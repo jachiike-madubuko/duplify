@@ -27,4 +27,4 @@ django-jsonview==1.1.0
 django-heroku-memcacheify==1.0.0
 django-coverage==1.2.4
 django-jet==1.0.7
-
+django-heroku
