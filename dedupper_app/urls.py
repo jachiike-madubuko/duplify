@@ -18,5 +18,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('dedupper/', include('dedupper.urls')),
+    path('', include('dedupper.urls')),
     path('admin/', admin.site.urls),
 ]

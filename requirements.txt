@@ -6,6 +6,14 @@ six==1.11.0
 django-autocomplete-light
 django-debug-toolbar
 django-import-export
+django-tables2
+django-postgres-extra==1.20.
+django-smsish==1.3.2
+django-jsonview==1.1.0
+django-heroku-memcacheify==1.0.0
+django-coverage==1.2.4
+django-jet==1.0.7
+django-heroku
 gunicorn==19.7.1
 psycopg2==2.7.4
 pandas==0.19.2
@@ -21,10 +29,5 @@ flaky
 coverage
 codecov
 tqdm
-django-postgres-extra==1.20.
-django-smsish==1.3.2
-django-jsonview==1.1.0
-django-heroku-memcacheify==1.0.0
-django-coverage==1.2.4
-django-jet==1.0.7
-django-heroku
+whitenoise
+
