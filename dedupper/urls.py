@@ -14,9 +14,16 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
+from django.conf.urls import url, include
 
-from . import views
+
+from dedupper.views import  SimpleFilteredSingleTableView, SimpleSingleTableView, FilteredTableView, FilterExListView
+
 
 urlpatterns = [
-    path('', views.index, name='index'),
+
+    url(r'^$', SimpleFilteredSingleTableView.as_view() ),
+    url(r'^nofilter/$', SimpleSingleTableView.as_view() ),
+    url(r'^filter2/$', FilteredTableView.as_view() ),
+    url(r'^filter_ex/$', FilterExListView.as_view() ),
 ]

@@ -1,0 +1,25 @@
+{% load render_table from django_tables2 %}
+{% load static %}
+<!doctype html>
+<html>
+    <head>
+        <title>List of persons</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    </head>
+    <body>
+        <div style=" height: 250px;"> </div>
+        <div style="margin-left: 150px; margin-right: 150px;">
+            <form method='GET'>
+        {{ filter.form }}
+        <input type='submit' value='Filter' />
+        |
+        Displaying {{ filter.qs.count }} of {{ filter.queryset.count }} items.
+        |
+        <a href='{{ request.path }}' >Clear</a>
+    </form>
+        </div>
+        <div style="margin-left: 150px; margin-right: 150px; height: 100%; width: 80%; box-shadow: 5px 5px 10px 3px
+        black"
+        >{% render_table table %} </div>
+    </body>
+</html>
