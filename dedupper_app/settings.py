@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'dedupper.apps.DedupperConfig',
     'django_tables2',
-    'rest_framework',
     'django_filters',
 ]
 
@@ -80,6 +79,39 @@ WSGI_APPLICATION = 'dedupper_app.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
+
+#heroku connnect
+#https://devcenter.heroku.com/articles/heroku-connect
+
+'''
+host: ec2-23-21-129-50.compute-1.amazonaws.com
+port: 5432 
+database: d6cmhrlj40jglf
+schema: salesforce 
+
+external obj credentials
+User: 8c536d5ac2454114b02c67954904b116
+Password: e42c94f0132a4faaa1384b62c3166f91
+server URL: https://odata-us.heroku.com/odata/v4/b85d58b34a3c4a37ba3fbc315e0987a4/	
+
+
+DATABASES	
+{'default': {'ATOMIC_REQUESTS': False,
+             'AUTOCOMMIT': True,
+             'CONN_MAX_AGE': 600,
+             'ENGINE': 'django.db.backends.postgresql_psycopg2',
+             'HOST': 'ec2-23-21-129-50.compute-1.amazonaws.com',
+             'NAME': 'd6cmhrlj40jglf',
+             'OPTIONS': {'sslmode': 'require'},
+             'PASSWORD': '********************',
+             'PORT': 5432,
+             'TEST': {'CHARSET': None,
+                      'COLLATION': None,
+                      'MIRROR': None,
+                      'NAME': None},
+             'TIME_ZONE': None,
+             'USER': 'avruysrbdidcpl'}}
+'''
 
 DATABASES = {
     'default': {
