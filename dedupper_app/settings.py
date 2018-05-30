@@ -42,8 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'dedupper.apps.DedupperConfig',
     'django_tables2',
+    'rest_framework',
     'django_filters',
-
 ]
 
 MIDDLEWARE = [
