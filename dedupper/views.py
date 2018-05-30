@@ -64,4 +64,3 @@ class FilterExListView(ListView):
 
     #TODO Add view for csv upload
     #TODO set up postgresql
-    #TODO heroku connect
