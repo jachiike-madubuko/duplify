@@ -12,11 +12,17 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 import django_heroku
+import dj_database_url
+import psycopg2
+
+DATABASE_URL = os.environ['DATABASE_URL']
+
+conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-import os
 SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -111,18 +117,54 @@ DATABASES
                       'NAME': None},
              'TIME_ZONE': None,
              'USER': 'avruysrbdidcpl'}}
+             
+Host        ec2-23-21-129-50.compute-1.amazonaws.com
+Database    d6cmhrlj40jglf
+User        avruysrbdidcpl
+Port        5432
+Password    a115aa44a42574a665e2eb8058232ad46d34d487622c80d2433c96a4af773f71
+URI         postgres://avruysrbdidcpl:a115aa44a42574a665e2eb8058232ad46d34d487622c80d2433c96a4af773f71@ec2-23-21-129-50.compute-1.amazonaws.com:5432/d6cmhrlj40jglf
+Heroku CLI  heroku pg:psql postgresql-vertical-55404 --app dedupper
+
+
+DATABASES = {
+    'default': {
+        'ATOMIC_REQUESTS': False,
+        'AUTOCOMMIT': True,
+        'CONN_MAX_AGE': 600,
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'HOST': 'ec2-23-21-129-50.compute-1.amazonaws.com',
+        'NAME': 'd6cmhrlj40jglf',
+        'OPTIONS': {'sslmode': 'require'},
+        'USER': 'avruysrbdidcpl',
+        'PASSWORD': 'a115aa44a42574a665e2eb8058232ad46d34d487622c80d2433c96a4af773f71',
+        'PORT': 5432,
+        'TEST': {
+            'CHARSET': None,
+            'COLLATION': None,
+            'MIRROR': None,
+            'NAME': None
+        },
+        'TIME_ZONE': None,
+    }
+}
 '''
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'd6cmhrlj40jglf',
+        'HOST': 'ec2-23-21-129-50.compute-1.amazonaws.com',
+        'PORT': '5432',
+        'USER': 'avruysrbdidcpl',
+        'PASSWORD': 'a115aa44a42574a665e2eb8058232ad46d34d487622c80d2433c96a4af773f71',
     }
 }
 
+DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
-# Password validation
-# https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
+#Password validation
+#https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -138,7 +180,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
