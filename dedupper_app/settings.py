@@ -15,7 +15,8 @@ import django_heroku
 import dj_database_url
 import psycopg2
 
-DATABASE_URL = os.environ['DATABASE_URL']
+#DATABASE_URL = os.environ['DATABASE_URL']
+DATABASE_URL = 'postgres://avruysrbdidcpl:a115aa44a42574a665e2eb8058232ad46d34d487622c80d2433c96a4af773f71@ec2-23-21-129-50.compute-1.amazonaws.com:5432/d6cmhrlj40jglf'
 
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
