@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Rep List</title>
+</head>
+<body>
+<div style="margin: 150px; height: 100%; width: 80%; box-shadow: 15px 15px 25px 0px black" >
+{% block content %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="myfile">
+    <button type="submit">Upload</button>
+  </form>
+{% endblock %}
+</div>
+
+</body>
+</html>

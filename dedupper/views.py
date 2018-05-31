@@ -4,6 +4,9 @@ import django_tables2
 import dedupper.models
 import dedupper.filters
 import dedupper.tables
+from tablib import Dataset
+from dedupper.resources import SimpleResource
+
 
 
 class FilteredSingleTableView(django_tables2.SingleTableView):
@@ -64,3 +67,23 @@ class FilterExListView(ListView):
 
     #TODO Add view for csv upload
     #TODO set up postgresql
+    #TODO heroku connect
+
+    def simple_upload(request):
+        if request.method == 'POST':
+            simple_resource = SimpleResource()
+            dataset = Dataset()
+            print('uploading file')
+            new_simples = request.FILES['myfile']
+            imported_data = dataset.load(new_simples.read())
+            result = simple_resource.import_data(imported_data, dry_run=True)  # Test the data import
+
+            if not result.has_errors():
+                print('importing data')
+                simple_resource.import_data(imported_data, dry_run=False)  # Actually import now
+
+        return render(request, 'dedupper/simple_list.html')
+
+def index(request):
+
+    return render(request, 'dedupper/rep_list_upload.html')

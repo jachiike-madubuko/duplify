@@ -13,8 +13,8 @@ db.sqlite3
 .idea/misc.xml
 .idea/modules.xml
 .idea/vcs.xml
-
-
+.idea/*
+.idea
 
 .DS_Store
 __pycache__/

@@ -15,14 +15,17 @@ Including another URLconf
 """
 from django.urls import path
 from django.conf.urls import url, include
-
-
+from django.contrib import admin
+from . import views
 from dedupper.views import  SimpleFilteredSingleTableView, SimpleSingleTableView, FilteredTableView, FilterExListView
 
 
-urlpatterns = [
+admin.autodiscover()
 
-    url(r'^$', SimpleFilteredSingleTableView.as_view() ),
+
+urlpatterns = [
+    path('', views.index, name='index'),
+    url(r'^table/$', SimpleFilteredSingleTableView.as_view() ),
     url(r'^nofilter/$', SimpleSingleTableView.as_view() ),
     url(r'^filter2/$', FilteredTableView.as_view() ),
     url(r'^filter_ex/$', FilterExListView.as_view() ),
