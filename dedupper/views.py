@@ -6,7 +6,7 @@ import dedupper.filters
 import dedupper.tables
 from tablib import Dataset
 from dedupper.resources import SimpleResource
-import pandas as pd
+from .import utils
 import csv
 
 
@@ -78,16 +78,31 @@ def index(request):
     else:
         simple_resource = SimpleResource()
         dataset = Dataset()
+        new_simples = list()
+
         #TODO format uploadeded file before using django-import-export
         #find out how to convert from bytes to csv
         #https://docs.djangoproject.com/en/2.0/ref/files/uploads/
         #https://docs.djangoproject.com/en/2.0/ref/files/
         print('uploading file')
         uploadedfile = request.FILES['myfile']
-        new_simples= uploadedfile.read()
+        print('start decoding')
+        reader = csv.reader(utils.fix_bytes(uploadedfile))
 
-        newCSV = pd.read_csv(new_simples)
-        imported_data = dataset.load(newCSV)
+        import csv
+        with open('some.csv', newline='', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            for row in reader:
+                print(row)
+
+        # for line in uploadedfile:
+        #     print(line.decode("utf-8"))
+        #     new_simples.append(line.decode("utf-8"))
+        print('done decoding')
+        print('load data')
+        imported_data = dataset.load(new_simples)
+        print('done data load')
+
         result = simple_resource.import_data(imported_data, dry_run=True)  # Test the data import
 
         if not result.has_errors():
@@ -95,4 +110,3 @@ def index(request):
             simple_resource.import_data(imported_data, dry_run=False)  # Actually import now
 
         return render(request, 'dedupper/simple_list.html')
-
