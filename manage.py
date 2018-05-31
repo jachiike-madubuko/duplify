@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
-
+#https://docs.djangoproject.com/en/2.0/ref/django-admin/
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "dedupper_app.settings")
     try:

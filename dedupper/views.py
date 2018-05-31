@@ -6,6 +6,9 @@ import dedupper.filters
 import dedupper.tables
 from tablib import Dataset
 from dedupper.resources import SimpleResource
+import pandas as pd
+import csv
+
 
 
 
@@ -69,21 +72,27 @@ class FilterExListView(ListView):
     #TODO set up postgresql
     #TODO heroku connect
 
-    def simple_upload(request):
-        if request.method == 'POST':
-            simple_resource = SimpleResource()
-            dataset = Dataset()
-            print('uploading file')
-            new_simples = request.FILES['myfile']
-            imported_data = dataset.load(new_simples.read())
-            result = simple_resource.import_data(imported_data, dry_run=True)  # Test the data import
+def index(request):
+    if(request.method == 'GET'):
+        return render(request, 'dedupper/rep_list_upload.html')
+    else:
+        simple_resource = SimpleResource()
+        dataset = Dataset()
+        #TODO format uploadeded file before using django-import-export
+        #find out how to convert from bytes to csv
+        #https://docs.djangoproject.com/en/2.0/ref/files/uploads/
+        #https://docs.djangoproject.com/en/2.0/ref/files/
+        print('uploading file')
+        uploadedfile = request.FILES['myfile']
+        new_simples= uploadedfile.read()
 
-            if not result.has_errors():
-                print('importing data')
-                simple_resource.import_data(imported_data, dry_run=False)  # Actually import now
+        newCSV = pd.read_csv(new_simples)
+        imported_data = dataset.load(newCSV)
+        result = simple_resource.import_data(imported_data, dry_run=True)  # Test the data import
+
+        if not result.has_errors():
+            print('importing data')
+            simple_resource.import_data(imported_data, dry_run=False)  # Actually import now
 
         return render(request, 'dedupper/simple_list.html')
 
-def index(request):
-
-    return render(request, 'dedupper/rep_list_upload.html')
