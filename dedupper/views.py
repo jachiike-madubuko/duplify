@@ -5,6 +5,10 @@ import dedupper.models
 import dedupper.filters
 import dedupper.tables
 from tablib import Dataset
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from dedupper.forms import UploadFileForm
+
 from dedupper.resources import SimpleResource
 from .import utils
 import csv
@@ -85,27 +89,18 @@ def index(request):
         #https://docs.djangoproject.com/en/2.0/ref/files/uploads/
         #https://docs.djangoproject.com/en/2.0/ref/files/
         print('uploading file')
+        form = UploadFileForm(request.POST, request.FILES)
+        print(form)
         uploadedfile = request.FILES['myfile']
-        print(uploadedfile)
-
-       # reader = csv.reader(utils.fix_bytes(uploadedfile))
-
-        # with open('some.csv', newline='', encoding='utf-8') as f:
-        #     reader = csv.reader(f)
-        #     for row in reader:
-        #         print(row)
-        #
-        # # for line in uploadedfile:
-        # #     print(line.decode("utf-8"))
-        # #     new_simples.append(line.decode("utf-8"))
-        # print('done decoding')
-        # print('load data')
-        # imported_data = dataset.load(new_simples)
-        # print('done data load')
-        #
-        # result = simple_resource.import_data(imported_data, dry_run=True)  # Test the data import
-        #
-        # if not result.has_errors():
-        #     print('importing data')
-        #     simple_resource.import_data(imported_data, dry_run=False)  # Actually import now
+        fileString = ''
+        for chunk in uploadedfile.chunks():
+            fileString += chunk.decode("utf-8")  + '\n'
+        print('done decoding')
+        print('load data')
+        dataset.csv = fileString
+        print('done data load')
+        result = simple_resource.import_data(dataset, dry_run=True)  # Test the data import
+        if not result.has_errors():
+            print('importing data')
+            simple_resource.import_data(dataset, dry_run=False)  # Actually import now
         return render(request, 'dedupper/rep_list_upload.html')

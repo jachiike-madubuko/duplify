@@ -43,8 +43,10 @@ INSTALLED_APPS = [
     'dedupper.apps.DedupperConfig',
     'django_tables2',
     'django_filters',
+    'import_export',
 
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -57,6 +59,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'dedupper_app.urls'
+IMPORT_EXPORT_USE_TRANSACTIONS = True
+
 
 TEMPLATES = [
     {
