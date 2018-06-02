@@ -86,27 +86,26 @@ def index(request):
         #https://docs.djangoproject.com/en/2.0/ref/files/
         print('uploading file')
         uploadedfile = request.FILES['myfile']
-        print('start decoding')
-        reader = csv.reader(utils.fix_bytes(uploadedfile))
+        print(uploadedfile)
 
-        import csv
-        with open('some.csv', newline='', encoding='utf-8') as f:
-            reader = csv.reader(f)
-            for row in reader:
-                print(row)
+       # reader = csv.reader(utils.fix_bytes(uploadedfile))
 
-        # for line in uploadedfile:
-        #     print(line.decode("utf-8"))
-        #     new_simples.append(line.decode("utf-8"))
-        print('done decoding')
-        print('load data')
-        imported_data = dataset.load(new_simples)
-        print('done data load')
-
-        result = simple_resource.import_data(imported_data, dry_run=True)  # Test the data import
-
-        if not result.has_errors():
-            print('importing data')
-            simple_resource.import_data(imported_data, dry_run=False)  # Actually import now
-
-        return render(request, 'dedupper/simple_list.html')
+        # with open('some.csv', newline='', encoding='utf-8') as f:
+        #     reader = csv.reader(f)
+        #     for row in reader:
+        #         print(row)
+        #
+        # # for line in uploadedfile:
+        # #     print(line.decode("utf-8"))
+        # #     new_simples.append(line.decode("utf-8"))
+        # print('done decoding')
+        # print('load data')
+        # imported_data = dataset.load(new_simples)
+        # print('done data load')
+        #
+        # result = simple_resource.import_data(imported_data, dry_run=True)  # Test the data import
+        #
+        # if not result.has_errors():
+        #     print('importing data')
+        #     simple_resource.import_data(imported_data, dry_run=False)  # Actually import now
+        return render(request, 'dedupper/rep_list_upload.html')

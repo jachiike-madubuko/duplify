@@ -1,5 +1,5 @@
 import ast
-
+import csv
 
 def _parse_bytes(field):
     """ Convert string represented in Python byte-string literal syntax into a
