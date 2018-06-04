@@ -1,0 +1,133 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Key Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<style>
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+
+    .switch input {display:none;}
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
+
+    input:focus + .slider {
+      box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked + .slider:before {
+      -webkit-transform: translateX(26px);
+      -ms-transform: translateX(26px);
+      transform: translateX(26px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+      border-radius: 34px;
+    }
+
+    .slider.round:before {
+      border-radius: 50%;
+    }
+</style>
+
+<script>
+$(document).ready(function(){
+    $(window).scrollTop(0);
+        alert("Thank you");
+    });
+    <!--
+    create 3 list views
+     List 1: contains the headers
+        Headers will have add button
+        When add button is clicked it will go to list 2
+     List 2: contains added headers
+        headers will have delete button
+        list will have a "make key" button
+            Make key button will reset list 2
+     List 3: contains keys
+        sortable keys
+        deletable keys
+     -->
+</script>
+</head>
+
+<body>
+	<div id="pageContainer">
+		<header id="pageHeader"></header>
+	 	<div id="contentContainer" class="clearfix">
+            <nav id="pageNav">Nav </nav>
+
+            <section id="pageSection">
+                <header class="sectionHeader"></header>
+                <article class="sectionArticle">
+                <div id="new_key" style="border: black 2px solid; border-radius: 20px; width: 250px; margin-outside:
+                10px;">
+                <table style="padding: 20px">
+                    {% for header in headers %}
+                            <tr style="box-shadow: #8d8d8d 1px 1px 10px 1px;">
+                                <td><p align="right">{{ header }}</p></td>
+                                <td>
+                                    <div align="left"; style="width: 100px; ">
+                                        <label class="switch" style="float: right; alignment: top">
+                                            <input type="checkbox" id="{{ header }}">
+                                            <span class="slider round"></span>
+                                        </label><!--<i class="fa fa-plus">-->
+                                    </div>
+                                </td>
+                            </tr>
+
+                    {% endfor %}
+                  </table>
+
+
+                <div align="right" style="padding: 10px">
+                    <button>Make Key</button>
+                </div>
+                </div>
+                </article>
+                <footer class="sectionFooter">footer</footer>
+            </section>
+
+ 			<aside id="pageAside">aside</aside>
+		</div>
+		<footer id="pageFooter"></footer>
+	</div>
+</body>
+</html>

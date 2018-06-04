@@ -17,6 +17,7 @@ from django.urls import path
 from django.conf.urls import url, include
 from django.contrib import admin
 from . import views
+from django.conf import settings
 from dedupper.views import  SimpleFilteredSingleTableView, SimpleSingleTableView, FilteredTableView, FilterExListView
 
 

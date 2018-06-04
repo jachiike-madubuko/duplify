@@ -4,4 +4,4 @@ class UploadFileForm(forms.Form):
     file = forms.FileField()
 
 
-class KeyGeneratorForm(forms.Form):
+# class KeyGeneratorForm(forms.Form):

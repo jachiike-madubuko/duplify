@@ -90,7 +90,6 @@ def index(request):
         #https://docs.djangoproject.com/en/2.0/ref/files/
         print('uploading file')
         form = UploadFileForm(request.POST, request.FILES)
-        print(form)
         uploadedfile = request.FILES['myfile']
         fileString = ''
         for chunk in uploadedfile.chunks():
@@ -99,8 +98,9 @@ def index(request):
         print('load data')
         dataset.csv = fileString
         print('done data load')
+
         result = simple_resource.import_data(dataset, dry_run=True)  # Test the data import
         if not result.has_errors():
             print('importing data')
             simple_resource.import_data(dataset, dry_run=False)  # Actually import now
-        return render(request, 'dedupper/rep_list_upload.html')
+        return render(request, 'dedupper/key_generator.html', {'headers' : dataset.headers})

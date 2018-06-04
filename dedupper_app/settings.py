@@ -12,11 +12,11 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 import django_heroku
+import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-import os
 SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -44,6 +44,9 @@ INSTALLED_APPS = [
     'django_tables2',
     'django_filters',
     'import_export',
+    'heroku_connect',
+    'django.contrib.postgres',
+   # 'connect_client',
 
 ]
 
@@ -92,7 +95,17 @@ DATABASES = {
     }
 }
 
+'''
+HEROKU_CONNECT_DATABASE_URL = os.environ['HEROKU_CONNECT_DATABASE_URL']
+HEROKU_CONNECT_SCHEMA = os.environ['HEROKU_CONNECT_SCHEMA']
+DATABASES = {
+    'default': dj_database_url.config(default=HEROKU_CONNECT_DATABASE_URL),
+}
 
+DATABASES['default'] = dj_database_url.config(
+    engine='heroku_connect.db.backends.postgresql'
+)
+'''
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 
