@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 
 #yo mama
 # Application definition
+# yo daddy
 
 
 INSTALLED_APPS = [
