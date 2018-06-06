@@ -5,6 +5,7 @@ Created on Sat May 19 17:53:34 2018
 
 @author: jachi
 """
+from dedupper.models import Simple
 import string
 from time import clock
 from random import *
@@ -12,11 +13,19 @@ from range_key_dict import RangeKeyDict
 import pandas as pd
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process #could be used to generate suggestions for unknown records
+import numpy as np
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
+
 df = None
 dups = list()
 new_records = list()
 unsure = list()
+
+rkd = RangeKeyDict({
+    (100, 101): 'Duplicate',
+    (70, 100): 'Undecided',
+    (0, 70): 'New Record'
+})
 
 """
 TODO clean up comments
@@ -25,33 +34,60 @@ TODO
 """
 
 
-def getheaders():
-    return(df.columns.values)
-
-def key_generator(headers):
+def key_generator(partslist):
     #for each row in df
         #concatenate each columns in headers
         #store key in new list
-    keys = list()
-    key = ''
-    for index, row in df.iterrows():
-        for col in headers:
-            key += str(row[col])
-        keys.append(key)
-        key= ''
-    return(keys)
+    print(partslist)
+    #for key_parts in partslist:
+    #Simple.objects.filter(type__exact='Unsure')
+    rep_list = list(Simple.objects.all())
+    rep_keys = [i.key(partslist[0]) for i in rep_list]
+    rep_map = dict(zip(rep_keys,rep_list))
 
-    #new keygenerator
-    #loop through data once and create all the different keys in one pass of the rep list
+    #sf_list = list(Contact.object.all())
+    #sf_keys = [i.key(partslist[0]) for i in sf_list]
+    #sf_map = dict(zip(sf_keys, sf_list))
+    sf_keys = mutate(rep_keys)
+
+    for rep_key in rep_keys:
+        key_matches = match_keys(rep_key,sf_keys)
+        match_map = list(zip(key_matches,sf_keys))
+        match_map  = sorted(match_map, reverse=True)
+        top1, top2, top3 = [match_map[0], match_map[1], match_map[2]]
+        percentage = np.mean([top1[0],top2[0],top3[0]])
+        #multiple 100
+
+        #seperate by activity
+
+        #new
+        #updates
+        #
+        person = rep_map[rep_key]
+
+        person.average  = percentage
+        person.closest1 = top1
+        person.closest2 = top2
+        person.closest3 = top3
+        person.type     = sort(percentage)
+        print(person.title + ' : ' + str(percentage) + '% : ' + rep_key)
+        print(person.closest1, end ='\t')
+        print(person.closest2, end ='\t')
+        print(person.closest3, end ='\n######################\n')
+
+        person.save()
+    print('\a')
+
+
+def match_keys(key,key_list):
+    for i in key_list:
+        yield match_percentage(key,i)
+
+def sort(avg):
+    return rkd[avg]
 
 def match_percentage(key1,key2):
     return fuzz.ratio(key1, key2)
-
-rkd = RangeKeyDict({
-    (100, 101): 'Duplicate',
-    (70, 100): 'Unsure',
-    (0, 70): 'New Record'
-})
 
 def setSortingAlgorithm(min_dup,min_uns):
     #TODO finish this function and connect it to a slider
@@ -72,7 +108,7 @@ def mutate(keys):
 
     for i in range(num_mutating):
         j = randint(0,len(keys)-1)
-        for i in range(randint(3,len(mutant[j]))):
+        for i in range(randint(3,len(mutant[j])+3)):
             mutant[j]=mutant[j].replace(mutant[j][int(sample(range(len(mutant[j])-1), 1)[0])], choice(string.printable))
     return mutant
 
@@ -86,8 +122,6 @@ def sorter(group, index,percent):
         new_records.append(record)
 #    elif(group == 'Unsure'):
 #        unsure.append(record)
-
-
 
 def dedup(key):
     print('...entering dedup process')
@@ -107,7 +141,6 @@ def dedup(key):
     end = clock()
     time = str(end-start)
     print('...dedupping and sorting complete \t time = '+time)
-
 
 def get_lists():
     return(dups, new_records, list(df.values))

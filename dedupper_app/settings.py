@@ -34,6 +34,8 @@ ALLOWED_HOSTS = []
 
 
 INSTALLED_APPS = [
+    'jet.dashboard',
+    'jet',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,15 +43,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'dedupper.apps.DedupperConfig',
+    'django.contrib.postgres',
     'django_tables2',
     'django_filters',
     'import_export',
     'heroku_connect',
-    'django.contrib.postgres',
    # 'connect_client',
 
 ]
 
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

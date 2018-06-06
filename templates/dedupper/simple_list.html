@@ -9,7 +9,7 @@
     </head>
     <body>
         <div style=" height: 50px;"> </div>
-        <div style="margin-left: 150px; margin-right: 150px;">
+        <div style="margin-left: 150px; margin-right: 250px; width: max-content" align="right">
             <form method='GET'>
         {{ filter.form }}
         <input type='submit' value='Filter' />
@@ -19,8 +19,13 @@
         <a href='{{ request.path }}' >Clear</a>
     </form>
         </div>
-        <div style="margin-left: 150px; margin-right: 150px; height: 100%; width: 80%; box-shadow: 5px 5px 10px 3px black">
+        <div style="margin-left: 150px; margin-right: 150px; height: max-content; width:max-content; overflow-y:
+        paged-y-controls; box-shadow: 5px 5px
+        10px 3px
+        black">
             {% render_table table %}
         </div>
+            <div style=" height: 50px;"> </div>
+
     </body>
 </html>

@@ -10,9 +10,16 @@ from django.shortcuts import render
 from dedupper.forms import UploadFileForm
 
 from dedupper.resources import SimpleResource
-from .import utils
+from  dedupper.utils import key_generator
 import csv
 
+#TODO create views for the different tables
+
+#TODO add interface for views closest match records
+
+#TODO Create document merging interface
+
+#TODO Interactive Table
 
 
 
@@ -77,30 +84,48 @@ class FilterExListView(ListView):
     #TODO heroku connect
 
 def index(request):
-    if(request.method == 'GET'):
-        return render(request, 'dedupper/rep_list_upload.html')
+    return render(request, 'dedupper/rep_list_upload.html')
+
+
+
+def upload(request):
+    simple_resource = SimpleResource()
+    dataset = Dataset()
+    new_simples = list()
+
+    #TODO format uploadeded file before using django-import-export
+    #find out how to convert from bytes to csv
+    #https://docs.djangoproject.com/en/2.0/ref/files/uploads/
+    #https://docs.djangoproject.com/en/2.0/ref/files/
+    print('uploading file')
+    form = UploadFileForm(request.POST, request.FILES)
+    if 'myfile' in request.session:
+        uploadedfile = request.session['myfile']
     else:
-        simple_resource = SimpleResource()
-        dataset = Dataset()
-        new_simples = list()
-
-        #TODO format uploadeded file before using django-import-export
-        #find out how to convert from bytes to csv
-        #https://docs.djangoproject.com/en/2.0/ref/files/uploads/
-        #https://docs.djangoproject.com/en/2.0/ref/files/
-        print('uploading file')
-        form = UploadFileForm(request.POST, request.FILES)
         uploadedfile = request.FILES['myfile']
-        fileString = ''
-        for chunk in uploadedfile.chunks():
-            fileString += chunk.decode("utf-8")  + '\n'
-        print('done decoding')
-        print('load data')
-        dataset.csv = fileString
-        print('done data load')
 
-        result = simple_resource.import_data(dataset, dry_run=True)  # Test the data import
-        if not result.has_errors():
-            print('importing data')
-            simple_resource.import_data(dataset, dry_run=False)  # Actually import now
-        return render(request, 'dedupper/key_generator.html', {'headers' : dataset.headers})
+
+    fileString = ''
+    for chunk in uploadedfile.chunks():
+        fileString += chunk.decode("utf-8") + '\n'
+    print('done decoding')
+    print('load data')
+    dataset.csv = fileString
+    print('done data load')
+
+    result = simple_resource.import_data(dataset, dry_run=True)  # Test the data import
+    if not result.has_errors():
+        print('importing data')
+        simple_resource.import_data(dataset, dry_run=False)  # Actually import now
+    return render(request, 'dedupper/key_generator.html', {'headers': dataset.headers})
+
+
+def rep_list_keys(request):
+    keylist = request.POST.getlist('keys[]')
+    partslist = list()
+    for key in keylist:
+        parts = key.split("-")
+        partslist.append(parts)
+    key_generator(partslist)
+    return render(request, 'dedupper/rep_list_upload.html')
+
