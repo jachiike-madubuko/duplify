@@ -5,6 +5,8 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
 	<title>Key Generator</title>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -48,7 +50,10 @@
 			});
 
 			$.post("{% url 'rep_list_keys' %}" , {"keys": keys}, function () {
-				alert("success!");
+				var alert = '<div class="alert alert-success">' +
+                    '  <strong>Success!</strong> Indicates a successful or positive action.' +
+                    '</div>';
+				$('article').append(alert);
 			}).fail(function() {
 				alert( "error");
 			});
@@ -201,10 +206,13 @@
                         </button>
                     </div >
 				</div>
-                <footer class="sectionFooter">
-                    <button>Next</button>
-				</footer>
 				</article>
+                <footer class="sectionFooter">
+                    <form  method="post" action="/display/">
+                        {% csrf_token %}
+                        <button type="submit">Next</button>
+                    </form>
+				</footer>
 			</section>
 
 			<aside id="pageAside">aside</aside>

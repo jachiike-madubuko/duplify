@@ -34,19 +34,22 @@ class FilteredSimpleListView(SingleTableMixin, FilterView):
 
     filterset_class = SimpleFilter
 
-#connect this page with filters
-def simples_sorted(request):
+#connect this page with filters config = RequestConfig(request)
+def display(request):
     config = RequestConfig(request)
-    table1 = SimpleTable(Simple.objects.filter(type__exact='Undecided'), prefix='1-')  # prefix specified
-    table2 = SimpleTable(Simple.objects.filter(type__exact='Duplicate'), prefix='1-')  # prefix specified
-    table3 = SimpleTable(Simple.objects.filter(type__exact='New Record'), prefix='1-')  # prefix specified
-    config.configure(table1)
-    config.configure(table2)
+    undecided_table = SimpleTable(Simple.objects.filter(type__exact='Undecided'), prefix='U-')  # prefix specified
+    duplicate_table = SimpleTable(Simple.objects.filter(type__exact='Duplicate'), prefix='D-')  # prefix specified
+    new_record_table = SimpleTable(Simple.objects.filter(type__exact='New Record'), prefix='N-')  # prefix specified
+    config.configure(undecided_table)
+    config.configure(duplicate_table)
+    config.configure(new_record_table)
 
-    return render(request, 'Simple_listing.html', {
-        'table1': table1,
-        'table2': table2
+    return render(request, 'dedupper/sorted.html', {
+        'undecided_table': undecided_table,
+        'duplicate_table': duplicate_table,
+        'new_record_table': new_record_table,
     })
+
 
 def upload(request):
     simple_resource = SimpleResource()

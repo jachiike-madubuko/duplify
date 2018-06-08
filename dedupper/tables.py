@@ -6,3 +6,6 @@ class SimpleTable(tables.Table):
     class Meta:
         model = Simple
         template_name = 'django_tables2/bootstrap.html'
+        row_attrs = {
+            'data-id': lambda record: record.pk
+        }

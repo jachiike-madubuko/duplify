@@ -30,6 +30,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     url(r'^keys', views.upload, name='keys'),
     path('rep_list_keys/', views.rep_list_keys, name='rep_list_keys'),
+    path('display/', views.display, name='display'),
     url(r'^table/$', FilteredSimpleListView.as_view() ),
     # url(r'^nofilter/$', SimpleSingleTableView.as_view() ),
     # url(r'^filter2/$', FilteredTableView.as_view() ),

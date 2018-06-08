@@ -55,25 +55,24 @@ def key_generator(partslist):
         match_map = list(zip(key_matches,sf_keys))
         match_map  = sorted(match_map, reverse=True)
         top1, top2, top3 = [match_map[0], match_map[1], match_map[2]]
-        percentage = np.mean([top1[0],top2[0],top3[0]])
-        #multiple 100
+        person = rep_map[rep_key]
+
+        if top1[0] <= top3[0]+25:
+            person.average = np.mean([top1[0],top2[0],top3[0]])
+            person.closest1 = top1
+            person.closest2 = top2
+            person.closest3 = top3
+        elif top1[0] <= top2[0]+25:
+            person.average = np.mean([top1[0],top2[0]])
+            person.closest1 = top1
+            person.closest2 = top2
+        else:
+            person.average = top1[0]
+            person.closest1 = top1
 
         #seperate by activity
 
-        #new
-        #updates
-        #
-        person = rep_map[rep_key]
-
-        person.average  = percentage
-        person.closest1 = top1
-        person.closest2 = top2
-        person.closest3 = top3
-        person.type     = sort(percentage)
-        print(person.title + ' : ' + str(percentage) + '% : ' + rep_key)
-        print(person.closest1, end ='\t')
-        print(person.closest2, end ='\t')
-        print(person.closest3, end ='\n######################\n')
+        person.type  = sort(person.average)
 
         person.save()
     print('\a')
