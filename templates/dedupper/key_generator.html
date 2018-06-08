@@ -1,4 +1,6 @@
 {% load static %}
+{% load bootstrap3 %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,7 +18,7 @@
 	}});
 	$(document).ready(function(){
 
-		$("#key").click(function(){
+		$(".key").click(function(){
 			var sList = "";
 			$('input[type=checkbox]').each(function () {
 				var sThisVal = (this.checked ? "1" : "0");
@@ -186,7 +188,8 @@
 					{% endfor %}
 				</table>
 				<div align="right" style="padding: 10px">
-					<button id="key">Make Key</button>
+                    {% bootstrap_button "Make Key" button_class="key" size='lg' %}
+
 				</div>
 				</div>
 				<div id="keyList">

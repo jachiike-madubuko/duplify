@@ -1,13 +1,15 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView, ListView
 import django_tables2
-import dedupper.models
-import dedupper.filters
-import dedupper.tables
+from dedupper.models import Simple
+from  dedupper.filters import SimpleFilter
+from dedupper.tables import SimpleTable
 from tablib import Dataset
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from dedupper.forms import UploadFileForm
+from django_filters.views import FilterView
+from django_tables2.views import SingleTableMixin, RequestConfig
 
 from dedupper.resources import SimpleResource
 from  dedupper.utils import key_generator
@@ -21,82 +23,36 @@ import csv
 
 #TODO Interactive Table
 
-
-
-class FilteredSingleTableView(django_tables2.SingleTableView):
-    filter_class = None
-
-    def get_table_data(self):
-        data = super(FilteredSingleTableView, self).get_table_data()
-        self.filter = self.filter_class(self.request.GET, queryset=data)
-        return self.filter.qs
-
-    def get_context_data(self, **kwargs):
-        context = super(FilteredSingleTableView, self).get_context_data(**kwargs)
-        context['filter'] = self.filter
-        return context
-
-
-class SimpleFilteredSingleTableView(FilteredSingleTableView):
-    model = dedupper.models.Simple
-    table_class = dedupper.tables.SimpleTable
-    filter_class = dedupper.filters.SimpleFilter
-
-
-class SimpleSingleTableView(django_tables2.SingleTableView):
-    model = dedupper.models.Simple
-    table_class = dedupper.tables.SimpleTable
-
-
-class FilteredTableView(ListView):
-    model = dedupper.models.Simple
-
-    def get_context_data(self, **kwargs):
-        context = super(FilteredTableView, self).get_context_data(**kwargs)
-        filter = dedupper.filters.SimpleFilter(self.request.GET, queryset=self.object_list)
-
-        table = dedupper.tables.SimpleTable(filter.qs)
-        django_tables2.RequestConfig(self.request, ).configure(table)
-
-        context['filter'] = filter
-        context['table'] = table
-        return context
-
-
-class FilterExListView(ListView):
-    model = dedupper.models.Simple
-
-    def get_context_data(self, **kwargs):
-        context = super(FilterExListView, self).get_context_data(**kwargs)
-        filter = dedupper.filters.SimpleFilterEx(self.request.GET, queryset=self.object_list)
-
-        table = dedupper.tables.SimpleTable(filter.qs)
-        django_tables2.RequestConfig(self.request, ).configure(table)
-
-        context['filter'] = filter
-        context['table'] = table
-
-        return context
-
-
-    #TODO Add view for csv upload
-    #TODO set up postgresql
-    #TODO heroku connect
-
 def index(request):
     return render(request, 'dedupper/rep_list_upload.html')
 
 
+class FilteredSimpleListView(SingleTableMixin, FilterView):
+    table_class = SimpleTable
+    model = Simple
+    template_name = 'simple_filter.html'
+
+    filterset_class = SimpleFilter
+
+#connect this page with filters
+def simples_sorted(request):
+    config = RequestConfig(request)
+    table1 = SimpleTable(Simple.objects.filter(type__exact='Undecided'), prefix='1-')  # prefix specified
+    table2 = SimpleTable(Simple.objects.filter(type__exact='Duplicate'), prefix='1-')  # prefix specified
+    table3 = SimpleTable(Simple.objects.filter(type__exact='New Record'), prefix='1-')  # prefix specified
+    config.configure(table1)
+    config.configure(table2)
+
+    return render(request, 'Simple_listing.html', {
+        'table1': table1,
+        'table2': table2
+    })
 
 def upload(request):
     simple_resource = SimpleResource()
     dataset = Dataset()
     new_simples = list()
 
-    #TODO format uploadeded file before using django-import-export
-    #find out how to convert from bytes to csv
-    #https://docs.djangoproject.com/en/2.0/ref/files/uploads/
-    #https://docs.djangoproject.com/en/2.0/ref/files/
     print('uploading file')
     form = UploadFileForm(request.POST, request.FILES)
     if 'myfile' in request.session:
