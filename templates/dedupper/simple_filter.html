@@ -1,0 +1,25 @@
+{% load render_table from django_tables2 %}
+{% load bootstrap3 %}
+{% load static %}
+<!doctype html>
+<html>
+<!-- https://jqueryui.com/tabs/#ajax -->
+    <head>
+        <title>List of persons</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    </head>
+    <body>
+        <div style=" height: 50px;"> </div>
+
+
+            {% if filter %}
+            <form action="" method="get" class="form form-inline">
+                {% bootstrap_form filter.form layout='inline' %}
+                {% bootstrap_button 'Filter' %}
+            </form>
+            {% endif %}
+            {% render_table table 'django_tables2/bootstrap.html' %}
+            <div style=" height: 50px;"> </div>
+
+    </body>
+</html>
