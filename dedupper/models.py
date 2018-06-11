@@ -22,9 +22,10 @@ class Simple(models.Model):
         ('Duplicate', 'Duplicate'),
         ('New Record', 'New Record')  )
     type = models.CharField(max_length=128, choices=TYPES_OF_RECORD, default='Undecided')
-    closest1 = models.CharField(max_length=128, null=True, blank=True)
-    closest2 = models.CharField(max_length=128, null=True, blank=True)
-    closest3 = models.CharField(max_length=128, null=True, blank=True)
+
+    closest1 = models.ForeignKey('Simple', on_delete=models.CASCADE, related_name='the_closest', null=True, blank=True)
+    closest2 = models.ForeignKey('Simple', on_delete=models.CASCADE, related_name='second_closest', null=True, blank=True)
+    closest3 = models.ForeignKey('Simple', on_delete=models.CASCADE, related_name='third_closest', null=True, blank=True)
 
     def __str__(self):
         return '{} by {} \n\t has Record type: {} with a match of {}%'.format(self.title, self.author, self.type, self.average)

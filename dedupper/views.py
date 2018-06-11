@@ -5,7 +5,7 @@ from dedupper.models import Simple
 from  dedupper.filters import SimpleFilter
 from dedupper.tables import SimpleTable
 from tablib import Dataset
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import render
 from dedupper.forms import UploadFileForm
 from django_filters.views import FilterView
@@ -36,6 +36,11 @@ class FilteredSimpleListView(SingleTableMixin, FilterView):
 
 #connect this page with filters config = RequestConfig(request)
 def display(request):
+    keylist = request.POST.get('keys')
+    keylist = keylist.split("_")
+    partslist = [i.split('-') for i in keylist[:-1]]
+    key_generator(partslist)
+
     config = RequestConfig(request)
     undecided_table = SimpleTable(Simple.objects.filter(type__exact='Undecided'), prefix='U-')  # prefix specified
     duplicate_table = SimpleTable(Simple.objects.filter(type__exact='Duplicate'), prefix='D-')  # prefix specified
@@ -79,12 +84,11 @@ def upload(request):
     return render(request, 'dedupper/key_generator.html', {'headers': dataset.headers})
 
 
-def rep_list_keys(request):
-    keylist = request.POST.getlist('keys[]')
-    partslist = list()
-    for key in keylist:
-        parts = key.split("-")
-        partslist.append(parts)
-    key_generator(partslist)
-    return render(request, 'dedupper/rep_list_upload.html')
-
+def merge(request, title):
+    obj = Simple.objects.get(title=title)
+    '''
+    django query for closest objects
+    send in as list of the attrs 
+    display in merge.html as button dropdowns to decide final version of object
+    '''
+    return render(request, 'dedupper/merge.html', {'obj': obj})

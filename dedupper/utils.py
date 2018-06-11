@@ -14,6 +14,8 @@ import pandas as pd
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process #could be used to generate suggestions for unknown records
 import numpy as np
+from copy import deepcopy
+
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
 
 df = None
@@ -41,40 +43,46 @@ def key_generator(partslist):
     print(partslist)
     #for key_parts in partslist:
     #Simple.objects.filter(type__exact='Unsure')
+
     rep_list = list(Simple.objects.all())
+    sf_list = deepcopy(rep_list)
     rep_keys = [i.key(partslist[0]) for i in rep_list]
+    start = clock()
     rep_map = dict(zip(rep_keys,rep_list))
 
     #sf_list = list(Contact.object.all())
     #sf_keys = [i.key(partslist[0]) for i in sf_list]
     #sf_map = dict(zip(sf_keys, sf_list))
+
     sf_keys = mutate(rep_keys)
+    sf_map = dict(zip(sf_keys, sf_list))
 
     for rep_key in rep_keys:
         key_matches = match_keys(rep_key,sf_keys)
         match_map = list(zip(key_matches,sf_keys))
         match_map  = sorted(match_map, reverse=True)
-        top1, top2, top3 = [match_map[0], match_map[1], match_map[2]]
+        top1, top2, top3 = [(match_map[i][0],sf_map[match_map[i][1]]) for i in range(3)]
         person = rep_map[rep_key]
 
         if top1[0] <= top3[0]+25:
             person.average = np.mean([top1[0],top2[0],top3[0]])
-            person.closest1 = top1
-            person.closest2 = top2
-            person.closest3 = top3
+            person.closest1 = top1[1]
+            person.closest2 = top2[1]
+            person.closest3 = top3[1]
         elif top1[0] <= top2[0]+25:
             person.average = np.mean([top1[0],top2[0]])
-            person.closest1 = top1
-            person.closest2 = top2
+            person.closest1 = top1[1]
+            person.closest2 = top2[1]
         else:
             person.average = top1[0]
-            person.closest1 = top1
-
+            person.closest1 = top1[1]
         #seperate by activity
-
         person.type  = sort(person.average)
-
         person.save()
+
+    end = clock()
+    time = str(end - start)
+    print('...dedupping and sorting complete \t time = ' + time)
     print('\a')
 
 

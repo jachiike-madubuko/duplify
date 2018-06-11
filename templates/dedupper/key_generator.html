@@ -8,64 +8,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 	<title>Key Generator</title>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
-	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+
+    <script>
 	 $.ajaxSetup({data: {
 		csrfmiddlewaretoken: '{{ csrf_token }}'
 	}});
-	$(document).ready(function(){
 
-		$(".key").click(function(){
-			var sList = "";
-			$('input[type=checkbox]').each(function () {
-				var sThisVal = (this.checked ? "1" : "0");
-				if (sThisVal === "1") {
-					 sList += ( this.id + "-");
-					 $(this).prop("checked", false);
-				}
-			});
-			sList = sList.slice(0, -1);
-			var key = '<li class="ui-state-default"><span class="ui-icon ui-icon-trash"></span>'+sList+'</li>';
-			$("#sortable").append(key);
-		});
-		{#$( "#sortable" ).sortable({axis: "y"});#}
-		{#$( "#sortable" ).disableSelection();#}
+	function add() {
+            var sList = "";
+            $('input[type=checkbox]').each(function () {
+                var sThisVal = (this.checked ? "1" : "0");
+                if (sThisVal === "1") {
+                     sList += ( this.id + "-");
+                     $(this).prop("checked", false);
+                }
+            });
+            sList = sList.slice(0, -1);
+            var key = '<li class="key list-group-item list-group-item-primary">'+sList+'<span class="glyphicon glyphicon-trash"></span></li>';
+            $(".list-group").append(key);
+            $("#next").show("slow");
 
-		$(document).on("click", "span", function (i, e) {
-			if ($(this).hasClass("ui-icon-trash")) {
-				$(this).parent().remove();
-			}
+    }
 
-		});
+    function generateKeys() {
+        let keys = "";
+        $(".key").each(function () {
+            keys += $(this).text();
+            keys += '_';
+        });
 
-		$(document).on("click", "#keygen", function (i, e) {
-			let keys = [];
-			$("li").each(function () {
-				keys.push($(this).text());
-			});
-
-			$.post("{% url 'rep_list_keys' %}" , {"keys": keys}, function () {
-				var alert = '<div class="alert alert-success">' +
-                    '  <strong>Success!</strong> Indicates a successful or positive action.' +
-                    '</div>';
-				$('article').append(alert);
-			}).fail(function() {
-				alert( "error");
-			});
-		});
-	});
+        $("#keys").val(keys);
+       // $("#next").removeClass("invisible");
+    }
 
 
-	</script>
-
+</script>
 	<style>
 		#new_key, #keyList{
-			border: black 2px solid;
+			border: black 1px solid;
 			border-radius: 20px;
 			width: 250px;
 			margin: 50px;
@@ -164,58 +146,99 @@
 </head>
 
 <body>
-	<div id="pageContainer">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+
+    <div id="pageContainer">
 		<header id="pageHeader"></header>
 		<div id="contentContainer" class="clearfix">
-			<nav id="pageNav">Nav </nav>
-
+            <nav class="navbar navbar-dark bg-primary navbar-expand-lg justify-content-between">
+                <a class="navbar-brand" href="#">Duplify</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                      <li class="nav-item active">
+                        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="#">Features</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="#">Pricing</a>
+                      </li>
+                    </ul>
+                    <form class="form-inline">
+                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-dark my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+                </div>
+            </nav>
 			<section id="pageSection">
 				<header class="sectionHeader"></header>
 				<article class="sectionArticle">
-				<div id="new_key">
-					<table>
-					{% for header in headers %}
-						<tr>
-							<td>
-                                <p align="right">
-                                    {{ header }}
-                                </p>
-                            </td>
-                            <td>
-                                <div align="left" style="width: 100px; ">
-                                    <label class="switch" style="float: right; alignment: top">
-                                        <input type="checkbox" id="{{ header }}" class="check">
-                                        <span class="slider round"></span>
-                                    </label><!--<i class="fa fa-plus">-->
-                                </div>
-                            </td>
-                        </tr>
-					{% endfor %}
-				</table>
-				<div align="right" style="padding: 10px">
-                    {% bootstrap_button "Make Key" button_class="key" size='lg' %}
+                <div class="container">
+                  <div class="row">
+                    <div id="new_key" class="col border border-primary">
+                        <table>
+                        {% for header in headers %}
+                            <tr>
+                                <td>
+                                    <p align="right">
+                                        {{ header }}
+                                    </p>
+                                </td>
+                                <td>
+                                    <div align="left" style="width: 100px; ">
+                                        <label class="switch" style="float: right; alignment: top">
+                                            <input type="checkbox" id="{{ header }}" class="check">
+                                            <span class="slider round"></span>
+                                        </label><!--<i class="fa fa-plus">-->
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <div align="right" style="padding: 10px">
+                        <button id="key" type="button" class="btn btn-primary" onclick="add()">Add</button>
 
-				</div>
-				</div>
-				<div id="keyList">
-					<ul id="sortable">
+
+                    </div>
+                    </div>
+                    <div id="keyList" class="col border border-primary">
+                    <ul class="list-group">
                     </ul>
                     <div align="right" style="padding: 10px">
-                        <button id="keygen">
-                            Generate Key
-                        </button>
+                        <form  method="post" action="/rep_list_keys/">
+                            {% csrf_token %}
+                            <input type="text" readonly class="form-control-plaintext" id="keys" name="keys" value="email@example.com" style="color: white;">
+                            <button type="submit" id="keygen" class="btn btn-primary" onclick="generateKeys()">
+                                GO!
+                            </button>
+                        </form>
                     </div >
 				</div>
+                  </div>
+                <div class="row">
+                    <div class="col"></div>
+                    <div class="col">
+                        <form  method="post" action="/display/">
+                            {% csrf_token %}
+                            <button id= "next" class="invisible btn btn-success btn-lg btn-block" type="submit">Next</button>
+                        </form>
+                    </div>
+                <div class="col"></div>
+                </div>
+                </div>
 				</article>
                 <footer class="sectionFooter">
-                    <form  method="post" action="/display/">
-                        {% csrf_token %}
-                        <button type="submit">Next</button>
-                    </form>
+
 				</footer>
 			</section>
 
-			<aside id="pageAside">aside</aside>
 		</div>
 		<footer id="pageFooter"></footer>
 	</div>
