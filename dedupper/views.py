@@ -36,10 +36,11 @@ class FilteredSimpleListView(SingleTableMixin, FilterView):
 
 #connect this page with filters config = RequestConfig(request)
 def display(request):
-    keylist = request.POST.get('keys')
-    keylist = keylist.split("_")
-    partslist = [i.split('-') for i in keylist[:-1]]
-    key_generator(partslist)
+    if request.method == 'POST':
+        keylist = request.POST.get('keys')
+        keylist = keylist.split("_")
+        partslist = [i.split('-') for i in keylist[:-1]]
+        key_generator(partslist)
 
     config = RequestConfig(request)
     undecided_table = SimpleTable(Simple.objects.filter(type__exact='Undecided'), prefix='U-')  # prefix specified
@@ -85,10 +86,24 @@ def upload(request):
 
 
 def merge(request, title):
-    obj = Simple.objects.get(title=title)
+    obj = Simple.objects.values().get(title=title)
+    ids = [obj['closest1_id'], obj['closest2_id'], obj['closest3_id']]
+    objs = Simple.objects.values().filter(pk__in=ids)
+    fields = [i.name for i in Simple._meta.local_fields][:-3]
+    mergers = list()
+
+    for i in range(len(objs)):
+        del objs[i]['closest1_id'], objs[i]['closest2_id'], objs[i]['closest3_id'], objs[i]['type'], objs[i]['average'],
+        mergers.append(list(objs[i].values()))
+    del obj['closest1_id'], obj['closest2_id'], obj['closest3_id'], obj['type'], obj['average']
+    obj = list(obj.values())
+
+    obj_map = {i:j for i,j in zip(fields, list(zip(obj,mergers[0],mergers[1],mergers[2])) ) }
+    print(obj_map)
     '''
-    django query for closest objects
-    send in as list of the attrs 
-    display in merge.html as button dropdowns to decide final version of object
+        outputs a dictionary of the field as the with a value of each objs corresponding field value
+        example
+        obj_map['title'] = ('free willy', 'home alone', 'toy story')
     '''
-    return render(request, 'dedupper/merge.html', {'obj': obj})
+    x = [ i for i in range(50)]
+    return render(request, 'dedupper/merge.html', {'objs' : obj_map, 'cnt':x})

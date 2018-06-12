@@ -36,7 +36,7 @@ class Simple(models.Model):
         key_builder = {
             'title': strip(self.title),
             'author': strip(self.author),
-            'catergory': strip(self.category)
+            'category': strip(self.category)
         }
 
         for part in key_parts:
