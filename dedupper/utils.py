@@ -31,19 +31,20 @@ rkd = RangeKeyDict({
 
 """
 TODO clean up comments
-TODO stage functionality for saving csv (pandas to csv)
-TODO
+TODO create special case for phones and emails
 """
 
 
 def key_generator(partslist):
-    #for each row in df
-        #concatenate each columns in headers
-        #store key in new list
     print(partslist)
+    #TODO
     #for key_parts in partslist:
-    #Simple.objects.filter(type__exact='Unsure')
+        #if phone in key_parts      **same for email
+            #for each type of phone
+             #clone key_parts and replace phone with the type of phone and add to partslist
 
+    # for key_parts in partslist:
+        #Simple.objects.filter(type__in=['Unsure', 'New Record'])
     rep_list = list(Simple.objects.all())
     sf_list = deepcopy(rep_list)
     rep_keys = [i.key(partslist[0]) for i in rep_list]
@@ -78,7 +79,9 @@ def key_generator(partslist):
             person.closest1 = top1[1]
         #seperate by activity
         person.type  = sort(person.average)
+        #try-catch for the save, error will raise if match_contactID is not unique
         person.save()
+
 
     end = clock()
     time = str(end - start)
@@ -151,3 +154,4 @@ def dedup(key):
 
 def get_lists():
     return(dups, new_records, list(df.values))
+

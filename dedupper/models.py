@@ -46,7 +46,8 @@ class Simple(models.Model):
 #model manager that returns object based on key code
 #function to create its all key map
 
-
+#TODO
 #create contact model
 #create rep_contact and sf_contact that inherit from contact
 #set up model for SF contact
+#for rep_contact make a match_contactID and make it unique
