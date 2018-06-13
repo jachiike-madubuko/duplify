@@ -15,13 +15,11 @@ from dedupper.resources import SimpleResource
 from  dedupper.utils import key_generator
 import csv
 
-#TODO create views for the different tables
+#TODO seperate url for form submission and for loading new pages use httpRedirect
+#TODO method for saving
 
-#TODO add interface for views closest match records
 
-#TODO Create document merging interface
 
-#TODO Interactive Table
 
 def index(request):
     return render(request, 'dedupper/rep_list_upload.html')
@@ -37,7 +35,10 @@ class FilteredSimpleListView(SingleTableMixin, FilterView):
 #connect this page with filters config = RequestConfig(request)
 def display(request):
     if request.method == 'POST':
+        #move into new method seperate displaying and form submission to get rid of do you want to resubmit form
         keylist = request.POST.get('keys')
+        #read in channel and query SF by channgel for the key gen
+        #keylist = request.POST.get('channel')
         keylist = keylist.split("_")
         partslist = [i.split('-') for i in keylist[:-1]]
         key_generator(partslist)
@@ -108,3 +109,4 @@ def merge(request, title):
     x = [ i for i in range(50)]
     return render(request, 'dedupper/merge.html', {'objs' : obj_map, 'cnt':x})
 
+#TODO add export functionality using django import export

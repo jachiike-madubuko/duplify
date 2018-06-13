@@ -1,7 +1,7 @@
 {% load static %}
 {% load bootstrap3 %}
 {% load render_table from django_tables2 %}
-
+<!-- add modal that specifies which record should be overwritten/tagged the rep list record with that contact's Id-->
 <!doctype html>
 <html lang="en">
 <head>
@@ -21,37 +21,45 @@
 
 
       </script>
+    <style>
+        .navbar {
+               background: linear-gradient(to bottom, #b8e1fc 0%, #a9d2f3 10%, #90bae4 25%, #90bcea 37%, #90bff0 50%, #6ba8e5 51%, #a2daf5 83%, #bdf3fd 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            }
+    </style>
   </head>
-  <body class="bg-dark">
+  <body class="bg-dark text-primary">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-<nav class="navbar navbar-dark bg-primary navbar-expand-lg justify-content-between">
-    <a class="navbar-brand" href="#">Duplify</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-            <li class="nav-item active">
+  <nav class="navbar navbar-dark bg-primary navbar-expand-lg justify-content-between">
+        <a class="navbar-brand" href="#">Duplify</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item active">
                 <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/rep_list_keys">Rep Lists</a>
-            </li>
-            <li class="nav-item">
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Features</a>
+              </li>
+              <li class="nav-item">
                 <a class="nav-link" href="#">Pricing</a>
-            </li>
-        </ul>
-        <form class="form-inline">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-dark my-2 my-sm-0" type="submit">Search</button>
-        </form>
-    </div>
-</nav>
-<div class="container-fluid row">
+              </li>
+            </ul>
+            <form class="navbar-form navbar-left">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search">
+                    <span class="input-group-btn ">
+                        <button type="button" class="btn btn-default bg-white border-top-0 border-bottom-0"><span class="fa fa-search"></span></button>
+                    </span>
+                </div>
+            </form>
+        </div>
+    </nav><div class="container-fluid row">
     <div class="col-4">
        <div class="row py-4 border-bottom">
            <div class="col-4"><a href="{% url 'rep_list_keys' %}" style="text-decoration: none"><button type="button" class="btn btn-danger btn-lg btn-block">Cancel Merge</button></a></div>
