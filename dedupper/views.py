@@ -107,3 +107,4 @@ def merge(request, title):
     '''
     x = [ i for i in range(50)]
     return render(request, 'dedupper/merge.html', {'objs' : obj_map, 'cnt':x})
+

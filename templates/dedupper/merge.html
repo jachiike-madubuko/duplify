@@ -4,9 +4,28 @@
 
 <!doctype html>
 <html lang="en">
-<body>
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <title>Merge</title>
+      <script>
+           function merge(field) {
+               val = field.id.split('-');
+               $("#"+val[0]).val(val[1]);
+           }
+
+
+      </script>
+  </head>
+  <body style="background-color:#eee">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 <nav class="navbar navbar-dark bg-primary navbar-expand-lg justify-content-between">
     <a class="navbar-brand" href="#">Duplify</a>
@@ -38,7 +57,7 @@
            <div class="col-4"> <button type="button" class="btn btn-warning btn-lg btn-block">Revert</button></div>
            <div class="col-4"> <button type="button" class="btn btn-success btn-lg btn-block">Update Record</button></div>
        </div>
-        <div class="row pt-3"  style="overflow-y:auto; max-height: 83vh; ">
+        <div class="row pt-3"  style="overflow-y:auto; scroll-behavior: smooth; max-height: 83vh; ">
                 {%  for i in cnt %}
             {% for key, value in objs.items %}
                 <div class="col-6">{{ key|title }}
@@ -74,7 +93,7 @@
                 3rd Closest Match in SF
             </div>
         </div>
-        <div class="row" style="overflow-y:auto; max-height: 82vh; min-height: 82vh;" >
+        <div class="row" style="overflow-y:auto; scroll-behavior: smooth; max-height: 82vh; min-height: 82vh;" >
                         {%  for i in cnt %}
 
             {% for key, value in objs.items %}
@@ -96,20 +115,5 @@
     </div>
 </div>
 </body>
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
-    <title>Merge</title>
-      <script>
-           function merge(field) {
-               val = field.id.split('-');
-               $("#"+val[0]).val(val[1]);
-           }
-      </script>
-  </head>
 </html>

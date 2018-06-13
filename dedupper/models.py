@@ -28,7 +28,7 @@ class Simple(models.Model):
     closest3 = models.ForeignKey('Simple', on_delete=models.CASCADE, related_name='third_closest', null=True, blank=True)
 
     def __str__(self):
-        return '{} by {} \n\t has Record type: {} with a match of {}%'.format(self.title, self.author, self.type, self.average)
+        return '{} by {} \n\t has Record type: {}'.format(self.title, self.author, self.type, self.average)
 
     def key(self, key_parts):
         key=''

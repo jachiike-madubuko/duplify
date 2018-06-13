@@ -6,48 +6,139 @@
     <title>Upload Rep List</title>
         <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
 </head>
-<body>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <nav class="navbar navbar-dark bg-primary navbar-expand-lg justify-content-between">
-                <a class="navbar-brand" href="#">Duplify</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav">
-                      <li class="nav-item active">
-                        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link" href="#">Features</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link" href="#">Pricing</a>
-                      </li>
-                    </ul>
-                    <form class="form-inline">
-                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                        <button class="btn btn-outline-dark my-2 my-sm-0" type="submit">Search</button>
-                    </form>
-                </div>
-            </nav>
+  <body style="background-color:#eee">
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
+        integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
 
-<div class="container" style="padding-top: 100px; margin: 150px; height: 100%; width: 80%;">
+   <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
+    <script>
+        function filename(file) {
+            var name = $(file).val().replace("C:\\fakepath\\","");
+
+            $(".custom-file-label").text(name);
+        }
+        function bg() {
+            $("#pbg").polygonizr({
+                  // How long to pause in between new node-movements.
+                  restNodeMovements: 1,
+
+                  // When the cluster up<a href="https://www.jqueryscript.net/time-clock/">date</a>s, this sets speed of nodes.
+                  duration: 3,
+
+                  // Define the maximum distance to move nodes.
+                  nodeMovementDistance: 100,
+
+                  // The number of node nodes to print out.
+                  numberOfNodes: 25,
+
+                  // Define the maximume size of each node dot.
+                  nodeDotSize: 2.5,
+
+                  // Sets the ease mode of the movement: linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
+                  nodeEase: "easeOut",
+
+                  // If true, the nodes will descend into place on load.
+                  nodeFancyEntrance: false,
+
+                  // Makes the cluster forms an ellipse inspired formation, random if true.
+                  randomizePolygonMeshNetworkFormation: true,
+
+                  // Define a formula for how to initialize each node dot's position.
+                  specifyPolygonMeshNetworkFormation: function (i) {
+                    var forEachNode = {
+                        // Half a circle and randomized
+                        x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
+                        y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
+                    };
+                    return forEachNode;
+                  },
+
+                  // Number of relations between nodes.
+                  nodeRelations: 3,
+
+                  // The FPS for the whole canvas.
+                  animationFps: 30,
+
+                  // Sets the color of the node dots in the network (RGB).
+                  nodeDotColor: "0, 255, 0",
+                  //nodeDotColor: "240, 255, 250",
+
+                  // Sets the color of the node lines in the network (RGB).
+                  nodeLineColor: "0, 0, 250",
+
+                  // Sets the color of the filled triangles in the network (RGB).
+                  nodeFillColor: "240, 0, 0",
+                  //nodeFillColor: "240, 255, 250",
+
+                  // Sets the alpha level for the colors (1-0).
+                  nodeFillAlpha: 0.5,
+
+                  // Sets the alpha level for the lines (1-0).
+                  nodeLineAlpha: 0.5,
+
+                  // Sets the alpha level for the dots (1-0).
+                  nodeDotAlpha: 1.0,
+
+                  // Defines if the triangles in the network should be shown.
+                  nodeFillSapce: true,
+
+                  // Define if the active animation should glow or not (not CPU friendly).
+                  nodeGlowing: false,
+
+                  // Define the canvas size and css position.
+                  canvasWidth: $(this).width(),
+                  canvasHeight: $(this).height(),
+                  canvasPosition: "absolute"
+
+                });
+           }
+        bg();
+    </script>
+      <nav class="navbar navbar-dark bg-primary navbar-expand-lg justify-content-between">
+        <a class="navbar-brand" href="#">Duplify</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item active">
+                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Features</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Pricing</a>
+              </li>
+            </ul>
+            <form class="navbar-form navbar-left">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search">
+                    <span class="input-group-btn ">
+                        <button type="button" class="btn btn-default bg-white border-top-0 border-bottom-0"><span class="fa fa-search"></span></button>
+                    </span>
+                </div>
+            </form>
+        </div>
+    </nav>
+
+        <div id="pbg" class="container-fluid " style="padding-top: 100px; margin: 150px; height: 100%; width: 80%;">
 <div>
 {% block content %}
   <form method="post" action="/keys/" enctype="multipart/form-data">
     {% csrf_token %}
    <div class="custom-file">
-  <input type="file" class="custom-file-input" id="customFile" name="myfile">
+  <input type="file" class="custom-file-input" id="customFile" name="myfile" onchange="filename(this)">
   <label class="custom-file-label" for="customFile">Choose file</label>
 </div>
       <div class="row">
 
-    <div class="col">
+    <div  class="col">
       {% bootstrap_button "Upload" button_type="submit" button_class="btn-primary btn-lg btn-block" %}
     </div>
 
