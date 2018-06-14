@@ -1,5 +1,5 @@
 {% load static %}
-
+<!-- fix jumbotron so it scrolls-->
 <!doctype html>
 <html lang="en">
 <head>
@@ -82,8 +82,130 @@
          }
 
     </style>
+
+</head>
+ <body style="overflow-y: hidden">
+ <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
     <script>
-        $.ajaxSetup({data: {
+        function bg() {
+            $("body").polygonizr({
+
+                  restNodeMovements: 0,// How long to pause in between new node-movements.
+
+                  duration: 4, // When the cluster updates, this sets speed of nodes.
+
+                  nodeMovementDistance: 200, // Define the maximum distance to move nodes.
+
+                  numberOfNodes: 30,// The number of node nodes to print out.
+
+                  nodeDotSize: 2.5,// Define the maximum size of each node dot.
+
+                  nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
+
+                  nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
+
+                  randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
+
+                  // Define a formula for how to initialize each node dot's position.
+                  specifyPolygonMeshNetworkFormation: function (i) {
+                    var forEachNode = {// Half a circle and randomized
+                        x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
+                        y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
+                    };
+                    return forEachNode;
+                  },
+
+                  nodeRelations: 3,// Number of relations between nodes.
+
+                  animationFps: 200, // The FPS for the whole canvas.
+
+                  nodeDotColor: "41, 106, 210",// Sets the color of the nodes in the network (RGB).
+
+                  nodeLineColor: "255, 255, 255",// Sets the color of the lines in the network (RGB).
+
+                  nodeFillColor: "41, 106, 210",// Sets the color of  triangles in the network (RGB).
+
+                  nodeFillAlpha: 0.5,// Sets the alpha level for the colors (1-0).
+
+                  nodeLineAlpha: 0.5, // Sets the alpha level for the lines (1-0).
+
+                  nodeDotAlpha: 1.0,// Sets the alpha level for the dots (1-0).
+
+                  nodeFillSapce: true,// Defines if the triangles in the network should be shown.
+
+                  nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
+
+                  // Define the canvas size and css position.
+                  canvasWidth: $(this).width(),
+                  canvasHeight: $(this).height(),
+                  canvasPosition: "absolute"
+
+                });
+           }
+        bg();
+
+        var colors = new Array(
+          [62,35,255],
+          [60,255,60],
+          [255,35,98],
+          [45,175,230],
+          [255,0,255],
+          [255,128,0]);
+
+        var step = 0;
+        //color table indices for:
+        // current color left
+        // next color left
+        // current color right
+        // next color right
+        var colorIndices = [0,1,2,3];
+
+        //transition speed
+        var gradientSpeed = 0.002;
+
+        function updateGradient()
+        {
+
+          if ( $===undefined ) return;
+
+        var c0_0 = colors[colorIndices[0]];
+        var c0_1 = colors[colorIndices[1]];
+        var c1_0 = colors[colorIndices[2]];
+        var c1_1 = colors[colorIndices[3]];
+
+        var istep = 1 - step;
+        var r1 = Math.round(istep * c0_0[0] + step * c0_1[0]);
+        var g1 = Math.round(istep * c0_0[1] + step * c0_1[1]);
+        var b1 = Math.round(istep * c0_0[2] + step * c0_1[2]);
+        var color1 = "rgb("+r1+","+g1+","+b1+")";
+
+        var r2 = Math.round(istep * c1_0[0] + step * c1_1[0]);
+        var g2 = Math.round(istep * c1_0[1] + step * c1_1[1]);
+        var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
+        var color2 = "rgb("+r2+","+g2+","+b2+")";
+
+         $('body').css({
+           background: "-webkit-gradient(linear, left top, right top, from("+color1+"), to("+color2+"))"}).css({
+            background: "-moz-linear-gradient(left, "+color1+" 0%, "+color2+" 100%)"});
+
+          step += gradientSpeed;
+          if ( step >= 1 )
+          {
+            step %= 1;
+            colorIndices[0] = colorIndices[1];
+            colorIndices[2] = colorIndices[3];
+
+            //pick two new target color indices
+            //do not pick the same as the current one
+            colorIndices[1] = ( colorIndices[1] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
+            colorIndices[3] = ( colorIndices[3] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
+
+          }
+        }
+
+        setInterval(updateGradient,10);
+
+            $.ajaxSetup({data: {
             csrfmiddlewaretoken: '{{ csrf_token }}'
         }});
         function create() {
@@ -98,8 +220,8 @@
                 sList = sList.slice(0, -1);
                 var key = '<li class="list-group-item">'+
                     '<button type="button" class="btn btn-sm btn-link float-right" onclick="del(this)">'+
-                    '<span class="fa fa-trash fa-2x"></span></button><h5 class="key">'+
-                        sList+'</h5></li>';
+                    '<span class="fa fa-trash fa-2x"></span></button><p class="key">'+
+                        sList+'</p></li>';
                 $(".list-group").append(key);
         }
         function generateKeys() {
@@ -115,10 +237,7 @@
             $(item).closest(".list-group-item").remove();
         }
     </script>
-</head>
- <body class="bg-dark">
-
-    <nav class="navbar navbar-dark bg-primary navbar-expand-lg justify-content-between">
+    <nav class="navbar navbar-dark bg-dark navbar-expand-lg justify-content-between">
         <a class="navbar-brand" href="#">Duplify</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -153,11 +272,11 @@
                     <h4 class="card-title">Key Builder</h4>
                     <p class="card-text">Toggle switches for the desired key components</p>
                     <p class="card-text">Click Create to add the new key</p>
-                    <div class="jumbotron" >
-                        <div class="container">
+                    <div class="jumbotron"   >
+                        <div class="container" style="overflow-y:scroll; max-height: 250px">
                             <div class="row">
                                 {% for header in headers %}
-                                    <div class="col-3">
+                                    <div class="col-4 float-right">
                                         <div class="row">
                                             {{ header|title }}
                                         </div>

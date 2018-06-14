@@ -9,13 +9,13 @@
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <style>
     /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#b8e1fc+0,a9d2f3+10,90bae4+25,90bcea+37,90bff0+50,6ba8e5+51,a2daf5+83,bdf3fd+100;Blue+Gloss+%231 */
-    .navbar {
-       background: linear-gradient(to bottom, #b8e1fc 0%, #a9d2f3 10%, #90bae4 25%, #90bcea 37%, #90bff0 50%, #6ba8e5 51%, #a2daf5 83%, #bdf3fd 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-    }
+    {#.navbar {#}
+    {#   background: linear-gradient(to bottom, #b8e1fc 0%, #a9d2f3 10%, #90bae4 25%, #90bcea 37%, #90bff0 50%, #6ba8e5 51%, #a2daf5 83%, #bdf3fd 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */#}
+    {#}#}
 
 </style>
 </head>
-  <body class="bg-dark">
+  <body style="transition: 2s;">
 
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
@@ -30,72 +30,52 @@
             $(".custom-file-label").text(name);
         }
         function bg() {
-            $("#pbg").polygonizr({
-                  // How long to pause in between new node-movements.
-                  restNodeMovements: 1,
+            $("body").polygonizr({
 
-                  // When the cluster up<a href="https://www.jqueryscript.net/time-clock/">date</a>s, this sets speed of nodes.
-                  duration: 3,
+                  restNodeMovements: 0,// How long to pause in between new node-movements.
 
-                  // Define the maximum distance to move nodes.
-                  nodeMovementDistance: 100,
+                  duration: 4, // When the cluster updates, this sets speed of nodes.
 
-                  // The number of node nodes to print out.
-                  numberOfNodes: 25,
+                  nodeMovementDistance: 200, // Define the maximum distance to move nodes.
 
-                  // Define the maximume size of each node dot.
-                  nodeDotSize: 2.5,
+                  numberOfNodes: 30,// The number of node nodes to print out.
 
-                  // Sets the ease mode of the movement: linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
-                  nodeEase: "easeOut",
+                  nodeDotSize: 2.5,// Define the maximum size of each node dot.
 
-                  // If true, the nodes will descend into place on load.
-                  nodeFancyEntrance: false,
+                  nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
 
-                  // Makes the cluster forms an ellipse inspired formation, random if true.
-                  randomizePolygonMeshNetworkFormation: true,
+                  nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
+
+                  randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
 
                   // Define a formula for how to initialize each node dot's position.
                   specifyPolygonMeshNetworkFormation: function (i) {
-                    var forEachNode = {
-                        // Half a circle and randomized
+                    var forEachNode = {// Half a circle and randomized
                         x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
                         y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
                     };
                     return forEachNode;
                   },
 
-                  // Number of relations between nodes.
-                  nodeRelations: 3,
+                  nodeRelations: 3,// Number of relations between nodes.
 
-                  // The FPS for the whole canvas.
-                  animationFps: 30,
+                  animationFps: 200, // The FPS for the whole canvas.
 
-                  // Sets the color of the node dots in the network (RGB).
-                  nodeDotColor: "0, 255, 0",
-                  //nodeDotColor: "240, 255, 250",
+                  nodeDotColor: "41, 106, 210",// Sets the color of the nodes in the network (RGB).
 
-                  // Sets the color of the node lines in the network (RGB).
-                  nodeLineColor: "0, 0, 250",
+                  nodeLineColor: "255, 255, 255",// Sets the color of the lines in the network (RGB).
 
-                  // Sets the color of the filled triangles in the network (RGB).
-                  nodeFillColor: "240, 0, 0",
-                  //nodeFillColor: "240, 255, 250",
+                  nodeFillColor: "41, 106, 210",// Sets the color of  triangles in the network (RGB).
 
-                  // Sets the alpha level for the colors (1-0).
-                  nodeFillAlpha: 0.5,
+                  nodeFillAlpha: 0.5,// Sets the alpha level for the colors (1-0).
 
-                  // Sets the alpha level for the lines (1-0).
-                  nodeLineAlpha: 0.5,
+                  nodeLineAlpha: 0.5, // Sets the alpha level for the lines (1-0).
 
-                  // Sets the alpha level for the dots (1-0).
-                  nodeDotAlpha: 1.0,
+                  nodeDotAlpha: 1.0,// Sets the alpha level for the dots (1-0).
 
-                  // Defines if the triangles in the network should be shown.
-                  nodeFillSapce: true,
+                  nodeFillSapce: true,// Defines if the triangles in the network should be shown.
 
-                  // Define if the active animation should glow or not (not CPU friendly).
-                  nodeGlowing: false,
+                  nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
 
                   // Define the canvas size and css position.
                   canvasWidth: $(this).width(),
@@ -105,8 +85,70 @@
                 });
            }
         bg();
+
+        var colors = new Array(
+          [62,35,255],
+          [60,255,60],
+          [255,35,98],
+          [45,175,230],
+          [255,0,255],
+          [255,128,0]);
+
+        var step = 0;
+        //color table indices for:
+        // current color left
+        // next color left
+        // current color right
+        // next color right
+        var colorIndices = [0,1,2,3];
+
+        //transition speed
+        var gradientSpeed = 0.002;
+
+        function updateGradient()
+        {
+
+          if ( $===undefined ) return;
+
+        var c0_0 = colors[colorIndices[0]];
+        var c0_1 = colors[colorIndices[1]];
+        var c1_0 = colors[colorIndices[2]];
+        var c1_1 = colors[colorIndices[3]];
+
+        var istep = 1 - step;
+        var r1 = Math.round(istep * c0_0[0] + step * c0_1[0]);
+        var g1 = Math.round(istep * c0_0[1] + step * c0_1[1]);
+        var b1 = Math.round(istep * c0_0[2] + step * c0_1[2]);
+        var color1 = "rgb("+r1+","+g1+","+b1+")";
+
+        var r2 = Math.round(istep * c1_0[0] + step * c1_1[0]);
+        var g2 = Math.round(istep * c1_0[1] + step * c1_1[1]);
+        var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
+        var color2 = "rgb("+r2+","+g2+","+b2+")";
+
+         $('body').css({
+           background: "-webkit-gradient(linear, left top, right top, from("+color1+"), to("+color2+"))"}).css({
+            background: "-moz-linear-gradient(left, "+color1+" 0%, "+color2+" 100%)"});
+
+          step += gradientSpeed;
+          if ( step >= 1 )
+          {
+            step %= 1;
+            colorIndices[0] = colorIndices[1];
+            colorIndices[2] = colorIndices[3];
+
+            //pick two new target color indices
+            //do not pick the same as the current one
+            colorIndices[1] = ( colorIndices[1] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
+            colorIndices[3] = ( colorIndices[3] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
+
+          }
+        }
+
+        setInterval(updateGradient,10);
+
     </script>
-      <nav class="navbar navbar-dark bg-primary navbar-expand-lg justify-content-between">
+      <nav class="navbar navbar-dark bg-dark navbar-expand-lg justify-content-between">
         <a class="navbar-brand" href="#">Duplify</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -135,26 +177,25 @@
     </nav>
 
         <div id="pbg" class="container-fluid " style="padding-top: 100px; margin: 150px; height: 100%; width: 80%;">
-<div>
-{% block content %}
-  <form method="post" action="/keys/" enctype="multipart/form-data">
-    {% csrf_token %}
-   <div class="custom-file">
-  <input type="file" class="custom-file-input" id="customFile" name="myfile" onchange="filename(this)">
-  <label class="custom-file-label" for="customFile">Choose file</label>
-</div>
-      <div class="row">
+        <div>
+            {% block content %}
+              <form method="post" action="/keys/" enctype="multipart/form-data">
+                {% csrf_token %}
+                   <div class="custom-file">
+                  <input type="file" class="custom-file-input" id="customFile" name="myfile" onchange="filename(this)">
+                  <label class="custom-file-label" for="customFile">Choose file</label>
+                </div>
+                      <div class="row my-3">
+                          <div  class="col-6"></div>
+                        <div  class="col-1">
+                             {% bootstrap_button "Upload" button_type="submit" button_class="btn-success btn-lg badge-pill float-right" %}
+                </div>
+                          <div  class="col-5 "></div>
 
-    <div  class="col">
-      {% bootstrap_button "Upload" button_type="submit" button_class="btn-primary btn-lg btn-block" %}
-    </div>
-
-  </div>
-
-  </form>
-{% endblock %}
-
-</div>
+                  </div>
+              </form>
+            {% endblock %}
+        </div>
 </div>
 
 </body>

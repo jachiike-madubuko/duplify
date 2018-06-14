@@ -91,7 +91,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'dedupper_app.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 

@@ -3,7 +3,7 @@ from django.views.generic import TemplateView, ListView
 import django_tables2
 from dedupper.models import Simple
 from  dedupper.filters import SimpleFilter
-from dedupper.tables import SimpleTable
+from dedupper.tables import SimpleTable, ContactTable
 from tablib import Dataset
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -11,7 +11,7 @@ from dedupper.forms import UploadFileForm
 from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin, RequestConfig
 
-from dedupper.resources import SimpleResource
+from dedupper.resources import SimpleResource, ContactResource
 from  dedupper.utils import key_generator
 import csv
 
@@ -59,7 +59,7 @@ def display(request):
 
 
 def upload(request):
-    simple_resource = SimpleResource()
+    contact_resource = ContactResource()
     dataset = Dataset()
     new_simples = list()
 
@@ -79,10 +79,10 @@ def upload(request):
     dataset.csv = fileString
     print('done data load')
 
-    result = simple_resource.import_data(dataset, dry_run=True)  # Test the data import
+    result = contact_resource.import_data(dataset, dry_run=True)  # Test the data import
     if not result.has_errors():
         print('importing data')
-        simple_resource.import_data(dataset, dry_run=False)  # Actually import now
+        contact_resource.import_data(dataset, dry_run=False)  # Actually import now
     return render(request, 'dedupper/key_generator.html', {'headers': dataset.headers})
 
 
@@ -90,7 +90,7 @@ def merge(request, title):
     obj = Simple.objects.values().get(title=title)
     ids = [obj['closest1_id'], obj['closest2_id'], obj['closest3_id']]
     objs = Simple.objects.values().filter(pk__in=ids)
-    fields = [i.name for i in Simple._meta.local_fields][:-3]
+    fields = [i.name for i in Simple.meta.local_fields][:-3]
     mergers = list()
 
     for i in range(len(objs)):
