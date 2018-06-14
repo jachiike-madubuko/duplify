@@ -1,0 +1,111 @@
+{% load static %}
+{% load bootstrap3 %}
+{% load render_table from django_tables2 %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>Duplify | Rep List</title>
+      <script>
+        $(document).ready(function() {
+            alert("hi");
+
+                //http://www.craigderington.me/solved-django-tables2-and-ajax/
+                //https://stackoverflow.com/questions/20782049/how-to-change-a-django-tables2-table-dynamically-on-ajax-request
+                //https://groups.google.com/forum/#!topic/django-users/ooQ7MLTeTkk
+                //https://stackoverflow.com/questions/12939548/select-all-rows-in-django-tables2
+                //https://github.com/djk2/django-tables2-column-shifter
+                //https://docs.djangoproject.com/en/dev/internals/contributing/writing-code/javascript/
+                //https://getbootstrap.com/docs/4.0/getting-started/introduction/
+        });
+
+      </script>
+      <style>
+          .btn-default{
+              background-color: white;
+          }
+          small{
+              color: white;
+          }
+          .pager li{
+              display: inline;
+          }
+
+           .navbar {
+               background: linear-gradient(to bottom, #b8e1fc 0%, #a9d2f3 10%, #90bae4 25%, #90bcea 37%, #90bff0 50%, #6ba8e5 51%, #a2daf5 83%, #bdf3fd 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            }
+      </style>
+  </head>
+  <body class="bg-dark">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+   <nav class="navbar navbar-dark bg-primary navbar-expand-lg justify-content-between">
+        <a class="navbar-brand" href="#">Duplify</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item active">
+                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Features</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Pricing</a>
+              </li>
+            </ul>
+            <form class="navbar-form navbar-left">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search">
+                    <span class="input-group-btn ">
+                        <button type="button" class="btn btn-default bg-white border-top-0 border-bottom-0"><span class="fa fa-search"></span></button>
+                    </span>
+                </div>
+            </form>
+        </div>
+    </nav>
+    <div class="container-fluid">
+        <ul class="nav nav-pills nav-fill my-3" id="pills-tab" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link  bg-dark" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">
+                Duplicates
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link bg-dark" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">
+                Unsure Records
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link bg-dark" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">
+                New Records
+            </a>
+          </li>
+        </ul>
+        <div class="row"> </div>
+
+        <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                {% render_table duplicate_table 'django_tables2/bootstrap-responsive.html' %}
+            </div>
+            <div class="tab-pane " id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+                {% render_table undecided_table 'django_tables2/bootstrap-responsive.html' %}
+            </div>
+            <div class="tab-pane " id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+                {% render_table new_record_table 'django_tables2/bootstrap-responsive.html' %}
+            </div>
+        </div>
+    </div>
+  </body>
+</html>

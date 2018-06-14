@@ -14,6 +14,8 @@ import pandas as pd
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process #could be used to generate suggestions for unknown records
 import numpy as np
+from copy import deepcopy
+
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
 
 df = None
@@ -29,53 +31,61 @@ rkd = RangeKeyDict({
 
 """
 TODO clean up comments
-TODO stage functionality for saving csv (pandas to csv)
-TODO
+TODO create special case for phones and emails
 """
 
 
 def key_generator(partslist):
-    #for each row in df
-        #concatenate each columns in headers
-        #store key in new list
     print(partslist)
+    #TODO
     #for key_parts in partslist:
-    #Simple.objects.filter(type__exact='Unsure')
+        #if phone in key_parts      **same for email
+            #for each type of phone
+             #clone key_parts and replace phone with the type of phone and add to partslist
+
+    # for key_parts in partslist:
+        #Simple.objects.filter(type__in=['Unsure', 'New Record'])
     rep_list = list(Simple.objects.all())
+    sf_list = deepcopy(rep_list)
     rep_keys = [i.key(partslist[0]) for i in rep_list]
+    start = clock()
     rep_map = dict(zip(rep_keys,rep_list))
 
     #sf_list = list(Contact.object.all())
     #sf_keys = [i.key(partslist[0]) for i in sf_list]
     #sf_map = dict(zip(sf_keys, sf_list))
+
     sf_keys = mutate(rep_keys)
+    sf_map = dict(zip(sf_keys, sf_list))
 
     for rep_key in rep_keys:
         key_matches = match_keys(rep_key,sf_keys)
         match_map = list(zip(key_matches,sf_keys))
         match_map  = sorted(match_map, reverse=True)
-        top1, top2, top3 = [match_map[0], match_map[1], match_map[2]]
-        percentage = np.mean([top1[0],top2[0],top3[0]])
-        #multiple 100
-
-        #seperate by activity
-
-        #new
-        #updates
-        #
+        top1, top2, top3 = [(match_map[i][0],sf_map[match_map[i][1]]) for i in range(3)]
         person = rep_map[rep_key]
 
-        person.average  = percentage
-        person.closest1 = top1
-        person.closest2 = top2
-        person.closest3 = top3
-        person.type     = sort(percentage)
-        print(person.title + ' : ' + str(percentage) + '% : ' + rep_key)
-        print(person.closest1, end ='\t')
-        print(person.closest2, end ='\t')
-        print(person.closest3, end ='\n######################\n')
-
+        if top1[0] <= top3[0]+25:
+            person.average = np.mean([top1[0],top2[0],top3[0]])
+            person.closest1 = top1[1]
+            person.closest2 = top2[1]
+            person.closest3 = top3[1]
+        elif top1[0] <= top2[0]+25:
+            person.average = np.mean([top1[0],top2[0]])
+            person.closest1 = top1[1]
+            person.closest2 = top2[1]
+        else:
+            person.average = top1[0]
+            person.closest1 = top1[1]
+        #seperate by activity
+        person.type  = sort(person.average)
+        #try-catch for the save, error will raise if match_contactID is not unique
         person.save()
+
+
+    end = clock()
+    time = str(end - start)
+    print('...dedupping and sorting complete \t time = ' + time)
     print('\a')
 
 
@@ -144,3 +154,4 @@ def dedup(key):
 
 def get_lists():
     return(dups, new_records, list(df.values))
+
