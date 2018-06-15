@@ -5,7 +5,7 @@ Created on Sat May 19 17:53:34 2018
 
 @author: jachi
 """
-from dedupper.models import Simple
+from dedupper.models import Simple, RepContact, SFContact
 import string
 from time import clock
 from random import *
@@ -34,34 +34,35 @@ TODO clean up comments
 TODO create special case for phones and emails
 """
 
-
 def key_generator(partslist):
-    print(partslist)
-    #TODO
-    #for key_parts in partslist:
-        #if phone in key_parts      **same for email
-            #for each type of phone
-             #clone key_parts and replace phone with the type of phone and add to partslist
+    for key_parts in partslist:
+        if 'phone' in key_parts:
+            index = partslist.index(key_parts)
+            del partslist[index]
+            for i in ['homePhone', 'mobilePhone', 'workPhone']:
+                new_key_parts = [i if x == 'phone' else x for x in key_parts]
+                partslist.insert(index, new_key_parts)
+        if 'email' in key_parts:
+            index = partslist.index(key_parts)
+            del partslist[index]
+            for i in [ 'otherEmail', 'personalEmail', 'workEmail']:
+                new_key_parts = [i if x == 'email' else x for x in key_parts]
+                partslist.insert(index, new_key_parts)
 
     # for key_parts in partslist:
-        #Simple.objects.filter(type__in=['Unsure', 'New Record'])
-    rep_list = list(Simple.objects.all())
-    sf_list = deepcopy(rep_list)
+
+    rep_list = list(RepContact.objects.filter(type__in=['Unsure', 'New Record']))
     rep_keys = [i.key(partslist[0]) for i in rep_list]
     start = clock()
     rep_map = dict(zip(rep_keys,rep_list))
 
-    #sf_list = list(Contact.object.all())
-    #sf_keys = [i.key(partslist[0]) for i in sf_list]
-    #sf_map = dict(zip(sf_keys, sf_list))
-
-    sf_keys = mutate(rep_keys)
+    sf_keys = [i.key(partslist[0]) for i in sf_list]
     sf_map = dict(zip(sf_keys, sf_list))
 
     for rep_key in rep_keys:
         key_matches = match_keys(rep_key,sf_keys)
         match_map = list(zip(key_matches,sf_keys))
-        match_map  = sorted(match_map, reverse=True)
+        match_map = sorted(match_map, reverse=True)
         top1, top2, top3 = [(match_map[i][0],sf_map[match_map[i][1]]) for i in range(3)]
         person = rep_map[rep_key]
 
@@ -122,16 +123,6 @@ def mutate(keys):
             mutant[j]=mutant[j].replace(mutant[j][int(sample(range(len(mutant[j])-1), 1)[0])], choice(string.printable))
     return mutant
 
-def sorter(group, index,percent):
-    global dups, new_records, unsure,df
-    record = list(df.iloc[index])
-    record.append(percent)
-    if(group == 'Duplicate'):
-        dups.append(record)
-    elif(group == 'New Record'):
-        new_records.append(record)
-#    elif(group == 'Unsure'):
-#        unsure.append(record)
 
 def dedup(key):
     print('...entering dedup process')
