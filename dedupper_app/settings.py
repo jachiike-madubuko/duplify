@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'django_filters',
     'import_export',
     'bootstrap3',
-
+     'django-dad',
 
    # 'heroku_connect',
    # 'connect_client',

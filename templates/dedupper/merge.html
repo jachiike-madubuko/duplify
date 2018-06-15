@@ -28,9 +28,130 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+ <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+ <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
+    <script>
+        function bg() {
+            $("body").polygonizr({
+
+                  restNodeMovements: 0,// How long to pause in between new node-movements.
+
+                  duration: 4, // When the cluster updates, this sets speed of nodes.
+
+                  nodeMovementDistance: 200, // Define the maximum distance to move nodes.
+
+                  numberOfNodes: 36,// The number of node nodes to print out.
+
+                  nodeDotSize: 2.5,// Define the maximum size of each node dot.
+
+                  nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
+
+                  nodeFancyEntrance: true,// If true, the nodes will descend into place on load.
+
+                  randomizePolygonMeshNetworkFormation: true,// Makes the cluster forms an ellipse inspired formation, random if true.
+
+                  // Define a formula for how to initialize each node dot's position.
+                  specifyPolygonMeshNetworkFormation: function (i) {
+                    var forEachNode = {// Half a circle and randomized
+                        x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
+                        y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
+                    };
+                    return forEachNode;
+                  },
+
+                  nodeRelations: 5,// Number of relations between nodes.
+
+                  animationFps: 300, // The FPS for the whole canvas.
+
+                  nodeDotColor: "41, 106, 210",// Sets the color of the nodes in the network (RGB).
+
+                  nodeLineColor: "255, 255, 255",// Sets the color of the lines in the network (RGB).
+
+                  nodeFillColor: "41, 106, 210",// Sets the color of  triangles in the network (RGB).
+
+                  nodeFillAlpha: 0.5,// Sets the alpha level for the colors (1-0).
+
+                  nodeLineAlpha: 0.5, // Sets the alpha level for the lines (1-0).
+
+                  nodeDotAlpha: 1.0,// Sets the alpha level for the dots (1-0).
+
+                  nodeFillSapce: true,// Defines if the triangles in the network should be shown.
+
+                  nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
+
+                  // Define the canvas size and css position.
+                  canvasWidth: $(this).width(),
+                  canvasHeight: $(this).height(),
+                  canvasPosition: "absolute"
+
+                });
+           }
+        bg();
+        var colors = new Array(
+          [62,35,255],
+          [60,255,60],
+          [255,35,98],
+          [45,175,230],
+          [255,0,255],
+          [255,128,0]);
+
+        var step = 0;
+        //color table indices for:
+        // current color left
+        // next color left
+        // current color right
+        // next color right
+        var colorIndices = [0,1,2,3];
+
+        //transition speed
+        var gradientSpeed = 0.002;
+
+        function updateGradient()
+        {
+
+          if ( $===undefined ) return;
+
+        var c0_0 = colors[colorIndices[0]];
+        var c0_1 = colors[colorIndices[1]];
+        var c1_0 = colors[colorIndices[2]];
+        var c1_1 = colors[colorIndices[3]];
+
+        var istep = 1 - step;
+        var r1 = Math.round(istep * c0_0[0] + step * c0_1[0]);
+        var g1 = Math.round(istep * c0_0[1] + step * c0_1[1]);
+        var b1 = Math.round(istep * c0_0[2] + step * c0_1[2]);
+        var color1 = "rgb("+r1+","+g1+","+b1+")";
+
+        var r2 = Math.round(istep * c1_0[0] + step * c1_1[0]);
+        var g2 = Math.round(istep * c1_0[1] + step * c1_1[1]);
+        var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
+        var color2 = "rgb("+r2+","+g2+","+b2+")";
+
+         $('body').css({
+           background: "-webkit-gradient(linear, left top, right top, from("+color1+"), to("+color2+"))"}).css({
+            background: "-moz-linear-gradient(left, "+color1+" 0%, "+color2+" 100%)"});
+
+          step += gradientSpeed;
+          if ( step >= 1 )
+          {
+            step %= 1;
+            colorIndices[0] = colorIndices[1];
+            colorIndices[2] = colorIndices[3];
+
+            //pick two new target color indices
+            //do not pick the same as the current one
+            colorIndices[1] = ( colorIndices[1] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
+            colorIndices[3] = ( colorIndices[3] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
+
+          }
+        }
+
+        setInterval(updateGradient,10);
+    </script>
 <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-  <nav class="navbar navbar-dark bg-primary navbar-expand-lg justify-content-between">
+      <nav class="navbar navbar-dark bg-dark navbar-expand-lg justify-content-between">
         <a class="navbar-brand" href="#">Duplify</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -56,7 +177,8 @@
                 </div>
             </form>
         </div>
-    </nav><div class="container-fluid row">
+    </nav>
+<div class="container-fluid row text-white">
     <div class="col-4">
        <div class="row py-4 border-bottom">
            <div class="col-4"><a href="{% url 'rep_list_keys' %}" style="text-decoration: none"><button type="button" class="btn btn-danger btn-lg btn-block">Cancel Merge</button></a></div>
@@ -64,12 +186,10 @@
            <div class="col-4"> <button type="button" class="btn btn-success btn-lg btn-block">Update Record</button></div>
        </div>
         <div class="row pt-3"  style="overflow-y:auto; scroll-behavior: smooth; max-height: 83vh; ">
-                {%  for i in cnt %}
             {% for key, value in objs.items %}
                 <div class="col-6">{{ key|title }}
                     <input id="{{ key }}" class="form-control" type="text" placeholder="{{ value|first }}" readonly>
                 </div>
-            {% endfor %}
             {% endfor %}
         </div>
     </div>
@@ -100,8 +220,6 @@
             </div>
         </div>
         <div class="row" style="overflow-y:auto; scroll-behavior: smooth; max-height: 82vh; min-height: 82vh;" >
-                        {%  for i in cnt %}
-
             {% for key, value in objs.items %}
                 <div class="col-3 my-4">
                      <div class="btn-group dropright ">
@@ -114,7 +232,6 @@
                 </div>
             </div>
                 </div>
-            {% endfor %}
             {% endfor %}
         </div>
         <div class="row"></div>
