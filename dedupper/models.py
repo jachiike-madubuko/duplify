@@ -116,7 +116,7 @@ class Contact(models.Model):
 
 
 class RepContact(models.Model):
-    CRD = models.CharField(max_length=128, unique=True, db_column="CRD")
+    CRD = models.CharField(max_length=128, db_column="CRD")
     firstName = models.CharField(max_length=128, blank=True)
     lastName = models.CharField(max_length=128, blank=True)
     suffix = models.CharField(max_length=128, blank=True)
@@ -177,7 +177,6 @@ class RepContact(models.Model):
             'mailingStateProvince': strip(self.mailingStateProvince),
             'mailingZipPostalCode': strip(self.mailingZipPostalCode),
             'territory': strip(self.territory),
-            'ID': strip(self.ID),
             'workPhone': strip(self.workPhone),
             'homePhone': strip(self.homePhone),
             'mobilePhone': strip(self.mobilePhone),
@@ -245,7 +244,6 @@ class SFContact(models.Model):
             'mailingStateProvince': strip(self.mailingStateProvince),
             'mailingZipPostalCode': strip(self.mailingZipPostalCode),
             'territory': strip(self.territory),
-            'ID': strip(self.ID),
             'workPhone': strip(self.workPhone),
             'homePhone': strip(self.homePhone),
             'mobilePhone': strip(self.mobilePhone),

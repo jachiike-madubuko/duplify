@@ -14,7 +14,7 @@
 
 </style>
 </head>
-  <body style="transition: 2s;">
+  <body style="transition: 2s; overflow: hidden">
 
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
@@ -25,10 +25,10 @@
     <script>
         //add in welcoming: "Welcome to Duplify"<->fade in with polygonizr
         //fade out then fade in chain of Start by uploading your rep list here and your salesforce report here-fade out
-        function filename(file) {
+        function filename(file, label) {
             var name = $(file).val().replace("C:\\fakepath\\","");
 
-            $(".custom-file-label").text(name);
+            $(label).text(name);
         }
         function bg() {
             $("body").polygonizr({
@@ -127,7 +127,7 @@
         var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
         var color2 = "rgb("+r2+","+g2+","+b2+")";
 
-         $('body').css({
+         $('body, .custom-file-label').css({
            background: "-webkit-gradient(linear, left bottom, right bottom, from("+color1+"), to("+color2+"))"}).css({
             background: "-moz-linear-gradient(left, "+color1+" 0%, "+color2+" 100%)"});
 
@@ -177,27 +177,39 @@
         </div>
     </nav>
 
-        <div id="pbg" class="container-fluid " style="padding-top: 100px; margin: 150px; height: 100%; width: 80%;">
-        <div>
-            {% block content %}
-              <form method="post" action="/keys/" enctype="multipart/form-data">
-                {% csrf_token %}
-                   <div class="custom-file">
-                  <input type="file" class="custom-file-input" id="customFile" name="myfile" onchange="filename(this)">
-                  <label class="custom-file-label" for="customFile">Choose file</label>
+        <div class="container" style="padding-top: 100px;  height: 100%; width: 80%;">
+            <div class="row">
+                <div class="col-3"></div>
+                <div class="card col-6 bg-dark">
+                    <div class="card-header text-white"> File Upload </div>
+                    <div class="card-body">
+                        {% block content %}
+                            <form method="post" action="/keys/" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="custom-file ">
+                                    <input type="file" class="custom-file-input" id="repFile" name="repFile"
+                                           onchange="filename(this, '.rep')">
+                                    <label class="text-white custom-file-label rep" for="repFile">Choose file</label>
+                                </div>
+                                <div class="custom-file my-3 text-white">
+                                    <input type="file" class="custom-file-input" id="sfFile" name="sfFile"
+                                           onchange="filename(this, '.sf')">
+                                    <label class="text-white custom-file-label sf" for="sfFile">Choose file</label>
+                                </div>
+                                <div class="row">
+                                    <div  class="col-4"></div>
+                                    <div  class="col-4">
+                                        {% bootstrap_button "Upload" button_type="submit" button_class="btn-success btn-lg badge-pill float-right" %}
+                                    </div>
+                                    <div  class="col-4"></div>
+                                </div>
+                            </form>
+                        {% endblock %}
+                    </div>
                 </div>
-                      <div class="row my-3">
-                          <div  class="col-6"></div>
-                        <div  class="col-1">
-                             {% bootstrap_button "Upload" button_type="submit" button_class="btn-success btn-lg badge-pill float-right" %}
-                </div>
-                          <div  class="col-5 "></div>
-
-                  </div>
-              </form>
-            {% endblock %}
+                <div class="col-3"></div>
+            </div>
         </div>
-</div>
 
 </body>
 </html>

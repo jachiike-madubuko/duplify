@@ -84,7 +84,7 @@
     </style>
 
 </head>
- <body style="overflow-y: hidden">
+ <body style="overflow: hidden">
  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 
  <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
@@ -186,7 +186,7 @@
         var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
         var color2 = "rgb("+r2+","+g2+","+b2+")";
 
-         $('body').css({
+         $('body, .sw').css({
            background: "-webkit-gradient(linear, left top, right top, from("+color1+"), to("+color2+"))"}).css({
             background: "-moz-linear-gradient(left, "+color1+" 0%, "+color2+" 100%)"});
 
@@ -220,10 +220,10 @@
                     }
                 });
                 sList = sList.slice(0, -1);
-                var key = '<li class="list-group-item">'+
+                var key = '<li class="bg-secondary list-group-item">'+
                     '<button type="button" class="btn btn-sm btn-link float-right" onclick="del(this)">'+
-                    '<span class="fa fa-trash fa-2x"></span></button><p class="key">'+
-                        sList+'</p></li>';
+                    '<span class="fa fa-trash fa-2x"></span></button><h6 class="key">'+
+                        sList+'</h6></li>';
                 $(".list-group").append(key);
         }
         function generateKeys() {
@@ -266,38 +266,58 @@
             </form>
         </div>
     </nav>
+
     <div class="container-fluid row my-5">
-        <div class="col-sm-1"></div>
-        <div id="keyBuilder" class="col-sm-6">
-            <div class="card">
+        <div class="col-1"></div>
+        <div id="keyBuilder" class="col-6">
+            <div class="card bg-dark text-white">
                 <div class="card-body">
                     <h4 class="card-title">Key Builder</h4>
                     <p class="card-text">Toggle switches for the desired key components</p>
                     <p class="card-text">Click Create to add the new key</p>
-                    <div class="jumbotron"   >
-                        <div class="container" style="overflow-y:scroll; max-height: 250px">
-                            <div class="row">
-                                {% for key in keys %}
-                                    <div class="col-4 float-right">
-                                        <div class="row">
-                                            {{ key|title }}
+                        <div class="container-fluid" style="overflow-y:scroll; max-height: 250px">
+                            <div class="row sw">
+                                {% for key,unique in keys %}
+                                    <div class="  col-4 my-2">
+                                        <div class="row ">
+                                            <div class="col-1"></div>
+                                            <div class="col-10  ">  {{ key|title }}</div>
+                                            <div class="col-1"></div>
                                         </div>
                                         <div class="row">
+                                            <div class="col-2"></div>
+
+                                        <div class="col-3">
                                             <input type="checkbox" id="{{ key }}" class="cbx hidden"/>
                                             <label for="{{ key }}" class="lbl"></label>
                                         </div>
+                                            <div class="col-4"> <span class=" float-left badge
+                                                                         badge-pill
+                                                {% if unique >= 75 %}
+                                                     badge-success
+                                                {% endif %}
+                                                {% if unique >= 25 and unique < 75 %}
+                                                    badge-warning
+                                                {% endif %}
+                                                {% if unique < 25 %}
+                                                    badge-danger
+                                                {% endif %}">
+                                                {{unique}}%</span>
+                                    </div>
+                                            <div class="col-1"></div>
+
+                                    </div>
                                     </div>
                                 {% endfor %}
                             </div>
                         </div>
                          <hr class="my-2">
                         <button class="btn btn-primary" onclick="create()">Create</button>
-                      </div>
                 </div>
             </div>
         </div>
-        <div id="keyList-channelPicker" class="col-sm-4">
-            <div id="channelPicker" class="card mb-2">
+        <div id="keyList-channelPicker" class="col-4">
+            <div id="channelPicker" class=" bg-dark text-white card mb-2">
               <div class="card-body">
                 <h4 class="card-title">Pick a Channel</h4>
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -322,7 +342,7 @@
                 </div>
               </div>
             </div>
-            <div id="listOfKeys" class="card">
+            <div id="listOfKeys" class="bg-dark text-white card">
                 <div class="card-body">
                     <h4 class="card-title">List of Keys</h4>
                     <p class="card-text">These keys will be generated for the duplicate finding algorithm</p>

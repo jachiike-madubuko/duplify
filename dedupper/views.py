@@ -12,7 +12,7 @@ from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin, RequestConfig
 
 from dedupper.resources import SimpleResource, ContactResource, RepContactResource, SFContactResource
-from  dedupper.utils import key_generator
+from  dedupper.utils import key_generator, makeKeys, convertCSV
 import csv
 
 #TODO seperate url for form submission and for loading new pages use httpRedirect
@@ -60,39 +60,19 @@ def display(request):
 
 def upload(request):
     repcontact_resource = RepContactResource()
+    sfcontact_resource = SFContactResource()
     dataset = Dataset()
-    new_simples = list()
 
     print('uploading file')
     form = UploadFileForm(request.POST, request.FILES)
-    if 'myfile' in request.session:
-        uploadedfile = request.session['myfile']
-    else:
-        uploadedfile = request.FILES['myfile']
+    repCSV = request.FILES['repFile']
+    sfCSV = request.FILES['sfFile']
 
+    headers = convertCSV(repCSV,repcontact_resource)
+    convertCSV(sfCSV,sfcontact_resource)
 
-    fileString = ''
-    for chunk in uploadedfile.chunks():
-        fileString += chunk.decode("utf-8") + '\n'
-    print('done decoding')
-    #needs id col as 1st col
-    print('load data')
-    dataset.csv = fileString
-    print('done data load')
+    keys = makeKeys(headers)
 
-    result = repcontact_resource.import_data(dataset, dry_run=True)  # Test the data import
-    print(result)
-    keys = []
-    for i in dataset.headers:
-        if 'Phone' in i or 'Email' in i:
-            continue
-        else:
-            keys.append(i)
-    keys.extend(['phone','email'])
-    keys.sort()
-    if not result.has_errors():
-        print('importing data')
-        repcontact_resource.import_data(dataset, dry_run=False)  # Actually import now
     return render(request, 'dedupper/key_generator.html', {'keys': keys})
 
 
@@ -121,3 +101,5 @@ def merge(request, CRD):
     return render(request, 'dedupper/merge.html', {'objs' : obj_map, 'cnt':x})
 
 #TODO add export functionality using django import export
+
+
