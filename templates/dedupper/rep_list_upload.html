@@ -1,5 +1,6 @@
 {% load bootstrap3 %}
 <!DOCTYPE html>
+<!--add second file input for SF report -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -9,13 +10,11 @@
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <style>
     /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#b8e1fc+0,a9d2f3+10,90bae4+25,90bcea+37,90bff0+50,6ba8e5+51,a2daf5+83,bdf3fd+100;Blue+Gloss+%231 */
-    {#.navbar {#}
-    {#   background: linear-gradient(to bottom, #b8e1fc 0%, #a9d2f3 10%, #90bae4 25%, #90bcea 37%, #90bff0 50%, #6ba8e5 51%, #a2daf5 83%, #bdf3fd 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */#}
-    {#}#}
+
 
 </style>
 </head>
-  <body style="transition: 2s;">
+  <body style="transition: 2s; overflow: hidden">
 
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
@@ -24,10 +23,12 @@
 
    <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
     <script>
-        function filename(file) {
+        //add in welcoming: "Welcome to Duplify"<->fade in with polygonizr
+        //fade out then fade in chain of Start by uploading your rep list here and your salesforce report here-fade out
+        function filename(file, label) {
             var name = $(file).val().replace("C:\\fakepath\\","");
 
-            $(".custom-file-label").text(name);
+            $(label).text(name);
         }
         function bg() {
             $("body").polygonizr({
@@ -38,15 +39,15 @@
 
                   nodeMovementDistance: 200, // Define the maximum distance to move nodes.
 
-                  numberOfNodes: 30,// The number of node nodes to print out.
+                  numberOfNodes: 36,// The number of node nodes to print out.
 
                   nodeDotSize: 2.5,// Define the maximum size of each node dot.
 
                   nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
 
-                  nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
+                  nodeFancyEntrance: true,// If true, the nodes will descend into place on load.
 
-                  randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
+                  randomizePolygonMeshNetworkFormation: true,// Makes the cluster forms an ellipse inspired formation, random if true.
 
                   // Define a formula for how to initialize each node dot's position.
                   specifyPolygonMeshNetworkFormation: function (i) {
@@ -57,9 +58,9 @@
                     return forEachNode;
                   },
 
-                  nodeRelations: 3,// Number of relations between nodes.
+                  nodeRelations: 5,// Number of relations between nodes.
 
-                  animationFps: 200, // The FPS for the whole canvas.
+                  animationFps: 300, // The FPS for the whole canvas.
 
                   nodeDotColor: "41, 106, 210",// Sets the color of the nodes in the network (RGB).
 
@@ -126,8 +127,8 @@
         var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
         var color2 = "rgb("+r2+","+g2+","+b2+")";
 
-         $('body').css({
-           background: "-webkit-gradient(linear, left top, right top, from("+color1+"), to("+color2+"))"}).css({
+         $('body, .custom-file-label').css({
+           background: "-webkit-gradient(linear, left bottom, right bottom, from("+color1+"), to("+color2+"))"}).css({
             background: "-moz-linear-gradient(left, "+color1+" 0%, "+color2+" 100%)"});
 
           step += gradientSpeed;
@@ -176,27 +177,39 @@
         </div>
     </nav>
 
-        <div id="pbg" class="container-fluid " style="padding-top: 100px; margin: 150px; height: 100%; width: 80%;">
-        <div>
-            {% block content %}
-              <form method="post" action="/keys/" enctype="multipart/form-data">
-                {% csrf_token %}
-                   <div class="custom-file">
-                  <input type="file" class="custom-file-input" id="customFile" name="myfile" onchange="filename(this)">
-                  <label class="custom-file-label" for="customFile">Choose file</label>
+        <div class="container" style="padding-top: 100px;  height: 100%; width: 80%;">
+            <div class="row">
+                <div class="col-3"></div>
+                <div class="card col-6 bg-dark">
+                    <div class="card-header text-white"> File Upload </div>
+                    <div class="card-body">
+                        {% block content %}
+                            <form method="post" action="/keys/" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="custom-file ">
+                                    <input type="file" class="custom-file-input" id="repFile" name="repFile"
+                                           onchange="filename(this, '.rep')">
+                                    <label class="text-white custom-file-label rep" for="repFile">Choose file</label>
+                                </div>
+                                <div class="custom-file my-3 text-white">
+                                    <input type="file" class="custom-file-input" id="sfFile" name="sfFile"
+                                           onchange="filename(this, '.sf')">
+                                    <label class="text-white custom-file-label sf" for="sfFile">Choose file</label>
+                                </div>
+                                <div class="row">
+                                    <div  class="col-4"></div>
+                                    <div  class="col-4">
+                                        {% bootstrap_button "Upload" button_type="submit" button_class="btn-success btn-lg badge-pill float-right" %}
+                                    </div>
+                                    <div  class="col-4"></div>
+                                </div>
+                            </form>
+                        {% endblock %}
+                    </div>
                 </div>
-                      <div class="row my-3">
-                          <div  class="col-6"></div>
-                        <div  class="col-1">
-                             {% bootstrap_button "Upload" button_type="submit" button_class="btn-success btn-lg badge-pill float-right" %}
-                </div>
-                          <div  class="col-5 "></div>
-
-                  </div>
-              </form>
-            {% endblock %}
+                <div class="col-3"></div>
+            </div>
         </div>
-</div>
 
 </body>
 </html>

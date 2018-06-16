@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView, ListView
 import django_tables2
-from dedupper.models import Simple
+from dedupper.models import Simple, Contact, RepContact
 from  dedupper.filters import SimpleFilter
-from dedupper.tables import SimpleTable, ContactTable
+from dedupper.tables import SimpleTable, ContactTable, RepContactTable
 from tablib import Dataset
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -11,8 +11,8 @@ from dedupper.forms import UploadFileForm
 from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin, RequestConfig
 
-from dedupper.resources import SimpleResource, ContactResource
-from  dedupper.utils import key_generator
+from dedupper.resources import SimpleResource, ContactResource, RepContactResource, SFContactResource
+from  dedupper.utils import key_generator, makeKeys, convertCSV
 import csv
 
 #TODO seperate url for form submission and for loading new pages use httpRedirect
@@ -44,9 +44,10 @@ def display(request):
         key_generator(partslist)
 
     config = RequestConfig(request)
-    undecided_table = SimpleTable(Simple.objects.filter(type__exact='Undecided'), prefix='U-')  # prefix specified
-    duplicate_table = SimpleTable(Simple.objects.filter(type__exact='Duplicate'), prefix='D-')  # prefix specified
-    new_record_table = SimpleTable(Simple.objects.filter(type__exact='New Record'), prefix='N-')  # prefix specified
+    undecided_table = RepContactTable(RepContact.objects.filter(type__exact='Undecided'), prefix='U-')  # prefix specified
+    duplicate_table = RepContactTable(RepContact.objects.filter(type__exact='Duplicate'), prefix='D-')  # prefix specified
+    new_record_table = RepContactTable(RepContact.objects.filter(type__exact='New Record'), prefix='N-')  # prefix
+    # specified
     config.configure(undecided_table)
     config.configure(duplicate_table)
     config.configure(new_record_table)
@@ -57,40 +58,29 @@ def display(request):
         'new_record_table': new_record_table,
     })
 
-
 def upload(request):
-    contact_resource = ContactResource()
+    repcontact_resource = RepContactResource()
+    sfcontact_resource = SFContactResource()
     dataset = Dataset()
-    new_simples = list()
 
     print('uploading file')
     form = UploadFileForm(request.POST, request.FILES)
-    if 'myfile' in request.session:
-        uploadedfile = request.session['myfile']
-    else:
-        uploadedfile = request.FILES['myfile']
+    repCSV = request.FILES['repFile']
+    sfCSV = request.FILES['sfFile']
+
+    headers = convertCSV(repCSV,repcontact_resource)
+    convertCSV(sfCSV,sfcontact_resource)
+
+    keys = makeKeys(headers)
+
+    return render(request, 'dedupper/key_generator.html', {'keys': keys})
 
 
-    fileString = ''
-    for chunk in uploadedfile.chunks():
-        fileString += chunk.decode("utf-8") + '\n'
-    print('done decoding')
-    print('load data')
-    dataset.csv = fileString
-    print('done data load')
-
-    result = contact_resource.import_data(dataset, dry_run=True)  # Test the data import
-    if not result.has_errors():
-        print('importing data')
-        contact_resource.import_data(dataset, dry_run=False)  # Actually import now
-    return render(request, 'dedupper/key_generator.html', {'headers': dataset.headers})
-
-
-def merge(request, title):
-    obj = Simple.objects.values().get(title=title)
+def merge(request, CRD):
+    obj = RepContact.objects.values().get(CRD=CRD)
     ids = [obj['closest1_id'], obj['closest2_id'], obj['closest3_id']]
-    objs = Simple.objects.values().filter(pk__in=ids)
-    fields = [i.name for i in Simple.meta.local_fields][:-3]
+    objs = RepContact.objects.values().filter(pk__in=ids)
+    fields = [i.name for i in RepContact._meta.local_fields]
     mergers = list()
 
     for i in range(len(objs)):
@@ -99,7 +89,8 @@ def merge(request, title):
     del obj['closest1_id'], obj['closest2_id'], obj['closest3_id'], obj['type'], obj['average']
     obj = list(obj.values())
 
-    obj_map = {i:j for i,j in zip(fields, list(zip(obj,mergers[0],mergers[1],mergers[2])) ) }
+    obj_map = {i:j for i,j in zip(fields, list(zip(obj,obj,obj,obj)) ) }
+    #obj_map = {i:j for i,j in zip(fields, list(zip(obj,mergers[0],mergers[1],mergers[2])) ) }
     print(obj_map)
     '''
         outputs a dictionary of the field as the with a value of each objs corresponding field value
@@ -110,3 +101,5 @@ def merge(request, title):
     return render(request, 'dedupper/merge.html', {'objs' : obj_map, 'cnt':x})
 
 #TODO add export functionality using django import export
+
+

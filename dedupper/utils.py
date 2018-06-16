@@ -14,6 +14,8 @@ import pandas as pd
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process #could be used to generate suggestions for unknown records
 import numpy as np
+from tablib import Dataset
+
 from copy import deepcopy
 
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
@@ -52,6 +54,7 @@ def key_generator(partslist):
     print(partslist)
 
 
+    sf_list = list(SFContact.objects.all())
     # for key_parts in partslist:
 
     rep_list = list(RepContact.objects.filter(type__in=['Unsure', 'New Record']))
@@ -113,9 +116,22 @@ def setSortingAlgorithm(min_dup,min_uns):
     (0, min_uns): 'New Record'
 })
 
-def classify_records(key1, key2):
-    percent = match_percentage(key1,key2)
-    return(rkd[percent],str(percent)+'%')
+def makeKeys(headers):
+    keys = []
+    total = RepContact.objects.all().count()
+    phoneUniqueness = 0
+    emailUniqueness = 0
+    for i in headers:
+        if 'Phone' in i:
+            phoneUniqueness += RepContact.objects.order_by().values_list(i).distinct().count() / total
+        if 'Email' in i:
+            emailUniqueness += RepContact.objects.order_by().values_list(i).distinct().count() / total
+        else:
+            uniqueness = RepContact.objects.order_by().values_list(i).distinct().count() / total
+            keys.append((i, int(uniqueness * 100)))
+    keys.extend([('phone', int((phoneUniqueness / 3) * 100)), ('email', int((emailUniqueness / 3) * 100))])
+    keys.sort()
+    return keys
 
 def mutate(keys):
     mutant = keys.copy()
@@ -128,25 +144,22 @@ def mutate(keys):
     return mutant
 
 
-def dedup(key):
-    print('...entering dedup process')
-    start = clock()
-    sorted_bin = []
-    #only dedup unsure list, aka start off with the keys
-    #in the unsure list, pop them into new list or leave them
-    #then iterate thru key set
-    sf_list=mutate(key)
+def convertCSV(file, resource):
+    dataset = Dataset()
 
-    for i in range(len(key)):
-        classify,percent = classify_records(key[i],sf_list[i])
-        sorter(classify, i, percent)
-        if(classify != 'Unsure'):
-            sorted_bin.append(i)
-    df.drop(df.index[sorted_bin], inplace = True)
-    end = clock()
-    time = str(end-start)
-    print('...dedupping and sorting complete \t time = '+time)
+    fileString = ''
+    for chunk in file.chunks():
+        fileString += chunk.decode("utf-8") + '\n'
+    print('done decoding')
+    # needs id col as 1st col
+    print('load data')
+    dataset.csv = fileString
+    print('done data load')
+    result = resource.import_data(dataset, dry_run=True)  # Test the data import
+    if not result.has_errors():
+        print('importing data')
+        resource.import_data(dataset, dry_run=False)  # Actually import now
 
-def get_lists():
-    return(dups, new_records, list(df.values))
+    return dataset.headers
+
 

@@ -24,7 +24,7 @@
     <style>
 </style>
   </head>
-  <body class="bg-dark text-primary">
+  <body class="bg-dark text-primary" style="overflow: hidden">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -223,7 +223,8 @@
             {% for key, value in objs.items %}
                 <div class="col-3 my-4">
                      <div class="btn-group dropright ">
-                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ key }}</button>
+                <button type="button" class="btn btn-dark dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">{{ key }}</button>
                 <span class="sr-only">Toggle Dropdown</span>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     {% for val in value  %}
