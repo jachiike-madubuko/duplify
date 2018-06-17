@@ -31,10 +31,13 @@
           .tab-content{
               z-index: 200;
           }
+          a:hover{
+              text-decoration: none;
+          }
 
       </style>
   </head>
-  <body class=" text-white">
+  <body class=" text-white" style="overflow: hidden">
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
@@ -160,7 +163,7 @@
 
     </script>
 
-      <nav class="navbar navbar-dark bg-dark navbar-expand-lg justify-content-between">
+      <nav class="navbar navbar-dark bg-dark navbar-expand-lg justify-content-between rounded-bottom">
         <a class="navbar-brand" href="#">Duplify</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -177,37 +180,39 @@
                 <a class="nav-link" href="#">Pricing</a>
               </li>
             </ul>
-            <form class="navbar-form navbar-left">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search">
-                    <span class="input-group-btn ">
-                        <button type="button" class="btn btn-default bg-white border-top-0 border-bottom-0"><span class="fa fa-search"></span></button>
-                    </span>
-                </div>
-            </form>
         </div>
     </nav>
     <div class="container-fluid">
-        <ul class="nav nav-pills nav-fill my-3 text-white" id="pills-tab" role="tablist">
-          <li class="nav-item">
-            <a class="nav-link  bg-dark" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">
-                Duplicates
+        <ul class="nav nav-pills nav-fill text-white" id="pills-tab" role="tablist">
+          <li class="nav-item badge-pill">
+              <h6  class="mx-1 mt-3"><a class="button btn-success badge-pill float-right"
+                                   href="export/Duplicate">Export</a></h6>
+              <a class="nav-link  bg-dark nav-pill badge-pill" id="pills-home-tab" data-toggle="pill" href="#pills-home"
+                 role="tab"
+               aria-controls="pills-home" aria-selected="true">
+                Duplicate Records
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link bg-dark" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">
-                Unsure Records
+          <li class="nav-item badge-pill">
+              <h6  class="mx-1 mt-3"><a class="button btn-success badge-pill float-right"
+                                    href="export/Undecided">Export</a></h6>
+              <a class="nav-link bg-dark badge-pill" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab"
+               aria-controls="pills-profile" aria-selected="false">
+                Undecided Records
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link bg-dark" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">
+          <li class="nav-item badge-pill">
+              <h6 class="mx-1 mt-3"><a class="button btn-success badge-pill float-right" href="export/New
+              Record">Export</a></h6>
+              <a class="nav-link bg-dark badge-pill" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab"
+               aria-controls="pills-contact" aria-selected="false">
                 New Records
             </a>
           </li>
         </ul>
         <div class="row"> </div>
 
-        <div class="tab-content" id="pills-tabContent">
+        <div class="tab-content rounded" id="pills-tabContent" style="overflow-y: scroll; height: 85vh">
             <div class="tab-pane show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
                 {% render_table duplicate_table 'django_tables2/bootstrap-responsive.html' %}
             </div>

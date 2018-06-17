@@ -20,7 +20,6 @@ import csv
 
 
 
-
 def index(request):
     return render(request, 'dedupper/rep_list_upload.html')
 
@@ -37,6 +36,7 @@ def display(request):
     if request.method == 'POST':
         #move into new method seperate displaying and form submission to get rid of do you want to resubmit form
         keylist = request.POST.get('keys')
+        print(keylist)
         #read in channel and query SF by channgel for the key gen
         #keylist = request.POST.get('channel')
         keylist = keylist.split("_")
@@ -52,6 +52,10 @@ def display(request):
     config.configure(duplicate_table)
     config.configure(new_record_table)
 
+    undecided = RepContactResource().export(RepContact.objects.filter(type='Undecided'))
+    newRecord = RepContactResource().export(RepContact.objects.filter(type='New Record'))
+    duplicate = RepContactResource().export(RepContact.objects.filter(type='Duplicate'))
+
     return render(request, 'dedupper/sorted.html', {
         'undecided_table': undecided_table,
         'duplicate_table': duplicate_table,
@@ -59,6 +63,7 @@ def display(request):
     })
 
 def upload(request):
+    global export_headers
     repcontact_resource = RepContactResource()
     sfcontact_resource = SFContactResource()
     dataset = Dataset()
@@ -69,6 +74,8 @@ def upload(request):
     sfCSV = request.FILES['sfFile']
 
     headers = convertCSV(repCSV,repcontact_resource)
+    export_headers = headers
+
     convertCSV(sfCSV,sfcontact_resource)
 
     keys = makeKeys(headers)
@@ -100,6 +107,29 @@ def merge(request, CRD):
     x = [ i for i in range(50)]
     return render(request, 'dedupper/merge.html', {'objs' : obj_map, 'cnt':x})
 
+
+
+def export(request,type):
+    export_headers = list(list(RepContact.objects.all().values())[0].keys())
+
+    if(type == "Duplicate"):
+        filename = 'filename="Duplicates.xlsx"'
+    elif(type == "New Record"):
+        filename = 'filename="New Records.xlsx"'
+    else:
+        filename = 'filename="Undecided Records.xlsx"'
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; '+filename
+
+    writer = csv.writer(response)
+    writer.writerow(export_headers)
+
+    users = RepContact.objects.filter(type = type).values_list(*export_headers)
+    for user in users:
+        writer.writerow(user)
+
+    return response
 #TODO add export functionality using django import export
 
 

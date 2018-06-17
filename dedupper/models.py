@@ -199,6 +199,7 @@ class RepContact(models.Model):
 
 class SFContact(models.Model):
     CRD = models.CharField(max_length=128, unique=True, db_column="CRD")
+    ContactID = models.CharField(max_length=128, blank=True)
     firstName = models.CharField(max_length=128, blank=True)
     lastName = models.CharField(max_length=128, blank=True)
     suffix = models.CharField(max_length=128, blank=True)
@@ -209,9 +210,10 @@ class SFContact(models.Model):
     mailingStateProvince = models.CharField(max_length=128, blank=True)
     mailingZipPostalCode = models.CharField(max_length=128, blank=True)
     territory = models.CharField(max_length=128, blank=True)
-    workPhone = models.CharField(max_length=128, blank=True)
+    Phone = models.CharField(max_length=128, blank=True)
     homePhone = models.CharField(max_length=128, blank=True)
     mobilePhone = models.CharField(max_length=128, blank=True)
+    otherPhone = models.CharField(max_length=128, blank=True)
     workEmail = models.CharField(max_length=128, blank=True)
     personalEmail = models.CharField(max_length=128, blank=True)
     otherEmail = models.CharField(max_length=128, blank=True)

@@ -30,7 +30,8 @@ class ContactTable(tables.Table):
         attrs = {'class' : 'table table-hover table-striped table-dark' }
 
 class RepContactTable(tables.Table):
-    merge = tables.LinkColumn('merge_records', args=[tables.A('pk')], attrs={'class': 'btn btn-outline-primary', 'href':"#" }, text="Merge")
+    merge = tables.LinkColumn('merge_records', args=[tables.A('pk')], attrs={'class': 'btn btn-outline-primary badge-pill',
+                                                                             'href':"#" }, text="Merge")
 
     def render_merge(self, record):
         href = record.CRD
@@ -42,7 +43,8 @@ class RepContactTable(tables.Table):
         attrs = {'class' : 'table table-hover table-striped table-dark' }
 
 class SFContactTable(tables.Table):
-    merge = tables.LinkColumn('merge_records', args=[tables.A('pk')], attrs={'class': 'btn btn-outline-primary', 'href':"#" }, text="Merge")
+    merge = tables.LinkColumn('merge_records', args=[tables.A('pk')], attrs={'class': 'btn btn-outline-primary badge-pill',
+                                                                             'href':"#" }, text="Merge")
 
     def render_merge(self, record):
         href = record.CRD

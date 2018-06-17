@@ -14,13 +14,11 @@
     <style>
         @import url(https://fonts.googleapis.com/css?family=Roboto:300,500);
 
-        body {
-          font-family: 'Roboto', sans-serif;
-          font-size: 14px;
-          text-align: center;
-          background: #eee;
-            width: 100%;
-        }
+        {#body {#}
+        {#  font-family: 'Roboto', sans-serif;#}
+        {#  font-size: 14px;#}
+        {#  text-align: center;#}
+        {#}#}
          .lbl {
              position: relative;
              display: block;
@@ -84,11 +82,11 @@
     </style>
 
 </head>
- <body style="overflow: hidden">
- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+ <body style="overflow: hidden;">
+     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 
- <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
-    <script>
+     <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
+     <script>
         function bg() {
             $("body").polygonizr({
 
@@ -233,7 +231,7 @@
                 keys += '_';
             });
             $("#keys").val(keys);
-           // $("#next").removeClass("invisible");
+          //  $("#keys").addClass("invisible");
         }
         function del(item) {
             $(item).closest(".list-group-item").remove();
@@ -267,7 +265,7 @@
         </div>
     </nav>
 
-    <div class="container-fluid row my-5">
+    <div class="container-fluid row my-5" style=" text-align: center;">
         <div class="col-1"></div>
         <div id="keyBuilder" class="col-6">
             <div class="card bg-dark text-white">
@@ -312,7 +310,13 @@
                             </div>
                         </div>
                          <hr class="my-2">
-                        <button class="btn btn-primary" onclick="create()">Create</button>
+                        <div class="row">
+                            <div class="col-4"></div>
+                            <div class="col-4">
+                                <button class="btn btn-primary btn-block badge-pill" onclick="create()">Create</button>
+                            </div>
+                            <div class="col-4"></div>
+                        </div>
                 </div>
             </div>
         </div>
@@ -358,9 +362,10 @@
             </div>
             <form  method="post" action="/rep_list_keys/">
                         {% csrf_token %}
-                <input type="text" readonly class="form-control-plaintext bg-transparent" id="keys" name="keys"  style="color: #343A40">
+                <input type="text" readonly class="form-control-plaintext bg-transparent invisible" id="keys" name="keys"
+                       style="color: #343A40">
                 <br>
-                <button type="submit" id="keygen" class="btn btn-primary btn-block" onclick="generateKeys()">
+                <button type="submit" id="keygen" class="btn btn-primary btn-block badge-pill" onclick="generateKeys()">
                     GO
                 </button>
              </form>

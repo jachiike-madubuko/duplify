@@ -47,7 +47,7 @@ python-dateutil==2.7.3
 pytz==2018.3
 PyYAML==3.12
 range-key-dict==1.1.0
-requests==2.18.4
+requests==2.19.1
 six==1.11.0
 sqlparse==0.2.4
 tablib==0.12.1
