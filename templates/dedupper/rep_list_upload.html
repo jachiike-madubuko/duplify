@@ -187,11 +187,13 @@
                             <form method="post" action="/keys/" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 <div class="custom-file ">
+                                    <h5 class="text-white">Upload Rep List Here</h5>
                                     <input type="file" class="custom-file-input" id="repFile" name="repFile"
                                            onchange="filename(this, '.rep')">
                                     <label class="text-white custom-file-label rep" for="repFile">Choose file</label>
                                 </div>
                                 <div class="custom-file my-3 text-white">
+                                    <h5 class="text-white">Upload SF Report Here</h5>
                                     <input type="file" class="custom-file-input" id="sfFile" name="sfFile"
                                            onchange="filename(this, '.sf')">
                                     <label class="text-white custom-file-label sf" for="sfFile">Choose file</label>

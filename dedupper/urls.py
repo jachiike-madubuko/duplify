@@ -31,6 +31,6 @@ urlpatterns = [
     url(r'^keys', views.upload, name='keys'),
     path('rep_list_keys/', views.display, name='rep_list_keys'),
     path('rep_list_keys/<CRD>', views.merge, name='merge'),
-    path('rep_list_keys/export/<type>', views.export, name='merge'),
+    path('rep_list_keys/export/<type>', views.download, name='merge'),
     url(r'^table/$', FilteredSimpleListView.as_view() ),
 ]

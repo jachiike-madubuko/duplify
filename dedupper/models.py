@@ -127,9 +127,10 @@ class RepContact(models.Model):
     mailingStateProvince = models.CharField(max_length=128, blank=True)
     mailingZipPostalCode = models.CharField(max_length=128, blank=True)
     territory = models.CharField(max_length=128, blank=True)
-    workPhone = models.CharField(max_length=128, blank=True)
+    Phone = models.CharField(max_length=128, blank=True)
     homePhone = models.CharField(max_length=128, blank=True)
     mobilePhone = models.CharField(max_length=128, blank=True)
+    otherPhone = models.CharField(max_length=128, blank=True)
     workEmail = models.CharField(max_length=128, blank=True)
     personalEmail = models.CharField(max_length=128, blank=True)
     otherEmail = models.CharField(max_length=128, blank=True)
@@ -145,7 +146,7 @@ class RepContact(models.Model):
                        ('Duplicate', 'Duplicate'),
                        ('New Record', 'New Record'))
     type = models.CharField(max_length=128, choices=TYPES_OF_RECORD, default='Undecided')
-
+    match_ID = models.CharField(max_length=128, blank=True)
     closest1 = models.ForeignKey('SFContact', on_delete=models.CASCADE, related_name="first_%(app_label)s_%("
                                                                                      "class)s_related",
         related_query_name="%(app_label)s_%(class)s", null=True,
@@ -177,9 +178,10 @@ class RepContact(models.Model):
             'mailingStateProvince': strip(self.mailingStateProvince),
             'mailingZipPostalCode': strip(self.mailingZipPostalCode),
             'territory': strip(self.territory),
-            'workPhone': strip(self.workPhone),
+            'Phone': strip(self.Phone),
             'homePhone': strip(self.homePhone),
             'mobilePhone': strip(self.mobilePhone),
+            'otherPhone': strip(self.otherPhone),
             'workEmail': strip(self.workEmail),
             'personalEmail': strip(self.personalEmail),
             'otherEmail': strip(self.otherEmail),
@@ -198,7 +200,7 @@ class RepContact(models.Model):
 
 
 class SFContact(models.Model):
-    CRD = models.CharField(max_length=128, unique=True, db_column="CRD")
+    CRD = models.CharField(max_length=128, db_column="CRD")
     ContactID = models.CharField(max_length=128, blank=True)
     firstName = models.CharField(max_length=128, blank=True)
     lastName = models.CharField(max_length=128, blank=True)
@@ -233,9 +235,9 @@ class SFContact(models.Model):
         return '{} {}'.format(self.firstName, self.lastName,)
     def key(self, key_parts):
         key = ''
-
         key_builder = {
             'CRD': strip(self.CRD),
+            'ContactID': strip(self.ContactID),
             'firstName': strip(self.firstName),
             'lastName': strip(self.lastName),
             'suffix': strip(self.suffix),
@@ -246,9 +248,10 @@ class SFContact(models.Model):
             'mailingStateProvince': strip(self.mailingStateProvince),
             'mailingZipPostalCode': strip(self.mailingZipPostalCode),
             'territory': strip(self.territory),
-            'workPhone': strip(self.workPhone),
+            'Phone': strip(self.Phone),
             'homePhone': strip(self.homePhone),
             'mobilePhone': strip(self.mobilePhone),
+            'otherPhone': strip(self.otherPhone),
             'workEmail': strip(self.workEmail),
             'personalEmail': strip(self.personalEmail),
             'otherEmail': strip(self.otherEmail),

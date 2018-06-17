@@ -73,15 +73,14 @@ def upload(request):
     repCSV = request.FILES['repFile']
     sfCSV = request.FILES['sfFile']
 
-    headers = convertCSV(repCSV,repcontact_resource)
+    headers = convertCSV(repCSV, repcontact_resource)
     export_headers = headers
 
-    convertCSV(sfCSV,sfcontact_resource)
+    convertCSV(sfCSV ,sfcontact_resource)
 
     keys = makeKeys(headers)
 
     return render(request, 'dedupper/key_generator.html', {'keys': keys})
-
 
 def merge(request, CRD):
     obj = RepContact.objects.values().get(CRD=CRD)
@@ -109,15 +108,16 @@ def merge(request, CRD):
 
 
 
-def export(request,type):
+def download(request,type):
     export_headers = list(list(RepContact.objects.all().values())[0].keys())
 
     if(type == "Duplicate"):
-        filename = 'filename="Duplicates.xlsx"'
-    elif(type == "New Record"):
-        filename = 'filename="New Records.xlsx"'
+        filename = 'filename="Duplicates.csv"'
+    elif(type == "NewRecord"):
+        filename = 'filename="New Records.csv"'
+        type = 'New Record'
     else:
-        filename = 'filename="Undecided Records.xlsx"'
+        filename = 'filename="Undecided Records.csv"'
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; '+filename

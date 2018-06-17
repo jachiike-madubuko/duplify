@@ -32,7 +32,7 @@ def key_generator(partslist):
         if 'phone' in key_parts:
             index = partslist.index(key_parts)
             del partslist[index]
-            for i in ['homePhone', 'mobilePhone', 'workPhone']:
+            for i in ['homePhone', 'mobilePhone', 'Phone', 'otherPhone']:
                 new_key_parts = [i if x == 'phone' else x for x in key_parts]
                 partslist.insert(index, new_key_parts)
         if 'email' in key_parts:
@@ -59,18 +59,19 @@ def key_generator(partslist):
         top1, top2, top3 = [(match_map[i][0], sf_map[match_map[i][1]]) for i in range(3)]
         person = rep_map[rep_key]
 
-        if top1[0] <= top3[0]+25:
+        if top1[0] <= top3[0]+10:
             person.average = np.mean([top1[0], top2[0], top3[0]])
             person.closest1 = top1[1]
             person.closest2 = top2[1]
             person.closest3 = top3[1]
-        elif top1[0] <= top2[0]+25:
+        elif top1[0] <= top2[0]+10:
             person.average = np.mean([top1[0], top2[0]])
             person.closest1 = top1[1]
             person.closest2 = top2[1]
         else:
             person.average = top1[0]
             person.closest1 = top1[1]
+        person.match_ID = top1[1].ContactID
         #seperate by activity
         person.type = sort(person.average)
         #try-catch for the save, error will raise if match_contactID is not unique
@@ -81,7 +82,6 @@ def key_generator(partslist):
     print('...dedupping and sorting complete \t time = ' + time)
     print('\a')
     os.system('say "The repp list has been duplified!"')
-
 
 def match_keys(key,key_list):
     for i in key_list:
@@ -115,7 +115,7 @@ def makeKeys(headers):
         else:
             uniqueness = RepContact.objects.order_by().values_list(i).distinct().count() / total
             keys.append((i, int(uniqueness * 100)))
-    keys.extend([('phone', int((phoneUniqueness / 3) * 100)), ('email', int((emailUniqueness / 3) * 100))])
+    keys.extend([('phone', int((phoneUniqueness / 4) * 100)), ('email', int((emailUniqueness / 3) * 100))])
     keys.sort()
     return keys
 
@@ -131,10 +131,22 @@ def mutate(keys):
 
 def convertCSV(file, resource):
     dataset = Dataset()
-
+    headers = ''
+    cnt=0
+    print('converting CSV')
     fileString = ''
+    #look into going line by line
     for chunk in file.chunks():
         fileString += chunk.decode("utf-8") + '\n'
+        if cnt == 0:
+            headers=fileString
+
+        if cnt == 5000:
+            cnt = 1
+            dataset.csv = fileString
+            resource.import_data(dataset, dry_run=False)
+
+
     print('done decoding')
     # needs id col as 1st col
     print('load data')
@@ -145,6 +157,6 @@ def convertCSV(file, resource):
         print('importing data')
         resource.import_data(dataset, dry_run=False)  # Actually import now
 
-    return dataset.headers
+    return headers
 
 

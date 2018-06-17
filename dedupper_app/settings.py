@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'django_filters',
     'import_export',
     'bootstrap3',
-     'django-dad',
+    'django-dad',
+    'django_extensions',
 
    # 'heroku_connect',
    # 'connect_client',
