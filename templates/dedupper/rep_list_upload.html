@@ -14,7 +14,7 @@
 
 </style>
 </head>
-  <body class="bg-secondary" style="transition: 2s; overflow: hidden">
+  <body class="bg-dark" style="transition: 2s; overflow: hidden">
 
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
@@ -62,13 +62,13 @@
 
                   animationFps: 300, // The FPS for the whole canvas.
 
-                  nodeDotColor: "41, 106, 210",// Sets the color of the nodes in the network (RGB).
+                  nodeDotColor: "255, 0, 0",// Sets the color of the nodes in the network (RGB).
 
-                  nodeLineColor: "255, 255, 255",// Sets the color of the lines in the network (RGB).
+                  nodeLineColor: "255, 0, 0",// Sets the color of the lines in the network (RGB).
 
-                  nodeFillColor: "41, 106, 210",// Sets the color of  triangles in the network (RGB).
+                  nodeFillColor: "255, 0, 0",// Sets the color of  triangles in the network (RGB).
 
-                  nodeFillAlpha: 0.5,// Sets the alpha level for the colors (1-0).
+                  nodeFillAlpha: 1.5,// Sets the alpha level for the colors (1-0).
 
                   nodeLineAlpha: 0.5, // Sets the alpha level for the lines (1-0).
 
@@ -180,7 +180,7 @@
         <div class="container" style="padding-top: 150px;  height: 100%; width: 80%;">
             <div class="row">
                 <div class="col-3"></div>
-                <div class="card col-6 bg-dark my-5">
+                <div class="card col-6  my-5" style="background: transparent">
                     <div class="card-header text-white text-center"> <h3> File Upload </h3></div>
                     <div class="card-body">
                         {% block content %}

@@ -78,7 +78,6 @@ def key_generator(partslist):
             person.type = sort(person.average)
             #try-catch for the save, error will raise if match_contactID is not unique
             person.save()
-            print("{} saved at {}".format(person.firstName, str(clock()-start)))
 
     end = clock()
     time = str(end - start)

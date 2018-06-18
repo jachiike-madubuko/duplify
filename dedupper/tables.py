@@ -19,7 +19,6 @@ class SimpleTable(tables.Table):
 
 class ContactTable(tables.Table):
     merge = tables.LinkColumn('merge_records', args=[tables.A('pk')], attrs={'class': 'btn btn-outline-primary', 'href':"#" }, text="Merge")
-
     def render_merge(self, record):
         href = record.id
         return mark_safe('<a id="yo" class="btn btn-outline-primary" onclick="merge()" href="'+str(href)+'" Merge>Merge</a>')
@@ -32,6 +31,8 @@ class ContactTable(tables.Table):
 class RepContactTable(tables.Table):
     merge = tables.LinkColumn('merge_records', args=[tables.A('pk')], attrs={'class': 'btn btn-outline-primary badge-pill',
                                                                              'href':"#" }, text="Merge")
+    exclude = ['cansellDate','levelGroup','regionLeader','boaName','performanceLeader','levelLeader', 'otherEmail',
+               'workEmail','personalEmail', 'otherPhone','Phone']
 
     def render_merge(self, record):
         href = record.CRD
