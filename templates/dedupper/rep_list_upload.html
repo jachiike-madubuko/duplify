@@ -14,7 +14,7 @@
 
 </style>
 </head>
-  <body style="transition: 2s; overflow: hidden">
+  <body class="bg-secondary" style="transition: 2s; overflow: hidden">
 
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
@@ -87,66 +87,66 @@
            }
         bg();
 
-        var colors = new Array(
-          [62,35,255],
-          [60,255,60],
-          [255,35,98],
-          [45,175,230],
-          [255,0,255],
-          [255,128,0]);
-
-        var step = 0;
-        //color table indices for:
-        // current color left
-        // next color left
-        // current color right
-        // next color right
-        var colorIndices = [0,1,2,3];
-
-        //transition speed
-        var gradientSpeed = 0.002;
-
-        function updateGradient()
-        {
-
-          if ( $===undefined ) return;
-
-        var c0_0 = colors[colorIndices[0]];
-        var c0_1 = colors[colorIndices[1]];
-        var c1_0 = colors[colorIndices[2]];
-        var c1_1 = colors[colorIndices[3]];
-
-        var istep = 1 - step;
-        var r1 = Math.round(istep * c0_0[0] + step * c0_1[0]);
-        var g1 = Math.round(istep * c0_0[1] + step * c0_1[1]);
-        var b1 = Math.round(istep * c0_0[2] + step * c0_1[2]);
-        var color1 = "rgb("+r1+","+g1+","+b1+")";
-
-        var r2 = Math.round(istep * c1_0[0] + step * c1_1[0]);
-        var g2 = Math.round(istep * c1_0[1] + step * c1_1[1]);
-        var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
-        var color2 = "rgb("+r2+","+g2+","+b2+")";
-
-         $('body, .custom-file-label').css({
-           background: "-webkit-gradient(linear, left bottom, right bottom, from("+color1+"), to("+color2+"))"}).css({
-            background: "-moz-linear-gradient(left, "+color1+" 0%, "+color2+" 100%)"});
-
-          step += gradientSpeed;
-          if ( step >= 1 )
-          {
-            step %= 1;
-            colorIndices[0] = colorIndices[1];
-            colorIndices[2] = colorIndices[3];
-
-            //pick two new target color indices
-            //do not pick the same as the current one
-            colorIndices[1] = ( colorIndices[1] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
-            colorIndices[3] = ( colorIndices[3] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
-
-          }
-        }
-
-        setInterval(updateGradient,10);
+        {#var colors = new Array(#}
+        {#  [62,35,255],#}
+        {#  [60,255,60],#}
+        {#  [255,35,98],#}
+        {#  [45,175,230],#}
+        {#  [255,0,255],#}
+        {#  [255,128,0]);#}
+        {##}
+        {#var step = 0;#}
+        {#//color table indices for:#}
+        {#// current color left#}
+        {#// next color left#}
+        {#// current color right#}
+        {#// next color right#}
+        {#var colorIndices = [0,1,2,3];#}
+        {##}
+        {#//transition speed#}
+        {#var gradientSpeed = 0.002;#}
+        {##}
+        {#function updateGradient()#}
+        {#{#}
+        {##}
+        {#  if ( $===undefined ) return;#}
+        {##}
+        {#var c0_0 = colors[colorIndices[0]];#}
+        {#var c0_1 = colors[colorIndices[1]];#}
+        {#var c1_0 = colors[colorIndices[2]];#}
+        {#var c1_1 = colors[colorIndices[3]];#}
+        {##}
+        {#var istep = 1 - step;#}
+        {#var r1 = Math.round(istep * c0_0[0] + step * c0_1[0]);#}
+        {#var g1 = Math.round(istep * c0_0[1] + step * c0_1[1]);#}
+        {#var b1 = Math.round(istep * c0_0[2] + step * c0_1[2]);#}
+        {#var color1 = "rgb("+r1+","+g1+","+b1+")";#}
+        {##}
+        {#var r2 = Math.round(istep * c1_0[0] + step * c1_1[0]);#}
+        {#var g2 = Math.round(istep * c1_0[1] + step * c1_1[1]);#}
+        {#var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);#}
+        {#var color2 = "rgb("+r2+","+g2+","+b2+")";#}
+        {##}
+        {# $('body, .custom-file-label').css({#}
+        {#   background: "-webkit-gradient(linear, left bottom, right bottom, from("+color1+"), to("+color2+"))"}).css({#}
+        {#    background: "-moz-linear-gradient(left, "+color1+" 0%, "+color2+" 100%)"});#}
+        {##}
+        {#  step += gradientSpeed;#}
+        {#  if ( step >= 1 )#}
+        {#  {#}
+        {#    step %= 1;#}
+        {#    colorIndices[0] = colorIndices[1];#}
+        {#    colorIndices[2] = colorIndices[3];#}
+        {##}
+        {#    //pick two new target color indices#}
+        {#    //do not pick the same as the current one#}
+        {#    colorIndices[1] = ( colorIndices[1] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;#}
+        {#    colorIndices[3] = ( colorIndices[3] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;#}
+        {##}
+        {#  }#}
+        {#}#}
+        {##}
+        {#setInterval(updateGradient,10);#}
 
     </script>
       <nav class="navbar navbar-dark bg-dark navbar-expand-lg justify-content-between">
@@ -177,27 +177,33 @@
         </div>
     </nav>
 
-        <div class="container" style="padding-top: 100px;  height: 100%; width: 80%;">
+        <div class="container" style="padding-top: 150px;  height: 100%; width: 80%;">
             <div class="row">
                 <div class="col-3"></div>
-                <div class="card col-6 bg-dark">
-                    <div class="card-header text-white"> File Upload </div>
+                <div class="card col-6 bg-dark my-5">
+                    <div class="card-header text-white text-center"> <h3> File Upload </h3></div>
                     <div class="card-body">
                         {% block content %}
                             <form method="post" action="/keys/" enctype="multipart/form-data">
                                 {% csrf_token %}
+
+                                <h6 class="card-text text-white text-center">Upload Rep List Here</h6>
                                 <div class="custom-file ">
-                                    <h5 class="text-white">Upload Rep List Here</h5>
+
                                     <input type="file" class="custom-file-input" id="repFile" name="repFile"
                                            onchange="filename(this, '.rep')">
-                                    <label class="text-white custom-file-label rep" for="repFile">Choose file</label>
+                                    <label class=" custom-file-label rep" for="repFile">Choose file</label>
                                 </div>
-                                <div class="custom-file my-3 text-white">
-                                    <h5 class="text-white">Upload SF Report Here</h5>
+
+                                <h6 class="card-text text-white mt-5 text-center">Upload SF Report Here</h6>
+                                <div class="custom-file text-white">
+
                                     <input type="file" class="custom-file-input" id="sfFile" name="sfFile"
                                            onchange="filename(this, '.sf')">
-                                    <label class="text-white custom-file-label sf" for="sfFile">Choose file</label>
+                                    <label class=" custom-file-label sf" for="sfFile">Choose file</label>
                                 </div>
+                                                         <hr class="my-3">
+
                                 <div class="row">
                                     <div  class="col-4"></div>
                                     <div  class="col-4">

@@ -82,7 +82,7 @@
     </style>
 
 </head>
- <body style="overflow: hidden;">
+ <body class="bg-secondary"style="overflow: hidden;">
      <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 
      <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
@@ -144,14 +144,25 @@
            }
         bg();
 
-        var colors = new Array(
-          [62,35,255],
-          [60,255,60],
-          [255,35,98],
-          [45,175,230],
-          [255,0,255],
-          [255,128,0]);
+        var grid = new Array(
+          [62%2,35%2,255%2],
+          [60%2,255%2,60%2],
+          [255%2,35%2,98%2],
+          [45%2,175%2,230%2],
+          [255%2,0%2,255%2],
+          [255%2,128%2,0%2]);
 
+        var grid = new Array(
+          [0,0,0],
+          [0,0,1],
+          [0,1,1],
+          [1,1,1],
+          [1,1,0],
+          [1,0,0]);
+        var mono =grid.map(function(element) {
+	return element*255;
+});
+        var colors =mono;
         var step = 0;
         //color table indices for:
         // current color left
@@ -201,6 +212,10 @@
             colorIndices[3] = ( colorIndices[3] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
 
           }
+        }
+
+        function play(){
+            alert("play!");
         }
 
         setInterval(updateGradient,10);
@@ -360,15 +375,18 @@
                     </div>
                 </div>
             </div>
+                        {% block content %}
             <form  method="post" action="/rep_list_keys/">
                         {% csrf_token %}
                 <input type="text" readonly class="form-control-plaintext bg-transparent invisible" id="keys" name="keys"
                        style="color: #343A40">
                 <br>
-                <button type="submit" id="keygen" class="btn btn-primary btn-block badge-pill" onclick="generateKeys()">
+                <button type="submit" id="keygen" class="btn btn-primary btn-block badge-pill" onclick="generateKeys
+                ()" onwaiting="play()">
                     GO
-                </button>
+                </button >
              </form>
+                        {% endblock %}
         </div>
         <div class="col-sm-1"></div>
     </div>

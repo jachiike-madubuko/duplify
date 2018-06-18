@@ -72,10 +72,11 @@ def upload(request):
     form = UploadFileForm(request.POST, request.FILES)
     repCSV = request.FILES['repFile']
     sfCSV = request.FILES['sfFile']
-
+    print('reps')
     headers = convertCSV(repCSV, repcontact_resource)
     export_headers = headers
 
+    print('SF')
     convertCSV(sfCSV ,sfcontact_resource)
 
     keys = makeKeys(headers)
@@ -105,8 +106,6 @@ def merge(request, CRD):
     '''
     x = [ i for i in range(50)]
     return render(request, 'dedupper/merge.html', {'objs' : obj_map, 'cnt':x})
-
-
 
 def download(request,type):
     export_headers = list(list(RepContact.objects.all().values())[0].keys())
