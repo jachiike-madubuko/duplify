@@ -78,6 +78,14 @@
          ul:empty::after{
             content: attr(data-empty-message);
          }
+        a {
+            text-shadow:
+                    -0.125px -0.125px 0 #fff,
+                    0.125px -0.125px 0 #fff,
+                    -0.125px 0.125px 0 #fff,
+                    0.125px 0.125px 0 #fff;
+        }
+        
 
     </style>
 
@@ -144,25 +152,14 @@
            }
         bg();
 
-        var grid = new Array(
-          [62%2,35%2,255%2],
-          [60%2,255%2,60%2],
-          [255%2,35%2,98%2],
-          [45%2,175%2,230%2],
-          [255%2,0%2,255%2],
-          [255%2,128%2,0%2]);
+       var colors = new Array(
+            [255,255,255],
+            [127.5,127.5,127.5],
+            [0,0,0],
+            [255,255,255],
+            [127.5,127.5,127.5],
+            [0,0,0]);
 
-        var grid = new Array(
-          [0,0,0],
-          [0,0,1],
-          [0,1,1],
-          [1,1,1],
-          [1,1,0],
-          [1,0,0]);
-        var mono =grid.map(function(element) {
-	return element*255;
-});
-        var colors =mono;
         var step = 0;
         //color table indices for:
         // current color left
@@ -172,7 +169,7 @@
         var colorIndices = [0,1,2,3];
 
         //transition speed
-        var gradientSpeed = 0.002;
+        var gradientSpeed = 0.001;
 
         function updateGradient()
         {
@@ -195,7 +192,7 @@
         var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
         var color2 = "rgb("+r2+","+g2+","+b2+")";
 
-         $('body, .sw').css({
+         $('body').css({
            background: "-webkit-gradient(linear, left top, right top, from("+color1+"), to("+color2+"))"}).css({
             background: "-moz-linear-gradient(left, "+color1+" 0%, "+color2+" 100%)"});
 
@@ -212,10 +209,6 @@
             colorIndices[3] = ( colorIndices[3] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
 
           }
-        }
-
-        function play(){
-            alert("play!");
         }
 
         setInterval(updateGradient,10);
@@ -252,8 +245,8 @@
             $(item).closest(".list-group-item").remove();
         }
     </script>
-    <nav class="navbar navbar-dark bg-dark navbar-expand-lg justify-content-between">
-        <a class="navbar-brand" href="#">Duplify</a>
+    <nav class="navbar navbar-light navbar-expand-lg justify-content-between">
+       <h1> <a class="navbar-brand" href="#">Duplify</a></h1>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -269,14 +262,6 @@
                 <a class="nav-link" href="#">Pricing</a>
               </li>
             </ul>
-            <form class="navbar-form navbar-left">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search">
-                    <span class="input-group-btn ">
-                        <button type="button" class="btn btn-default bg-white border-top-0 border-bottom-0"><span class="fa fa-search"></span></button>
-                    </span>
-                </div>
-            </form>
         </div>
     </nav>
 
@@ -285,10 +270,19 @@
         <div id="keyBuilder" class="col-6">
             <div class="card bg-dark text-white">
                 <div class="card-body">
-                    <h4 class="card-title">Key Builder</h4>
+                    <h4 class="card-title">Key Builder <form class="navbar-form navbar-left">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search">
+                    <span class="input-group-btn ">
+                        <button type="button" class="btn btn-default bg-white border-top-0 border-bottom-0"><span class="fa fa-search"></span></button>
+                    </span>
+                </div>
+            </form>
+</h4>
                     <p class="card-text">Toggle switches for the desired key components</p>
                     <p class="card-text">Click Create to add the new key</p>
-                        <div class="container-fluid" style="overflow-y:scroll; max-height: 250px">
+                        <div class="container-fluid" style="background: transparent; overflow-y:scroll; max-height:
+                        500px">
                             <div class="row sw">
                                 {% for key,unique in keys %}
                                     <div class="  col-4 my-2">
@@ -376,7 +370,7 @@
                 </div>
             </div>
                         {% block content %}
-            <form  method="post" action="/rep_list_keys/">
+            <form  method="post" action="/run/">
                         {% csrf_token %}
                 <input type="text" readonly class="form-control-plaintext bg-transparent invisible" id="keys" name="keys"
                        style="color: #343A40">

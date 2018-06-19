@@ -1,31 +1,89 @@
-#http://www.informit.com/articles/article.aspx?p=1850445&seqNum=8from threading import Thread
-from threading import Thread
+import threading
 import time
+import logging
+import dedupper.utils
 import random
-from Queue import Queue
+import queue  #must be in same directory as this file
 
-queue = Queue(10)
+logging.basicConfig(level=logging.DEBUG,
+                    format='(%(threadName)-9s) %(message)s',)
 
-class ProducerThread(Thread):
+BUF_SIZE = 10000
+q = queue.Queue(BUF_SIZE)
+command = []
+producer = None
+consumers = None
+
+class ProducerThread(threading.Thread):
+    def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None):
+        super(ProducerThread,self).__init__()
+        self.target = target
+        self.name = name
+        self.event = threading.Event()  #enable easy thread stopping
+
+
     def run(self):
-        nums = range(5)
-        global queue
-        while True:
-            num = random.choice(nums)
-            queue.put(num)
-            print "Produced", num
-            time.sleep(random.random())
+        global command
+        while not self.event.is_set():
+            if not q.full():
+                if command:
+                    d=command.pop()
+                    q.put(d)
+                    logging.debug('Putting REP ' +d[0].firstName + ' : ' + str(q.qsize())+ ' reps in the queue')
+        return
 
+class DeviceThread(threading.Thread):
+    curr_command = '*'
+    def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None):
+        super(DeviceThread,self).__init__()
+        self.target = target
+        self.name = name
+        self.event = threading.Event()   #enable easy thread stopping
+        return
 
-class ConsumerThread(Thread):
     def run(self):
-        global queue
-        while True:
-            num = queue.get()
-            queue.task_done()
-            print "Consumed", num
-            time.sleep(random.random())
+        while not self.event.is_set():
+            ''' switch based on name of consumer thread
+            face should look at a static variable
+            'action' updated after q.get '''
+            if not q.empty():
+                item = q.get()
+                logging.debug('dedupping REP ' + item[0].firstName + ' : ' + str(q.qsize()) + ' commands in queue')
+                dedup(item)
+            else:
+                stop_threads()
+        return
+
+def updateQ(newQ):
+    global command
+    command.extend(newQ)
+    startThreads()
+
+def stop_threads():  #all threads run on a while event is not set
+    global producer, consumers
+    producer.event.set()
+    for i in consumers:
+        i.event.set()
+    dedupper.utils.finish()
 
 
-ProducerThread().start()
-ConsumerThread().start()
+def dedup(repNkey):
+   # logging.debug('hi')
+    time.sleep(random.random() * 4)
+    dedupper.utils.duplify(repNkey[0],repNkey[1])
+
+def makeThreads(num):
+    return [DeviceThread(name='dedupper'+str(i)) for i in range(num)]
+
+def startThreads():
+    global producer, consumers
+    producer = ProducerThread(name='producer')
+    consumers = makeThreads(10)
+
+    producer.start()
+    time.sleep(5)
+    for i in consumers:
+        i.start()
+   # updateQ([('jim brown', 'firstName-territory-mailingStateProvince'),('tim harding',
+# 'firstName-territory-mailingStateProvince'),('paul green', 'firstName-territory-mailingStateProvince')])
+   # updateQ([('jim brown', 'Phone-lastName'),('tim harding', 'Phone-lastName'),('paul green', 'Phone-lastName')])

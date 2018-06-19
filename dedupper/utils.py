@@ -5,7 +5,7 @@ Created on Sat May 19 17:53:34 2018
 
 @author: jachi
 """
-
+from dedupper.threads import updateQ
 import os
 from dedupper.models import Simple, RepContact, SFContact
 import string
@@ -17,6 +17,7 @@ from fuzzywuzzy import fuzz
 from fuzzywuzzy import process #could be used to generate suggestions for unknown records
 import numpy as np
 from tablib import Dataset
+import logging
 
 from copy import deepcopy
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
@@ -27,7 +28,13 @@ rkd = RangeKeyDict({
     (0, 70): 'New Record'
 })
 
+sf_list = SFContact.objects.all()
+sf_map = None
+start = 0
+end = 0
+
 def key_generator(partslist):
+    global start
     for key_parts in partslist:
         if 'phone' in key_parts:
             index = partslist.index(key_parts)
@@ -44,46 +51,10 @@ def key_generator(partslist):
     start = clock()
     sf_list = list(SFContact.objects.all())
     for key_parts in partslist:
-        print('KEY:', end='\t')
-        for i in key_parts:
-            print(i,end='\t' )
         rep_list = list(RepContact.objects.filter(type__in=['Undecided', 'New Record']))
-        rep_keys = [i.key(key_parts) for i in rep_list]
-        rep_map = dict(zip(rep_keys, rep_list))
-        print("################################")
-        sf_keys = [i.key(partslist[0]) for i in sf_list]
-        sf_map = dict(zip(sf_keys, sf_list))
 
-        for rep_key in rep_keys:
-            key_matches = match_keys(rep_key, sf_keys)
-            match_map = list(zip(key_matches, sf_keys))
-            match_map = sorted(match_map, reverse=True)
-            top1, top2, top3 = [(match_map[i][0], sf_map[match_map[i][1]]) for i in range(3)]
-            person = rep_map[rep_key]
+        updateQ([[rep,key_parts] for rep in rep_list])
 
-            if top1[0] <= top3[0]+25 and top1[1].id != top3[1].id:
-                person.average = np.mean([top1[0], top2[0], top3[0]])
-                person.closest1 = top1[1]
-                person.closest2 = top2[1]
-                person.closest3 = top3[1]
-            elif top1[0] <= top2[0]+25 and top1[1].id != top2[1].id:
-                person.average = np.mean([top1[0], top2[0]])
-                person.closest1 = top1[1]
-                person.closest2 = top2[1]
-            else:
-                person.average = top1[0]
-                person.closest1 = top1[1]
-            person.match_ID = top1[1].ContactID
-            #seperate by activity
-            person.type = sort(person.average)
-            #try-catch for the save, error will raise if match_contactID is not unique
-            person.save()
-
-    end = clock()
-    time = str(end - start)
-    print('...dedupping and sorting complete \t time = ' + time)
-    print('\a')
-    os.system('say "The repp list has been duplified!"')
 
 def match_keys(key,key_list):
     for i in key_list:
@@ -163,5 +134,49 @@ def convertCSV(file, resource):
     time = str(end - start)
     print('...upload complete \t time = ' + time)
     return headers
+
+def duplify(rep, keys):
+    rep_key = rep.key(keys)
+    # logging.debug(rep_key)
+    sf_keys = [i.key(keys) for i in sf_list]
+    sf_map = dict(zip(sf_keys, sf_list))
+   # logging.debug(sf_map)
+    
+    key_matches = match_keys(rep_key, sf_keys)
+    match_map = list(zip(key_matches, sf_keys))
+    match_map = sorted(match_map, reverse=True)
+    top1, top2, top3 = [(match_map[i][0], sf_map[match_map[i][1]]) for i in range(3)]
+
+    if top1[0] <= top3[0] + 15 and top1[1].id != top3[1].id:
+        rep.average = np.mean([top1[0], top2[0], top3[0]])
+        rep.closest1 = top1[1]
+        rep.closest2 = top2[1]
+        rep.closest3 = top3[1]
+    elif top1[0] <= top2[0] + 15 and top1[1].id != top2[1].id:
+        rep.average = np.mean([top1[0], top2[0]])
+        rep.closest1 = top1[1]
+        rep.closest2 = top2[1]
+    else:
+        rep.average = top1[0]
+        rep.closest1 = top1[1]
+    # seperate by activity
+    rep.type = sort(rep.average)
+
+    if rep.type != "New Record":
+        rep.match_ID = top1[1].ContactID
+    else:
+        rep.match_ID = ''
+    # try-catch for the save, error will raise if match_contactID is not unique
+    rep.dupFlag = True
+    rep.save()
+    logging.debug('bye')
+
+def finish():
+    global end
+    end = clock()
+    time = str(end - start)
+    print('...dedupping and sorting complete \t time = ' + time)
+    print('\a')
+    os.system('say "The repp list has been duplified!"')
 
 

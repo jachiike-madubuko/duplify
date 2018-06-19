@@ -29,6 +29,8 @@ admin.autodiscover()
 urlpatterns = [
     path('', views.index, name='index'),
     url(r'^keys', views.upload, name='keys'),
+    path('key-gen/', views.key_gen, name='key-gen'),
+    path('run/', views.run, name='run'),
     path('rep_list_keys/', views.display, name='rep_list_keys'),
     path('rep_list_keys/<CRD>', views.merge, name='merge'),
     path('rep_list_keys/export/<type>', views.download, name='merge'),
