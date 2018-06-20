@@ -28,14 +28,14 @@ rkd = RangeKeyDict({
     (70, 100): 'Undecided',
     (0, 70): 'New Record'
 })
-
+waiting= True
 sf_list = list(SFContact.objects.all())
 sf_map = None
 start = 0
 end = 0
 
 def key_generator(partslist):
-    global start
+    global start, waiting
     for key_parts in partslist:
         if 'phone' in key_parts:
             index = partslist.index(key_parts)
@@ -52,9 +52,16 @@ def key_generator(partslist):
     start = clock()
     sf_list = list(SFContact.objects.all())
     for key_parts in partslist:
+        waiting = True
         rep_list = list(RepContact.objects.filter(type__in=['Undecided', 'New Record']))
-
         updateQ([[rep,key_parts] for rep in rep_list])
+        while waiting:
+            pass
+
+        ###in threads
+        ###when Q in empty
+        ### call function drop_flag
+        ##def drop_flag(): = False
 
 
 def match_keys(key,key_list):
@@ -172,17 +179,18 @@ def duplify(rep, keys, numthreads):
     rep.dupFlag = True
     rep.save()
     end = clock()
-    DedupTime.objects.create(num_SF = len(sf_list), seconds=timedelta(seconds=end-start), num_threads=numthreads)
+    DedupTime.objects.create(num_SF = len(sf_list), seconds=timedelta(seconds=int(end-start)), num_threads=numthreads)
     #logging.debug('bye')
 
 def finish(numThreads):
-    global end
+    global end, waiting
     end = clock()
     time = end - start
     DuplifyTime.objects.create(num_threads=numThreads, num_SF=len(sf_list), num_rep = len(RepContact.objects.all()),
-                               seconds = timedelta(seconds=time))
+                               seconds = timedelta(seconds=int(time)))
     #print('...dedupping and sorting complete \t time = ' + time)
     print('\a')
     os.system('say "The repp list has been duplified!"')
+    waiting=False
 
 

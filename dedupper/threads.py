@@ -67,7 +67,6 @@ def stop_threads():  #all threads run on a while event is not set
         i.event.set()
     dedupper.utils.finish(numThreads)
 
-
 def dedup(repNkey):
    # logging.debug('hi')
     time.sleep(random.random() * 4)

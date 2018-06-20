@@ -275,8 +275,6 @@ class DedupTime(models.Model):
     num_SF = models.IntegerField(null=True, blank=True)
     seconds = models.DurationField( null=True, blank=True)
     created_on = models. DateTimeField(auto_now_add=True, null=True)
-    duplify_session = models.ForeignKey('DuplifyTime', on_delete=models.CASCADE)
-
 
 class DuplifyTime(models.Model):
     num_threads = models.IntegerField(null=True, blank=True)
