@@ -7,9 +7,10 @@ Created on Sat May 19 17:53:34 2018
 """
 from dedupper.threads import updateQ
 import os
-from dedupper.models import Simple, RepContact, SFContact
+from dedupper.models import Simple, RepContact, SFContact, DedupTime, DuplifyTime, UploadTime
 import string
 from time import clock
+from datetime import timedelta
 from random import *
 from range_key_dict import RangeKeyDict
 import pandas as pd
@@ -28,7 +29,7 @@ rkd = RangeKeyDict({
     (0, 70): 'New Record'
 })
 
-sf_list = SFContact.objects.all()
+sf_list = list(SFContact.objects.all())
 sf_map = None
 start = 0
 end = 0
@@ -135,7 +136,8 @@ def convertCSV(file, resource):
     print('...upload complete \t time = ' + time)
     return headers
 
-def duplify(rep, keys):
+def duplify(rep, keys, numthreads):
+    start=clock()
     rep_key = rep.key(keys)
     # logging.debug(rep_key)
     sf_keys = [i.key(keys) for i in sf_list]
@@ -169,13 +171,17 @@ def duplify(rep, keys):
     # try-catch for the save, error will raise if match_contactID is not unique
     rep.dupFlag = True
     rep.save()
-    logging.debug('bye')
+    end = clock()
+    DedupTime.objects.create(num_SF = len(sf_list), seconds=timedelta(seconds=end-start), num_threads=numthreads)
+    #logging.debug('bye')
 
-def finish():
+def finish(numThreads):
     global end
     end = clock()
-    time = str(end - start)
-    print('...dedupping and sorting complete \t time = ' + time)
+    time = end - start
+    DuplifyTime.objects.create(num_threads=numThreads, num_SF=len(sf_list), num_rep = len(RepContact.objects.all()),
+                               seconds = timedelta(seconds=time))
+    #print('...dedupping and sorting complete \t time = ' + time)
     print('\a')
     os.system('say "The repp list has been duplified!"')
 

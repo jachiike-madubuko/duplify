@@ -13,6 +13,7 @@ q = queue.Queue(BUF_SIZE)
 command = []
 producer = None
 consumers = None
+numThreads = 10
 
 class ProducerThread(threading.Thread):
     def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None):
@@ -29,7 +30,7 @@ class ProducerThread(threading.Thread):
                 if command:
                     d=command.pop()
                     q.put(d)
-                    logging.debug('Putting REP ' +d[0].firstName + ' : ' + str(q.qsize())+ ' reps in the queue')
+                    # logging.debug('Putting REP ' +d[0].firstName + ' : ' + str(q.qsize())+ ' reps in the queue')
         return
 
 class DeviceThread(threading.Thread):
@@ -48,7 +49,7 @@ class DeviceThread(threading.Thread):
             'action' updated after q.get '''
             if not q.empty():
                 item = q.get()
-                logging.debug('dedupping REP ' + item[0].firstName + ' : ' + str(q.qsize()) + ' commands in queue')
+                # logging.debug('dedupping REP ' + item[0].firstName + ' : ' + str(q.qsize()) + ' commands in queue')
                 dedup(item)
             else:
                 stop_threads()
@@ -64,13 +65,13 @@ def stop_threads():  #all threads run on a while event is not set
     producer.event.set()
     for i in consumers:
         i.event.set()
-    dedupper.utils.finish()
+    dedupper.utils.finish(numThreads)
 
 
 def dedup(repNkey):
    # logging.debug('hi')
     time.sleep(random.random() * 4)
-    dedupper.utils.duplify(repNkey[0],repNkey[1])
+    dedupper.utils.duplify(repNkey[0],repNkey[1],numThreads)
 
 def makeThreads(num):
     return [DeviceThread(name='dedupper'+str(i)) for i in range(num)]
@@ -78,7 +79,7 @@ def makeThreads(num):
 def startThreads():
     global producer, consumers
     producer = ProducerThread(name='producer')
-    consumers = makeThreads(10)
+    consumers = makeThreads(numThreads)
 
     producer.start()
     time.sleep(5)
