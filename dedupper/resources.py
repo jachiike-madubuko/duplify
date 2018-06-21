@@ -1,10 +1,17 @@
 from import_export import resources
-from .models import Simple, Contact
+from .models import Simple, RepContact, SFContact
 
 class SimpleResource(resources.ModelResource):
     class Meta:
         model = Simple
         
-class ContactResource(resources.ModelResource):
+class RepContactResource(resources.ModelResource):
     class Meta:
-        model = Contact
+        model = RepContact
+
+
+class SFContactResource(resources.ModelResource):
+    class Meta:
+        model = SFContact
+
+

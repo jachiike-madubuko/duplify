@@ -53,7 +53,7 @@ class Simple(models.Model):
 class Contact(models.Model):
     CRD = models.CharField( max_length=128, unique=True,  db_column="CRD")
     firstName = models.CharField(max_length=128, blank=True)
-    lastName = models.CharField(max_length=128, blank=True)
+    lastName = models.CharFigeld(max_length=128, blank=True)
     suffix = models.CharField(max_length=128, blank=True)
     canSellDate = models.CharField(max_length=128, blank=True)
     levelGroup = models.CharField(max_length=128, blank=True)

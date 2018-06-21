@@ -10,8 +10,7 @@ from django.shortcuts import render
 from dedupper.forms import UploadFileForm
 from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin, RequestConfig
-
-from dedupper.resources import SimpleResource, ContactResource, RepContactResource, SFContactResource
+from dedupper.resources import  RepContactResource, SFContactResource
 from  dedupper.utils import key_generator, makeKeys, convertCSV
 import csv
 
