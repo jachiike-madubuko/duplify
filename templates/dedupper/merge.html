@@ -47,7 +47,7 @@
 
                   nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
 
-                  nodeFancyEntrance: true,// If true, the nodes will descend into place on load.
+                  nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
 
                   randomizePolygonMeshNetworkFormation: true,// Makes the cluster forms an ellipse inspired formation, random if true.
 
@@ -64,13 +64,13 @@
 
                   animationFps: 300, // The FPS for the whole canvas.
 
-                  nodeDotColor: "41, 106, 210",// Sets the color of the nodes in the network (RGB).
+                  nodeDotColor: "0, 0, 255",// Sets the color of the nodes in the network (RGB).
 
-                  nodeLineColor: "255, 255, 255",// Sets the color of the lines in the network (RGB).
+                  nodeLineColor:  "0, 0, 255",// Sets the color of the lines in the network (RGB).
 
-                  nodeFillColor: "41, 106, 210",// Sets the color of  triangles in the network (RGB).
+                  nodeFillColor:  "0, 0, 255",// Sets the color of  triangles in the network (RGB).
 
-                  nodeFillAlpha: 0.5,// Sets the alpha level for the colors (1-0).
+                  nodeFillAlpha: 1.5,// Sets the alpha level for the colors (1-0).
 
                   nodeLineAlpha: 0.5, // Sets the alpha level for the lines (1-0).
 
@@ -88,13 +88,13 @@
                 });
            }
         bg();
-        var colors = new Array(
-          [62,35,255],
-          [60,255,60],
-          [255,35,98],
-          [45,175,230],
-          [255,0,255],
-          [255,128,0]);
+var colors = new Array(
+            [255,255,255],
+            [127.5,127.5,127.5],
+            [0,0,0],
+            [255,255,255],
+            [127.5,127.5,127.5],
+            [0,0,0]);
 
         var step = 0;
         //color table indices for:
@@ -105,7 +105,7 @@
         var colorIndices = [0,1,2,3];
 
         //transition speed
-        var gradientSpeed = 0.002;
+        var gradientSpeed = 0.001;
 
         function updateGradient()
         {
@@ -179,7 +179,7 @@
         </div>
     </nav>
 <div class="container-fluid row text-white">
-    <div class="col-4">
+    <div class="row>
        <div class="row py-4 border-bottom">
            <div class="col-4"><a href="{% url 'rep_list_keys' %}" style="text-decoration: none"><button type="button" class="btn btn-danger btn-lg btn-block">Cancel Merge</button></a></div>
            <div class="col-4"> <button type="button" class="btn btn-warning btn-lg btn-block">Revert</button></div>
@@ -193,8 +193,8 @@
             {% endfor %}
         </div>
     </div>
-    <div class="my-3" style="width: 2px; height: 90vh; background-color: lightgrey"></div>
-    <div class="col-7 container-fluid">
+    <hr class="my-2">
+    <div class="row container-fluid">
         <div class="row">
             <div class="col-sm">
             </div>

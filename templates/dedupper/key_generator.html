@@ -14,13 +14,11 @@
     <style>
         @import url(https://fonts.googleapis.com/css?family=Roboto:300,500);
 
-        body {
-          font-family: 'Roboto', sans-serif;
-          font-size: 14px;
-          text-align: center;
-          background: #eee;
-            width: 100%;
-        }
+        {#body {#}
+        {#  font-family: 'Roboto', sans-serif;#}
+        {#  font-size: 14px;#}
+        {#  text-align: center;#}
+        {#}#}
          .lbl {
              position: relative;
              display: block;
@@ -80,15 +78,23 @@
          ul:empty::after{
             content: attr(data-empty-message);
          }
+        a {
+            text-shadow:
+                    -0.125px -0.125px 0 #fff,
+                    0.125px -0.125px 0 #fff,
+                    -0.125px 0.125px 0 #fff,
+                    0.125px 0.125px 0 #fff;
+        }
+        
 
     </style>
 
 </head>
- <body style="overflow: hidden">
- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+ <body class="bg-secondary"style="overflow: hidden;">
+     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 
- <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
-    <script>
+     <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
+     <script>
         function bg() {
             $("body").polygonizr({
 
@@ -104,7 +110,7 @@
 
                   nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
 
-                  nodeFancyEntrance: true,// If true, the nodes will descend into place on load.
+                  nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
 
                   randomizePolygonMeshNetworkFormation: true,// Makes the cluster forms an ellipse inspired formation, random if true.
 
@@ -121,13 +127,13 @@
 
                   animationFps: 300, // The FPS for the whole canvas.
 
-                  nodeDotColor: "41, 106, 210",// Sets the color of the nodes in the network (RGB).
+                  nodeDotColor: "0, 255, 0",// Sets the color of the nodes in the network (RGB).
 
-                  nodeLineColor: "255, 255, 255",// Sets the color of the lines in the network (RGB).
+                  nodeLineColor:  "0, 255, 0",// Sets the color of the lines in the network (RGB).
 
-                  nodeFillColor: "41, 106, 210",// Sets the color of  triangles in the network (RGB).
+                  nodeFillColor:  "0, 255, 0",// Sets the color of  triangles in the network (RGB).
 
-                  nodeFillAlpha: 0.5,// Sets the alpha level for the colors (1-0).
+                  nodeFillAlpha: 1.5,// Sets the alpha level for the colors (1-0).
 
                   nodeLineAlpha: 0.5, // Sets the alpha level for the lines (1-0).
 
@@ -146,13 +152,13 @@
            }
         bg();
 
-        var colors = new Array(
-          [62,35,255],
-          [60,255,60],
-          [255,35,98],
-          [45,175,230],
-          [255,0,255],
-          [255,128,0]);
+       var colors = new Array(
+            [255,255,255],
+            [127.5,127.5,127.5],
+            [0,0,0],
+            [255,255,255],
+            [127.5,127.5,127.5],
+            [0,0,0]);
 
         var step = 0;
         //color table indices for:
@@ -163,7 +169,7 @@
         var colorIndices = [0,1,2,3];
 
         //transition speed
-        var gradientSpeed = 0.002;
+        var gradientSpeed = 0.001;
 
         function updateGradient()
         {
@@ -186,7 +192,7 @@
         var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
         var color2 = "rgb("+r2+","+g2+","+b2+")";
 
-         $('body, .sw').css({
+         $('body').css({
            background: "-webkit-gradient(linear, left top, right top, from("+color1+"), to("+color2+"))"}).css({
             background: "-moz-linear-gradient(left, "+color1+" 0%, "+color2+" 100%)"});
 
@@ -233,14 +239,14 @@
                 keys += '_';
             });
             $("#keys").val(keys);
-           // $("#next").removeClass("invisible");
+          //  $("#keys").addClass("invisible");
         }
         function del(item) {
             $(item).closest(".list-group-item").remove();
         }
     </script>
-    <nav class="navbar navbar-dark bg-dark navbar-expand-lg justify-content-between">
-        <a class="navbar-brand" href="#">Duplify</a>
+    <nav class="navbar navbar-light navbar-expand-lg justify-content-between">
+       <h1> <a class="navbar-brand" href="#">Duplify</a></h1>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -256,7 +262,15 @@
                 <a class="nav-link" href="#">Pricing</a>
               </li>
             </ul>
-            <form class="navbar-form navbar-left">
+        </div>
+    </nav>
+
+    <div class="container-fluid row my-5" style=" text-align: center;">
+        <div class="col-1"></div>
+        <div id="keyBuilder" class="col-6">
+            <div class="card bg-dark text-white">
+                <div class="card-body">
+                    <h4 class="card-title">Key Builder <form class="navbar-form navbar-left">
                 <div class="input-group">
                     <input type="text" class="form-control" placeholder="Search">
                     <span class="input-group-btn ">
@@ -264,18 +278,11 @@
                     </span>
                 </div>
             </form>
-        </div>
-    </nav>
-
-    <div class="container-fluid row my-5">
-        <div class="col-1"></div>
-        <div id="keyBuilder" class="col-6">
-            <div class="card bg-dark text-white">
-                <div class="card-body">
-                    <h4 class="card-title">Key Builder</h4>
+</h4>
                     <p class="card-text">Toggle switches for the desired key components</p>
                     <p class="card-text">Click Create to add the new key</p>
-                        <div class="container-fluid" style="overflow-y:scroll; max-height: 250px">
+                        <div class="container-fluid" style="background: transparent; overflow-y:scroll; max-height:
+                        500px">
                             <div class="row sw">
                                 {% for key,unique in keys %}
                                     <div class="  col-4 my-2">
@@ -312,7 +319,13 @@
                             </div>
                         </div>
                          <hr class="my-2">
-                        <button class="btn btn-primary" onclick="create()">Create</button>
+                        <div class="row">
+                            <div class="col-4"></div>
+                            <div class="col-4">
+                                <button class="btn btn-primary btn-block badge-pill" onclick="create()">Create</button>
+                            </div>
+                            <div class="col-4"></div>
+                        </div>
                 </div>
             </div>
         </div>
@@ -356,14 +369,18 @@
                     </div>
                 </div>
             </div>
-            <form  method="post" action="/rep_list_keys/">
+                        {% block content %}
+            <form  method="post" action="/run/">
                         {% csrf_token %}
-                <input type="text" readonly class="form-control-plaintext bg-transparent" id="keys" name="keys"  style="color: #343A40">
+                <input type="text" readonly class="form-control-plaintext bg-transparent invisible" id="keys" name="keys"
+                       style="color: #343A40">
                 <br>
-                <button type="submit" id="keygen" class="btn btn-primary btn-block" onclick="generateKeys()">
+                <button type="submit" id="keygen" class="btn btn-primary btn-block badge-pill" onclick="generateKeys
+                ()" onwaiting="play()">
                     GO
-                </button>
+                </button >
              </form>
+                        {% endblock %}
         </div>
         <div class="col-sm-1"></div>
     </div>
