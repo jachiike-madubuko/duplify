@@ -13,17 +13,25 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.urls import path
 from django.conf.urls import url, include
+from django.contrib import admin
+from . import views
+from django.conf import settings
 
 
-from dedupper.views import  SimpleFilteredSingleTableView, SimpleSingleTableView, FilteredTableView, FilterExListView
+
+admin.autodiscover()
 
 
 urlpatterns = [
-
-    url(r'^$', SimpleFilteredSingleTableView.as_view() ),
-    url(r'^nofilter/$', SimpleSingleTableView.as_view() ),
-    url(r'^filter2/$', FilteredTableView.as_view() ),
-    url(r'^filter_ex/$', FilterExListView.as_view() ),
+    path('', views.index, name='index'),
+    url(r'^keys', views.upload, name='keys'),
+    path('key-gen/', views.key_gen, name='key-gen'),
+    path('run/', views.run, name='run'),
+    path('sorted-reps/', views.display, name='rep_list_keys'),
+    path('sorted-reps/<CRD>', views.merge, name='merge'),
+    path('sorted-reps/export/<type>', views.download, name='merge'),
+    path('sorted-reps/report/<type>', views.download_times, name='report'),
 ]
