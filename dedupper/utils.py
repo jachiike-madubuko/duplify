@@ -5,9 +5,12 @@ Created on Sat May 19 17:53:34 2018
 
 @author: jachi
 """
-from dedupper.models import Simple, RepContact, SFContact
+import dedupper.threads
+import os
+from dedupper.models import Simple, RepContact, SFContact, DedupTime, DuplifyTime, UploadTime
 import string
 from time import clock
+from datetime import timedelta
 from random import *
 from range_key_dict import RangeKeyDict
 import pandas as pd
@@ -15,86 +18,50 @@ from fuzzywuzzy import fuzz
 from fuzzywuzzy import process #could be used to generate suggestions for unknown records
 import numpy as np
 from tablib import Dataset
+import logging
 
 from copy import deepcopy
-
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
 
-df = None
-dups = list()
-new_records = list()
-unsure = list()
-
 rkd = RangeKeyDict({
-    (100, 101): 'Duplicate',
-    (70, 100): 'Undecided',
-    (0, 70): 'New Record'
+    (90, 101): 'Duplicate',
+    (50, 90): 'Undecided',
+    (0, 50): 'New Record'
 })
-
-"""
-TODO clean up comments
-TODO create special case for phones and emails
-"""
+waiting= True
+sf_list = list(SFContact.objects.all())
+sf_map = None
+start = 0
+end = 0
 
 def key_generator(partslist):
-    print(partslist)
+    global start, waiting
     for key_parts in partslist:
         if 'phone' in key_parts:
             index = partslist.index(key_parts)
             del partslist[index]
-            for i in ['homePhone', 'mobilePhone', 'workPhone']:
+            for i in ['homePhone', 'mobilePhone', 'Phone', 'otherPhone']:
                 new_key_parts = [i if x == 'phone' else x for x in key_parts]
                 partslist.insert(index, new_key_parts)
         if 'email' in key_parts:
             index = partslist.index(key_parts)
             del partslist[index]
-            for i in ['personalEmail', 'workEmail', 'otherEmail']:
+            for i in ['otherEmail', 'personalEmail', 'workEmail']:
                 new_key_parts = [i if x == 'email' else x for x in key_parts]
                 partslist.insert(index, new_key_parts)
-    print(partslist)
-
-
-    sf_list = list(SFContact.objects.all())
-    # for key_parts in partslist:
-
-    rep_list = list(RepContact.objects.filter(type__in=['Unsure', 'New Record']))
-    rep_keys = [i.key(partslist[0]) for i in rep_list]
+    print("starting algorithm")
     start = clock()
-    rep_map = dict(zip(rep_keys,rep_list))
+    for key_parts in partslist:
+        waiting = True
+        rep_list = list(RepContact.objects.filter(type__in=['Undecided', 'New Record']))
+        dedupper.threads.updateQ([[rep,key_parts] for rep in rep_list])
+        while waiting:
+            pass
 
-    sf_list = list(SFContact.object.all())
-    sf_keys = [i.key(partslist[0]) for i in sf_list]
-    sf_map = dict(zip(sf_keys, sf_list))
-
-    for rep_key in rep_keys:
-        key_matches = match_keys(rep_key,sf_keys)
-        match_map = list(zip(key_matches,sf_keys))
-        match_map = sorted(match_map, reverse=True)
-        top1, top2, top3 = [(match_map[i][0],sf_map[match_map[i][1]]) for i in range(3)]
-        person = rep_map[rep_key]
-
-        if top1[0] <= top3[0]+25:
-            person.average = np.mean([top1[0],top2[0],top3[0]])
-            person.closest1 = top1[1]
-            person.closest2 = top2[1]
-            person.closest3 = top3[1]
-        elif top1[0] <= top2[0]+25:
-            person.average = np.mean([top1[0],top2[0]])
-            person.closest1 = top1[1]
-            person.closest2 = top2[1]
-        else:
-            person.average = top1[0]
-            person.closest1 = top1[1]
-        #seperate by activity
-        person.type  = sort(person.average)
-        #try-catch for the save, error will raise if match_contactID is not unique
-        person.save()
-
-
-    end = clock()
-    time = str(end - start)
-    print('...dedupping and sorting complete \t time = ' + time)
-    print('\a')
+        ###in threads
+        ###when Q in empty
+        ### call function drop_flag
+        ##def drop_flag(): = False
 
 
 def match_keys(key,key_list):
@@ -121,6 +88,10 @@ def makeKeys(headers):
     total = RepContact.objects.all().count()
     phoneUniqueness = 0
     emailUniqueness = 0
+    # headers.replace('\r\n', '')
+    # headers.replace('\n', '')
+    # headers=headers.split(',')
+
     for i in headers:
         if 'Phone' in i:
             phoneUniqueness += RepContact.objects.order_by().values_list(i).distinct().count() / total
@@ -129,7 +100,7 @@ def makeKeys(headers):
         else:
             uniqueness = RepContact.objects.order_by().values_list(i).distinct().count() / total
             keys.append((i, int(uniqueness * 100)))
-    keys.extend([('phone', int((phoneUniqueness / 3) * 100)), ('email', int((emailUniqueness / 3) * 100))])
+    keys.extend([('phone', int((phoneUniqueness / 4) * 100)), ('email', int((emailUniqueness / 3) * 100))])
     keys.sort()
     return keys
 
@@ -143,23 +114,77 @@ def mutate(keys):
             mutant[j]=mutant[j].replace(mutant[j][int(sample(range(len(mutant[j])-1), 1)[0])], choice(string.printable))
     return mutant
 
-
-def convertCSV(file, resource):
+def convertCSV(file, resource, type='rep', batchSize=2000):
     dataset = Dataset()
-
+    headers = ''
+    cnt, cnt2 = 0, 0
+    print('converting CSV' + str(file))
+    start = clock()
     fileString = ''
-    for chunk in file.chunks():
-        fileString += chunk.decode("utf-8") + '\n'
-    print('done decoding')
-    # needs id col as 1st col
-    print('load data')
+    #look into going line by line
+    for chunk in file.open():
+        fileString += chunk.decode("utf-8")
+        if cnt == 0:
+            headers=fileString
+        cnt+=1
+        if cnt == batchSize:
+            print('importing data' + '.'*((cnt2%3)+1))
+            cnt2+=1
+            cnt = 1
+            dataset.csv = fileString
+            resource.import_data(dataset, dry_run=False)
+            fileString = headers
     dataset.csv = fileString
-    print('done data load')
-    result = resource.import_data(dataset, dry_run=True)  # Test the data import
-    if not result.has_errors():
-        print('importing data')
-        resource.import_data(dataset, dry_run=False)  # Actually import now
-
+    resource.import_data(dataset, dry_run=False)
+    end = clock()
+    time = end - start
+    if type == 'SF':
+        UploadTime.objects.create(num_records = len(SFContact.objects.all()), batch_size= batchSize)
+    else:
+        UploadTime.objects.create(num_records = len(RepContact.objects.all()), batch_size = batchSize)
     return dataset.headers
+
+def duplify(rep, keys, numthreads):
+    start=clock()
+    rep_key = rep.key(keys)
+    # logging.debug(rep_key)
+    sf_keys = [i.key(keys) for i in sf_list]
+    sf_map = dict(zip(sf_keys, sf_list))
+
+    key_matches = match_keys(rep_key, sf_keys)
+    match_map = list(zip(key_matches, sf_keys))
+    match_map = sorted(match_map, reverse=True)
+    top1, top2, top3 = [(match_map[i][0], sf_map[match_map[i][1]]) for i in range(3)]
+
+    if top1[0] <= top3[0] + 15 and top1[1].id != top3[1].id:
+        rep.average = np.mean([top1[0], top2[0], top3[0]])
+        rep.closest1 = top1[1]
+        rep.closest2 = top2[1]
+        rep.closest3 = top3[1]
+    elif top1[0] <= top2[0] + 15 and top1[1].id != top2[1].id:
+        rep.average = np.mean([top1[0], top2[0]])
+        rep.closest1 = top1[1]
+        rep.closest2 = top2[1]
+    else:
+        rep.average = top1[0]
+        rep.closest1 = top1[1]
+    # seperate by activity
+    rep.type = sort(rep.average)
+    rep.match_ID = top1[1].ContactID
+    rep.save()
+    time = clock()-start
+    DedupTime.objects.create(num_SF = len(sf_list), seconds=time, num_threads=numthreads)
+    logging.debug('Completed in {} seconds'.format(time))
+
+def finish(numThreads):
+    global end, waiting
+    end = clock()
+    time = end - start
+    DuplifyTime.objects.create(num_threads=numThreads, num_SF=len(sf_list), num_rep = len(RepContact.objects.all()),
+                               seconds = (time))
+    #print('...dedupping and sorting complete \t time = ' + time)
+    print('\a')
+    os.system('say "The repp list has been duplified!"')
+    waiting=False
 
 

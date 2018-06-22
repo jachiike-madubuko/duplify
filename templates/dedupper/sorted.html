@@ -26,13 +26,13 @@
           }
 
           .nav-item{
-              z-index: 100;
-          }
-          .tab-content{
-              z-index: 200;
+              z-index: 1000;
           }
           a:hover{
               text-decoration: none;
+          }
+          table{
+              z-index: 1090;
           }
 
       </style>
@@ -43,62 +43,6 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
           <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
     <script>
-        function bg() {
-            $(".navbar").polygonizr({
-
-                  restNodeMovements: 0,// How long to pause in between new node-movements.
-
-                  duration: 4, // When the cluster updates, this sets speed of nodes.
-
-                  nodeMovementDistance: 200, // Define the maximum distance to move nodes.
-
-                  numberOfNodes: 36,// The number of node nodes to print out.
-
-                  nodeDotSize: 2.5,// Define the maximum size of each node dot.
-
-                  nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
-
-                  nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
-
-                  randomizePolygonMeshNetworkFormation: true,// Makes the cluster forms an ellipse inspired formation, random if true.
-
-                  // Define a formula for how to initialize each node dot's position.
-                  specifyPolygonMeshNetworkFormation: function (i) {
-                    var forEachNode = {// Half a circle and randomized
-                        x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
-                        y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
-                    };
-                    return forEachNode;
-                  },
-
-                  nodeRelations: 5,// Number of relations between nodes.
-
-                  animationFps: 300, // The FPS for the whole canvas.
-
-                  nodeDotColor: "41, 106, 210",// Sets the color of the nodes in the network (RGB).
-
-                  nodeLineColor: "255, 255, 255",// Sets the color of the lines in the network (RGB).
-
-                  nodeFillColor: "41, 106, 210",// Sets the color of  triangles in the network (RGB).
-
-                  nodeFillAlpha: 0.5,// Sets the alpha level for the colors (1-0).
-
-                  nodeLineAlpha: 0.5, // Sets the alpha level for the lines (1-0).
-
-                  nodeDotAlpha: 1.0,// Sets the alpha level for the dots (1-0).
-
-                  nodeFillSapce: true,// Defines if the triangles in the network should be shown.
-
-                  nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
-
-                  // Define the canvas size and css position.
-                  canvasWidth: $(this).width(),
-                  canvasHeight: $(this).height(),
-                  canvasPosition: "absolute"
-
-                });
-           }
-        bg();
 
       var colors = new Array(
             [255,255,255],
@@ -164,7 +108,7 @@
     </script>
 
       <nav class="navbar navbar-dark bg-dark navbar-expand-lg justify-content-between rounded-bottom">
-        <a class="navbar-brand" href="#">Duplify</a>
+        <a class="navbar-brand" href="/">Duplify</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -173,15 +117,18 @@
               <li class="nav-item active">
                 <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Features</a>
+              <li class="nav-item ">
+                <a class="nav-link" href="#" data-toggle="modal" data-target="#exampleModalCenter" aria-haspopup="true" aria-expanded="false">
+                  Duplify Reports
+                </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Pricing</a>
+                <a class="nav-link" href="report/D">Pricing</a>
               </li>
             </ul>
         </div>
     </nav>
+
     <div class="container-fluid">
         <ul class="nav nav-pills nav-fill text-white" id="pills-tab" role="tablist">
           <li class="nav-item badge-pill">
@@ -210,6 +157,30 @@
             </a>
           </li>
         </ul>
+        <!-- Button trigger modal -->
+        <!-- Modal -->
+        <div class="modal fade text-dark" id="exampleModalCenter" tabindex="-1" role="dialog"
+             aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-center" id="exampleModalLongTitle">Duplify Reports</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+         <a  href="report/D" class=" my-3 btn btn-block badge-pill btn-large btn-success" >Duplify Report </a>
+          <a href="report/DD" class="my-3 btn btn-block badge-pill btn-large btn-success" >Dedup Report</a>
+          <a href="report/U" class="my-3 btn btn-block badge-pill btn-large btn-success" >Upload Report</a>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
         <div class="row"> </div>
 
         <div class="tab-content rounded" id="pills-tabContent" style="overflow-y: scroll; height: 85vh">

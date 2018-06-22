@@ -13,7 +13,7 @@ q = queue.Queue(BUF_SIZE)
 command = []
 producer = None
 consumers = None
-numThreads = 10
+numThreads = 20
 
 class ProducerThread(threading.Thread):
     def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None):
@@ -34,7 +34,6 @@ class ProducerThread(threading.Thread):
         return
 
 class DeviceThread(threading.Thread):
-    curr_command = '*'
     def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None):
         super(DeviceThread,self).__init__()
         self.target = target
@@ -72,16 +71,16 @@ def dedup(repNkey):
     time.sleep(random.random() * 4)
     dedupper.utils.duplify(repNkey[0],repNkey[1],numThreads)
 
-def makeThreads(num):
-    return [DeviceThread(name='dedupper'+str(i)) for i in range(num)]
+def makeThreads():
+    return [DeviceThread(name='dedupper'+str(i)) for i in range(numThreads)]
 
 def startThreads():
     global producer, consumers
     producer = ProducerThread(name='producer')
-    consumers = makeThreads(numThreads)
+    consumers = makeThreads()
 
     producer.start()
-    time.sleep(5)
+    time.sleep(1)
     for i in consumers:
         i.start()
    # updateQ([('jim brown', 'firstName-territory-mailingStateProvince'),('tim harding',

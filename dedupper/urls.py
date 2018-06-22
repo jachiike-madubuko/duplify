@@ -19,7 +19,6 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from . import views
 from django.conf import settings
-from dedupper.views import  FilteredSimpleListView
 
 
 
@@ -29,7 +28,10 @@ admin.autodiscover()
 urlpatterns = [
     path('', views.index, name='index'),
     url(r'^keys', views.upload, name='keys'),
-    path('rep_list_keys/', views.display, name='rep_list_keys'),
-    path('rep_list_keys/<CRD>', views.merge, name='merge'),
-    url(r'^table/$', FilteredSimpleListView.as_view() ),
+    path('key-gen/', views.key_gen, name='key-gen'),
+    path('run/', views.run, name='run'),
+    path('sorted-reps/', views.display, name='rep_list_keys'),
+    path('sorted-reps/<CRD>', views.merge, name='merge'),
+    path('sorted-reps/export/<type>', views.download, name='merge'),
+    path('sorted-reps/report/<type>', views.download_times, name='report'),
 ]

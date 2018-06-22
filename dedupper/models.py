@@ -18,7 +18,8 @@ class Simple(models.Model):
     author = models.CharField(max_length=128)
     category = models.CharField(max_length=128)
     average = models.IntegerField(null=True, blank=True)
-    TYPES_OF_RECORD = (  ('Undecided', 'Undecided'),
+    TYPES_OF_RECORD = (
+        ('Undecided', 'Undecided'),
         ('Duplicate', 'Duplicate'),
         ('New Record', 'New Record')  )
     type = models.CharField(max_length=128, choices=TYPES_OF_RECORD, default='Undecided')
@@ -273,14 +274,14 @@ class DedupTime(models.Model):
     id = models.BigAutoField(primary_key=True)
     num_threads = models.IntegerField(null=True, blank=True)
     num_SF = models.IntegerField(null=True, blank=True)
-    seconds = models.DurationField( null=True, blank=True)
+    seconds = models.FloatField( null=True, blank=True)
     created_on = models. DateTimeField(auto_now_add=True, null=True)
 
 class DuplifyTime(models.Model):
     num_threads = models.IntegerField(null=True, blank=True)
     num_SF = models.IntegerField(null=True, blank=True)
     num_rep = models.IntegerField(null=True, blank=True)
-    seconds = models.DurationField( null=True, blank=True)
+    seconds = models.FloatField( null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
 
 
@@ -288,5 +289,5 @@ class UploadTime(models.Model):
     num_threads = models.IntegerField(default=1, null=True, blank=True)
     num_records = models.IntegerField(null=True, blank=True)
     batch_size = models.IntegerField(null=True, blank=True)
-    seconds = models.DurationField(null=True, blank=True)
+    seconds = models.FloatField(null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
