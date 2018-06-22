@@ -33,6 +33,7 @@ sf_list = list(SFContact.objects.all())
 sf_map = None
 start = 0
 end = 0
+#TODO implement batch upload, append contacts to a list the batch save them.
 
 def key_generator(partslist):
     global start, waiting
@@ -62,7 +63,6 @@ def key_generator(partslist):
         ###when Q in empty
         ### call function drop_flag
         ##def drop_flag(): = False
-
 
 def match_keys(key,key_list):
     for i in key_list:
@@ -139,15 +139,14 @@ def convertCSV(file, resource, type='rep', batchSize=2000):
     end = clock()
     time = end - start
     if type == 'SF':
-        UploadTime.objects.create(num_records = len(SFContact.objects.all()), batch_size= batchSize)
+        UploadTime.objects.create(num_records = len(SFContact.objects.all()), batch_size= batchSize, seconds=round(time,2))
     else:
-        UploadTime.objects.create(num_records = len(RepContact.objects.all()), batch_size = batchSize)
+        UploadTime.objects.create(num_records = len(RepContact.objects.all()), batch_size = batchSize, seconds=round(time,2))
     return dataset.headers
 
 def duplify(rep, keys, numthreads):
     start=clock()
     rep_key = rep.key(keys)
-    # logging.debug(rep_key)
     sf_keys = [i.key(keys) for i in sf_list]
     sf_map = dict(zip(sf_keys, sf_list))
 
@@ -172,7 +171,7 @@ def duplify(rep, keys, numthreads):
     rep.type = sort(rep.average)
     rep.match_ID = top1[1].ContactID
     rep.save()
-    time = clock()-start
+    time = round(clock()-start,2)
     DedupTime.objects.create(num_SF = len(sf_list), seconds=time, num_threads=numthreads)
     logging.debug('Completed in {} seconds'.format(time))
 
@@ -181,10 +180,8 @@ def finish(numThreads):
     end = clock()
     time = end - start
     DuplifyTime.objects.create(num_threads=numThreads, num_SF=len(sf_list), num_rep = len(RepContact.objects.all()),
-                               seconds = (time))
-    #print('...dedupping and sorting complete \t time = ' + time)
+                               seconds = round(time,2))
     print('\a')
     os.system('say "The repp list has been duplified!"')
     waiting=False
-
 

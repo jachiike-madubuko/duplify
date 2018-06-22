@@ -14,18 +14,20 @@ from django_tables2.views import SingleTableMixin, RequestConfig
 from dedupper.resources import RepContactResource, SFContactResource, DedupTimeResource, DuplifyTimeResource, UploadTimeResource
 from  dedupper.utils import key_generator, makeKeys, convertCSV
 import csv
-
-#TODO seperate url for form submission and for loading new pages use httpRedirect
-#TODO method for saving
-
+'''
+#TODO change the HTTP request 
+timeout for the running algorithm or 
+have a middle man page that loads and send an request for 
+TODO set up postgresql
+#TODO https://medium.com/@johngrant/django-and-heroku-postgres-databases-6c22ffd71081 
+https://medium.com/agatha-codes/9-straightforward-steps-for-deploying-your-django-app-with-heroku-82b952652fb4
+http://www.marinamele.com/2013/12/how-to-set-django-app-on-heroku-part-i.html
+https://www.youtube.com/watch?v=P8_wDttTeuk
+'''
 keys= []
 
 def index(request):
     return render(request, 'dedupper/rep_list_upload.html')
-
-
-
-
 
 def run(request):
     if request.method == 'POST':
@@ -159,6 +161,5 @@ def download_times(request,type):
     return response
 
 def key_gen(request):
-    return render(request, 'dedupper/key_generator.html', {'keys': keys})
-
-#def get times, export a csv with the times
+    key = makeKeys([i.name for i in RepContact._meta.local_concrete_fields])
+    return render(request, 'dedupper/key_generator.html', {'keys': key})

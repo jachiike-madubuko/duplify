@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'django_tables2',
     'django_filters',
     'import_export',
-     'django-dad',
 
    # 'heroku_connect',
    # 'connect_client',

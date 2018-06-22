@@ -1,4 +1,4 @@
-id,CRD,ContactID,firstName,lastName,suffix ,canSellDate,levelGroup,mailingStreet,mailingCity,mailingStateProvince,mailingZipPostalCode,territory,Phone,homePhone,mobilePhone,otherPhone,workEmail,personalEmail,otherEmail,area,region,regionalLeader,levelLeader,fieldTrainerLeader,performanceLeader,boaName
++id,CRD,ContactID,firstName,lastName,suffix ,canSellDate,levelGroup,mailingStreet,mailingCity,mailingStateProvince,mailingZipPostalCode,territory,Phone,homePhone,mobilePhone,otherPhone,workEmail,personalEmail,otherEmail,area,region,regionalLeader,levelLeader,fieldTrainerLeader,performanceLeader,boaName
 ,,0033600000SiiYH,Jacqueline,Halcomb,,,,949 Se 7Th St,Grants Pass,OR,97526,,(541) 479-5760,,(206) 344-2428,,jacqueline.halcomb@edwardjones.com,,,,,,,,,
 ,2105466,0033600001d79aT,David,Menichino,,,,535 Broadhollow Rd Ste B14,Melville,NY,11747,,(516) 699-0215,,,,d.menichino@investfinancial.com,,,,,,,,,
 ,,0033600000Siiuk,Marvin,Searles,,,,3390 Commercial St Se,Salem,OR,97302,,(503) 265-2821,,,,,,,,,,,,,

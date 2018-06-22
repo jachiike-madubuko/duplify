@@ -277,12 +277,19 @@ class DedupTime(models.Model):
     seconds = models.FloatField( null=True, blank=True)
     created_on = models. DateTimeField(auto_now_add=True, null=True)
 
+    def __str__(self):
+       return "{} SF records dupped against in {} seconds".format(self.num_SF, self.seconds)
+
 class DuplifyTime(models.Model):
     num_threads = models.IntegerField(null=True, blank=True)
     num_SF = models.IntegerField(null=True, blank=True)
     num_rep = models.IntegerField(null=True, blank=True)
     seconds = models.FloatField( null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return "{} reps <=> {} SF records in {} seconds".format(self.num_rep, self.num_SF, self.seconds)
+
 
 
 class UploadTime(models.Model):
@@ -291,3 +298,7 @@ class UploadTime(models.Model):
     batch_size = models.IntegerField(null=True, blank=True)
     seconds = models.FloatField(null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return "{} records uploaded in {} seconds".format(self.num_records, self.seconds)
+
