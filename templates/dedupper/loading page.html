@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<!--add second file input for SF report -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Duplify | Upload</title>
+        <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<style>
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#b8e1fc+0,a9d2f3+10,90bae4+25,90bcea+37,90bff0+50,6ba8e5+51,a2daf5+83,bdf3fd+100;Blue+Gloss+%231 */
+
+
+</style>
+</head>
+  <body class="bg-dark" style="transition: 2s; overflow: hidden">
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
+        integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+
+   <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
+    <script>
+        //add in welcoming: "Welcome to Duplify"<->fade in with polygonizr
+        //fade out then fade in chain of Start by uploading your rep list here and your salesforce report here-fade out
+        function filename(file, label) {
+            var name = $(file).val().replace("C:\\fakepath\\","");
+
+            $(label).text(name);
+        }
+
+        function bg() {
+
+            $("body").polygonizr({
+
+                  restNodeMovements: 0,// How long to pause in between new node-movements.
+
+                  duration: 4, // When the cluster updates, this sets speed of nodes.
+
+                  nodeMovementDistance: 400, // Define the maximum distance to move nodes.
+
+                  numberOfNodes: 36,// The number of node nodes to print out.
+
+                  nodeDotSize: 2.5,// Define the maximum size of each node dot.
+
+                  nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
+
+                  nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
+
+                 randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
+
+                  // Define a formula for how to initialize each node dot's position.
+                  specifyPolygonMeshNetworkFormation: function (i) {
+                    var forEachNode = {// Half a circle and randomized
+                        x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
+                        y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
+                    };
+                    return forEachNode;
+                  },
+
+                  nodeRelations: 15,// Number of relations between nodes.
+
+                  animationFps: 300, // The FPS for the whole canvas.
+
+                  nodeDotColor: "0, 0 0 ",// Sets the color of the nodes in the network (RGB).
+
+                  nodeLineColor: "0, 0, 0 ",// Sets the color of the lines in the network (RGB).
+
+                  nodeFillColor: "0, 0, 0 ",// Sets the color of  triangles in the network (RGB).
+
+                  nodeFillAlpha: 2,// Sets the alpha level for the colors (1-0).
+
+                  nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
+
+                  nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
+
+                  nodeFillSpace: true,// Defines if the triangles in the network should be shown.
+
+                  nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
+
+                  // Define the canvas size and css position.
+                  canvasWidth: $(this).width(),
+                  canvasHeight: $(this).height(),
+                  canvasPosition: "absolute"
+
+                });
+            $("body").polygonizr({
+
+                  restNodeMovements: 0,// How long to pause in between new node-movements.
+
+                  duration: 8, // When the cluster updates, this sets speed of nodes.
+
+                  nodeMovementDistance: 400, // Define the maximum distance to move nodes.
+
+                  numberOfNodes: 36,// The number of node nodes to print out.
+
+                  nodeDotSize: 1,// Define the maximum size of each node dot.
+
+                  nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
+
+                  nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
+
+                 randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
+
+                  // Define a formula for how to initialize each node dot's position.
+                  specifyPolygonMeshNetworkFormation: function (i) {
+                    var forEachNode = {// Half a circle and randomized
+                        x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
+                        y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
+                    };
+                    return forEachNode;
+                  },
+
+                  nodeRelations: 15,// Number of relations between nodes.
+
+                  animationFps: 300, // The FPS for the whole canvas.
+
+                  nodeDotColor: "255, 255, 255 ",// Sets the color of the nodes in the network (RGB).
+
+                  nodeLineColor: "255, 255, 255",// Sets the color of the lines in the network (RGB).
+
+                  nodeFillColor: "255, 255, 255 ",// Sets the color of  triangles in the network (RGB).
+
+                  nodeFillAlpha: 3,// Sets the alpha level for the colors (1-0).
+
+                  nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
+
+                  nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
+
+                  nodeFillSpace: true,// Defines if the triangles in the network should be shown.
+
+                  nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
+
+                  // Define the canvas size and css position.
+                  canvasWidth: $(this).width(),
+                  canvasHeight: $(this).height(),
+                  canvasPosition: "absolute"
+
+                });
+           }
+        bg();
+
+        var colors = new Array(
+            [127.5,127.5,127.5],
+            [255,255,255],
+            [0,0,0],
+            [255,255,255],
+            [0,0,0],
+            [127.5,127.5,127.5],);
+
+        var step = 0;
+        //color table indices for:
+        // current color left
+        // next color left
+        // current color right
+        // next color right
+        var colorIndices = [0,1,2,3];
+
+        //transition speed
+        var gradientSpeed = 0.001;
+
+        var percentage = $("#percentage");
+
+        function updateGradient()
+        {
+
+          if ( $===undefined ) return;
+
+        var c0_0 = colors[colorIndices[0]];
+        var c0_1 = colors[colorIndices[1]];
+        var c1_0 = colors[colorIndices[2]];
+        var c1_1 = colors[colorIndices[3]];
+
+        var istep = 1 - step;
+        var r1 = Math.round(istep * c0_0[0] + step * c0_1[0]);
+        var g1 = Math.round(istep * c0_0[1] + step * c0_1[1]);
+        var b1 = Math.round(istep * c0_0[2] + step * c0_1[2]);
+        var color1 = "rgb("+r1+","+g1+","+b1+")";
+
+        var r2 = Math.round(istep * c1_0[0] + step * c1_1[0]);
+        var g2 = Math.round(istep * c1_0[1] + step * c1_1[1]);
+        var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
+        var color2 = "rgb("+r2+","+g2+","+b2+")";
+
+         $('body').css({
+           background: "-webkit-gradient(linear, left top, right top, from("+color1+"), to("+color2+"))"}).css({
+            background: "-moz-linear-gradient(left, "+color1+" 0%, "+color2+" 100%)"});
+
+          step += gradientSpeed;
+          if ( step >= 1 )
+          {
+            step %= 1;
+            colorIndices[0] = colorIndices[1];
+            colorIndices[2] = colorIndices[3];
+
+            //pick two new target color indices
+            //do not pick the same as the current one
+            colorIndices[1] = ( colorIndices[1] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
+            colorIndices[3] = ( colorIndices[3] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
+
+          }
+        }
+
+        setInterval(updateGradient,20);
+
+        //while some element is not equal 100% (i.e. 5/5) get json for a model that stores the progress of each keys
+        function updateProgress() {
+            while(percentage != "100%")
+            {
+               getProgress();
+            }
+        }
+
+        function getProgress() {
+            $.getJSON("{% url 'progress' %}", function (result) {
+
+            })
+        }
+
+        updateProgress()
+
+    </script>
+        <div class="container-fluid" style="padding-top: 50px;  height: 100%; width: 80%;">
+            <div class="row">
+                <div class="col-3"></div>
+                <div class="card col-6  my-5" >
+                    <div class="card-header text-center"> <h3> Running Algorithm </h3></div>
+                    <div class="card-body">
+                        Duplify Progress
+                        <div class="progress my-2" style="height:25px">
+                            <div class="progress-bar duplify bg-success progress-bar-animated" role="progressbar"
+                                 aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width:
+                                 75%"><p id="percentage">75%</p></div>
+                        </div>
+                        <div class="progress my-2"  style="height:8px">
+                            <div class="progress-bar progress-bar-animated progress-bar-striped" role="progressbar"
+                                 aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3"></div>
+            </div>
+        </div>
+
+</body>
+</html>

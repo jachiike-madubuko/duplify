@@ -29,89 +29,11 @@ rkd = RangeKeyDict({
     (0, 50): 'New Record'
 })
 waiting= True
+sf_list = list(sfcontact.objects.all())
 sf_map = None
 start = 0
 end = 0
 #TODO implement batch upload, append contacts to a list the batch save them.
-
-def key_generator(partslist):
-    global start, waiting
-    for key_parts in partslist:
-        if 'phone' in key_parts:
-            index = partslist.index(key_parts)
-            del partslist[index]
-            for i in ['homePhone', 'mobilePhone', 'Phone', 'otherPhone']:
-                new_key_parts = [i if x == 'phone' else x for x in key_parts]
-                partslist.insert(index, new_key_parts)
-        if 'email' in key_parts:
-            index = partslist.index(key_parts)
-            del partslist[index]
-            for i in ['otherEmail', 'personalEmail', 'workEmail']:
-                new_key_parts = [i if x == 'email' else x for x in key_parts]
-                partslist.insert(index, new_key_parts)
-    print("starting algorithm")
-    start = clock()
-    for key_parts in partslist:
-        waiting = True
-        rep_list = list(repContact.objects.filter(type__in=['Undecided', 'New Record']))
-        dedupper.threads.updateQ([[rep,key_parts] for rep in rep_list])
-        while waiting:
-            pass
-
-        ###in threads
-        ###when Q in empty
-        ### call function drop_flag
-        ##def drop_flag(): = False
-
-def match_keys(key,key_list):
-    for i in key_list:
-        yield match_percentage(key,i)
-
-def sort(avg):
-    return rkd[avg]
-
-def match_percentage(key1,key2):
-    return fuzz.ratio(key1, key2)
-
-def setSortingAlgorithm(min_dup,min_uns):
-    #TODO finish this function and connect it to a slider
-    global rkd
-    rkd = RangeKeyDict({
-    (min_dup, 101): 'Duplicate',
-    (min_uns, min_dup): 'Unsure',
-    (0, min_uns): 'New Record'
-})
-
-def makeKeys(headers):
-    keys = []
-    total = repContact.objects.all().count()
-    phoneUniqueness = 0
-    emailUniqueness = 0
-    # headers.replace('\r\n', '')
-    # headers.replace('\n', '')
-    # headers=headers.split(',')
-
-    for i in headers:
-        if 'Phone' in i:
-            phoneUniqueness += repContact.objects.order_by().values_list(i).distinct().count() / total
-        if 'Email' in i:
-            emailUniqueness += repContact.objects.order_by().values_list(i).distinct().count() / total
-        else:
-            uniqueness = repContact.objects.order_by().values_list(i).distinct().count() / total
-            keys.append((i, int(uniqueness * 100)))
-    keys.extend([('phone', int((phoneUniqueness / 4) * 100)), ('email', int((emailUniqueness / 3) * 100))])
-    keys.sort()
-    return keys
-
-def mutate(keys):
-    mutant = keys.copy()
-    num_mutating = randint(int(len(keys)/5),int(len(keys)*0.8))
-
-    for i in range(num_mutating):
-        j = randint(0,len(keys)-1)
-        for i in range(randint(3,len(mutant[j])+3)):
-            mutant[j]=mutant[j].replace(mutant[j][int(sample(range(len(mutant[j])-1), 1)[0])], choice(string.printable))
-    return mutant
 
 def convertCSV(file, resource, type='rep', batchSize=2000):
     dataset = Dataset()
@@ -143,10 +65,9 @@ def convertCSV(file, resource, type='rep', batchSize=2000):
         uploadTime.objects.create(num_records = len(repContact.objects.all()), batch_size = batchSize, seconds=round(time, 2))
     return dataset.headers
 
-def duplify(rep, keys, numthreads):
+def findRepDups(rep, keys, numthreads):
     start=clock()
     rep_key = rep.key(keys)
-    sf_list = list(sfcontact.objects.filter(type__in=['New Record', 'Undecided']))
     sf_keys = [i.key(keys) for i in sf_list]
     sf_map = dict(zip(sf_keys, sf_list))
 
@@ -172,6 +93,8 @@ def duplify(rep, keys, numthreads):
     rep.match_ID = top1[1].ContactID
     rep.save()
     time = round(clock()-start, 2)
+    #update the progress object using
+    #progress.object.latest().update(comments_on+=1)
     dedupTime.objects.create(num_SF = len(sf_list), seconds=time, num_threads=numthreads)
     logging.debug('Completed in {} seconds'.format(time))
 
@@ -185,3 +108,78 @@ def finish(numThreads):
     os.system('say "The repp list has been duplified!"')
     waiting=False
 
+def key_generator(partslist):
+    global start, waiting
+    for key_parts in partslist:
+        if 'phone' in key_parts:
+            index = partslist.index(key_parts)
+            del partslist[index]
+            for i in ['homePhone', 'mobilePhone', 'Phone', 'otherPhone']:
+                new_key_parts = [i if x == 'phone' else x for x in key_parts]
+                partslist.insert(index, new_key_parts)
+        if 'email' in key_parts:
+            index = partslist.index(key_parts)
+            del partslist[index]
+            for i in ['otherEmail', 'personalEmail', 'workEmail']:
+                new_key_parts = [i if x == 'email' else x for x in key_parts]
+                partslist.insert(index, new_key_parts)
+    print("starting algorithm")
+    start = clock()
+    for key_parts in partslist:
+        waiting = True
+        rep_list = list(repContact.objects.filter(type__in=['Undecided', 'New Record']))
+        #create progress object with reps total and title of key part
+        #progress.objects.create(label = key_parts, total = len(rep_
+        dedupper.threads.updateQ([[rep, key_parts] for rep in rep_list])
+        while waiting:
+            pass
+
+def makeKeys(headers):
+    keys = []
+    total = repContact.objects.all().count()
+    phoneUniqueness = 0
+    emailUniqueness = 0
+    # headers.replace('\r\n', '')
+    # headers.replace('\n', '')
+    # headers=headers.split(',')
+
+    for i in headers:
+        if 'Phone' in i:
+            phoneUniqueness += repContact.objects.order_by().values_list(i).distinct().count() / total
+        if 'Email' in i:
+            emailUniqueness += repContact.objects.order_by().values_list(i).distinct().count() / total
+        else:
+            uniqueness = repContact.objects.order_by().values_list(i).distinct().count() / total
+            keys.append((i, int(uniqueness * 100)))
+    keys.extend([('phone', int((phoneUniqueness / 4) * 100)), ('email', int((emailUniqueness / 3) * 100))])
+    keys.sort()
+    return keys
+
+def match_keys(key,key_list):
+    for i in key_list:
+        yield match_percentage(key,i)
+
+def match_percentage(key1,key2):
+    return fuzz.ratio(key1, key2)
+
+def mutate(keys):
+    mutant = keys.copy()
+    num_mutating = randint(int(len(keys)/5),int(len(keys)*0.8))
+
+    for i in range(num_mutating):
+        j = randint(0,len(keys)-1)
+        for i in range(randint(3,len(mutant[j])+3)):
+            mutant[j]=mutant[j].replace(mutant[j][int(sample(range(len(mutant[j])-1), 1)[0])], choice(string.printable))
+    return mutant
+
+def setSortingAlgorithm(min_dup,min_uns):
+    #TODO finish this function and connect it to a slider
+    global rkd
+    rkd = RangeKeyDict({
+    (min_dup, 101): 'Duplicate',
+    (min_uns, min_dup): 'Unsure',
+    (0, min_uns): 'New Record'
+})
+
+def sort(avg):
+    return rkd[avg]

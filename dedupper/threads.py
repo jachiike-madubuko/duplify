@@ -15,9 +15,9 @@ producer = None
 consumers = None
 numThreads = 20
 
-class ProducerThread(threading.Thread):
+class DuplifyThread(threading.Thread):
     def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None):
-        super(ProducerThread,self).__init__()
+        super(DuplifyThread, self).__init__()
         self.target = target
         self.name = name
         self.event = threading.Event()  #enable easy thread stopping
@@ -33,9 +33,9 @@ class ProducerThread(threading.Thread):
                     # logging.debug('Putting REP ' +d[0].firstName + ' : ' + str(q.qsize())+ ' reps in the queue')
         return
 
-class DeviceThread(threading.Thread):
+class DedupThread(threading.Thread):
     def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None):
-        super(DeviceThread,self).__init__()
+        super(DedupThread, self).__init__()
         self.target = target
         self.name = name
         self.event = threading.Event()   #enable easy thread stopping
@@ -69,14 +69,14 @@ def stop_threads():  #all threads run on a while event is not set
 def dedup(repNkey):
    # logging.debug('hi')
     time.sleep(random.random() * 4)
-    dedupper.utils.duplify(repNkey[0],repNkey[1],numThreads)
+    dedupper.utils.findRepDups(repNkey[0], repNkey[1], numThreads)
 
 def makeThreads():
-    return [DeviceThread(name='dedupper'+str(i)) for i in range(numThreads)]
+    return [DedupThread(name='dedupper' + str(i)) for i in range(numThreads)]
 
 def startThreads():
     global producer, consumers
-    producer = ProducerThread(name='producer')
+    producer = DuplifyThread(name='producer')
     consumers = makeThreads()
 
     producer.start()

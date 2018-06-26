@@ -269,6 +269,15 @@ class sfcontact(models.Model):
             key += key_builder[part]
         return key
 
+class progress(models.Model):
+    label = models.CharField(max_length=128, blank=True)
+    total = models.IntegerField(null=True, blank=True)
+    total_keys = models.IntegerField(null=True, blank=True)
+    completed = models.IntegerField(null=True, blank=True, default=0)
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta():
+        get_latest_by = "created_on"
 
 class dedupTime(models.Model):
     id = models.BigAutoField(primary_key=True)

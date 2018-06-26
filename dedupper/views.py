@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView, ListView
 import django_tables2
-from dedupper.models import dedupTime, duplifyTime, uploadTime,  sfcontact, repContact
+from dedupper.models import dedupTime, duplifyTime, uploadTime,  sfcontact, repContact, progress
 from  dedupper.filters import SimpleFilter
 from dedupper.tables import SimpleTable, ContactTable, RepContactTable
 from tablib import Dataset
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from dedupper.forms import UploadFileForm
 from django_filters.views import FilterView
@@ -163,3 +163,8 @@ def download_times(request,type):
 def key_gen(request):
     key = makeKeys([i.name for i in repContact._meta.local_concrete_fields])
     return render(request, 'dedupper/key_generator.html', {'keys': key})
+
+def progress(request):
+    updatedProgress = progress.objects.lastest().values()
+    return JsonResponse(updatedProgress, safe=False)
+
