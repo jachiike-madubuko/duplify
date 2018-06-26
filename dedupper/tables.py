@@ -1,5 +1,5 @@
 import django_tables2 as tables
-from dedupper.models import Simple, Contact, RepContact, SFContact
+from dedupper.models import simple, contact, repContact, sfcontact
 from django_tables2.utils import AttributeDict
 from django.utils.safestring import mark_safe
 
@@ -13,7 +13,7 @@ class SimpleTable(tables.Table):
         return mark_safe('<a id="yo" class="btn btn-outline-primary" onclick="merge()" href="'+str(href)+'" Merge>Merge</a>')
 
     class Meta:
-        model = Simple
+        model = simple
         template_name = 'django_tables2/bootstrap.html'
         attrs = {'class' : 'table table-hover table-striped table-dark' }
 
@@ -24,7 +24,7 @@ class ContactTable(tables.Table):
         return mark_safe('<a id="yo" class="btn btn-outline-primary" onclick="merge()" href="'+str(href)+'" Merge>Merge</a>')
 
     class Meta:
-        model = Contact
+        model = contact
         template_name = 'django_tables2/bootstrap.html'
         attrs = {'class' : 'table table-hover table-striped table-dark' }
 
@@ -39,7 +39,7 @@ class RepContactTable(tables.Table):
         return mark_safe('<a id="yo" class="btn btn-outline-primary" onclick="merge()" href="'+str(href)+'" Merge>Merge</a>')
 
     class Meta:
-        model = RepContact
+        model = repContact
         template_name = 'django_tables2/bootstrap.html'
         attrs = {'class' : 'table table-hover table-striped table-dark' }
 
@@ -52,7 +52,7 @@ class SFContactTable(tables.Table):
         return mark_safe('<a id="yo" class="btn btn-outline-primary" onclick="merge()" href="'+str(href)+'" Merge>Merge</a>')
 
     class Meta:
-        model = SFContact
+        model = sfcontact
         template_name = 'django_tables2/bootstrap.html'
         attrs = {'class' : 'table table-hover table-striped table-dark' }
 

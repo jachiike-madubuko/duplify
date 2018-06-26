@@ -1,12 +1,12 @@
 from django.db.models import Q
 import django_filters
-from dedupper.models import Simple
+from dedupper.models import simple
 import itertools
 
 
 class SimpleFilter(django_filters.FilterSet):
     class Meta:
-        model = Simple
+        model = simple
         exclude = ()
 
 
@@ -49,5 +49,5 @@ class SimpleFilterEx(django_filters.FilterSet):
         return qs
 
     class Meta:
-        model = Simple
+        model = simple
         fields = ['ex']

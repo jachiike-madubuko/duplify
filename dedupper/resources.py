@@ -1,25 +1,25 @@
 from import_export import resources
-from .models import Simple, RepContact, SFContact, DuplifyTime, DedupTime, UploadTime
+from .models import simple, repContact, sfcontact, duplifyTime, dedupTime, uploadTime
 
 class DuplifyTimeResource(resources.ModelResource):
     class Meta:
-        model = DuplifyTime
+        model = duplifyTime
         
 class DedupTimeResource(resources.ModelResource):
     class Meta:
-        model = DedupTime
+        model = dedupTime
 
 class UploadTimeResource(resources.ModelResource):
     class Meta:
-        model = UploadTime
+        model = uploadTime
 
 class RepContactResource(resources.ModelResource):
     class Meta:
-        model = RepContact
+        model = repContact
 
 
 class SFContactResource(resources.ModelResource):
     class Meta:
-        model = SFContact
+        model = sfcontact
 
 

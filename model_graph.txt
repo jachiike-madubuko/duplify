@@ -26,7 +26,7 @@ digraph model_graph {
     <TABLE BGCOLOR="palegoldenrod" BORDER="0" CELLBORDER="0" CELLSPACING="0">
     <TR><TD COLSPAN="2" CELLPADDING="4" ALIGN="CENTER" BGCOLOR="olivedrab4">
     <FONT FACE="Helvetica Bold" COLOR="white">
-    Simple
+    simple
     </FONT></TD></TR>
   
     <TR><TD ALIGN="LEFT" BORDER="0">
@@ -90,7 +90,7 @@ digraph model_graph {
     <TABLE BGCOLOR="palegoldenrod" BORDER="0" CELLBORDER="0" CELLSPACING="0">
     <TR><TD COLSPAN="2" CELLPADDING="4" ALIGN="CENTER" BGCOLOR="olivedrab4">
     <FONT FACE="Helvetica Bold" COLOR="white">
-    Contact
+    contact
     </FONT></TD></TR>
   
     <TR><TD ALIGN="LEFT" BORDER="0">
@@ -250,7 +250,7 @@ digraph model_graph {
     <TABLE BGCOLOR="palegoldenrod" BORDER="0" CELLBORDER="0" CELLSPACING="0">
     <TR><TD COLSPAN="2" CELLPADDING="4" ALIGN="CENTER" BGCOLOR="olivedrab4">
     <FONT FACE="Helvetica Bold" COLOR="white">
-    RepContact
+    repContact
     </FONT></TD></TR>
   
     <TR><TD ALIGN="LEFT" BORDER="0">
@@ -458,7 +458,7 @@ digraph model_graph {
     <TABLE BGCOLOR="palegoldenrod" BORDER="0" CELLBORDER="0" CELLSPACING="0">
     <TR><TD COLSPAN="2" CELLPADDING="4" ALIGN="CENTER" BGCOLOR="olivedrab4">
     <FONT FACE="Helvetica Bold" COLOR="white">
-    SFContact
+    sfcontact
     </FONT></TD></TR>
   
     <TR><TD ALIGN="LEFT" BORDER="0">
@@ -642,7 +642,7 @@ digraph model_graph {
     <TABLE BGCOLOR="palegoldenrod" BORDER="0" CELLBORDER="0" CELLSPACING="0">
     <TR><TD COLSPAN="2" CELLPADDING="4" ALIGN="CENTER" BGCOLOR="olivedrab4">
     <FONT FACE="Helvetica Bold" COLOR="white">
-    DedupTime
+    dedupTime
     </FONT></TD></TR>
   
     <TR><TD ALIGN="LEFT" BORDER="0">
@@ -682,7 +682,7 @@ digraph model_graph {
     <TABLE BGCOLOR="palegoldenrod" BORDER="0" CELLBORDER="0" CELLSPACING="0">
     <TR><TD COLSPAN="2" CELLPADDING="4" ALIGN="CENTER" BGCOLOR="olivedrab4">
     <FONT FACE="Helvetica Bold" COLOR="white">
-    DuplifyTime
+    duplifyTime
     </FONT></TD></TR>
   
     <TR><TD ALIGN="LEFT" BORDER="0">
@@ -728,7 +728,7 @@ digraph model_graph {
     <TABLE BGCOLOR="palegoldenrod" BORDER="0" CELLBORDER="0" CELLSPACING="0">
     <TR><TD COLSPAN="2" CELLPADDING="4" ALIGN="CENTER" BGCOLOR="olivedrab4">
     <FONT FACE="Helvetica Bold" COLOR="white">
-    UploadTime
+    uploadTime
     </FONT></TD></TR>
   
     <TR><TD ALIGN="LEFT" BORDER="0">

@@ -7,7 +7,7 @@ Created on Sat May 19 17:53:34 2018
 """
 import dedupper.threads
 import os
-from dedupper.models import Simple, RepContact, SFContact, DedupTime, DuplifyTime, UploadTime
+from dedupper.models import simple, repContact, sfcontact, dedupTime, duplifyTime, uploadTime
 import string
 from time import clock
 from datetime import timedelta
@@ -29,7 +29,6 @@ rkd = RangeKeyDict({
     (0, 50): 'New Record'
 })
 waiting= True
-sf_list = list(SFContact.objects.all())
 sf_map = None
 start = 0
 end = 0
@@ -54,7 +53,7 @@ def key_generator(partslist):
     start = clock()
     for key_parts in partslist:
         waiting = True
-        rep_list = list(RepContact.objects.filter(type__in=['Undecided', 'New Record']))
+        rep_list = list(repContact.objects.filter(type__in=['Undecided', 'New Record']))
         dedupper.threads.updateQ([[rep,key_parts] for rep in rep_list])
         while waiting:
             pass
@@ -85,7 +84,7 @@ def setSortingAlgorithm(min_dup,min_uns):
 
 def makeKeys(headers):
     keys = []
-    total = RepContact.objects.all().count()
+    total = repContact.objects.all().count()
     phoneUniqueness = 0
     emailUniqueness = 0
     # headers.replace('\r\n', '')
@@ -94,11 +93,11 @@ def makeKeys(headers):
 
     for i in headers:
         if 'Phone' in i:
-            phoneUniqueness += RepContact.objects.order_by().values_list(i).distinct().count() / total
+            phoneUniqueness += repContact.objects.order_by().values_list(i).distinct().count() / total
         if 'Email' in i:
-            emailUniqueness += RepContact.objects.order_by().values_list(i).distinct().count() / total
+            emailUniqueness += repContact.objects.order_by().values_list(i).distinct().count() / total
         else:
-            uniqueness = RepContact.objects.order_by().values_list(i).distinct().count() / total
+            uniqueness = repContact.objects.order_by().values_list(i).distinct().count() / total
             keys.append((i, int(uniqueness * 100)))
     keys.extend([('phone', int((phoneUniqueness / 4) * 100)), ('email', int((emailUniqueness / 3) * 100))])
     keys.sort()
@@ -139,14 +138,15 @@ def convertCSV(file, resource, type='rep', batchSize=2000):
     end = clock()
     time = end - start
     if type == 'SF':
-        UploadTime.objects.create(num_records = len(SFContact.objects.all()), batch_size= batchSize, seconds=round(time,2))
+        uploadTime.objects.create(num_records = len(sfcontact.objects.all()), batch_size= batchSize, seconds=round(time, 2))
     else:
-        UploadTime.objects.create(num_records = len(RepContact.objects.all()), batch_size = batchSize, seconds=round(time,2))
+        uploadTime.objects.create(num_records = len(repContact.objects.all()), batch_size = batchSize, seconds=round(time, 2))
     return dataset.headers
 
 def duplify(rep, keys, numthreads):
     start=clock()
     rep_key = rep.key(keys)
+    sf_list = list(sfcontact.objects.filter(type__in=['New Record', 'Undecided']))
     sf_keys = [i.key(keys) for i in sf_list]
     sf_map = dict(zip(sf_keys, sf_list))
 
@@ -171,15 +171,15 @@ def duplify(rep, keys, numthreads):
     rep.type = sort(rep.average)
     rep.match_ID = top1[1].ContactID
     rep.save()
-    time = round(clock()-start,2)
-    DedupTime.objects.create(num_SF = len(sf_list), seconds=time, num_threads=numthreads)
+    time = round(clock()-start, 2)
+    dedupTime.objects.create(num_SF = len(sf_list), seconds=time, num_threads=numthreads)
     logging.debug('Completed in {} seconds'.format(time))
 
 def finish(numThreads):
     global end, waiting
     end = clock()
     time = end - start
-    DuplifyTime.objects.create(num_threads=numThreads, num_SF=len(sf_list), num_rep = len(RepContact.objects.all()),
+    duplifyTime.objects.create(num_threads=numThreads, num_SF=len(sf_list), num_rep = len(repContact.objects.all()),
                                seconds = round(time,2))
     print('\a')
     os.system('say "The repp list has been duplified!"')

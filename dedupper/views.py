@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView, ListView
 import django_tables2
-from dedupper.models import DedupTime, DuplifyTime, UploadTime,  SFContact, RepContact
+from dedupper.models import dedupTime, duplifyTime, uploadTime,  sfcontact, repContact
 from  dedupper.filters import SimpleFilter
 from dedupper.tables import SimpleTable, ContactTable, RepContactTable
 from tablib import Dataset
@@ -45,17 +45,17 @@ def run(request):
 def display(request):
 
     config = RequestConfig(request)
-    undecided_table = RepContactTable(RepContact.objects.filter(type__exact='Undecided'), prefix='U-')  # prefix specified
-    duplicate_table = RepContactTable(RepContact.objects.filter(type__exact='Duplicate'), prefix='D-')  # prefix specified
-    new_record_table = RepContactTable(RepContact.objects.filter(type__exact='New Record'), prefix='N-')  # prefix
+    undecided_table = RepContactTable(repContact.objects.filter(type__exact='Undecided'), prefix='U-')  # prefix specified
+    duplicate_table = RepContactTable(repContact.objects.filter(type__exact='Duplicate'), prefix='D-')  # prefix specified
+    new_record_table = RepContactTable(repContact.objects.filter(type__exact='New Record'), prefix='N-')  # prefix
     # specified
     config.configure(undecided_table)
     config.configure(duplicate_table)
     config.configure(new_record_table)
 
-    undecided = RepContactResource().export(RepContact.objects.filter(type='Undecided'))
-    newRecord = RepContactResource().export(RepContact.objects.filter(type='New Record'))
-    duplicate = RepContactResource().export(RepContact.objects.filter(type='Duplicate'))
+    undecided = RepContactResource().export(repContact.objects.filter(type='Undecided'))
+    newRecord = RepContactResource().export(repContact.objects.filter(type='New Record'))
+    duplicate = RepContactResource().export(repContact.objects.filter(type='Duplicate'))
 
     return render(request, 'dedupper/sorted.html', {
         'undecided_table': undecided_table,
@@ -85,10 +85,10 @@ def upload(request):
     return redirect('/key-gen/', {'keys': keys})
 
 def merge(request, CRD):
-    obj = RepContact.objects.values().get(CRD=CRD)
+    obj = repContact.objects.values().get(CRD=CRD)
     ids = [obj['closest1_id'], obj['closest2_id'], obj['closest3_id']]
-    objs = SFContact.objects.values().filter(pk__in=ids)
-    fields = [i.name for i in RepContact._meta.local_fields]
+    objs = sfcontact.objects.values().filter(pk__in=ids)
+    fields = [i.name for i in repContact._meta.local_fields]
     mergers = list()
 
     for i in range(len(objs)):
@@ -113,7 +113,7 @@ def merge(request, CRD):
     return render(request, 'dedupper/merge.html', {'objs' : obj_map})
 
 def download(request,type):
-    export_headers = list(list(RepContact.objects.all().values())[0].keys())
+    export_headers = list(list(repContact.objects.all().values())[0].keys())
 
     if(type == "Duplicate"):
         filename = 'filename="Duplicates.csv"'
@@ -129,7 +129,7 @@ def download(request,type):
     writer = csv.writer(response)
     writer.writerow(export_headers)
 
-    users = RepContact.objects.filter(type = type).values_list(*export_headers)
+    users = repContact.objects.filter(type = type).values_list(*export_headers)
     for user in users:
         writer.writerow(user)
 
@@ -138,16 +138,16 @@ def download(request,type):
 def download_times(request,type):
     if(type == "DD"):
         filename = 'filename="Dedup Times.csv"'
-        times = DedupTime.objects.all().values_list()
-        export_headers = [i.name for i in DedupTime._meta.local_concrete_fields]
+        times = dedupTime.objects.all().values_list()
+        export_headers = [i.name for i in dedupTime._meta.local_concrete_fields]
     elif(type == "D"):
         filename = 'filename="Duplify Times.csv"'
-        times = DuplifyTime.objects.all().values_list()
-        export_headers = [i.name for i in DuplifyTime._meta.local_concrete_fields]
+        times = duplifyTime.objects.all().values_list()
+        export_headers = [i.name for i in duplifyTime._meta.local_concrete_fields]
     else:
         filename = 'filename="Upload Times.csv"'
-        times = UploadTime.objects.all().values_list()
-        export_headers = [i.name for i in UploadTime._meta.local_concrete_fields]
+        times = uploadTime.objects.all().values_list()
+        export_headers = [i.name for i in uploadTime._meta.local_concrete_fields]
 
 
     response = HttpResponse(content_type='text/csv')
@@ -161,5 +161,5 @@ def download_times(request,type):
     return response
 
 def key_gen(request):
-    key = makeKeys([i.name for i in RepContact._meta.local_concrete_fields])
+    key = makeKeys([i.name for i in repContact._meta.local_concrete_fields])
     return render(request, 'dedupper/key_generator.html', {'keys': key})

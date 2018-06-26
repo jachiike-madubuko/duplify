@@ -13,7 +13,7 @@ def strip(string):
     return  newstring
 
 
-class Simple(models.Model):
+class simple(models.Model):
     title = models.CharField(max_length=128)
     author = models.CharField(max_length=128)
     category = models.CharField(max_length=128)
@@ -24,9 +24,9 @@ class Simple(models.Model):
         ('New Record', 'New Record')  )
     type = models.CharField(max_length=128, choices=TYPES_OF_RECORD, default='Undecided')
 
-    closest1 = models.ForeignKey('Simple', on_delete=models.CASCADE, related_name='the_closest', null=True, blank=True)
-    closest2 = models.ForeignKey('Simple', on_delete=models.CASCADE, related_name='second_closest', null=True, blank=True)
-    closest3 = models.ForeignKey('Simple', on_delete=models.CASCADE, related_name='third_closest', null=True, blank=True)
+    closest1 = models.ForeignKey('simple', on_delete=models.CASCADE, related_name='the_closest', null=True, blank=True)
+    closest2 = models.ForeignKey('simple', on_delete=models.CASCADE, related_name='second_closest', null=True, blank=True)
+    closest3 = models.ForeignKey('simple', on_delete=models.CASCADE, related_name='third_closest', null=True, blank=True)
 
     def __str__(self):
         return '{} by {} \n\t has Record type: {}'.format(self.title, self.author, self.type, self.average)
@@ -51,7 +51,7 @@ class Simple(models.Model):
 #set up model for SF contact
 #for rep_contact make a match_contactID and make it unique
 
-class Contact(models.Model):
+class contact(models.Model):
     CRD = models.CharField( max_length=128, unique=True,  db_column="CRD")
     firstName = models.CharField(max_length=128, blank=True)
     lastName = models.CharField(max_length=128, blank=True)
@@ -116,7 +116,7 @@ class Contact(models.Model):
         return key
 
 
-class RepContact(models.Model):
+class repContact(models.Model):
     CRD = models.CharField(max_length=128, db_column="CRD")
     firstName = models.CharField(max_length=128, blank=True)
     lastName = models.CharField(max_length=128, blank=True)
@@ -148,15 +148,15 @@ class RepContact(models.Model):
                        ('New Record', 'New Record'))
     type = models.CharField(max_length=128, choices=TYPES_OF_RECORD, default='Undecided')
     match_ID = models.CharField(max_length=128, blank=True)
-    closest1 = models.ForeignKey('SFContact', on_delete=models.CASCADE, related_name="first_%(app_label)s_%("
+    closest1 = models.ForeignKey('sfcontact', on_delete=models.CASCADE, related_name="first_%(app_label)s_%("
                                                                                      "class)s_related",
         related_query_name="%(app_label)s_%(class)s", null=True,
                                  blank=True)
-    closest2 = models.ForeignKey('SFContact', on_delete=models.CASCADE, related_name="second_%(app_label)s_%("
+    closest2 = models.ForeignKey('sfcontact', on_delete=models.CASCADE, related_name="second_%(app_label)s_%("
                                                                                      "class)s_related",
         related_query_name="%(app_label)s_%(class)ss", null=True,
                                  blank=True)
-    closest3 = models.ForeignKey('SFContact', on_delete=models.CASCADE, related_name="third_%(app_label)s_%("
+    closest3 = models.ForeignKey('sfcontact', on_delete=models.CASCADE, related_name="third_%(app_label)s_%("
                                                                                      "class)s_related",
         related_query_name="%(app_label)s_%(class)sss", null=True,
                                  blank=True)
@@ -200,7 +200,7 @@ class RepContact(models.Model):
         return key
 
 
-class SFContact(models.Model):
+class sfcontact(models.Model):
     CRD = models.CharField(max_length=128, db_column="CRD")
     ContactID = models.CharField(max_length=128, blank=True)
     firstName = models.CharField(max_length=128, blank=True)
@@ -227,7 +227,7 @@ class SFContact(models.Model):
     fieldTrainerLeader = models.CharField(max_length=128, blank=True)
     performanceLeader = models.CharField(max_length=128, blank=True)
     boaName = models.CharField(max_length=128, blank=True)
-    closest_rep = models.ForeignKey('RepContact', on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_related",
+    closest_rep = models.ForeignKey('repContact', on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_related",
         related_query_name="%(class)s", null=True,
                                  blank=True)
     dupFlag = models.BooleanField(blank=True, default=False)
@@ -270,7 +270,7 @@ class SFContact(models.Model):
         return key
 
 
-class DedupTime(models.Model):
+class dedupTime(models.Model):
     id = models.BigAutoField(primary_key=True)
     num_threads = models.IntegerField(null=True, blank=True)
     num_SF = models.IntegerField(null=True, blank=True)
@@ -280,7 +280,7 @@ class DedupTime(models.Model):
     def __str__(self):
        return "{} SF records dupped against in {} seconds".format(self.num_SF, self.seconds)
 
-class DuplifyTime(models.Model):
+class duplifyTime(models.Model):
     num_threads = models.IntegerField(null=True, blank=True)
     num_SF = models.IntegerField(null=True, blank=True)
     num_rep = models.IntegerField(null=True, blank=True)
@@ -292,7 +292,7 @@ class DuplifyTime(models.Model):
 
 
 
-class UploadTime(models.Model):
+class uploadTime(models.Model):
     num_threads = models.IntegerField(default=1, null=True, blank=True)
     num_records = models.IntegerField(null=True, blank=True)
     batch_size = models.IntegerField(null=True, blank=True)
