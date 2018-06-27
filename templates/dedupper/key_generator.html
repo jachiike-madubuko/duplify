@@ -282,8 +282,7 @@ function bg() {
                 sList = sList.slice(0, -1);
                 var key = '<li class="bg-secondary list-group-item">'+
                     '<button type="button" class="btn btn-sm btn-link float-right" onclick="del(this)">'+
-                    '<span class="fa fa-trash fa-2x"></span></button><h6 class="key">'+
-                        sList+'</h6></li>';
+                    '<span class="fa fa-trash fa-1x"></span></button><h6 class="key">'+sList+'</h6></li>';
                 $(".list-group").append(key);
         }
         function generateKeys() {
@@ -293,7 +292,7 @@ function bg() {
                 keys += '_';
             });
             $("#keys").val(keys);
-          //  $("#keys").addClass("invisible");
+            //  $("#keys").addClass("invisible");
         }
         function del(item) {
             $(item).closest(".list-group-item").remove();
@@ -423,18 +422,17 @@ function bg() {
                     </div>
                 </div>
             </div>
-                        {% block content %}
+            {% block content %}
             <form  method="post" action="/run/">
-                        {% csrf_token %}
+                {% csrf_token %}
                 <input type="text" readonly class="form-control-plaintext bg-transparent invisible" id="keys" name="keys"
                        style="color: #343A40">
                 <br>
-                <button type="submit" id="keygen" class="btn btn-primary btn-block badge-pill" onclick="generateKeys
-                ()" onwaiting="play()">
+                <button type="submit" id="keygen" class="btn btn-primary btn-block badge-pill" onclick="generateKeys()">
                     GO
-                </button >
+                </button>
              </form>
-                        {% endblock %}
+             {% endblock %}
         </div>
         <div class="col-sm-1"></div>
     </div>

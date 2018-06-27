@@ -31,15 +31,15 @@ def index(request):
 
 def run(request):
     if request.method == 'POST':
+
         # move into new method seperate displaying and form submission to get rid of do you want to resubmit form
         keylist = request.POST.get('keys')
         print(keylist)
         # read in channel and query SF by channgel for the key gen
-        # keylist = request.POST.get('channel')
-        keylist = keylist.split("_")
-        partslist = [i.split('-') for i in keylist[:-1]]
-        key_generator(partslist)
-    return redirect('/sorted-reps/')
+        # channel = request.POST.get('channel')
+    return render(request, "dedupper/loading page.html", {'keylist': keylist})
+
+    #return redirect('/sorted-reps/')
 
 #connect this page with filters config = RequestConfig(request)
 def display(request):
@@ -165,6 +165,14 @@ def key_gen(request):
     return render(request, 'dedupper/key_generator.html', {'keys': key})
 
 def progress(request):
-    updatedProgress = progress.objects.lastest().values()
-    return JsonResponse(updatedProgress, safe=False)
+    updatedProgress = progress.objects.values().latest()
+    return JsonResponse({'updatedProgress': updatedProgress}, safe=False)
 
+def duplify(request):
+    if request.method == 'GET':
+        keylist = request.GET.get('keys')
+        print('Starting algorithm with {}'.format(keylist))
+        keylist = keylist.split("_")
+        partslist = [i.split('-') for i in keylist[:-1]]
+       # key_generator(partslist)
+    return JsonResponse({'msg': 'Duplify has started'}, safe=False)

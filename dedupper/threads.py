@@ -13,7 +13,7 @@ q = queue.Queue(BUF_SIZE)
 command = []
 producer = None
 consumers = None
-numThreads = 20
+numThreads = 1
 
 class DuplifyThread(threading.Thread):
     def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None):

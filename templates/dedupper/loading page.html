@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <!--add second file input for SF report -->
 <html lang="en">
@@ -15,7 +16,7 @@
 </head>
   <body class="bg-dark" style="transition: 2s; overflow: hidden">
 
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
         integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
@@ -160,7 +161,9 @@
         //transition speed
         var gradientSpeed = 0.001;
 
-        var percentage = $("#percentage");
+        var  duplify_progress = $(".duplify"),
+            key_progress = $(".key"),
+            percentage =  $("#percent");
 
         function updateGradient()
         {
@@ -204,42 +207,61 @@
 
         setInterval(updateGradient,20);
 
+
         //while some element is not equal 100% (i.e. 5/5) get json for a model that stores the progress of each keys
         function updateProgress() {
-            while(percentage != "100%")
+            $(document).ready(function()
             {
-               getProgress();
-            }
+                $.getJSON("{% url 'duplify' %}", {keys: $("#keys").text() }, function (result) {
+                        alert(result.msg);
+
+                    }).fail(function () {
+                            alert("sucker");
+
+
+                });
+           // while(duplify_progress.text() != "100%")
+            //{
+                percentage.text("100%");
+
+              // getProgress();
+           // }
+            //window.location.replace("{% url 'reps' %}");
+                alert("load tables page");
+
+            });
         }
 
         function getProgress() {
             $.getJSON("{% url 'progress' %}", function (result) {
-
-            })
+                alert(result['updatedProgress']['label']);
+            }).fail(function () {
+                            alert('s');
+                        });
         }
 
-        updateProgress()
+        $(function () {updateProgress();});
 
     </script>
+        <p id="keys" class=" invisible">{{ keylist }}</p>
         <div class="container-fluid" style="padding-top: 50px;  height: 100%; width: 80%;">
-            <div class="row">
-                <div class="col-3"></div>
-                <div class="card col-6  my-5" >
+            <div class="row ">
+                <div class="card my-5 container-fluid" >
                     <div class="card-header text-center"> <h3> Running Algorithm </h3></div>
                     <div class="card-body">
                         Duplify Progress
-                        <div class="progress my-2" style="height:25px">
+                        <div class="progress" style="height:35px">
                             <div class="progress-bar duplify bg-success progress-bar-animated" role="progressbar"
-                                 aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width:
-                                 75%"><p id="percentage">75%</p></div>
+                                 aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width:75%">
+                                <h5 class="mt-2"><b id="percent">75%</b></h5>
+                            </div>
                         </div>
                         <div class="progress my-2"  style="height:8px">
-                            <div class="progress-bar progress-bar-animated progress-bar-striped" role="progressbar"
+                            <div class="key progress-bar progress-bar-animated progress-bar-striped" role="progressbar"
                                  aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%"></div>
                         </div>
                     </div>
                 </div>
-                <div class="col-3"></div>
             </div>
         </div>
 

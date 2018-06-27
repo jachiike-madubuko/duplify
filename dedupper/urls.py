@@ -21,7 +21,6 @@ from . import views
 from django.conf import settings
 
 
-
 admin.autodiscover()
 
 
@@ -30,9 +29,10 @@ urlpatterns = [
     url(r'^keys', views.upload, name='keys'),
     path('key-gen/', views.key_gen, name='key-gen'),
     path('run/', views.run, name='run'),
-    path('progress/', views.progress, name='progress'),
-    path('sorted-reps/', views.display, name='rep_list_keys'),
+    path('run/duplify', views.duplify, name='duplify'), #figure out url reverse
+    path('run/progress', views.progress, name='progress'), #figure out url reverse
+    path('sorted-reps/', views.display, name='reps'),
     path('sorted-reps/<CRD>', views.merge, name='merge'),
-    path('sorted-reps/export/<type>', views.download, name='merge'),
+    path('sorted-reps/export/<type>', views.download, name='export'),
     path('sorted-reps/report/<type>', views.download_times, name='report'),
 ]
