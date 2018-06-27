@@ -26,6 +26,10 @@ https://www.youtube.com/watch?v=P8_wDttTeuk
 '''
 keys= []
 
+#TODO look into make custom commands reset the contacts type and closest matches
+#TODO look make custom command to spit out number of each model
+#TODO find how to for django celery and bootstrap progress bar
+
 def index(request):
     return render(request, 'dedupper/rep_list_upload.html')
 
@@ -164,8 +168,10 @@ def key_gen(request):
     key = makeKeys([i.name for i in repContact._meta.local_concrete_fields])
     return render(request, 'dedupper/key_generator.html', {'keys': key})
 
-def progress(request):
-    updatedProgress = progress.objects.values().latest()
+def progress_update(request):
+    updatedProgress = list(progress.objects.all().values())[-1]
+    print("{}/{} = {}%".format(updatedProgress['completed'], updatedProgress['total'], updatedProgress[
+        'completed']/updatedProgress['total']))
     return JsonResponse({'updatedProgress': updatedProgress}, safe=False)
 
 def duplify(request):
@@ -174,5 +180,5 @@ def duplify(request):
         print('Starting algorithm with {}'.format(keylist))
         keylist = keylist.split("_")
         partslist = [i.split('-') for i in keylist[:-1]]
-       # key_generator(partslist)
+        key_generator(partslist)
     return JsonResponse({'msg': 'Duplify has started'}, safe=False)

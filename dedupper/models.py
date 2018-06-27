@@ -279,6 +279,11 @@ class progress(models.Model):
     class Meta():
         get_latest_by = "created_on"
 
+    def complete(self):
+        print('\a')
+        self.completed += 1
+        self.save()
+
 class dedupTime(models.Model):
     id = models.BigAutoField(primary_key=True)
     num_threads = models.IntegerField(null=True, blank=True)

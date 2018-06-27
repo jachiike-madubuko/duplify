@@ -7,7 +7,7 @@ Created on Sat May 19 17:53:34 2018
 """
 import dedupper.threads
 import os
-from dedupper.models import simple, repContact, sfcontact, dedupTime, duplifyTime, uploadTime
+from dedupper.models import progress, repContact, sfcontact, dedupTime, duplifyTime, uploadTime
 import string
 from time import clock
 from datetime import timedelta
@@ -94,9 +94,9 @@ def findRepDups(rep, keys, numthreads):
     rep.save()
     time = round(clock()-start, 2)
     #update the progress object using
-    #progress.object.latest().update(comments_on+=1)
+    list(progress.objects.all())[-1].complete()
     dedupTime.objects.create(num_SF = len(sf_list), seconds=time, num_threads=numthreads)
-    logging.debug('Completed in {} seconds'.format(time))
+    #logging.debug('Completed in {} seconds'.format(time))
 
 def finish(numThreads):
     global end, waiting
@@ -129,7 +129,7 @@ def key_generator(partslist):
         waiting = True
         rep_list = list(repContact.objects.filter(type__in=['Undecided', 'New Record']))
         #create progress object with reps total and title of key part
-        #progress.objects.create(label = key_parts, total = len(rep_
+        progress.objects.create(label = key_parts, total = len(rep_list), total_keys=len(partslist))
         dedupper.threads.updateQ([[rep, key_parts] for rep in rep_list])
         while waiting:
             pass

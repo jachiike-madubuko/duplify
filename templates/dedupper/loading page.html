@@ -161,9 +161,13 @@
         //transition speed
         var gradientSpeed = 0.001;
 
-        var  duplify_progress = $(".duplify"),
+        var  duplify = $(".duplify"),
             key_progress = $(".key"),
-            percentage =  $("#percent");
+            percentage =  $("#percent"),
+            total_progress = 0,
+            last_label = "",
+             duplify_progress = 0;
+
 
         function updateGradient()
         {
@@ -220,24 +224,41 @@
 
 
                 });
-           // while(duplify_progress.text() != "100%")
-            //{
-                percentage.text("100%");
-
-              // getProgress();
-           // }
-            //window.location.replace("{% url 'reps' %}");
-                alert("load tables page");
-
+            while(percentage.text() != "100%")
+            {
+               getProgress();
+            }
+             window.location.replace("{% url 'reps' %}");
             });
         }
 
         function getProgress() {
             $.getJSON("{% url 'progress' %}", function (result) {
-                alert(result['updatedProgress']['label']);
-            }).fail(function () {
-                            alert('s');
-                        });
+                alert("hi");
+                var completed = result.updatedProgress["completed"],
+                    total =result.updatedProgress["total"],
+                    total_keys = result.updatedProgress["total_keys"],
+                    label = result.updatedProgress["label"];
+                    alert((completed/total_keys)+"%" );
+
+                var percent = Math.round((completed/total)*100);
+
+                 $("#keyprogress")
+                      .css("width", percent + "%")
+                      .attr("aria-valuenow", percent)
+                      .text(percent + "% Complete");
+
+                if(last_label != "" && label != last_label){
+                    total_progress += 1;
+                    duplify_progress = Math.round((total_progress/total_keys)*100);
+
+                     $("#duplifyprogress")
+                      .css("width", duplify_progress + "%")
+                      .attr("aria-valuenow", duplify_progress)
+                      .text(duplify_progress + "% Complete");
+                }
+                last_label = label;
+            });
         }
 
         $(function () {updateProgress();});
@@ -251,14 +272,17 @@
                     <div class="card-body">
                         Duplify Progress
                         <div class="progress" style="height:35px">
-                            <div class="progress-bar duplify bg-success progress-bar-animated" role="progressbar"
-                                 aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width:75%">
-                                <h5 class="mt-2"><b id="percent">75%</b></h5>
+                            <div id="duplifyprogress" class="progress-bar bg-success progress-bar-animated"
+                                 role="progressbar"
+                                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+                                 <span id="current-progress"></span>
                             </div>
                         </div>
                         <div class="progress my-2"  style="height:8px">
-                            <div class="key progress-bar progress-bar-animated progress-bar-striped" role="progressbar"
-                                 aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%"></div>
+                            <div id="keyprogress"  class="progress-bar progress-bar-animated progress-bar-striped"
+                                 role="progressbar"
+                                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                            </div>
                         </div>
                     </div>
                 </div>
