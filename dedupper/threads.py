@@ -8,12 +8,12 @@ import queue  #must be in same directory as this file
 logging.basicConfig(level=logging.DEBUG,
                     format='(%(threadName)-9s) %(message)s',)
 
-BUF_SIZE = 10000
+BUF_SIZE = 20000
 q = queue.Queue(BUF_SIZE)
 command = []
 producer = None
 consumers = None
-numThreads = 20
+numThreads = 100
 
 class DuplifyThread(threading.Thread):
     def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None):

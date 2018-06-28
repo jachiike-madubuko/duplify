@@ -12,7 +12,7 @@ from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin, RequestConfig
 
 from dedupper.resources import RepContactResource, SFContactResource, DedupTimeResource, DuplifyTimeResource, UploadTimeResource
-from  dedupper.utils import key_generator, makeKeys, convertCSV
+from  dedupper.utils import key_generator, makeKeys, convertCSV, my_task
 import csv
 '''
 #TODO change the HTTP request 
@@ -28,22 +28,32 @@ keys= []
 
 #TODO look into make custom commands reset the contacts type and closest matches
 #TODO look make custom command to spit out number of each model
+    #https://docs.djangoproject.com/en/2.0/howto/custom-management-commands/
 #TODO find how to for django celery and bootstrap progress bar
+    #https://www.dangtrinh.com/2013/07/django-celery-display-progress-bar-of.html
+    #https://github.com/czue/celery-progress
+    #https://stackoverflow.com/questions/7380373/django-celery-progress-bar
+
 
 def index(request):
     return render(request, 'dedupper/rep_list_upload.html')
 
 def run(request):
-    if request.method == 'POST':
+    if request.method == 'GET':
 
         # move into new method seperate displaying and form submission to get rid of do you want to resubmit form
-        keylist = request.POST.get('keys')
+        keylist = request.GET.get('keys')
         print(keylist)
         # read in channel and query SF by channgel for the key gen
         # channel = request.POST.get('channel')
-    return render(request, "dedupper/loading page.html", {'keylist': keylist})
+        print('Starting algorithm with {}'.format(keylist))
+        keylist = keylist.split("_")
+        partslist = [i.split('-') for i in keylist[:-1]]
+        result = key_generator(partslist)
+        # result = key_generator.delay(partslist)
+    # return render(request, "dedupper/loading_page.html", context={'task_id': result.task_id})
+    return JsonResponse({'msg': 'success'}, safe=False)
 
-    #return redirect('/sorted-reps/')
 
 #connect this page with filters config = RequestConfig(request)
 def display(request):
@@ -94,6 +104,7 @@ def merge(request, CRD):
     objs = sfcontact.objects.values().filter(pk__in=ids)
     fields = [i.name for i in repContact._meta.local_fields]
     mergers = list()
+    obj_map = [(i,i,i) for i in range(30)]
 
     for i in range(len(objs)):
         del objs[i]['closest1_id'], objs[i]['closest2_id'], objs[i]['closest3_id'], objs[i]['type'], objs[i]['average'],
@@ -108,7 +119,6 @@ def merge(request, CRD):
         obj_map = {i:j for i,j in zip(fields, list(zip(obj,mergers[0],mergers[1])) ) }
     elif len(mergers) == 1:
         obj_map = {i:j for i,j in zip(fields, list(zip(obj,mergers[0])) ) }
-    print(obj_map)
     '''
         outputs a dictionary of the field as the with a value of each objs corresponding field value
         example
@@ -165,20 +175,19 @@ def download_times(request,type):
     return response
 
 def key_gen(request):
-    key = makeKeys([i.name for i in repContact._meta.local_concrete_fields])
+    key = makeKeys(list(list(repContact.objects.all().values())[0].keys()))
     return render(request, 'dedupper/key_generator.html', {'keys': key})
 
-def progress_update(request):
-    updatedProgress = list(progress.objects.all().values())[-1]
-    print("{}/{} = {}%".format(updatedProgress['completed'], updatedProgress['total'], updatedProgress[
-        'completed']/updatedProgress['total']))
-    return JsonResponse({'updatedProgress': updatedProgress}, safe=False)
+def loading(request,keylist):
+    return render(request, 'dedupper/loading_page.html', {'keylist':keylist})
 
 def duplify(request):
     if request.method == 'GET':
-        keylist = request.GET.get('keys')
+        keylist = request.GET.get('keylist')
         print('Starting algorithm with {}'.format(keylist))
         keylist = keylist.split("_")
         partslist = [i.split('-') for i in keylist[:-1]]
-        key_generator(partslist)
-    return JsonResponse({'msg': 'Duplify has started'}, safe=False)
+        result = key_generator.delay(partslist)
+
+    return JsonResponse({'task_id': result.task_id}, safe=False)
+

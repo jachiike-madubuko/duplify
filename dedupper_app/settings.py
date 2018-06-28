@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django_tables2',
     'django_filters',
     'import_export',
+    'celery_progress',
 
    # 'heroku_connect',
    # 'connect_client',

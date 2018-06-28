@@ -46,11 +46,11 @@
              transform: scale(1.15, 0.85);
         }
          .cbx:checked ~ label {
-             background: #6fbeb5;
+             background: #428bff;
         }
          .cbx:checked ~ label:after {
              left: 20px;
-             background: #179588;
+             background: #5bc0ff;
         }
          .cbx:disabled ~ label {
              background: #d5d5d5;
@@ -91,9 +91,12 @@
 
 </head>
  <body class="bg-secondary"style="overflow: hidden;">
-     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-
+     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
      <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
+        integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+
      <script>
 function bg() {
 
@@ -291,14 +294,26 @@ function bg() {
                 keys += $(this).text();
                 keys += '_';
             });
-            $("#keys").val(keys);
-            //  $("#keys").addClass("invisible");
+            alert(keys);
+            $.getJSON("{% url 'run' %}", {keys: keys}, function (result) {
+                   window.location.replace("{% url 'reps' %}");
+            });
         }
         function del(item) {
             $(item).closest(".list-group-item").remove();
         }
+
+        $(document).ready(function () {
+            $('#progress').ajaxStart(function () {
+                alert('ajax start');
+                $(this).modal('show');
+            });
+            $('#progress').ajaxComplete(function () {
+                $(this).modal('hide');
+            });
+        });
     </script>
-    <nav class="navbar navbar-light navbar-expand-lg justify-content-between">
+    <nav class="navbar navbar-dark bg-info navbar-expand-lg justify-content-between">
        <h1> <a class="navbar-brand" href="#">Duplify</a></h1>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -317,7 +332,20 @@ function bg() {
             </ul>
         </div>
     </nav>
-
+    <div class="modal fade" id="progress" tabindex="-1" role="dialog"  aria-hidden="true">
+         <div class="modal-dialog" role="document">
+             <div class="modal-content">
+                 <div class="modal-header">
+                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                         <span aria-hidden="true">&times;</span>
+                     </button>
+                 </div>
+                 <div class="modal-body">
+                     Duplify is now running. Sit back and relax!
+                 </div>
+             </div>
+         </div>
+     </div>
     <div class="container-fluid row my-5" style=" text-align: center;">
         <div class="col-1"></div>
         <div id="keyBuilder" class="col-6">
@@ -422,23 +450,11 @@ function bg() {
                     </div>
                 </div>
             </div>
-            {% block content %}
-            <form  method="post" action="/run/">
-                {% csrf_token %}
-                <input type="text" readonly class="form-control-plaintext bg-transparent invisible" id="keys" name="keys"
-                       style="color: #343A40">
-                <br>
-                <button type="submit" id="keygen" class="btn btn-primary btn-block badge-pill" onclick="generateKeys()">
-                    GO
+                <button id="keygen" class="btn btn-primary btn-block badge-pill my-2" onclick="generateKeys()">
+                    <b>GO</b>
                 </button>
-             </form>
-             {% endblock %}
         </div>
         <div class="col-sm-1"></div>
     </div>
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
-        integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
 </body>
 </html>

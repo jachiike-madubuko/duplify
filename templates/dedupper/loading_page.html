@@ -15,7 +15,7 @@
 </style>
 </head>
   <body class="bg-dark" style="transition: 2s; overflow: hidden">
-
+<script src="{% static 'celery_progress/celery_progress.js' %}"></script>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
@@ -161,14 +161,6 @@
         //transition speed
         var gradientSpeed = 0.001;
 
-        var  duplify = $(".duplify"),
-            key_progress = $(".key"),
-            percentage =  $("#percent"),
-            total_progress = 0,
-            last_label = "",
-             duplify_progress = 0;
-
-
         function updateGradient()
         {
 
@@ -211,79 +203,77 @@
 
         setInterval(updateGradient,20);
 
+         $(document).ready(function(){
+          var progressUrl= "{% url 'celery_progress:task_status' task_id %}";
+                $(function () {
+                  CeleryProgressBar.initProgressBar(progressUrl)
+                });
+         });
 
         //while some element is not equal 100% (i.e. 5/5) get json for a model that stores the progress of each keys
-        function updateProgress() {
-            $(document).ready(function()
-            {
-                $.getJSON("{% url 'duplify' %}", {keys: $("#keys").text() }, function (result) {
-                        alert(result.msg);
-
-                    }).fail(function () {
-                            alert("sucker");
-
-
-                });
-            while(percentage.text() != "100%")
-            {
-               getProgress();
-            }
-             window.location.replace("{% url 'reps' %}");
-            });
-        }
-
-        function getProgress() {
-            $.getJSON("{% url 'progress' %}", function (result) {
-                alert("hi");
-                var completed = result.updatedProgress["completed"],
-                    total =result.updatedProgress["total"],
-                    total_keys = result.updatedProgress["total_keys"],
-                    label = result.updatedProgress["label"];
-                    alert((completed/total_keys)+"%" );
-
-                var percent = Math.round((completed/total)*100);
-
-                 $("#keyprogress")
-                      .css("width", percent + "%")
-                      .attr("aria-valuenow", percent)
-                      .text(percent + "% Complete");
-
-                if(last_label != "" && label != last_label){
-                    total_progress += 1;
-                    duplify_progress = Math.round((total_progress/total_keys)*100);
-
-                     $("#duplifyprogress")
-                      .css("width", duplify_progress + "%")
-                      .attr("aria-valuenow", duplify_progress)
-                      .text(duplify_progress + "% Complete");
-                }
-                last_label = label;
-            });
-        }
-
-        $(function () {updateProgress();});
+        {#function updateProgress() {#}
+        {#    $(document).ready(function()#}
+        {#    {#}
+        {#        $.getJSON("{% url 'duplify' %}", {keys: $("#keys").text() }, function (result) {#}
+        {#                alert(result.msg);#}
+        {##}
+        {#            }).fail(function () {#}
+        {#                    alert("sucker");#}
+        {##}
+        {##}
+        {#        });#}
+        {#    while(percentage.text() != "100%")#}
+        {#    {#}
+        {#       getProgress();#}
+        {#    }#}
+        {#     window.location.replace("{% url 'reps' %}");#}
+        {#    });#}
+        //{#}#}
+        {##}
+        {#function getProgress() {#}
+        {#    $.getJSON("{% url 'progress' %}", function (result) {#}
+        {#        alert("hi");#}
+        {#        var completed = result.updatedProgress["completed"],#}
+        {#            total =result.updatedProgress["total"],#}
+        {#            total_keys = result.updatedProgress["total_keys"],#}
+        {#            label = result.updatedProgress["label"];#}
+        {#            alert((completed/total_keys)+"%" );#}
+        {##}
+        {#        var percent = Math.round((completed/total)*100);#}
+        {##}
+        {#         $("#keyprogress")#}
+        {#              .css("width", percent + "%")#}
+        {#              .attr("aria-valuenow", percent)#}
+        {#              .text(percent + "% Complete");#}
+        {##}
+        {#        if(last_label != "" && label != last_label){#}
+        {#            total_progress += 1;#}
+        {#            duplify_progress = Math.round((total_progress/total_keys)*100);#}
+        {##}
+        {#             $("#duplifyprogress")#}
+        {#              .css("width", duplify_progress + "%")#}
+        {#              .attr("aria-valuenow", duplify_progress)#}
+        {#              .text(duplify_progress + "% Complete");#}
+        {#        }#}
+        {#        last_label = label;#}
+        {#    });#}
+        //{#}#}
+        {##}
+        {#$(function () {updateProgress();});#}
 
     </script>
-        <p id="keys" class=" invisible">{{ keylist }}</p>
+        <p id="keys" class=" visible">{{ keylist }}</p>
         <div class="container-fluid" style="padding-top: 50px;  height: 100%; width: 80%;">
             <div class="row ">
                 <div class="card my-5 container-fluid" >
                     <div class="card-header text-center"> <h3> Running Algorithm </h3></div>
                     <div class="card-body">
                         Duplify Progress
-                        <div class="progress" style="height:35px">
-                            <div id="duplifyprogress" class="progress-bar bg-success progress-bar-animated"
-                                 role="progressbar"
-                                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
-                                 <span id="current-progress"></span>
-                            </div>
+                        <div class='progress-wrapper progress' style="height:35px">
+                          <div id='progress-bar' class='progress-bar' style="background-color: #000; width: 0%;">&nbsp;
+                          </div>
                         </div>
-                        <div class="progress my-2"  style="height:8px">
-                            <div id="keyprogress"  class="progress-bar progress-bar-animated progress-bar-striped"
-                                 role="progressbar"
-                                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
-                            </div>
-                        </div>
+                        <div id="progress-bar-message">Waiting for progress to start...</div>
                     </div>
                 </div>
             </div>

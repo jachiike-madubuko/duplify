@@ -19,6 +19,10 @@ from fuzzywuzzy import process #could be used to generate suggestions for unknow
 import numpy as np
 from tablib import Dataset
 import logging
+from celery import shared_task
+from celery_progress.backend import ProgressRecorder
+import time
+
 
 from copy import deepcopy
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
@@ -94,9 +98,9 @@ def findRepDups(rep, keys, numthreads):
     rep.save()
     time = round(clock()-start, 2)
     #update the progress object using
-    list(progress.objects.all())[-1].complete()
+    #list(progress.objects.all())[-1].complete()
     dedupTime.objects.create(num_SF = len(sf_list), seconds=time, num_threads=numthreads)
-    #logging.debug('Completed in {} seconds'.format(time))
+    logging.debug('Completed in {} seconds'.format(time))
 
 def finish(numThreads):
     global end, waiting
@@ -108,7 +112,9 @@ def finish(numThreads):
     os.system('say "The repp list has been duplified!"')
     waiting=False
 
-def key_generator(partslist):
+
+@shared_task(bind=True)
+def key_generator(self,partslist):
     global start, waiting
     for key_parts in partslist:
         if 'phone' in key_parts:
@@ -123,13 +129,14 @@ def key_generator(partslist):
             for i in ['otherEmail', 'personalEmail', 'workEmail']:
                 new_key_parts = [i if x == 'email' else x for x in key_parts]
                 partslist.insert(index, new_key_parts)
-    print("starting algorithm")
+    progress_recorder = ProgressRecorder(self)
     start = clock()
+    i=0
     for key_parts in partslist:
         waiting = True
         rep_list = list(repContact.objects.filter(type__in=['Undecided', 'New Record']))
         #create progress object with reps total and title of key part
-        progress.objects.create(label = key_parts, total = len(rep_list), total_keys=len(partslist))
+        progress_recorder.set_progress(i + 1, len(partslist))
         dedupper.threads.updateQ([[rep, key_parts] for rep in rep_list])
         while waiting:
             pass
@@ -142,15 +149,20 @@ def makeKeys(headers):
     # headers.replace('\r\n', '')
     # headers.replace('\n', '')
     # headers=headers.split(',')
+    phoneTypes = ['Phone', 'homePhone', 'mobilePhone', 'otherPhone']
+    emailTypes = ['workEmail', 'personalEmail', 'otherEmail']
+    excluded = ['id', 'average', 'type', 'match_ID', 'closest1_id', 'closest2_id', 'closest3_id', 'dupFlag']
 
     for i in headers:
-        if 'Phone' in i:
-            phoneUniqueness += repContact.objects.order_by().values_list(i).distinct().count() / total
-        if 'Email' in i:
-            emailUniqueness += repContact.objects.order_by().values_list(i).distinct().count() / total
-        else:
-            uniqueness = repContact.objects.order_by().values_list(i).distinct().count() / total
-            keys.append((i, int(uniqueness * 100)))
+        if i not in excluded:
+            if i in phoneTypes:
+                phoneUniqueness += repContact.objects.order_by().values_list(i).distinct().count() / total
+            elif i in emailTypes:
+                emailUniqueness += repContact.objects.order_by().values_list(i).distinct().count() / total
+
+            else:
+                uniqueness = repContact.objects.order_by().values_list(i).distinct().count() / total
+                keys.append((i, int(uniqueness * 100)))
     keys.extend([('phone', int((phoneUniqueness / 4) * 100)), ('email', int((emailUniqueness / 3) * 100))])
     keys.sort()
     return keys
@@ -183,3 +195,13 @@ def setSortingAlgorithm(min_dup,min_uns):
 
 def sort(avg):
     return rkd[avg]
+
+
+@shared_task(bind=True)
+def my_task(self,seconds):
+    progress_recorder = ProgressRecorder(self)
+    for i in range(seconds):
+        time.sleep(1)
+        progress_recorder.set_progress(i+1, seconds)
+    return 'done'
+
