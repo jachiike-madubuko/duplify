@@ -8,7 +8,7 @@ import queue  #must be in same directory as this file
 logging.basicConfig(level=logging.DEBUG,
                     format='(%(threadName)-9s) %(message)s',)
 
-BUF_SIZE = 20000
+BUF_SIZE = 10000
 q = queue.Queue(BUF_SIZE)
 command = []
 producer = None
@@ -25,12 +25,14 @@ class DuplifyThread(threading.Thread):
 
     def run(self):
         global command
+        num = threading.activeCount()
         while not self.event.is_set():
             if not q.full():
                 if command:
-                    d=command.pop()
+                    d = command.pop()
                     q.put(d)
-                    # logging.debug('Putting REP ' +d[0].firstName + ' : ' + str(q.qsize())+ ' reps in the queue')
+            if threading.activeCount() < num:
+                stop_threads()
         return
 
 class DedupThread(threading.Thread):
@@ -51,7 +53,8 @@ class DedupThread(threading.Thread):
                 # logging.debug('dedupping REP ' + item[0].firstName + ' : ' + str(q.qsize()) + ' commands in queue')
                 dedup(item)
             else:
-                stop_threads()
+                logging.debug("bye! {} threads now active".format(threading.activeCount()))
+                self.event.set()
         return
 
 def updateQ(newQ):
@@ -61,9 +64,8 @@ def updateQ(newQ):
 
 def stop_threads():  #all threads run on a while event is not set
     global producer, consumers
+    print('producer stopped')
     producer.event.set()
-    for i in consumers:
-        i.event.set()
     dedupper.utils.finish(numThreads)
 
 def dedup(repNkey):
@@ -80,7 +82,6 @@ def startThreads():
     consumers = makeThreads()
 
     producer.start()
-    time.sleep(1)
     for i in consumers:
         i.start()
    # updateQ([('jim brown', 'firstName-territory-mailingStateProvince'),('tim harding',

@@ -294,16 +294,15 @@ function bg() {
                 keys += $(this).text();
                 keys += '_';
             });
-            alert(keys);
             $.getJSON("{% url 'run' %}", {keys: keys}, function (result) {
-                   window.location.replace("{% url 'reps' %}");
+                $("#progress").modal('dispose');
+                window.location.replace("{% url 'reps' %}");
             });
         }
         function del(item) {
             $(item).closest(".list-group-item").remove();
         }
 
-        $(document).ready(function () {
             $('#progress').ajaxStart(function () {
                 alert('ajax start');
                 $(this).modal('show');
@@ -311,7 +310,6 @@ function bg() {
             $('#progress').ajaxComplete(function () {
                 $(this).modal('hide');
             });
-        });
     </script>
     <nav class="navbar navbar-dark bg-info navbar-expand-lg justify-content-between">
        <h1> <a class="navbar-brand" href="#">Duplify</a></h1>
@@ -333,12 +331,9 @@ function bg() {
         </div>
     </nav>
     <div class="modal fade" id="progress" tabindex="-1" role="dialog"  aria-hidden="true">
-         <div class="modal-dialog" role="document">
+         <div class="modal-dialog modal-dialog-centered" role="document">
              <div class="modal-content">
                  <div class="modal-header">
-                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                         <span aria-hidden="true">&times;</span>
-                     </button>
                  </div>
                  <div class="modal-body">
                      Duplify is now running. Sit back and relax!
@@ -450,7 +445,7 @@ function bg() {
                     </div>
                 </div>
             </div>
-                <button id="keygen" class="btn btn-primary btn-block badge-pill my-2" onclick="generateKeys()">
+                <button id="keygen" class="btn btn-primary btn-block badge-pill my-2" onclick="generateKeys()" data-toggle="modal" data-target="#progress">
                     <b>GO</b>
                 </button>
         </div>

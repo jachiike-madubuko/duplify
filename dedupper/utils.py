@@ -43,7 +43,7 @@ def convertCSV(file, resource, type='rep', batchSize=2000):
     dataset = Dataset()
     headers = ''
     cnt, cnt2 = 0, 0
-    print('converting CSV' + str(file))
+    print('converting CSV', str(file))
     start = clock()
     fileString = ''
     #look into going line by line
@@ -80,6 +80,8 @@ def findRepDups(rep, keys, numthreads):
     match_map = sorted(match_map, reverse=True)
     top1, top2, top3 = [(match_map[i][0], sf_map[match_map[i][1]]) for i in range(3)]
 
+
+
     if top1[0] <= top3[0] + 15 and top1[1].id != top3[1].id:
         rep.average = np.mean([top1[0], top2[0], top3[0]])
         rep.closest1 = top1[1]
@@ -109,7 +111,6 @@ def finish(numThreads):
     duplifyTime.objects.create(num_threads=numThreads, num_SF=len(sf_list), num_rep = len(repContact.objects.all()),
                                seconds = round(time,2))
     print('\a')
-    os.system('say "The repp list has been duplified!"')
     waiting=False
 
 
@@ -133,6 +134,7 @@ def key_generator(self,partslist):
     start = clock()
     i=0
     for key_parts in partslist:
+        print('starting key: {}'.format(key_parts))
         waiting = True
         rep_list = list(repContact.objects.filter(type__in=['Undecided', 'New Record']))
         #create progress object with reps total and title of key part

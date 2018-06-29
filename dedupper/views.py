@@ -87,11 +87,8 @@ def upload(request):
     form = UploadFileForm(request.POST, request.FILES)
     repCSV = request.FILES['repFile']
     sfCSV = request.FILES['sfFile']
-    print('reps')
     headers = convertCSV(repCSV, repcontact_resource, batchSize=100)
     export_headers = headers
-    print(headers)
-    print('SF')
     convertCSV(sfCSV, sfcontact_resource, type='SF', batchSize=100)
 
     keys = makeKeys(headers)
