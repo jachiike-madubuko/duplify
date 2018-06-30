@@ -35,8 +35,8 @@ rkd = RangeKeyDict({
 waiting= True
 sf_list = list(sfcontact.objects.all())
 sf_map = None
-start = 0
-end = 0
+start= end=cnt = 0
+
 #TODO implement batch upload, append contacts to a list the batch save them.
 
 def convertCSV(file, resource, type='rep', batchSize=2000):
@@ -70,6 +70,7 @@ def convertCSV(file, resource, type='rep', batchSize=2000):
     return dataset.headers
 
 def findRepDups(rep, keys, numthreads):
+    global cnt
     start=clock()
     rep_key = rep.key(keys)
     sf_keys = [i.key(keys) for i in sf_list]
@@ -80,20 +81,26 @@ def findRepDups(rep, keys, numthreads):
     match_map = sorted(match_map, reverse=True)
     top1, top2, top3 = [(match_map[i][0], sf_map[match_map[i][1]]) for i in range(3)]
 
-
-
-    if top1[0] <= top3[0] + 15 and top1[1].id != top3[1].id:
+    if top1[0] <= top3[0] + 10 and top1[1].id != top3[1].id:
         rep.average = np.mean([top1[0], top2[0], top3[0]])
         rep.closest1 = top1[1]
         rep.closest2 = top2[1]
         rep.closest3 = top3[1]
-    elif top1[0] <= top2[0] + 15 and top1[1].id != top2[1].id:
+        rep.closest1_contactID = top1[1].ContactID
+        rep.closest2_contactID = top2[1].ContactID
+        rep.closest3_contactID = top3[1].ContactID
+
+    elif top1[0] <= top2[0] + 10 and top1[1].id != top2[1].id:
         rep.average = np.mean([top1[0], top2[0]])
         rep.closest1 = top1[1]
         rep.closest2 = top2[1]
+        rep.closest1_contactID = top1[1].ContactID
+        rep.closest2_contactID = top2[1].ContactID
+
     else:
         rep.average = top1[0]
         rep.closest1 = top1[1]
+        rep.closest1_contactID = top1[1].ContactID
     # seperate by activity
     rep.type = sort(rep.average)
     rep.match_ID = top1[1].ContactID
@@ -102,15 +109,17 @@ def findRepDups(rep, keys, numthreads):
     #update the progress object using
     #list(progress.objects.all())[-1].complete()
     dedupTime.objects.create(num_SF = len(sf_list), seconds=time, num_threads=numthreads)
-    logging.debug('Completed in {} seconds'.format(time))
+    cnt+=1
+    if(cnt%500==0):
+        logging.debug('Completed in {} seconds'.format(time))
 
 def finish(numThreads):
     global end, waiting
     end = clock()
     time = end - start
-    duplifyTime.objects.create(num_threads=numThreads, num_SF=len(sf_list), num_rep = len(repContact.objects.all()),
-                               seconds = round(time,2))
-    print('\a')
+    duplifyTime.objects.create(num_threads=numThreads, num_SF=len(sf_list), num_rep = len(repContact.objects.all()), seconds = round(time,2))
+    # print('\a')
+    os.system('say "The repp list has been duplified!"')
     waiting=False
 
 

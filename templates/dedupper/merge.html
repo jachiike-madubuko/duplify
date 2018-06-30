@@ -27,8 +27,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-
+{# <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>#}
  <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
     <script>
 function bg() {
@@ -203,7 +202,6 @@ function bg() {
 
         setInterval(updateGradient,10);
     </script>
-<script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
       <nav class="navbar navbar-dark bg-dark navbar-expand-lg justify-content-between">
         <a class="navbar-brand" href="#">Duplify</a>
@@ -233,23 +231,9 @@ function bg() {
         </div>
     </nav>
 <div class="container-fluid row text-white">
-    <div class="row">
-       <div class="row py-4 border-bottom">
-           <div class="col-4"><a href="{% url 'reps' %}" style="text-decoration: none"><button type="button" class="btn btn-danger btn-lg btn-block">Cancel Merge</button></a></div>
-           <div class="col-4"> <button type="button" class="btn btn-warning btn-lg btn-block">Revert</button></div>
-           <div class="col-4"> <button type="button" class="btn btn-success btn-lg btn-block">Update Record</button></div>
-       </div>
-        <div class="row pt-3"  style="overflow-y:auto; scroll-behavior: smooth; max-height: 83vh; ">
-            {% for key, value in objs.items %}
-                <div class="col-6">{{ key|title }}
-                    <input id="{{ key }}" class="form-control" type="text" placeholder="{{ value|first }}" readonly>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-    <hr class="my-2">
-    <div class="row container-fluid">
-        <div class="row">
+
+    <div class="col-11 container mt-3">
+        <div class=" header row">
             <div class="col-sm">
             </div>
             <div class="col-sm">
@@ -258,7 +242,7 @@ function bg() {
             <div class="col-sm">
             </div>
         </div>
-        <div class="row">
+        <div class="guide row border-bottom">
             <div class="alert alert-primary col-md mx-4" role="alert">
                 Original From Rep List
 
@@ -273,12 +257,14 @@ function bg() {
                 3rd Closest Match in SF
             </div>
         </div>
-        <div class="row" style="overflow-y:auto; scroll-behavior: smooth; max-height: 82vh; min-height: 82vh;" >
+        <div class="fields row" style="overflow-y:auto; scroll-behavior: smooth; max-height: 72vh; min-height: 72vh;" >
             {% for key, value in objs.items %}
-                <div class="col-3 my-4">
-                     <div class="btn-group dropright ">
-                <button type="button" class="btn btn-dark dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-                        aria-expanded="false">{{ key }}</button>
+                <div class="col-4 my-4 input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text bg-dark text-white">{{ key|title }}</span>
+                    </div>
+                        <input id="{{ key }}" class="form-control" type="text" placeholder="{{ value|first }}" readonly>
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
                 <span class="sr-only">Toggle Dropdown</span>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     {% for val in value  %}
@@ -286,10 +272,13 @@ function bg() {
                     {% endfor %}
                 </div>
             </div>
-                </div>
             {% endfor %}
         </div>
-        <div class="row"></div>
+     <div class="row py-2 border-top">
+           <div class="col-4"><a href="{% url 'reps' %}" style="text-decoration: none"><button type="button" class="btn btn-danger btn-lg btn-block">Cancel Merge</button></a></div>
+           <div class="col-4"> <button type="button" class="btn btn-warning btn-lg btn-block">Revert</button></div>
+           <div class="col-4"> <button type="button" class="btn btn-success btn-lg btn-block">Update Record</button></div>
+       </div>
     </div>
 </div>
 </body>

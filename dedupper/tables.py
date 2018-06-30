@@ -31,8 +31,6 @@ class ContactTable(tables.Table):
 class RepContactTable(tables.Table):
     merge = tables.LinkColumn('merge_records', args=[tables.A('pk')], attrs={'class': 'btn btn-outline-primary badge-pill',
                                                                              'href':"#" }, text="Merge")
-    exclude = ['cansellDate','levelGroup','regionLeader','boaName','performanceLeader','levelLeader', 'otherEmail',
-               'workEmail','personalEmail', 'otherPhone','Phone']
 
     def render_merge(self, record):
         href = record.CRD
@@ -42,6 +40,12 @@ class RepContactTable(tables.Table):
         model = repContact
         template_name = 'django_tables2/bootstrap.html'
         attrs = {'class' : 'table table-hover table-striped table-dark' }
+        sequence = ('closest1', 'closest1_contactID', 'closest2', 'closest2_contactID', 'closest3', 'closest3_contactID', 'merge',
+                    'average', '...')
+        exclude = ('cansellDate', 'levelGroup', 'regionalLeader', 'boaName', 'fieldTrainerLeader',
+                   'id', 'canSellDate', 'performanceLeader', 'levelLeader', 'otherEmail', 'workEmail',
+                   'personalEmail', 'otherPhone', 'Phone', 'dupFlag', 'type')
+
 
 class SFContactTable(tables.Table):
     merge = tables.LinkColumn('merge_records', args=[tables.A('pk')], attrs={'class': 'btn btn-outline-primary badge-pill',

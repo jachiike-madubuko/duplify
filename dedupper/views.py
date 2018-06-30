@@ -14,6 +14,7 @@ from django_tables2.views import SingleTableMixin, RequestConfig
 from dedupper.resources import RepContactResource, SFContactResource, DedupTimeResource, DuplifyTimeResource, UploadTimeResource
 from  dedupper.utils import key_generator, makeKeys, convertCSV, my_task
 import csv
+from collections import OrderedDict
 '''
 #TODO change the HTTP request 
 timeout for the running algorithm or 
@@ -58,7 +59,7 @@ def run(request):
 #connect this page with filters config = RequestConfig(request)
 def display(request):
 
-    config = RequestConfig(request)
+    config = RequestConfig(request, paginate={'per_page': 1000})
     undecided_table = RepContactTable(repContact.objects.filter(type__exact='Undecided'), prefix='U-')  # prefix specified
     duplicate_table = RepContactTable(repContact.objects.filter(type__exact='Duplicate'), prefix='D-')  # prefix specified
     new_record_table = RepContactTable(repContact.objects.filter(type__exact='New Record'), prefix='N-')  # prefix
@@ -97,19 +98,27 @@ def upload(request):
 
 def merge(request, CRD):
     obj = repContact.objects.values().get(CRD=CRD)
-    ids = [obj['closest1_id'], obj['closest2_id'], obj['closest3_id']]
-    objs = sfcontact.objects.values().filter(pk__in=ids)
+    # print(obj)
+    ids = [obj['closest1_contactID'], obj['closest2_contactID'], obj['closest3_contactID']]
+    objs = sfcontact.objects.values().filter(ContactID__in=ids)
+    # print(objs)
     fields = [i.name for i in repContact._meta.local_fields]
     mergers = list()
-    obj_map = [(i,i,i) for i in range(30)]
 
     for i in range(len(objs)):
-        del objs[i]['closest1_id'], objs[i]['closest2_id'], objs[i]['closest3_id'], objs[i]['type'], objs[i]['average'],
-        mergers.append(list(objs[i].values()))
-    del obj['closest1_id'], obj['closest2_id'], obj['closest3_id'], obj['type'], obj['average']
+        if objs[i]['ContactID'] == obj['closest1_contactID']:
+            del objs[i]['closest_rep_id'], objs[i]['dupFlag'], objs[i]['ContactID']
+            mergers.insert(0, list(objs[i].values()))
+        elif objs[i]['ContactID'] == obj['closest2_contactID']:
+            del objs[i]['closest_rep_id'], objs[i]['dupFlag'], objs[i]['ContactID']
+            mergers.insert(1, list(objs[i].values()))
+        else:
+            del objs[i]['closest_rep_id'], objs[i]['dupFlag'], objs[i]['ContactID']
+            mergers.insert(2, list(objs[i].values()))
+
+    del obj['closest1_id'], obj['closest2_id'], obj['closest3_id'], obj['closest1_contactID'], \
+        obj['closest2_contactID'], obj['closest3_contactID'], obj['type'], obj['dupFlag'], obj['average']
     obj = list(obj.values())
-
-
     if len(mergers) == 3:
         obj_map = {i:j for i,j in zip(fields, list(zip(obj,mergers[0],mergers[1],mergers[2])) ) }
     elif len(mergers) == 2:

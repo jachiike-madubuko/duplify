@@ -10,10 +10,11 @@ logging.basicConfig(level=logging.DEBUG,
 
 BUF_SIZE = 10000
 q = queue.Queue(BUF_SIZE)
-command = []
+command = list()
 producer = None
 consumers = None
-numThreads = 100
+numThreads = 12
+stopper = True
 
 class DuplifyThread(threading.Thread):
     def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None):
@@ -22,17 +23,13 @@ class DuplifyThread(threading.Thread):
         self.name = name
         self.event = threading.Event()  #enable easy thread stopping
 
-
     def run(self):
         global command
-        num = threading.activeCount()
         while not self.event.is_set():
             if not q.full():
                 if command:
                     d = command.pop()
                     q.put(d)
-            if threading.activeCount() < num:
-                stop_threads()
         return
 
 class DedupThread(threading.Thread):
@@ -53,8 +50,7 @@ class DedupThread(threading.Thread):
                 # logging.debug('dedupping REP ' + item[0].firstName + ' : ' + str(q.qsize()) + ' commands in queue')
                 dedup(item)
             else:
-                logging.debug("bye! {} threads now active".format(threading.activeCount()))
-                self.event.set()
+                stop_threads()
         return
 
 def updateQ(newQ):
@@ -62,11 +58,17 @@ def updateQ(newQ):
     command.extend(newQ)
     startThreads()
 
+def stop(x):
+    x.event.set()
+
 def stop_threads():  #all threads run on a while event is not set
-    global producer, consumers
-    print('producer stopped')
-    producer.event.set()
-    dedupper.utils.finish(numThreads)
+    global producer, consumers, stopper
+    if stopper:
+        print('producer stopped')
+        stop(producer)
+        map(stop, consumers)
+        dedupper.utils.finish(numThreads)
+        stopper = False
 
 def dedup(repNkey):
    # logging.debug('hi')
@@ -78,6 +80,7 @@ def makeThreads():
 
 def startThreads():
     global producer, consumers
+    stopper = True
     producer = DuplifyThread(name='producer')
     consumers = makeThreads()
 

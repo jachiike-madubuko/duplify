@@ -115,7 +115,9 @@ class contact(models.Model):
             key += key_builder[part]
         return key
 
-
+'''
+mdl.repContact.objects.update(type='Undecided', closest1='', closest2='', closest3='', closest1_contactID='', closest2_contactID='', closest3_contactID='', average=None)
+'''
 class repContact(models.Model):
     CRD = models.CharField(max_length=256, db_column="CRD")
     firstName = models.CharField(max_length=256, blank=True)
@@ -147,15 +149,19 @@ class repContact(models.Model):
                        ('Duplicate', 'Duplicate'),
                        ('New Record', 'New Record'))
     type = models.CharField(max_length=256, choices=TYPES_OF_RECORD, default='Undecided')
-    match_ID = models.CharField(max_length=256, blank=True)
+
+    closest1_contactID = models.CharField(max_length=256, blank=True)
     closest1 = models.ForeignKey('sfcontact', on_delete=models.CASCADE, related_name="first_%(app_label)s_%("
                                                                                      "class)s_related",
         related_query_name="%(app_label)s_%(class)s", null=True,
                                  blank=True)
+
+    closest2_contactID = models.CharField(max_length=256, blank=True)
     closest2 = models.ForeignKey('sfcontact', on_delete=models.CASCADE, related_name="second_%(app_label)s_%("
                                                                                      "class)s_related",
         related_query_name="%(app_label)s_%(class)ss", null=True,
                                  blank=True)
+    closest3_contactID = models.CharField(max_length=256, blank=True)
     closest3 = models.ForeignKey('sfcontact', on_delete=models.CASCADE, related_name="third_%(app_label)s_%("
                                                                                      "class)s_related",
         related_query_name="%(app_label)s_%(class)sss", null=True,
