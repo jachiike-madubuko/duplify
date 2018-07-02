@@ -44,7 +44,6 @@ def run(request):
 
         # move into new method seperate displaying and form submission to get rid of do you want to resubmit form
         keylist = request.GET.get('keys')
-        print(keylist)
         # read in channel and query SF by channgel for the key gen
         # channel = request.POST.get('channel')
         print('Starting algorithm with {}'.format(keylist))

@@ -15,6 +15,7 @@ producer = None
 consumers = None
 numThreads = 12
 stopper = True
+dead_threads = 0
 
 class DuplifyThread(threading.Thread):
     def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None):
@@ -30,6 +31,11 @@ class DuplifyThread(threading.Thread):
                 if command:
                     d = command.pop()
                     q.put(d)
+            if dead_threads == numThreads:
+                print('all consumer threads dead. producer stopped')
+                stop(self)
+                dedupper.utils.finish(numThreads)
+
         return
 
 class DedupThread(threading.Thread):
@@ -46,11 +52,10 @@ class DedupThread(threading.Thread):
             face should look at a static variable
             'action' updated after q.get '''
             if not q.empty():
-                item = q.get()
-                # logging.debug('dedupping REP ' + item[0].firstName + ' : ' + str(q.qsize()) + ' commands in queue')
-                dedup(item)
+                dedup(q.get())
             else:
-                stop_threads()
+                logging.debug('Queue empty, stopping thread')
+                stop(self)
         return
 
 def updateQ(newQ):
@@ -59,34 +64,22 @@ def updateQ(newQ):
     startThreads()
 
 def stop(x):
+    global dead_threads
     x.event.set()
-
-def stop_threads():  #all threads run on a while event is not set
-    global producer, consumers, stopper
-    if stopper:
-        print('producer stopped')
-        stop(producer)
-        map(stop, consumers)
-        dedupper.utils.finish(numThreads)
-        stopper = False
+    dead_threads+=1
+    logging.debug('bye: {}/{} threads killed'.format(dead_threads,numThreads))
 
 def dedup(repNkey):
-   # logging.debug('hi')
-    time.sleep(random.random() * 4)
     dedupper.utils.findRepDups(repNkey[0], repNkey[1], numThreads)
 
 def makeThreads():
-    return [DedupThread(name='dedupper' + str(i)) for i in range(numThreads)]
+    return [DedupThread(name='dedupper' + str(i+1)) for i in range(numThreads)]
 
 def startThreads():
-    global producer, consumers
-    stopper = True
+    global producer, consumers, dead_threads
+    dead_threads = 0
     producer = DuplifyThread(name='producer')
     consumers = makeThreads()
-
     producer.start()
-    for i in consumers:
-        i.start()
-   # updateQ([('jim brown', 'firstName-territory-mailingStateProvince'),('tim harding',
-# 'firstName-territory-mailingStateProvince'),('paul green', 'firstName-territory-mailingStateProvince')])
-   # updateQ([('jim brown', 'Phone-lastName'),('tim harding', 'Phone-lastName'),('paul green', 'Phone-lastName')])
+    [x.start() for x in consumers]
+

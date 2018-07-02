@@ -110,8 +110,8 @@ def findRepDups(rep, keys, numthreads):
     #list(progress.objects.all())[-1].complete()
     dedupTime.objects.create(num_SF = len(sf_list), seconds=time, num_threads=numthreads)
     cnt+=1
-    if(cnt%500==0):
-        logging.debug('Completed in {} seconds'.format(time))
+    if(cnt%100==0):
+        logging.debug('Dedup #{}: Completed in {} seconds'.format(cnt,time))
 
 def finish(numThreads):
     global end, waiting
@@ -139,7 +139,6 @@ def key_generator(self,partslist):
             for i in ['otherEmail', 'personalEmail', 'workEmail']:
                 new_key_parts = [i if x == 'email' else x for x in key_parts]
                 partslist.insert(index, new_key_parts)
-    progress_recorder = ProgressRecorder(self)
     start = clock()
     i=0
     for key_parts in partslist:
@@ -147,7 +146,6 @@ def key_generator(self,partslist):
         waiting = True
         rep_list = list(repContact.objects.filter(type__in=['Undecided', 'New Record']))
         #create progress object with reps total and title of key part
-        progress_recorder.set_progress(i + 1, len(partslist))
         dedupper.threads.updateQ([[rep, key_parts] for rep in rep_list])
         while waiting:
             pass
@@ -162,7 +160,7 @@ def makeKeys(headers):
     # headers=headers.split(',')
     phoneTypes = ['Phone', 'homePhone', 'mobilePhone', 'otherPhone']
     emailTypes = ['workEmail', 'personalEmail', 'otherEmail']
-    excluded = ['id', 'average', 'type', 'match_ID', 'closest1_id', 'closest2_id', 'closest3_id', 'dupFlag']
+    excluded = ['id', 'average', 'type', 'match_ID', 'closest1_id', 'closest2_id', 'closest3_id', 'closest1_contactID', 'closest2_contactID', 'closest3_contactID', 'dupFlag', ]
 
     for i in headers:
         if i not in excluded:
