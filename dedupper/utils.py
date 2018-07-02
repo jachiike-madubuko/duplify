@@ -19,8 +19,8 @@ from fuzzywuzzy import process #could be used to generate suggestions for unknow
 import numpy as np
 from tablib import Dataset
 import logging
-from celery import shared_task
-from celery_progress.backend import ProgressRecorder
+# from celery import shared_task
+# from celery_progress.backend import ProgressRecorder
 import time
 
 
@@ -123,7 +123,6 @@ def finish(numThreads):
     waiting=False
 
 
-@shared_task(bind=True)
 def key_generator(self,partslist):
     global start, waiting
     for key_parts in partslist:
