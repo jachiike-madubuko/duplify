@@ -106,13 +106,11 @@ def findRepDups(rep, keys, numthreads):
     rep.match_ID = top1[1].ContactID
     rep.save()
     time = round(clock()-start, 2)
-    #update the progress object using
-    #list(progress.objects.all())[-1].complete()
     dedupTime.objects.create(num_SF = len(sf_list), seconds=time, num_threads=numthreads)
     cnt+=1
     if(cnt%500==0):
         avg = dedupTime.objects.aggregate(Avg('seconds'))
-        logging.debug('Dedup #{}: \n\t average time of dedup={}}'.format(cnt,avg))
+        logging.debug('Dedup #{}: \n\t average time of dedup={}'.format(cnt,avg))
 
 def finish(numThreads):
     global end, waiting

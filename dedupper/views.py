@@ -48,10 +48,10 @@ def run(request):
         print('Starting algorithm with {}'.format(keylist))
         keylist = keylist.split("_")
         partslist = [i.split('-') for i in keylist[:-1]]
-        # result = key_generator(partslist)
+        result = key_generator(partslist)
         # result = key_generator.delay(partslist)
     # return render(request, "dedupper/loading_page.html", context={'task_id': result.task_id})
-    return JsonResponse({'msg': 'success'}, safe=False)
+    return JsonResponse({'msg': 'success!'}, safe=False)
 
 def progress(request):
     if request.method == 'GET':
@@ -60,7 +60,6 @@ def progress(request):
         news = len(repContact.objects.filter(type='New Record'))
         undies = len(repContact.objects.filter(type='Undecided'))
         doneKeys, numKeys, currKey, repsDone = getProgress()
-        # numRuns = len(dedupTime.objects.all())
     return JsonResponse({'reps': reps, 'dups':dups, 'news': news, 'undies':undies, 'doneKeys': doneKeys,
                          'numKeys':numKeys, 'repsDone':repsDone, 'currKey':currKey}, safe=False)
 

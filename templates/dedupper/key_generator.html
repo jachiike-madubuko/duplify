@@ -275,7 +275,6 @@ function bg() {
             $.ajaxSetup({data: {
             csrfmiddlewaretoken: '{{ csrf_token }}'
         }});
-
             function update_progress(){
                     $.getJSON("{% url 'progress' %}", function (result) {
                     var reps = result['reps'],
@@ -292,8 +291,13 @@ function bg() {
                     $('#new').text(news);
                     $('#undies').text(undies);
                     $('#donekeys').text(doneKeys);
+                    $('#doneReps').text(doneReps);
                     $('#numkeys').text(numKeys);
                     var percent = (doneKeys/numKeys)*100 + (1/numkKeys * doneReps/reps)*100;
+                    Plotly.animate('myDiv', {
+                        data: [{y: [undies, dups, news]}],
+                        layout: {},
+                    });
                   });
                 }
             function create() {
@@ -336,12 +340,6 @@ function bg() {
             $('#progress').ajaxComplete(function () {
                 $(this).modal('hide');
             });
-            var data = [{
-            x: ['giraffes', 'orangutans', 'monkeys'],
-            y: [20, 14, 23],
-                type: 'bar'
-                }];
-            Plotly.newPlot('myDiv', data);
     </script>
     <nav class="navbar navbar-dark bg-info navbar-expand-lg justify-content-between">
        <h1> <a class="navbar-brand" href="#">Duplify</a></h1>
@@ -367,6 +365,8 @@ function bg() {
              <div class="modal-content">
                  <div class="modal-header">
                      Duplify is now running. Sit back and relax!
+                     <BR>
+                     <b id="doneReps"></b><b>%</b>
                  </div>
                  <div class="modal-body">
                      <div class='row'>
@@ -391,8 +391,22 @@ function bg() {
                       </div>
                       <div class='row'><b id='donekeys'>0</b>/<b id='numkeys'>0</b></div>
                        <div id="myDiv"><!-- Plotly chart will be drawn inside this DIV --></div>
-                 <hr />
-                  </div>
+                     <script>
+                        var data = [{
+                            x: ['Undecided Record', 'Duplicates', 'New Records'],
+                            y: [0, 0, 0],
+                                type: 'bar'
+                                }];
+                            Plotly.newPlot('myDiv', data);
+
+                     </script>
+                     <div class="progress">
+  <div class="progress-bar progress-bar-striped active" role="progressbar"
+  aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+    40%
+  </div>
+</div>
+                 </div>
 
              </div>
          </div>

@@ -12,7 +12,6 @@ def strip(string):
     newstring = string.replace(" ","")
     return  newstring
 
-
 class simple(models.Model):
     title = models.CharField(max_length=256)
     author = models.CharField(max_length=256)
