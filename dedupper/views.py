@@ -12,7 +12,7 @@ from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin, RequestConfig
 
 from dedupper.resources import RepContactResource, SFContactResource, DedupTimeResource, DuplifyTimeResource, UploadTimeResource
-from  dedupper.utils import key_generator, makeKeys, convertCSV, my_task
+from  dedupper.utils import key_generator, makeKeys, convertCSV, getProgress
 import csv
 from collections import OrderedDict
 '''
@@ -42,18 +42,27 @@ def index(request):
 def run(request):
     if request.method == 'GET':
 
-        # move into new method seperate displaying and form submission to get rid of do you want to resubmit form
         keylist = request.GET.get('keys')
         # read in channel and query SF by channgel for the key gen
         # channel = request.POST.get('channel')
         print('Starting algorithm with {}'.format(keylist))
         keylist = keylist.split("_")
         partslist = [i.split('-') for i in keylist[:-1]]
-        result = key_generator(partslist)
+        # result = key_generator(partslist)
         # result = key_generator.delay(partslist)
     # return render(request, "dedupper/loading_page.html", context={'task_id': result.task_id})
     return JsonResponse({'msg': 'success'}, safe=False)
 
+def progress(request):
+    if request.method == 'GET':
+        reps = len(repContact.objects.all())
+        dups = len(repContact.objects.filter(type='Duplicate'))
+        news = len(repContact.objects.filter(type='New Record'))
+        undies = len(repContact.objects.filter(type='Undecided'))
+        doneKeys, numKeys, currKey, repsDone = getProgress()
+        # numRuns = len(dedupTime.objects.all())
+    return JsonResponse({'reps': reps, 'dups':dups, 'news': news, 'undies':undies, 'doneKeys': doneKeys,
+                         'numKeys':numKeys, 'repsDone':repsDone, 'currKey':currKey}, safe=False)
 
 #connect this page with filters config = RequestConfig(request)
 def display(request):

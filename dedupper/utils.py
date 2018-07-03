@@ -25,21 +25,22 @@ import time
 
 
 from copy import deepcopy
+from django.db.models import Avg
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
 
 rkd = RangeKeyDict({
-    (90, 101): 'Duplicate',
-    (50, 90): 'Undecided',
-    (0, 50): 'New Record'
+    (95, 101): 'Duplicate',
+    (65, 95): 'Undecided',
+    (0, 65): 'New Record'
 })
 waiting= True
 sf_list = list(sfcontact.objects.all())
-sf_map = None
-start= end=cnt = 0
+sf_map=currKey = None
+start=end=cnt=doneKeys=totalKeys = 0
 
 #TODO implement batch upload, append contacts to a list the batch save them.
 
-def convertCSV(file, resource, type='rep', batchSize=2000):
+def convertCSV(file, resource, type='rep', batchSize=3000):
     dataset = Dataset()
     headers = ''
     cnt, cnt2 = 0, 0
@@ -75,7 +76,6 @@ def findRepDups(rep, keys, numthreads):
     rep_key = rep.key(keys)
     sf_keys = [i.key(keys) for i in sf_list]
     sf_map = dict(zip(sf_keys, sf_list))
-
     key_matches = match_keys(rep_key, sf_keys)
     match_map = list(zip(key_matches, sf_keys))
     match_map = sorted(match_map, reverse=True)
@@ -110,8 +110,9 @@ def findRepDups(rep, keys, numthreads):
     #list(progress.objects.all())[-1].complete()
     dedupTime.objects.create(num_SF = len(sf_list), seconds=time, num_threads=numthreads)
     cnt+=1
-    if(cnt%100==0):
-        logging.debug('Dedup #{}: Completed in {} seconds'.format(cnt,time))
+    if(cnt%500==0):
+        avg = dedupTime.objects.aggregate(Avg('seconds'))
+        logging.debug('Dedup #{}: \n\t average time of dedup={}}'.format(cnt,avg))
 
 def finish(numThreads):
     global end, waiting
@@ -122,10 +123,9 @@ def finish(numThreads):
     os.system('say "The repp list has been duplified!"')
     waiting=False
 
-
 @shared_task(bind=True)
 def key_generator(self,partslist):
-    global start, waiting
+    global start, waiting, doneKeys, totalKeys, cnt
     for key_parts in partslist:
         if 'phone' in key_parts:
             index = partslist.index(key_parts)
@@ -140,15 +140,18 @@ def key_generator(self,partslist):
                 new_key_parts = [i if x == 'email' else x for x in key_parts]
                 partslist.insert(index, new_key_parts)
     start = clock()
-    i=0
+    totalKeys =len(partslist)
     for key_parts in partslist:
+        currKey = key_parts
+        cnt=0
         print('starting key: {}'.format(key_parts))
         waiting = True
-        rep_list = list(repContact.objects.filter(type__in=['Undecided', 'New Record']))
-        #create progress object with reps total and title of key part
+        rep_list = list(repContact.objects.filter(type='Undecided'))
         dedupper.threads.updateQ([[rep, key_parts] for rep in rep_list])
         while waiting:
             pass
+        doneKeys += 1
+
 
 def makeKeys(headers):
     keys = []
@@ -205,12 +208,7 @@ def setSortingAlgorithm(min_dup,min_uns):
 def sort(avg):
     return rkd[avg]
 
+def getProgress():
+    return doneKeys, totalKeys, currKey, cnt
 
-@shared_task(bind=True)
-def my_task(self,seconds):
-    progress_recorder = ProgressRecorder(self)
-    for i in range(seconds):
-        time.sleep(1)
-        progress_recorder.set_progress(i+1, seconds)
-    return 'done'
 

@@ -88,6 +88,8 @@
         
 
     </style>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
 
 </head>
  <body class="bg-secondary"style="overflow: hidden;">
@@ -273,32 +275,56 @@ function bg() {
             $.ajaxSetup({data: {
             csrfmiddlewaretoken: '{{ csrf_token }}'
         }});
-        function create() {
-                var sList = "";
-                $('input[type=checkbox]').each(function () {
-                    var sThisVal = (this.checked ? "1" : "0");
-                    if (sThisVal === "1") {
-                         sList += ( this.id + "-");
-                         $(this).prop("checked", false);
-                    }
-                });
-                sList = sList.slice(0, -1);
-                var key = '<li class="bg-secondary list-group-item">'+
-                    '<button type="button" class="btn btn-sm btn-link float-right" onclick="del(this)">'+
-                    '<span class="fa fa-trash fa-1x"></span></button><h6 class="key">'+sList+'</h6></li>';
-                $(".list-group").append(key);
-        }
-        function generateKeys() {
+
+            function update_progress(){
+                    $.getJSON("{% url 'progress' %}", function (result) {
+                    var reps = result['reps'],
+                        dups = result['dups'],
+                        news = result['news'],
+                        undies = result['undies'],
+                        doneKeys = result['doneKeys'],
+                        doneReps = result['doneReps'],
+                        numKeys = result['numKeys'],
+                        currKeys = result['currKeys'];
+
+                    $('#totalReps').text(reps);
+                    $('#dups').text(dups);
+                    $('#new').text(news);
+                    $('#undies').text(undies);
+                    $('#donekeys').text(doneKeys);
+                    $('#numkeys').text(numKeys);
+                    var percent = (doneKeys/numKeys)*100 + (1/numkKeys * doneReps/reps)*100;
+                  });
+                }
+            function create() {
+                    var sList = "";
+                    $('input[type=checkbox]').each(function () {
+                        var sThisVal = (this.checked ? "1" : "0");
+                        if (sThisVal === "1") {
+                             sList += ( this.id + "-");
+                             $(this).prop("checked", false);
+                        }
+                    });
+                    sList = sList.slice(0, -1);
+                    var key = '<li class="bg-secondary list-group-item">'+
+                        '<button type="button" class="btn btn-sm btn-link float-right" onclick="del(this)">'+
+                        '<span class="fa fa-trash fa-1x"></span></button><h6 class="key">'+sList+'</h6></li>';
+                    $(".list-group").append(key);
+            }
+            function generateKeys() {
             let keys = "";
             $(".key").each(function () {
                 keys += $(this).text();
                 keys += '_';
             });
+            update_progress();
             $.getJSON("{% url 'run' %}", {keys: keys}, function (result) {
                 $("#progress").modal('dispose');
                 window.location.replace("{% url 'reps' %}");
             });
+            var interval = setInterval(update_progress,  500);
         }
+
         function del(item) {
             $(item).closest(".list-group-item").remove();
         }
@@ -310,6 +336,12 @@ function bg() {
             $('#progress').ajaxComplete(function () {
                 $(this).modal('hide');
             });
+            var data = [{
+            x: ['giraffes', 'orangutans', 'monkeys'],
+            y: [20, 14, 23],
+                type: 'bar'
+                }];
+            Plotly.newPlot('myDiv', data);
     </script>
     <nav class="navbar navbar-dark bg-info navbar-expand-lg justify-content-between">
        <h1> <a class="navbar-brand" href="#">Duplify</a></h1>
@@ -330,14 +362,38 @@ function bg() {
             </ul>
         </div>
     </nav>
-    <div class="modal fade" id="progress" tabindex="-1" role="dialog"  aria-hidden="true">
-         <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal show" id="progress" tabindex="-1" role="dialog"  aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
              <div class="modal-content">
                  <div class="modal-header">
-                 </div>
-                 <div class="modal-body">
                      Duplify is now running. Sit back and relax!
                  </div>
+                 <div class="modal-body">
+                     <div class='row'>
+                         Current Key: <b id='currKey'> _ </b>
+                     </div>
+                     <div class='row'>
+                         Total Reps: <b id='totalReps'> 0 </b>
+                     </div>
+                      <div class='row'>
+                          <div class='col-4'>
+                              <div class='row'>Undecided</div>
+                              <div id="undies" class='row'>0</div>
+                          </div>
+                          <div class='col-4'>
+                              <div class='row'>Duplicates</div>
+                              <div id="dups"  class='row'>0</div>
+                          </div>
+                          <div class='col-4'>
+                              <div class='row'>New Records</div>
+                              <div id="new" class='row'>0</div>
+                          </div>
+                      </div>
+                      <div class='row'><b id='donekeys'>0</b>/<b id='numkeys'>0</b></div>
+                       <div id="myDiv"><!-- Plotly chart will be drawn inside this DIV --></div>
+                 <hr />
+                  </div>
+
              </div>
          </div>
      </div>
@@ -445,7 +501,8 @@ function bg() {
                     </div>
                 </div>
             </div>
-                <button id="keygen" class="btn btn-primary btn-block badge-pill my-2" onclick="generateKeys()" data-toggle="modal" data-target="#progress">
+                <button id="keygen" class="btn btn-primary btn-block badge-pill my-2" onclick="generateKeys()"
+                        data-toggle="modal" data-target="#progress" data-backdrop="'static" data-keyboard="false">
                     <b>GO</b>
                 </button>
         </div>
