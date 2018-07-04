@@ -270,6 +270,7 @@ function bg() {
                     {% for val in value  %}
                         <a class="dropdown-item {% cycle 'alert-primary' 'alert-success' 'alert-warning' 'alert-danger'   %}" href="#" onclick="merge(this) " id="{{ key }}-{{ val }}"> {{ val }}</a>
                     {% endfor %}
+                    {% resetcycle %}
                 </div>
             </div>
             {% endfor %}

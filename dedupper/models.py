@@ -293,11 +293,16 @@ class dedupTime(models.Model):
     id = models.BigAutoField(primary_key=True)
     num_threads = models.IntegerField(null=True, blank=True)
     num_SF = models.IntegerField(null=True, blank=True)
+    num_dup = models.IntegerField(null=True, blank=True)
+    num_new = models.IntegerField(null=True, blank=True)
+    num_undie= models.IntegerField(null=True, blank=True)
     seconds = models.FloatField( null=True, blank=True)
+    avg = models.FloatField( null=True, blank=True)
+    current_key = models.CharField(max_length=256, blank=True, null=True)
     created_on = models. DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
-       return "{} SF records dupped against in {} seconds".format(self.num_SF, self.seconds)
+       return "At {} -- {} dups and {} new".format(self.created_on, self.num_dup, self.num_new)
 
 class duplifyTime(models.Model):
     num_threads = models.IntegerField(null=True, blank=True)
@@ -305,6 +310,7 @@ class duplifyTime(models.Model):
     num_rep = models.IntegerField(null=True, blank=True)
     seconds = models.FloatField( null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
+
 
     def __str__(self):
         return "{} reps <=> {} SF records in {} seconds".format(self.num_rep, self.num_SF, self.seconds)

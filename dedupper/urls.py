@@ -34,4 +34,3 @@ urlpatterns = [
     path('sorted-reps/export/<type>', views.download, name='export'),
     path('sorted-reps/report/<type>', views.download_times, name='report'),
 ]
-

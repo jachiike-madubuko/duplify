@@ -19,19 +19,15 @@ from fuzzywuzzy import process #could be used to generate suggestions for unknow
 import numpy as np
 from tablib import Dataset
 import logging
-from celery import shared_task
-from celery_progress.backend import ProgressRecorder
 import time
-
-
-from copy import deepcopy
 from django.db.models import Avg
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
 
+
 rkd = RangeKeyDict({
-    (95, 101): 'Duplicate',
-    (65, 95): 'Undecided',
-    (0, 65): 'New Record'
+    (97, 101): 'Duplicate',
+    (70, 97): 'Undecided',
+    (0, 70): 'New Record'
 })
 waiting= True
 sf_list = list(sfcontact.objects.all())
@@ -101,16 +97,19 @@ def findRepDups(rep, keys, numthreads):
         rep.average = top1[0]
         rep.closest1 = top1[1]
         rep.closest1_contactID = top1[1].ContactID
-    # seperate by activity
     rep.type = sort(rep.average)
     rep.match_ID = top1[1].ContactID
     rep.save()
     time = round(clock()-start, 2)
-    dedupTime.objects.create(num_SF = len(sf_list), seconds=time, num_threads=numthreads)
-    cnt+=1
-    if(cnt%500==0):
-        avg = dedupTime.objects.aggregate(Avg('seconds'))
-        logging.debug('Dedup #{}: \n\t average time of dedup={}'.format(cnt,avg))
+    avg = dedupTime.objects.aggregate(Avg('seconds'))['seconds__avg']
+    if avg == None:
+        avg = 0
+    dups = len(repContact.objects.filter(type='Duplicate'))
+    news = len(repContact.objects.filter(type='New Record'))
+    undies = len(repContact.objects.filter(type='Undecided'))
+    dedupTime.objects.create(num_SF = len(sf_list), seconds=time, num_threads=numthreads, avg=avg, num_dup=dups,
+                             num_new=news, num_undie=undies, current_key=currKey)
+    cnt += 1
 
 def finish(numThreads):
     global end, waiting
@@ -121,9 +120,8 @@ def finish(numThreads):
     os.system('say "The repp list has been duplified!"')
     waiting=False
 
-@shared_task(bind=True)
-def key_generator(self,partslist):
-    global start, waiting, doneKeys, totalKeys, cnt
+def key_generator(partslist):
+    global start, waiting, doneKeys, totalKeys, cnt, currKey
     for key_parts in partslist:
         if 'phone' in key_parts:
             index = partslist.index(key_parts)
@@ -138,7 +136,7 @@ def key_generator(self,partslist):
                 new_key_parts = [i if x == 'email' else x for x in key_parts]
                 partslist.insert(index, new_key_parts)
     start = clock()
-    totalKeys =len(partslist)
+    totalKeys = len(partslist)
     for key_parts in partslist:
         currKey = key_parts
         cnt=0
@@ -149,7 +147,6 @@ def key_generator(self,partslist):
         while waiting:
             pass
         doneKeys += 1
-
 
 def makeKeys(headers):
     keys = []
@@ -208,5 +205,6 @@ def sort(avg):
 
 def getProgress():
     return doneKeys, totalKeys, currKey, cnt
+
 
 

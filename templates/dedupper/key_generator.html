@@ -85,7 +85,7 @@
                     -0.125px 0.125px 0 #fff,
                     0.125px 0.125px 0 #fff;
         }
-        
+
 
     </style>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -100,7 +100,8 @@
         integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
 
      <script>
-function bg() {
+         var inter;
+        function bg() {
 
             $("body").polygonizr({
 
@@ -210,8 +211,7 @@ function bg() {
                 });
            }
         bg();
-
-        var colors = new Array(
+                var colors = new Array(
             [127.5,127.5,127.5],
             [255,255,255],
             [0,0,0],
@@ -275,71 +275,123 @@ function bg() {
             $.ajaxSetup({data: {
             csrfmiddlewaretoken: '{{ csrf_token }}'
         }});
-            function update_progress(){
-                    $.getJSON("{% url 'progress' %}", function (result) {
-                    var reps = result['reps'],
-                        dups = result['dups'],
-                        news = result['news'],
-                        undies = result['undies'],
-                        doneKeys = result['doneKeys'],
-                        doneReps = result['doneReps'],
-                        numKeys = result['numKeys'],
-                        currKeys = result['currKeys'];
-
-                    $('#totalReps').text(reps);
-                    $('#dups').text(dups);
-                    $('#new').text(news);
-                    $('#undies').text(undies);
-                    $('#donekeys').text(doneKeys);
-                    $('#doneReps').text(doneReps);
-                    $('#numkeys').text(numKeys);
-                    var percent = (doneKeys/numKeys)*100 + (1/numkKeys * doneReps/reps)*100;
-                    Plotly.animate('myDiv', {
-                        data: [{y: [undies, dups, news]}],
-                        layout: {},
-                    });
-                  });
-                }
-            function create() {
-                    var sList = "";
-                    $('input[type=checkbox]').each(function () {
-                        var sThisVal = (this.checked ? "1" : "0");
-                        if (sThisVal === "1") {
-                             sList += ( this.id + "-");
-                             $(this).prop("checked", false);
-                        }
-                    });
-                    sList = sList.slice(0, -1);
-                    var key = '<li class="bg-secondary list-group-item">'+
-                        '<button type="button" class="btn btn-sm btn-link float-right" onclick="del(this)">'+
-                        '<span class="fa fa-trash fa-1x"></span></button><h6 class="key">'+sList+'</h6></li>';
-                    $(".list-group").append(key);
-            }
-            function generateKeys() {
-            let keys = "";
-            $(".key").each(function () {
-                keys += $(this).text();
-                keys += '_';
-            });
-            update_progress();
-            $.getJSON("{% url 'run' %}", {keys: keys}, function (result) {
-                $("#progress").modal('dispose');
-                window.location.replace("{% url 'reps' %}");
-            });
-            var interval = setInterval(update_progress,  500);
+        function update_bar(now) {
+            var p_bar= $(".progress-bar");
+            p_bar.attr('aria-valuenow', now);
+            p_bar.animate({width: now+'%'}, 500);
         }
+        var old_percent = 0;
+
+        function update_progress(){
+                $.getJSON("{% url 'progress' %}", function (result) {
+                var reps = result['reps'],
+                    dups = result['dups'],
+                    news = result['news'],
+                    undies = result['undies'],
+                    doneKeys = result['doneKeys'],
+                    doneReps = result['doneReps'],
+                    numKeys = result['numKeys'],
+                    currKey = result['currKey'];
+                var percent = Math.round(((doneKeys/numKeys)*100) + ((1/numKeys) * (doneReps/reps)*100));
+
+                if (percent > old_percent)
+                {
+                     $('#doneReps').text(percent);
+                     update_bar(percent);
+                }
+                old_percent=percent;
+
+                $('#totalReps').text(reps);
+                $('#dups').text(dups);
+                $('#new').text(news);
+                $('#undies').text(undies);
+                $('#donekeys').text(doneKeys);
+                $('#numkeys').text(numKeys);
+                $('#currKey').text(currKey);
+
+
+
+                var data = [{
+                            x: ['Undecided Record', 'Duplicates', 'New Records'],
+                            y: [undies, dups, news],
+                            type: 'bar',
+                            marker:{
+                                color: ['rgba(0,0,255,1)', 'rgba(255,0,0,1)', 'rgba(0,255,0,1)', ]
+                            },
+                                }];
+                        var layout = {
+                            title: 'Reps Distribution',
+                            xaxis: {
+                                showgrid: false,
+                                zeroline: false
+                            },
+                            yaxis: {
+                                showline: false,
+                                rangemode: 'tozero'
+                            }
+                        };
+                  var fig = {
+                            data: data,
+                            layout: layout,
+                        };
+                $("#repDistro").fadeToggle("slow");
+                setTimeout(function () {Plotly.react('repDistro', fig);}, 500);
+                $("#repDistro").fadeToggle("slow");
+
+                if (percent > 99){
+                    clearInterval(inter);
+                    $("#next").removeClass("invisible");
+                    $(".progress-bar").removeClass("progress-bar-striped ");
+                    $(".progress-bar").removeClass("progress-bar-animated");
+                    $(".progress-bar").addClass("bg-success");
+
+                    $(".modal-header").text("Duplify is done! Click Next to see the sorted reps.")
+
+                }
+
+              }).fail(function () {
+                });
+        }
+
+        function create() {
+                var sList = "";
+                $('input[type=checkbox]').each(function () {
+                    var sThisVal = (this.checked ? "1" : "0");
+                    if (sThisVal === "1") {
+                         sList += ( this.id + "-");
+                         $(this).prop("checked", false);
+                    }
+                });
+                sList = sList.slice(0, -1);
+                var key = '<li class="bg-secondary list-group-item">'+
+                    '<button type="button" class="btn btn-sm btn-link float-right" onclick="del(this)">'+
+                    '<span class="fa fa-trash fa-1x"></span></button><h6 class="key">'+sList+'</h6></li>';
+                $(".list-group").append(key);
+        }
+
+        function generateKeys() {
+        let keys = "";
+        $(".key").each(function () {
+            keys += $(this).text();
+            keys += '_';
+        });
+        $.getJSON("{% url 'run' %}", {keys: keys}, function (result) {
+            $("#progress").modal('dispose');
+        });
+         inter = setInterval(update_progress,  2000);
+    }
 
         function del(item) {
             $(item).closest(".list-group-item").remove();
         }
+              function togglegameon(){
+           $("#qwop").show();
 
-            $('#progress').ajaxStart(function () {
-                alert('ajax start');
-                $(this).modal('show');
-            });
-            $('#progress').ajaxComplete(function () {
-                $(this).modal('hide');
-            });
+        }
+              function togglegameoff(){
+           $("#qwop").hide();
+
+        }
     </script>
     <nav class="navbar navbar-dark bg-info navbar-expand-lg justify-content-between">
        <h1> <a class="navbar-brand" href="#">Duplify</a></h1>
@@ -363,51 +415,91 @@ function bg() {
     <div class="modal show" id="progress" tabindex="-1" role="dialog"  aria-hidden="true">
          <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
              <div class="modal-content">
-                 <div class="modal-header">
+                 <div class="modal-header row">
                      Duplify is now running. Sit back and relax!
-                     <BR>
-                     <b id="doneReps"></b><b>%</b>
                  </div>
                  <div class="modal-body">
-                     <div class='row'>
-                         Current Key: <b id='currKey'> _ </b>
+                     <div role="tabpanel">
+                    <!-- Nav tabs -->
+                            <ul class="my-2 nav nav-pills nav-fill text-white" id="pills-tab" role="tablist">
+
+                        <li role="presentation" class="active nav-item badge-pill"><a   href="#uploadTab" aria-controls="uploadTab" role="tab"
+                                                                                         data-toggle="tab"><button
+                                class="nav-link  bg-primary nav-pill badge-pill" onclick="togglegameoff()">
+                            Progress</button></a>
+
+                        </li>
+                        <li  id="br"role="presentation" class=" nav-item badge-pill"><a   href="#browseTab" aria-controls="browseTab" role="tab"
+                                                                                         data-toggle="tab"><button
+                                class="nav-link  bg-primary nav-pill badge-pill" onclick="togglegameon()">
+                            Analytics</button></a>
+                        </li>
+                    </ul>
                      </div>
-                     <div class='row'>
-                         Total Reps: <b id='totalReps'> 0 </b>
-                     </div>
-                      <div class='row'>
-                          <div class='col-4'>
-                              <div class='row'>Undecided</div>
-                              <div id="undies" class='row'>0</div>
-                          </div>
-                          <div class='col-4'>
-                              <div class='row'>Duplicates</div>
-                              <div id="dups"  class='row'>0</div>
-                          </div>
-                          <div class='col-4'>
-                              <div class='row'>New Records</div>
-                              <div id="new" class='row'>0</div>
-                          </div>
+                         <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="uploadTab">
+                 <div class="progress">
+                      <div class="progress-bar progress-bar-striped progress-bar-animated badge-pill" role="progressbar"
+                           aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+                          <b id="doneReps">0</b><b>%</b>
                       </div>
+                    </div>
+                      <div class='row my-3 alert alert-secondary '>
+                          <div class="col-2"></div>
+                          <div class='col-4'>
+                              <div class='row'>Current Key:</div>
+                               <div class='row'>
+                         <b id='currKey'> _ </b>
+                     </div>
+                          </div>
+                          <div class='col-4'>
+                              <div class='row'>Keys Completed:</div>
                       <div class='row'><b id='donekeys'>0</b>/<b id='numkeys'>0</b></div>
-                       <div id="myDiv"><!-- Plotly chart will be drawn inside this DIV --></div>
+                          </div>
+                                                    <div class="col-2"></div>
+
+                      </div>
+                       <div id="repDistro"><!-- Plotly chart will be drawn inside this DIV --></div>
                      <script>
                         var data = [{
                             x: ['Undecided Record', 'Duplicates', 'New Records'],
                             y: [0, 0, 0],
-                                type: 'bar'
+                            type: 'bar',
+                            marker:{
+                                color: ['rgba(0,0,255,1)', 'rgba(255,0,0,1)', 'rgba(0,255,0,1)', ]
+                            },
                                 }];
-                            Plotly.newPlot('myDiv', data);
+                        var layout = {
+                            title: 'Reps Distribution',
+                            xaxis: {
+                                showgrid: false,
+                                zeroline: false
+                            },
+                            yaxis: {
+                                showline: false,
+                                rangemode: 'tozero'
+                            },
+                        };
+                        var fig = {
+                            data: data,
+                            layout: layout,
+                        }
+                        Plotly.react('repDistro', fig);
+                     </script></div>
+                        <div role="tabpanel" class="tab-pane" id="browseTab">
+                            <object class="" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="640"
+                                    height="900"
+                                     align="middle" id="qwop"><param name="movie" value="http://m.toogame.com/q/swfs/QWOP.swf"><param name="quality" value="high"><param name="AllowScriptAccess" value="always">><object type="application/x-shockwave-flash" data="http://m.toogame.com/q/swfs/QWOP.swf" width="640" height="400"><param name="movie" value="http://m.toogame.com/q/swfs/QWOP.swf"><param name="quality" value="high"><param name="AllowScriptAccess" value="always"><a href="http://www.adobe.com/go/getflash"><img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash Player"></a></object></object>
 
-                     </script>
-                     <div class="progress">
-  <div class="progress-bar progress-bar-striped active" role="progressbar"
-  aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:0%">
-    40%
-  </div>
-</div>
+                        </div>
+                    </div>
+                     </div>
+                         <hr>
+                 <div class="container my-3">
+                    <a id="next" class="invisible btn btn-success
+                    badge-pill btn-block" href="{% url 'reps' %}">Next</a>
+                  </div>
                  </div>
-
              </div>
          </div>
      </div>
@@ -476,7 +568,7 @@ function bg() {
             </div>
         </div>
         <div id="keyList-channelPicker" class="col-4">
-            <div id="channelPicker" class=" bg-dark text-white card mb-2">
+            <div id="channelPicker" class="bg-dark text-white card mb-2">
               <div class="card-body">
                 <h4 class="card-title">Pick a Channel</h4>
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -516,7 +608,7 @@ function bg() {
                 </div>
             </div>
                 <button id="keygen" class="btn btn-primary btn-block badge-pill my-2" onclick="generateKeys()"
-                        data-toggle="modal" data-target="#progress" data-backdrop="'static" data-keyboard="false">
+                        data-toggle="modal" data-target="#progress" data-backdrop="static" data-keyboard="false">
                     <b>GO</b>
                 </button>
         </div>
@@ -524,3 +616,10 @@ function bg() {
     </div>
 </body>
 </html>
+<!--                            ADD TABS TO MODAL and Imbed games
+ <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="640" height="400" align="middle" id="qwop"><param
+        name="movie" value="http://m.toogame.com/q/swfs/QWOP.swf"><param name="quality" value="high"><param
+        name="AllowScriptAccess" value="always">><object type="application/x-shockwave-flash" data="http://m.toogame.com/q/swfs/QWOP.swf" width="640" height="400"><param name="movie" value="http://m.toogame.com/q/swfs/QWOP.swf"><param name="quality" value="high"><param name="AllowScriptAccess" value="always"><a href="http://www.adobe.com/go/getflash"><img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash Player"></a></object></object>
+            <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="550" height="445" align="middle" id="sneaky-weasel-tetris"><param name="movie" value="http://m.toogame.com/s/swfs/sneaky-weasel-tetris_80r.swf"><param name="quality" value="high"><param name="AllowScriptAccess" value="always"><object type="application/x-shockwave-flash" data="http://m.toogame.com/s/swfs/sneaky-weasel-tetris_80r.swf" width="550" height="445"><param name="movie" value="http://m.toogame.com/s/swfs/sneaky-weasel-tetris_80r.swf"><param name="quality" value="high"><param name="AllowScriptAccess" value="always"><a href="http://www.adobe.com/go/getflash"><img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash Player"></a></object></object>
+
+ -->

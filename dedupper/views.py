@@ -59,9 +59,9 @@ def progress(request):
         dups = len(repContact.objects.filter(type='Duplicate'))
         news = len(repContact.objects.filter(type='New Record'))
         undies = len(repContact.objects.filter(type='Undecided'))
-        doneKeys, numKeys, currKey, repsDone = getProgress()
+        doneKeys, numKeys, currKey, doneReps = getProgress()
     return JsonResponse({'reps': reps, 'dups':dups, 'news': news, 'undies':undies, 'doneKeys': doneKeys,
-                         'numKeys':numKeys, 'repsDone':repsDone, 'currKey':currKey}, safe=False)
+                         'numKeys':numKeys, 'doneReps':doneReps, 'currKey':currKey}, safe=False)
 
 #connect this page with filters config = RequestConfig(request)
 def display(request):
@@ -105,10 +105,8 @@ def upload(request):
 
 def merge(request, CRD):
     obj = repContact.objects.values().get(CRD=CRD)
-    # print(obj)
     ids = [obj['closest1_contactID'], obj['closest2_contactID'], obj['closest3_contactID']]
     objs = sfcontact.objects.values().filter(ContactID__in=ids)
-    # print(objs)
     fields = [i.name for i in repContact._meta.local_fields]
     mergers = list()
 
@@ -118,10 +116,10 @@ def merge(request, CRD):
             mergers.insert(0, list(objs[i].values()))
         elif objs[i]['ContactID'] == obj['closest2_contactID']:
             del objs[i]['closest_rep_id'], objs[i]['dupFlag'], objs[i]['ContactID']
-            mergers.insert(1, list(objs[i].values()))
+            mergers.insert(len(mergers), list(objs[i].values()))
         else:
             del objs[i]['closest_rep_id'], objs[i]['dupFlag'], objs[i]['ContactID']
-            mergers.insert(2, list(objs[i].values()))
+            mergers.insert(-1, list(objs[i].values()))
 
     del obj['closest1_id'], obj['closest2_id'], obj['closest3_id'], obj['closest1_contactID'], \
         obj['closest2_contactID'], obj['closest3_contactID'], obj['type'], obj['dupFlag'], obj['average']
@@ -132,11 +130,6 @@ def merge(request, CRD):
         obj_map = {i:j for i,j in zip(fields, list(zip(obj,mergers[0],mergers[1])) ) }
     elif len(mergers) == 1:
         obj_map = {i:j for i,j in zip(fields, list(zip(obj,mergers[0])) ) }
-    '''
-        outputs a dictionary of the field as the with a value of each objs corresponding field value
-        example
-        obj_map['title'] = ('free willy', 'home alone', 'toy story')
-    '''
     return render(request, 'dedupper/merge.html', {'objs' : obj_map})
 
 def download(request,type):
