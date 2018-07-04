@@ -9,7 +9,6 @@ class SimpleFilter(django_filters.FilterSet):
         model = simple
         exclude = ()
 
-
 class SimpleFilterEx(django_filters.FilterSet):
     ex = django_filters.CharFilter(label='Ex filter', method='filter_ex')
     search_fields = ['title', 'author', 'category', 'id', ]

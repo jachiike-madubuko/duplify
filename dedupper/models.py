@@ -43,13 +43,6 @@ class simple(models.Model):
             key += key_builder[part]
         return key
 
-
-#TODO
-#create contact model
-#create rep_contact and sf_contact that inherit from contact
-#set up model for SF contact
-#for rep_contact make a match_contactID and make it unique
-
 class contact(models.Model):
     CRD = models.CharField( max_length=256, unique=True,  db_column="CRD")
     firstName = models.CharField(max_length=256, blank=True)
@@ -204,7 +197,6 @@ class repContact(models.Model):
             key += key_builder[part]
         return key
 
-
 class sfcontact(models.Model):
     CRD = models.CharField(max_length=256, db_column="CRD")
     ContactID = models.CharField(max_length=256, blank=True)
@@ -314,8 +306,6 @@ class duplifyTime(models.Model):
 
     def __str__(self):
         return "{} reps <=> {} SF records in {} seconds".format(self.num_rep, self.num_SF, self.seconds)
-
-
 
 class uploadTime(models.Model):
     num_threads = models.IntegerField(default=1, null=True, blank=True)

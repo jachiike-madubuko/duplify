@@ -8,11 +8,10 @@ import queue  #must be in same directory as this file
 logging.basicConfig(level=logging.DEBUG,
                     format='(%(threadName)-9s) %(message)s',)
 
-BUF_SIZE = 10000
-q = queue.Queue(BUF_SIZE)
+BUFF_SIZE = 10000
+q = queue.Queue(BUFF_SIZE)
 command = list()
-producer = None
-consumers = None
+producer= consumers = None
 numThreads = 12
 stopper = True
 dead_threads = 0

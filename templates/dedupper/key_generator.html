@@ -378,14 +378,14 @@
         $.getJSON("{% url 'run' %}", {keys: keys}, function (result) {
             $("#progress").modal('dispose');
         });
-         inter = setInterval(update_progress,  2000);
+         inter = setInterval(update_progress,  5000);
     }
 
         function del(item) {
             $(item).closest(".list-group-item").remove();
         }
               function togglegameon(){
-           $("#qwop").show();
+           $("#qwop").fadeIn("slow");
 
         }
               function togglegameoff(){
@@ -425,13 +425,14 @@
 
                         <li role="presentation" class="active nav-item badge-pill"><a   href="#uploadTab" aria-controls="uploadTab" role="tab"
                                                                                          data-toggle="tab"><button
-                                class="nav-link  bg-primary nav-pill badge-pill" onclick="togglegameoff()">
+                                class="nav-link btn btn-block  bg-primary nav-pill badge-pill" onclick="togglegameoff
+                                ()">
                             Progress</button></a>
 
                         </li>
                         <li  id="br"role="presentation" class=" nav-item badge-pill"><a   href="#browseTab" aria-controls="browseTab" role="tab"
                                                                                          data-toggle="tab"><button
-                                class="nav-link  bg-primary nav-pill badge-pill" onclick="togglegameon()">
+                                class="nav-link btn  bg-primary btn-block nav-pill badge-pill" onclick="togglegameon()">
                             Analytics</button></a>
                         </li>
                     </ul>

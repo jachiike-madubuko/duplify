@@ -1,14 +1,10 @@
 {% load static %}
 {% load render_table from django_tables2 %}
-<!-- make content pane scrollable and add an export button-->
 <!doctype html>
 <html lang="en">
   <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
       <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
@@ -162,11 +158,6 @@
             [0,0,0]);
 
         var step = 0;
-        //color table indices for:
-        // current color left
-        // next color left
-        // current color right
-        // next color right
         var colorIndices = [0,1,2,3];
 
         //transition speed
@@ -213,7 +204,6 @@
         }
 
         setInterval(updateGradient,10);
-
     </script>
 
       <nav class="navbar navbar-dark bg-dark navbar-expand-lg justify-content-between rounded-bottom">

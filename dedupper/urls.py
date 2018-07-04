@@ -29,8 +29,8 @@ urlpatterns = [
     path('progress/', views.progress, name='progress'),
     path('duplify/', views.duplify, name='duplify'), #figure out url reverse
     path('loading/<keylist>', views.loading, name='loading'), #figure out url reverse
-    path('sorted-reps/', views.display, name='reps'),
-    path('sorted-reps/<CRD>', views.merge, name='merge'),
-    path('sorted-reps/export/<type>', views.download, name='export'),
-    path('sorted-reps/report/<type>', views.download_times, name='report'),
+    path('sorted/', views.display, name='reps'),
+    path('sorted/<CRD>', views.merge, name='merge'),
+    path('sorted/export/<type>', views.download, name='export'),
+    path('sorted/report/<type>', views.download_times, name='report'),
 ]

@@ -14,7 +14,6 @@ from django_tables2.views import SingleTableMixin, RequestConfig
 from dedupper.resources import RepContactResource, SFContactResource, DedupTimeResource, DuplifyTimeResource, UploadTimeResource
 from  dedupper.utils import key_generator, makeKeys, convertCSV, getProgress
 import csv
-from collections import OrderedDict
 '''
 #TODO change the HTTP request 
 timeout for the running algorithm or 
@@ -30,11 +29,6 @@ keys= []
 #TODO look into make custom commands reset the contacts type and closest matches
 #TODO look make custom command to spit out number of each model
     #https://docs.djangoproject.com/en/2.0/howto/custom-management-commands/
-#TODO find how to for django celery and bootstrap progress bar
-    #https://www.dangtrinh.com/2013/07/django-celery-display-progress-bar-of.html
-    #https://github.com/czue/celery-progress
-    #https://stackoverflow.com/questions/7380373/django-celery-progress-bar
-
 
 def index(request):
     return render(request, 'dedupper/rep_list_upload.html')
@@ -63,7 +57,6 @@ def progress(request):
     return JsonResponse({'reps': reps, 'dups':dups, 'news': news, 'undies':undies, 'doneKeys': doneKeys,
                          'numKeys':numKeys, 'doneReps':doneReps, 'currKey':currKey}, safe=False)
 
-#connect this page with filters config = RequestConfig(request)
 def display(request):
 
     config = RequestConfig(request, paginate={'per_page': 1000})

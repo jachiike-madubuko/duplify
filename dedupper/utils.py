@@ -25,8 +25,8 @@ from django.db.models import Avg
 
 
 rkd = RangeKeyDict({
-    (97, 101): 'Duplicate',
-    (70, 97): 'Undecided',
+    (98, 101): 'Duplicate',
+    (70, 98): 'Undecided',
     (0, 70): 'New Record'
 })
 waiting= True
