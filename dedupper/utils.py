@@ -34,7 +34,6 @@ sf_list = list(sfcontact.objects.all())
 sf_map=currKey = None
 start=end=cnt=doneKeys=totalKeys = 0
 
-#TODO implement batch upload, append contacts to a list the batch save them.
 
 def convertCSV(file, resource, type='rep', batchSize=3000):
     dataset = Dataset()
@@ -192,13 +191,13 @@ def mutate(keys):
     return mutant
 
 def setSortingAlgorithm(min_dup,min_uns):
-    #TODO finish this function and connect it to a slider
     global rkd
     rkd = RangeKeyDict({
     (min_dup, 101): 'Duplicate',
     (min_uns, min_dup): 'Unsure',
     (0, min_uns): 'New Record'
 })
+    #TODO function to loop through the records and resort them based on new RKD
 
 def sort(avg):
     return rkd[avg]

@@ -26,10 +26,6 @@ https://www.youtube.com/watch?v=P8_wDttTeuk
 '''
 keys= []
 
-#TODO look into make custom commands reset the contacts type and closest matches
-#TODO look make custom command to spit out number of each model
-    #https://docs.djangoproject.com/en/2.0/howto/custom-management-commands/
-
 def index(request):
     return render(request, 'dedupper/rep_list_upload.html')
 
