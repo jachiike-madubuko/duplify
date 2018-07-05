@@ -109,14 +109,15 @@
             {% for key,unique in keys %}
                 {
                     id: {{ forloop.counter0 }},
-                    text: '{{ key }}',
+                    text:"{{ key }}",
+                    value:'{{ key }}',
                     uniqueness: {{ unique }}
                 },
             {% endfor %}
         ]
          $('.js-example-basic-multiple').select2({
              theme: "bootstrap",
-             placeholder: "Use Fields to Make Keys",
+            placeholderOption: 'first',
              data: data
          });
      });
@@ -377,13 +378,10 @@
             var sList;
            var select_data =  $('.js-example-basic-multiple').select2('data');
            $.map(select_data, function (data) {
-                   sList += (data.text + " ");
-                   alert(data.uniqueness);
-           });
+                   sList += (data.value + ' ');
+            });
            $('.js-example-basic-multiple').val(null).trigger('change');
-           sList = sList.slice(0, -1);
-           alert(sList);
-           sList.replace("undefined"," ");
+           sList = sList.slice(9, -1);
            var key = '<li class="bg-secondary list-group-item">'+
                     '<button type="button" class="btn btn-sm btn-link float-right" onclick="del(this)">'+
                     '<span class="fa fa-trash fa-2x"></span></button><h6 class="key">'+sList+'</h6></li>';
@@ -547,7 +545,7 @@
                     </div>
                         <div class="container-fluid" style="background: transparent; overflow-y:scroll; max-height:
                         60vh; min-height: 40vh">
-                        <ul class="list-group" data-empty-message="Add at least one key before starting the algorithm">
+                        <div class="list-group" data-empty-message="Add at least one key before starting the algorithm">
                             <!-- <div class="col-4"> <span class=" float-left badge  badge-pill
                                                 {% if unique >= 75 %}
                                                      badge-success
@@ -560,7 +558,7 @@
                                                 {% endif %}">
                                                 unique}}%</span>
                                     </div>> -->
-                        </ul>
+                        </div>
                         </div>
                          <hr class="my-2">
                 </div>
