@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
           integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" />
     <style>
         @import url(https://fonts.googleapis.com/css?family=Roboto:300,500);
 
@@ -94,12 +96,30 @@
 </head>
  <body class="bg-secondary"style="overflow: hidden;">
      <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+         <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
+
      <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
         integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
 
      <script>
+     $(document).ready(function() {
+        var data = [
+            {% for key,unique in keys %}
+                {
+                    id: {{ forloop.counter0 }},
+                    text: '{{ key }}',
+                    uniqueness: {{ unique }}
+                },
+            {% endfor %}
+        ]
+         $('.js-example-basic-multiple').select2({
+             theme: "bootstrap",
+             placeholder: "Use Fields to Make Keys",
+             data: data
+         });
+     });
          var inter;
         function bg() {
 
@@ -354,20 +374,26 @@
         }
 
         function create() {
-                var sList = "";
-                $('input[type=checkbox]').each(function () {
-                    var sThisVal = (this.checked ? "1" : "0");
-                    if (sThisVal === "1") {
-                         sList += ( this.id + "-");
-                         $(this).prop("checked", false);
-                    }
-                });
-                sList = sList.slice(0, -1);
-                var key = '<li class="bg-secondary list-group-item">'+
+            var sList;
+           var select_data =  $('.js-example-basic-multiple').select2('data');
+           $.map(select_data, function (data) {
+                   sList += (data.text + " ");
+                   alert(data.uniqueness);
+           });
+           $('.js-example-basic-multiple').val(null).trigger('change');
+           sList = sList.slice(0, -1);
+           alert(sList);
+           sList.replace("undefined"," ");
+           var key = '<li class="bg-secondary list-group-item">'+
                     '<button type="button" class="btn btn-sm btn-link float-right" onclick="del(this)">'+
-                    '<span class="fa fa-trash fa-1x"></span></button><h6 class="key">'+sList+'</h6></li>';
-                $(".list-group").append(key);
+                    '<span class="fa fa-trash fa-2x"></span></button><h6 class="key">'+sList+'</h6></li>';
+           $(".list-group").append(key);
         }
+                //for clearing selections after add to key list
+                //
+
+
+
 
         function generateKeys() {
         let keys = "";
@@ -412,7 +438,7 @@
             </ul>
         </div>
     </nav>
-    <div class="modal show" id="progress" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal fade" id="progress" tabindex="-1" role="dialog"  aria-hidden="true">
          <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
              <div class="modal-content">
                  <div class="modal-header row">
@@ -509,36 +535,20 @@
         <div id="keyBuilder" class="col-6">
             <div class="card bg-dark text-white">
                 <div class="card-body" style="max-height: 85vh">
-                    <h4 class="card-title">Key Builder <form class="navbar-form navbar-left">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search">
-                    <span class="input-group-btn ">
-                        <button type="button" class="btn btn-default bg-white border-top-0 border-bottom-0"><span class="fa fa-search"></span></button>
-                    </span>
-                </div>
-            </form>
-</h4>
-                    <p class="card-text">Toggle switches for the desired key components</p>
-                    <p class="card-text">Click Create to add the new key</p>
-                        <div class="container-fluid" style="background: transparent; overflow-y:scroll; max-height:
-                        50vh">
-                            <div class="row sw">
-                                {% for key,unique in keys %}
-                                    <div class="  col-4 my-2">
-                                        <div class="row ">
-                                            <div class="col-1"></div>
-                                            <div class="col-10  ">  {{ key|title }}</div>
-                                            <div class="col-1"></div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-2"></div>
+                    <h4 class="card-title">Key Builder </h4>
+                    <div class="input-group mb-3">
+                        <select class="js-example-basic-multiple col-11" name="states[]" multiple="multiple">
 
-                                        <div class="col-3">
-                                            <input type="checkbox" id="{{ key }}" class="cbx hidden"/>
-                                            <label for="{{ key }}" class="lbl"></label>
-                                        </div>
-                                            <div class="col-4"> <span class=" float-left badge
-                                                                         badge-pill
+                        </select>
+                        <div class="input-group-apppend">
+                            <button onclick="create()" class=" badge-pill btn-primary rounded-left" style="height:
+                            35px" type="button">Create</button>
+                        </div>
+                    </div>
+                        <div class="container-fluid" style="background: transparent; overflow-y:scroll; max-height:
+                        60vh; min-height: 40vh">
+                        <ul class="list-group" data-empty-message="Add at least one key before starting the algorithm">
+                            <!-- <div class="col-4"> <span class=" float-left badge  badge-pill
                                                 {% if unique >= 75 %}
                                                      badge-success
                                                 {% endif %}
@@ -548,23 +558,11 @@
                                                 {% if unique < 25 %}
                                                     badge-danger
                                                 {% endif %}">
-                                                {{unique}}%</span>
-                                    </div>
-                                            <div class="col-1"></div>
-
-                                    </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
+                                                unique}}%</span>
+                                    </div>> -->
+                        </ul>
                         </div>
                          <hr class="my-2">
-                        <div class="row">
-                            <div class="col-4"></div>
-                            <div class="col-4">
-                                <button class="btn btn-primary btn-block badge-pill" onclick="create()">Create</button>
-                            </div>
-                            <div class="col-4"></div>
-                        </div>
                 </div>
             </div>
         </div>
@@ -600,11 +598,6 @@
                     <p class="card-text">These keys will be generated for the duplicate finding algorithm</p>
                     <p class="card-text">Click GO to start the algorithm</p>
                     <div class="container my-2" style="max-height: 300px" >
-                        <ul class="list-group" data-empty-message="Add at least one key before starting the algorithm">
-                            <!-- for default keys  <li class="list-group-item disabled">
-                          <span class="tag tag-default tag-pill float-xs-right">pill3</span> Disabled item
-                      </li> -->
-                        </ul>
                     </div>
                 </div>
             </div>

@@ -10,10 +10,8 @@ import os
 from dedupper.models import progress, repContact, sfcontact, dedupTime, duplifyTime, uploadTime
 import string
 from time import clock
-from datetime import timedelta
 from random import *
 from range_key_dict import RangeKeyDict
-import pandas as pd
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process #could be used to generate suggestions for unknown records
 import numpy as np
