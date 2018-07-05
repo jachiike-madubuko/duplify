@@ -2,171 +2,171 @@
 {% load render_table from django_tables2 %}
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
     <title>Duplify | Rep List</title>
-      <style>
-          .btn-default{
-              background-color: #222529;
-          }
-          small{
-              color: white;
-          }
-          .pager li{
-              display: inline;
-          }
+    <style>
+        .btn-default{
+            background-color: #222529;
+        }
+        small{
+            color: white;
+        }
+        .pager li{
+            display: inline;
+        }
 
-          .nav-item{
-              z-index: 1000;
-          }
-          a:hover{
-              text-decoration: none;
-          }
-          table{
-              z-index: 1090;
-          }
+        .nav-item{
+            z-index: 1000;
+        }
+        a:hover{
+            text-decoration: none;
+        }
+        table{
+            z-index: 1090;
+        }
 
-      </style>
-  </head>
-  <body class="bg-dark text-white" style="overflow: hidden">
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-          <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
-    <script>
-                function bg() {
+    </style>
+</head>
+<body class="bg-dark text-white" style="overflow: hidden">
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
+<script>
+    function bg() {
 
-            $("body").polygonizr({
+        $("body").polygonizr({
 
-                  restNodeMovements: 0,// How long to pause in between new node-movements.
+            restNodeMovements: 0,// How long to pause in between new node-movements.
 
-                  duration: 4, // When the cluster updates, this sets speed of nodes.
+            duration: 4, // When the cluster updates, this sets speed of nodes.
 
-                  nodeMovementDistance: 400, // Define the maximum distance to move nodes.
+            nodeMovementDistance: 400, // Define the maximum distance to move nodes.
 
-                  numberOfNodes: 36,// The number of node nodes to print out.
+            numberOfNodes: 36,// The number of node nodes to print out.
 
-                  nodeDotSize: 2.5,// Define the maximum size of each node dot.
+            nodeDotSize: 2.5,// Define the maximum size of each node dot.
 
-                  nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
+            nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
 
-                  nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
+            nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
 
-                 randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
+            randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
 
-                  // Define a formula for how to initialize each node dot's position.
-                  specifyPolygonMeshNetworkFormation: function (i) {
-                    var forEachNode = {// Half a circle and randomized
-                        x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
-                        y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
-                    };
-                    return forEachNode;
-                  },
+            // Define a formula for how to initialize each node dot's position.
+            specifyPolygonMeshNetworkFormation: function (i) {
+                var forEachNode = {// Half a circle and randomized
+                    x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
+                    y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
+                };
+                return forEachNode;
+            },
 
-                  nodeRelations: 15,// Number of relations between nodes.
+            nodeRelations: 15,// Number of relations between nodes.
 
-                  animationFps: 300, // The FPS for the whole canvas.
+            animationFps: 300, // The FPS for the whole canvas.
 
-                  nodeDotColor: "0, 0 0 ",// Sets the color of the nodes in the network (RGB).
+            nodeDotColor: "0, 0 0 ",// Sets the color of the nodes in the network (RGB).
 
-                  nodeLineColor: "0, 0, 0 ",// Sets the color of the lines in the network (RGB).
+            nodeLineColor: "0, 0, 0 ",// Sets the color of the lines in the network (RGB).
 
-                  nodeFillColor: "0, 0, 0 ",// Sets the color of  triangles in the network (RGB).
+            nodeFillColor: "0, 0, 0 ",// Sets the color of  triangles in the network (RGB).
 
-                  nodeFillAlpha: 2,// Sets the alpha level for the colors (1-0).
+            nodeFillAlpha: 2,// Sets the alpha level for the colors (1-0).
 
-                  nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
+            nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
 
-                  nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
+            nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
 
-                  nodeFillSpace: true,// Defines if the triangles in the network should be shown.
+            nodeFillSpace: true,// Defines if the triangles in the network should be shown.
 
-                  nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
+            nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
 
-                  // Define the canvas size and css position.
-                  canvasWidth: $(this).width(),
-                  canvasHeight: $(this).height(),
-                  canvasPosition: "absolute"
+            // Define the canvas size and css position.
+            canvasWidth: $(this).width(),
+            canvasHeight: $(this).height(),
+            canvasPosition: "absolute"
 
-                });
-            $("body").polygonizr({
+        });
+        $("body").polygonizr({
 
-                  restNodeMovements: 0,// How long to pause in between new node-movements.
+            restNodeMovements: 0,// How long to pause in between new node-movements.
 
-                  duration: 8, // When the cluster updates, this sets speed of nodes.
+            duration: 8, // When the cluster updates, this sets speed of nodes.
 
-                  nodeMovementDistance: 400, // Define the maximum distance to move nodes.
+            nodeMovementDistance: 400, // Define the maximum distance to move nodes.
 
-                  numberOfNodes: 36,// The number of node nodes to print out.
+            numberOfNodes: 36,// The number of node nodes to print out.
 
-                  nodeDotSize: 1,// Define the maximum size of each node dot.
+            nodeDotSize: 1,// Define the maximum size of each node dot.
 
-                  nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
+            nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
 
-                  nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
+            nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
 
-                 randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
+            randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
 
-                  // Define a formula for how to initialize each node dot's position.
-                  specifyPolygonMeshNetworkFormation: function (i) {
-                    var forEachNode = {// Half a circle and randomized
-                        x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
-                        y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
-                    };
-                    return forEachNode;
-                  },
+            // Define a formula for how to initialize each node dot's position.
+            specifyPolygonMeshNetworkFormation: function (i) {
+                var forEachNode = {// Half a circle and randomized
+                    x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
+                    y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
+                };
+                return forEachNode;
+            },
 
-                  nodeRelations: 15,// Number of relations between nodes.
+            nodeRelations: 15,// Number of relations between nodes.
 
-                  animationFps: 300, // The FPS for the whole canvas.
+            animationFps: 300, // The FPS for the whole canvas.
 
-                  nodeDotColor: "255, 255, 255 ",// Sets the color of the nodes in the network (RGB).
+            nodeDotColor: "255, 255, 255 ",// Sets the color of the nodes in the network (RGB).
 
-                  nodeLineColor: "255, 255, 255",// Sets the color of the lines in the network (RGB).
+            nodeLineColor: "255, 255, 255",// Sets the color of the lines in the network (RGB).
 
-                  nodeFillColor: "255, 255, 255 ",// Sets the color of  triangles in the network (RGB).
+            nodeFillColor: "255, 255, 255 ",// Sets the color of  triangles in the network (RGB).
 
-                  nodeFillAlpha: 3,// Sets the alpha level for the colors (1-0).
+            nodeFillAlpha: 3,// Sets the alpha level for the colors (1-0).
 
-                  nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
+            nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
 
-                  nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
+            nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
 
-                  nodeFillSpace: true,// Defines if the triangles in the network should be shown.
+            nodeFillSpace: true,// Defines if the triangles in the network should be shown.
 
-                  nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
+            nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
 
-                  // Define the canvas size and css position.
-                  canvasWidth: $(this).width(),
-                  canvasHeight: $(this).height(),
-                  canvasPosition: "absolute"
+            // Define the canvas size and css position.
+            canvasWidth: $(this).width(),
+            canvasHeight: $(this).height(),
+            canvasPosition: "absolute"
 
-                });
-           }
-        bg();
+        });
+    }
+    bg();
 
-      var colors = new Array(
-            [255,255,255],
-            [127.5,127.5,127.5],
-            [0,0,0],
-            [255,255,255],
-            [127.5,127.5,127.5],
-            [0,0,0]);
+    var colors = new Array(
+        [255,255,255],
+        [127.5,127.5,127.5],
+        [0,0,0],
+        [255,255,255],
+        [127.5,127.5,127.5],
+        [0,0,0]);
 
-        var step = 0;
-        var colorIndices = [0,1,2,3];
+    var step = 0;
+    var colorIndices = [0,1,2,3];
 
-        //transition speed
-        var gradientSpeed = 0.001;
+    //transition speed
+    var gradientSpeed = 0.001;
 
-        function updateGradient()
-        {
+    function updateGradient()
+    {
 
-          if ( $===undefined ) return;
+        if ( $===undefined ) return;
 
         var c0_0 = colors[colorIndices[0]];
         var c0_1 = colors[colorIndices[1]];
@@ -184,13 +184,13 @@
         var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
         var color2 = "rgb("+r2+","+g2+","+b2+")";
 
-         $('body').css({
-           background: "-webkit-gradient(linear, left top, right top, from("+color1+"), to("+color2+"))"}).css({
+        $('body').css({
+            background: "-webkit-gradient(linear, left top, right top, from("+color1+"), to("+color2+"))"}).css({
             background: "-moz-linear-gradient(left, "+color1+" 0%, "+color2+" 100%)"});
 
-          step += gradientSpeed;
-          if ( step >= 1 )
-          {
+        step += gradientSpeed;
+        if ( step >= 1 )
+        {
             step %= 1;
             colorIndices[0] = colorIndices[1];
             colorIndices[2] = colorIndices[3];
@@ -200,99 +200,99 @@
             colorIndices[1] = ( colorIndices[1] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
             colorIndices[3] = ( colorIndices[3] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
 
-          }
         }
+    }
 
-        setInterval(updateGradient,10);
-    </script>
+    setInterval(updateGradient,10);
+</script>
 
-      <nav class="navbar navbar-dark bg-dark navbar-expand-lg justify-content-between rounded-bottom">
-        <a class="navbar-brand" href="/">Duplify</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-              <li class="nav-item active">
+<nav class="navbar navbar-dark bg-dark navbar-expand-lg justify-content-between rounded-bottom">
+    <a class="navbar-brand" href="/">Duplify</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
                 <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-              </li>
-              <li class="nav-item ">
+            </li>
+            <li class="nav-item ">
                 <a class="nav-link" href="#" data-toggle="modal" data-target="#exampleModalCenter" aria-haspopup="true" aria-expanded="false">
-                  Duplify Reports
+                    Duplify Reports
                 </a>
-              </li>
-              <li class="nav-item">
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="report/D">Pricing</a>
-              </li>
-            </ul>
-        </div>
-    </nav>
+            </li>
+        </ul>
+    </div>
+</nav>
 
-    <div class="container-fluid">
-        <ul class="nav nav-pills nav-fill text-white" id="pills-tab" role="tablist">
-          <li class="nav-item badge-pill">
-              <h6  class="mx-1 mt-3"><a class="button btn-success badge-pill float-right"
-                                   href="export/Duplicate">Export</a></h6>
-              <a class="nav-link active  bg-dark nav-pill badge-pill" id="pills-home-tab" data-toggle="pill"
-                 href="#pills-home"
-                 role="tab"
+<div class="container-fluid">
+    <ul class="nav nav-pills nav-fill text-white" id="pills-tab" role="tablist">
+        <li class="nav-item badge-pill">
+            <h6  class="mx-1 mt-3"><a class="button btn-success badge-pill float-right"
+                                      href="export/Duplicate">Export</a></h6>
+            <a class="nav-link active  bg-dark nav-pill badge-pill" id="pills-home-tab" data-toggle="pill"
+               href="#pills-home"
+               role="tab"
                aria-controls="pills-home" aria-selected="true">
                 Duplicate Records
             </a>
-          </li>
-          <li class="nav-item badge-pill">
-              <h6  class="mx-1 mt-3"><a class="button btn-success badge-pill float-right"
-                                    href="export/Undecided">Export</a></h6>
-              <a class="nav-link bg-dark badge-pill" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab"
+        </li>
+        <li class="nav-item badge-pill">
+            <h6  class="mx-1 mt-3"><a class="button btn-success badge-pill float-right"
+                                      href="export/Undecided">Export</a></h6>
+            <a class="nav-link bg-dark badge-pill" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab"
                aria-controls="pills-profile" aria-selected="false">
                 Undecided Records
             </a>
-          </li>
-          <li class="nav-item badge-pill">
-              <h6 class="mx-1 mt-3"><a class="button btn-success badge-pill float-right" href="export/NewRecord">Export</a></h6>
-              <a class="nav-link bg-dark badge-pill" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab"
+        </li>
+        <li class="nav-item badge-pill">
+            <h6 class="mx-1 mt-3"><a class="button btn-success badge-pill float-right" href="export/NewRecord">Export</a></h6>
+            <a class="nav-link bg-dark badge-pill" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab"
                aria-controls="pills-contact" aria-selected="false">
                 New Records
             </a>
-          </li>
-        </ul>
-        <!-- Button trigger modal -->
-        <!-- Modal -->
-        <div class="modal fade text-dark" id="exampleModalCenter" tabindex="-1" role="dialog"
-             aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title text-center" id="exampleModalLongTitle">Duplify Reports</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-         <a  href="report/D" class=" my-3 btn btn-block badge-pill btn-large btn-success" >Duplify Report </a>
-          <a href="report/DD" class="my-3 btn btn-block badge-pill btn-large btn-success" >Dedup Report</a>
-          <a href="report/U" class="my-3 btn btn-block badge-pill btn-large btn-success" >Upload Report</a>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-        <div class="row"> </div>
-
-        <div class="card bg-dark tab-content rounded" id="pills-tabContent" style="overflow-y: scroll; height: 85vh">
-            <div class="tab-pane show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
-                {% render_table duplicate_table 'django_tables2/bootstrap-responsive.html' %}
-            </div>
-            <div class="tab-pane " id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
-                {% render_table undecided_table 'django_tables2/bootstrap-responsive.html' %}
-            </div>
-            <div class="tab-pane " id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
-                {% render_table new_record_table 'django_tables2/bootstrap-responsive.html' %}
+        </li>
+    </ul>
+    <!-- Button trigger modal -->
+    <!-- Modal -->
+    <div class="modal fade text-dark" id="exampleModalCenter" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-center" id="exampleModalLongTitle">Duplify Reports</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <a  href="report/D" class=" my-3 btn btn-block badge-pill btn-large btn-success" >Duplify Report </a>
+                    <a href="report/DD" class="my-3 btn btn-block badge-pill btn-large btn-success" >Dedup Report</a>
+                    <a href="report/U" class="my-3 btn btn-block badge-pill btn-large btn-success" >Upload Report</a>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
-  </body>
+
+    <div class="row"> </div>
+
+    <div class="card bg-dark tab-content rounded" id="pills-tabContent" style="overflow-y: scroll; height: 85vh">
+        <div class="tab-pane show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+            {% render_table duplicate_table 'django_tables2/bootstrap-responsive.html' %}
+        </div>
+        <div class="tab-pane " id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+            {% render_table undecided_table 'django_tables2/bootstrap-responsive.html' %}
+        </div>
+        <div class="tab-pane " id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+            {% render_table new_record_table 'django_tables2/bootstrap-responsive.html' %}
+        </div>
+    </div>
+</div>
+</body>
 </html>

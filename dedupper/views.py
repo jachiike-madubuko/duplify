@@ -33,14 +33,11 @@ def run(request):
     if request.method == 'GET':
 
         keylist = request.GET.get('keys')
-        # read in channel and query SF by channgel for the key gen
-        # channel = request.POST.get('channel')
+        #channel = request.GET.get('channel')
         print('Starting algorithm with {}'.format(keylist))
         keylist = keylist.split("_")
-        partslist = [i.split('-') for i in keylist[:-1]]
+        partslist = [i.split(' ') for i in keylist[:-1]]
         result = key_generator(partslist)
-        # result = key_generator.delay(partslist)
-    # return render(request, "dedupper/loading_page.html", context={'task_id': result.task_id})
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def progress(request):
