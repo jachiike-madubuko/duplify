@@ -36,7 +36,6 @@
 <body class="bg-secondary"style="overflow: hidden;">
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
-
 <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
@@ -77,27 +76,18 @@
             templateResult: colorCode
         });
     });
-    var inter;
+    var old_percent = 0,
+        inter;
     function bg() {
-
         $("body").polygonizr({
-
             restNodeMovements: 0,// How long to pause in between new node-movements.
-
             duration: 4, // When the cluster updates, this sets speed of nodes.
-
             nodeMovementDistance: 400, // Define the maximum distance to move nodes.
-
             numberOfNodes: 36,// The number of node nodes to print out.
-
             nodeDotSize: 2.5,// Define the maximum size of each node dot.
-
             nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
-
             nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
-
             randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
-
             // Define a formula for how to initialize each node dot's position.
             specifyPolygonMeshNetworkFormation: function (i) {
                 var forEachNode = {// Half a circle and randomized
@@ -106,27 +96,16 @@
                 };
                 return forEachNode;
             },
-
             nodeRelations: 15,// Number of relations between nodes.
-
             animationFps: 300, // The FPS for the whole canvas.
-
             nodeDotColor: "0, 0 0 ",// Sets the color of the nodes in the network (RGB).
-
             nodeLineColor: "0, 0, 0 ",// Sets the color of the lines in the network (RGB).
-
             nodeFillColor: "0, 0, 0 ",// Sets the color of  triangles in the network (RGB).
-
             nodeFillAlpha: 2,// Sets the alpha level for the colors (1-0).
-
             nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
-
             nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
-
             nodeFillSpace: true,// Defines if the triangles in the network should be shown.
-
             nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
-
             // Define the canvas size and css position.
             canvasWidth: $(this).width(),
             canvasHeight: $(this).height(),
@@ -134,23 +113,14 @@
 
         });
         $("body").polygonizr({
-
             restNodeMovements: 0,// How long to pause in between new node-movements.
-
             duration: 8, // When the cluster updates, this sets speed of nodes.
-
             nodeMovementDistance: 400, // Define the maximum distance to move nodes.
-
             numberOfNodes: 36,// The number of node nodes to print out.
-
             nodeDotSize: 1,// Define the maximum size of each node dot.
-
             nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
-
             nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
-
             randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
-
             // Define a formula for how to initialize each node dot's position.
             specifyPolygonMeshNetworkFormation: function (i) {
                 var forEachNode = {// Half a circle and randomized
@@ -159,27 +129,16 @@
                 };
                 return forEachNode;
             },
-
             nodeRelations: 15,// Number of relations between nodes.
-
             animationFps: 300, // The FPS for the whole canvas.
-
             nodeDotColor: "255, 255, 255 ",// Sets the color of the nodes in the network (RGB).
-
             nodeLineColor: "255, 255, 255",// Sets the color of the lines in the network (RGB).
-
             nodeFillColor: "255, 255, 255 ",// Sets the color of  triangles in the network (RGB).
-
             nodeFillAlpha: 3,// Sets the alpha level for the colors (1-0).
-
             nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
-
             nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
-
             nodeFillSpace: true,// Defines if the triangles in the network should be shown.
-
             nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
-
             // Define the canvas size and css position.
             canvasWidth: $(this).width(),
             canvasHeight: $(this).height(),
@@ -197,11 +156,6 @@
         [127.5,127.5,127.5],);
 
     var step = 0;
-    //color table indices for:
-    // current color left
-    // next color left
-    // current color right
-    // next color right
     var colorIndices = [0,1,2,3];
 
     //transition speed
@@ -246,18 +200,17 @@
 
         }
     }
-
     setInterval(updateGradient,10);
 
     $.ajaxSetup({data: {
             csrfmiddlewaretoken: '{{ csrf_token }}'
         }});
+
     function update_bar(now) {
         var p_bar= $(".progress-bar");
         p_bar.attr('aria-valuenow', now);
         p_bar.animate({width: now+'%'}, 500);
     }
-    var old_percent = 0;
 
     function update_progress(){
         $.getJSON("{% url 'progress' %}", function (result) {
@@ -390,7 +343,6 @@
             </div>
             <div class="modal-body">
                 <div role="tabpanel">
-                    <!-- Nav tabs -->
                     <ul class="my-2 nav nav-pills nav-fill text-white" id="pills-tab" role="tablist">
 
                         <li role="presentation" class="active nav-item badge-pill"><a   href="#uploadTab" aria-controls="uploadTab" role="tab"
