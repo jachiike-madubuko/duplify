@@ -14,71 +14,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" />
     <style>
         @import url(https://fonts.googleapis.com/css?family=Roboto:300,500);
-
-        {#body {#}
-        {#  font-family: 'Roboto', sans-serif;#}
-        {#  font-size: 14px;#}
-        {#  text-align: center;#}
-        {#}#}
-         .lbl {
-             position: relative;
-             display: block;
-             height: 20px;
-             width: 44px;
-             background: #898989;
-             border-radius: 100px;
-             cursor: pointer;
-             transition: all 0.3s ease;
+        .jumbotron, .container{
+            overflow-y: auto;
+            scroll-behavior: smooth;
         }
-         .lbl:after {
-             position: absolute;
-             left: -2px;
-             top: -3px;
-             display: block;
-             width: 26px;
-             height: 26px;
-             border-radius: 100px;
-             background: #fff;
-             box-shadow: 0px 3px 3px rgba(0,0,0,0.05);
-             content: '';
-             transition: all 0.3s ease;
-        }
-         .lbl:active:after {
-             transform: scale(1.15, 0.85);
-        }
-         .cbx:checked ~ label {
-             background: #428bff;
-        }
-         .cbx:checked ~ label:after {
-             left: 20px;
-             background: #5bc0ff;
-        }
-         .cbx:disabled ~ label {
-             background: #d5d5d5;
-             pointer-events: none;
-        }
-         .cbx:disabled ~ label:after {
-             background: #bcbdbc;
-        }
-         .cntr {
-             position: absolute;
-             top: 50%;
-             left: 50%;
-             transform: translate(-50%, -50%);
-        }
-         .press {
-             margin-bottom: 40px;
-        }
-         .hidden {
-             display: none;
-        }
-         .jumbotron, .container{
-             overflow-y: auto;
-             scroll-behavior: smooth;
-         }
-         ul:empty::after{
+        ul:empty::after{
             content: attr(data-empty-message);
-         }
+        }
         a {
             text-shadow:
                     -0.125px -0.125px 0 #fff,
@@ -86,8 +28,6 @@
                     -0.125px 0.125px 0 #fff,
                     0.125px 0.125px 0 #fff;
         }
-
-
     </style>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
@@ -101,18 +41,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
         integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
-                        <!-- <div class="col-4"> <span class=" float-left badge  badge-pill
-                                                {% if unique >= 75 %}
-                                                     badge-success
-                                                {% endif %}
-                                                {% if unique >= 25 and unique < 75 %}
-                                                    badge-warning
-                                                {% endif %}
-                                                {% if unique < 25 %}
-                                                    badge-danger
-                                                {% endif %}">
-                                                unique}}%</span>
-                                    </div>> -->
 <script>
     $(document).ready(function() {
         var data = [
@@ -137,8 +65,8 @@
             }
             var $field = $('<span>'+field.text + '</span> <span class="badge  badge-pill text-white bg-' + cc + '"> ' +
                 field
-                .uniqueness + '%' +
-            '</span>');
+                    .uniqueness + '%' +
+                '</span>');
             return $field;
         }
         $('.js-example-basic-multiple').select2({
@@ -343,8 +271,7 @@
                 currKey = result['currKey'];
             var percent = Math.round(((doneKeys/numKeys)*100) + ((1/numKeys) * (doneReps/reps)*100));
 
-            if (percent > old_percent)
-            {
+            if (percent > old_percent) {
                 $('#doneReps').text(percent);
                 update_bar(percent);
             }
@@ -367,8 +294,8 @@
                 marker:{
                     color: ['rgba(0,0,255,1)', 'rgba(255,0,0,1)', 'rgba(0,255,0,1)', ]
                 },
-            }];
-            var layout = {
+            }],
+                layout = {
                 title: 'Reps Distribution',
                 xaxis: {
                     showgrid: false,
@@ -378,8 +305,8 @@
                     showline: false,
                     rangemode: 'tozero'
                 }
-            };
-            var fig = {
+            },
+                fig = {
                 data: data,
                 layout: layout,
             };
@@ -393,9 +320,7 @@
                 $(".progress-bar").removeClass("progress-bar-striped ");
                 $(".progress-bar").removeClass("progress-bar-animated");
                 $(".progress-bar").addClass("bg-success");
-
                 $(".modal-header").text("Duplify is done! Click Next to see the sorted reps.")
-
             }
 
         }).fail(function () {
@@ -410,16 +335,12 @@
         });
         $('.js-example-basic-multiple').val(null).trigger('change');
         sList = sList.slice(9, -1);
-        var key = '<li class="bg-secondary list-group-item">'+
-            '<button type="button" class="btn btn-sm btn-link float-right" onclick="del(this)">'+
-            '<span class="fa fa-trash fa-2x"></span></button><h6 class="key">'+sList+'</h6></li>';
-        $(".list-group").append(key);
+        var key = '<div class="madeKey rounded bg-white m-1 pt-2 col-3 align-text-bottom">' +
+            '<button type="button" class="btn btn-sm btn-link float-right" onclick="del(this)">' +
+            '<span class="fa fa-trash fa-1x"></span></button><p class=" key ' +
+            'text-dark">'+sList+'</p></div>';
+        $(".keylist").append(key);
     }
-    //for clearing selections after add to key list
-    //
-
-
-
 
     function generateKeys() {
         let keys = "";
@@ -432,17 +353,14 @@
         });
         inter = setInterval(update_progress,  5000);
     }
-
     function del(item) {
-        $(item).closest(".list-group-item").remove();
+        $(item).closest(".madeKey").remove();
     }
     function togglegameon(){
         $("#qwop").fadeIn("slow");
-
     }
     function togglegameoff(){
         $("#qwop").hide();
-
     }
 </script>
 <nav class="navbar navbar-dark bg-info navbar-expand-lg justify-content-between">
@@ -600,26 +518,31 @@
                             34px" type="button">Create</button>
                     </div>
                 </div>
-                <div class="container-fluid" style="background: transparent; overflow-y:scroll; max-height:
-                        60vh; min-height: 40vh">
-                    <div class="list-group" data-empty-message="Add at least one key before starting the algorithm">
+                <div class="row">
+
+                    <div class="col-2"></div>
+                    <div class="col">
+
+                        <div class="container-fluid keylist row" style="background: transparent; overflow-y:scroll; max-height:
+                        35vh; min-height: 5vh">
+                        </div>
                     </div>
                 </div>
                 <hr class="my-2">
                 <div class="row">
                     <div class="col-4">
-
                     </div>
-                <div class="col-4">        <button id="keygen" class="btn btn-primary btn-block badge-pill my-2" onclick="generateKeys()"
-                data-toggle="modal" data-target="#progress" data-backdrop="static" data-keyboard="false">
-            <b>GO</b>
-        </button>
- </div>
-                <div class="col-4"></div>
-            </div>
+                    <div class="col-4">
+                        <button id="keygen" class="btn btn-primary btn-block badge-pill my-2" onclick="generateKeys()"
+                                data-toggle="modal" data-target="#progress" data-backdrop="static" data-keyboard="false">
+                            <b>GO</b>
+                        </button>
                     </div>
+                    <div class="col-4"></div>
                 </div>
             </div>
+        </div>
+    </div>
     <div class="col-3"></div>
 
 </div>
