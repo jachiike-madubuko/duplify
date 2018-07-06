@@ -379,6 +379,7 @@
             'badge-primary"> Manual ' +
             '</span></div></li>';
         $("#keylist").append(key);
+        $('.js-example-basic-multiple').focus();
     }
 
     function generateKeys() {
@@ -550,7 +551,7 @@
                         <button disabled class="  btn-secondary rounded-left col-12" style="height:
                             34px" type="button"> <span class="fa fa-search fa-1x"></span></button>
                     </div>
-                    <select class="js-example-basic-multiple col-10" name="states[]"
+                    <select autofocus class="js-example-basic-multiple col-10" name="states[]"
                             multiple="multiple">
 
                     </select>

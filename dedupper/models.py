@@ -146,20 +146,18 @@ class repContact(models.Model):
     closest1_contactID = models.CharField(max_length=256, blank=True)
     closest1 = models.ForeignKey('sfcontact', on_delete=models.CASCADE, related_name="first_%(app_label)s_%("
                                                                                      "class)s_related",
-        related_query_name="%(app_label)s_%(class)s", null=True,
-                                 blank=True)
+                                 related_query_name="%(app_label)s_%(class)s", null=True, blank=True)
 
     closest2_contactID = models.CharField(max_length=256, blank=True)
     closest2 = models.ForeignKey('sfcontact', on_delete=models.CASCADE, related_name="second_%(app_label)s_%("
                                                                                      "class)s_related",
-        related_query_name="%(app_label)s_%(class)ss", null=True,
-                                 blank=True)
+                                 related_query_name="%(app_label)s_%(class)ss", null=True, blank=True)
+
     closest3_contactID = models.CharField(max_length=256, blank=True)
     closest3 = models.ForeignKey('sfcontact', on_delete=models.CASCADE, related_name="third_%(app_label)s_%("
                                                                                      "class)s_related",
-        related_query_name="%(app_label)s_%(class)sss", null=True,
-                                 blank=True)
-    #will be flagged when sorted as dup and CRD does not match
+                                 related_query_name="%(app_label)s_%(class)sss", null=True, blank=True)
+
     dupFlag = models.BooleanField(blank=True, default=False)
     keySortedBy = models.CharField(max_length=256, blank=True)
 
