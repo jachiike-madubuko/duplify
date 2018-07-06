@@ -22,14 +22,22 @@ from django.db.models import Avg
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
 
 
-rkd = RangeKeyDict({
+dup_rkd = RangeKeyDict({
     (98, 101): 'Duplicate',
     (70, 98): 'Undecided',
     (0, 70): 'New Record'
 })
+
+man_rkd = RangeKeyDict({
+    (98, 101): 'Manual Check',
+    (70, 98): 'Undecided',
+    (0, 70): 'New Record'
+})
+
+
 waiting= True
 sf_list = list(sfcontact.objects.all())
-sf_map=currKey = None
+sf_map=currKey=sort_alg = None
 start=end=cnt=doneKeys=totalKeys = 0
 
 
@@ -94,8 +102,11 @@ def findRepDups(rep, keys, numthreads):
         rep.average = top1[0]
         rep.closest1 = top1[1]
         rep.closest1_contactID = top1[1].ContactID
-    rep.type = sort(rep.average)
-    rep.match_ID = top1[1].ContactID
+        rep.type = sort(rep.average)
+
+    if rep.CRD != top1[1].CRD:
+        rep.dupFlag = True
+    rep.keySortedBy = currKey
     rep.save()
     time = round(clock()-start, 2)
     avg = dedupTime.objects.aggregate(Avg('seconds'))['seconds__avg']
@@ -118,7 +129,7 @@ def finish(numThreads):
     waiting=False
 
 def key_generator(partslist):
-    global start, waiting, doneKeys, totalKeys, cnt, currKey
+    global start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg
     for key_parts in partslist:
         if 'phone' in key_parts:
             index = partslist.index(key_parts)
@@ -135,6 +146,7 @@ def key_generator(partslist):
     start = clock()
     totalKeys = len(partslist)
     for key_parts in partslist:
+        sort_alg = key_parts.pop()
         currKey = key_parts
         cnt=0
         print('starting key: {}'.format(key_parts))
@@ -198,7 +210,16 @@ def setSortingAlgorithm(min_dup,min_uns):
     #TODO function to loop through the records and resort them based on new RKD
 
 def sort(avg):
-    return rkd[avg]
+    return dup_rkd[avg]
+
+
+def sort(avg):
+    if(sort_alg == 'true'):
+        return man_rkd[avg]
+    else:
+        return dup_rkd[avg]
+
+
 
 def getProgress():
     return doneKeys, totalKeys, currKey, cnt

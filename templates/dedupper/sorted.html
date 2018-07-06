@@ -233,37 +233,44 @@
         <li class="nav-item badge-pill">
             <h6  class="mx-1 mt-3"><a class="button btn-success badge-pill float-right"
                                       href="export/Duplicate">Export</a></h6>
-            <a class="nav-link active  bg-dark nav-pill badge-pill" id="pills-home-tab" data-toggle="pill"
-               href="#pills-home"
+            <a class="nav-link active  bg-dark nav-pill badge-pill" id="pills-dup-tab" data-toggle="pill"
+               href="#pills-dup"
                role="tab"
-               aria-controls="pills-home" aria-selected="true">
+               aria-controls="pills-dup" aria-selected="true">
                 Duplicate Records
             </a>
         </li>
         <li class="nav-item badge-pill">
             <h6  class="mx-1 mt-3"><a class="button btn-success badge-pill float-right"
                                       href="export/Undecided">Export</a></h6>
-            <a class="nav-link bg-dark badge-pill" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab"
-               aria-controls="pills-profile" aria-selected="false">
+            <a class="nav-link bg-dark badge-pill" id="pills-undie-tab" data-toggle="pill" href="#pills-undie" role="tab"
+               aria-controls="pills-undie" aria-selected="false">
                 Undecided Records
             </a>
         </li>
         <li class="nav-item badge-pill">
             <h6 class="mx-1 mt-3"><a class="button btn-success badge-pill float-right" href="export/NewRecord">Export</a></h6>
-            <a class="nav-link bg-dark badge-pill" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab"
-               aria-controls="pills-contact" aria-selected="false">
+            <a class="nav-link bg-dark badge-pill" id="pills-new-tab" data-toggle="pill" href="#pills-new" role="tab"
+               aria-controls="pills-new" aria-selected="false">
                 New Records
             </a>
         </li>
+        <li class="nav-item badge-pill">
+            <h6 class="mx-1 mt-3"><a class="button btn-success badge-pill float-right" 
+                                     href="export/ManualCheck">Export</a></h6>
+            <a class="nav-link bg-dark badge-pill" id="pills-man-tab" data-toggle="pill" href="#pills-man" 
+               role="tab"
+               aria-controls="pills-man" aria-selected="false">
+                Manual Check
+            </a>
+        </li>
     </ul>
-    <!-- Button trigger modal -->
-    <!-- Modal -->
     <div class="modal fade text-dark" id="exampleModalCenter" tabindex="-1" role="dialog"
          aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title text-center" id="exampleModalLongTitle">Duplify Reports</h5>
+                    <h5 class="modal-title text-center" id="exampleModalLongTitle">Reports</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -279,18 +286,19 @@
             </div>
         </div>
     </div>
-
     <div class="row"> </div>
-
     <div class="card bg-dark tab-content rounded" id="pills-tabContent" style="overflow-y: scroll; height: 85vh">
-        <div class="tab-pane show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+        <div class="tab-pane show active" id="pills-dup" role="tabpanel" aria-labelledby="pills-dup-tab">
             {% render_table duplicate_table 'django_tables2/bootstrap-responsive.html' %}
         </div>
-        <div class="tab-pane " id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+        <div class="tab-pane " id="pills-undie" role="tabpanel" aria-labelledby="pills-undie-tab">
             {% render_table undecided_table 'django_tables2/bootstrap-responsive.html' %}
         </div>
-        <div class="tab-pane " id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+        <div class="tab-pane " id="pills-new" role="tabpanel" aria-labelledby="pills-new-tab">
             {% render_table new_record_table 'django_tables2/bootstrap-responsive.html' %}
+        </div>
+        <div class="tab-pane " id="pills-man" role="tabpanel" aria-labelledby="pills-man-tab">
+            {% render_table manual_check_table 'django_tables2/bootstrap-responsive.html' %}
         </div>
     </div>
 </div>

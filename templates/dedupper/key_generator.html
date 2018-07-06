@@ -14,11 +14,80 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" />
     <style>
         @import url(https://fonts.googleapis.com/css?family=Roboto:300,500);
-        .jumbotron, .container{
-            overflow-y: auto;
-            scroll-behavior: smooth;
+
+        #keylist li {
+            list-style-type: none;
+            padding: 3px;
+            margin: 6px;
+            width: 90%;
+            font-size: 85%;
+            -moz-box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.25);
+            -webkit-box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.25);
+            box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.25);
+            cursor: move;
         }
-        ul:empty::after{
+
+        {#body {#}
+        {#  font-family: 'Roboto', sans-serif;#}
+        {#  font-size: 14px;#}
+        {#  text-align: center;#}
+        {#}#}
+         .lbl {
+             position: relative;
+             display: block;
+             height: 20px;
+             width: 44px;
+             background: #898989;
+             border-radius: 100px;
+             cursor: pointer;
+             transition: all 0.3s ease;
+        }
+         .lbl:after {
+             position: absolute;
+             left: -2px;
+             top: -3px;
+             display: block;
+             width: 26px;
+             height: 26px;
+             border-radius: 100px;
+             background: #fff;
+             box-shadow: 0px 3px 3px rgba(0,0,0,0.05);
+             content: '';
+             transition: all 0.3s ease;
+        }
+         .lbl:active:after {
+             transform: scale(1.15, 0.85);
+        }
+         .cbx:checked ~ label {
+        }
+         .cbx:checked ~ label:after {
+             left: 20px;
+             background: #ffffff;
+        }
+         .cbx:disabled ~ label {
+             background: #0fb015;
+             pointer-events: none;
+        }
+         .cbx:disabled ~ label:after {
+             background: #7cff70;
+        }
+         .cntr {
+             position: absolute;
+             top: 50%;
+             left: 50%;
+             transform: translate(-50%, -50%);
+        }
+         .press {
+             margin-bottom: 40px;
+        }
+         .hidden {
+             display: none;
+        }
+         .jumbotron, .container{
+             overflow-y: auto;
+             scroll-behavior: smooth;
+         }
+         ul:empty::after{
             content: attr(data-empty-message);
         }
         a {
@@ -30,8 +99,6 @@
         }
     </style>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
-
 </head>
 <body class="bg-secondary"style="overflow: hidden;">
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
@@ -40,8 +107,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
         integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+<script src="http://yui.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
 <script>
     $(document).ready(function() {
+
         var data = [
             {% for key,unique in keys %}
                 {
@@ -74,6 +143,14 @@
             data: data,
             {#templateSelection: colorCode,#}
             templateResult: colorCode
+        });
+
+        YUI().use('sortable', function(Y) {
+            var sortable = new Y.Sortable({
+                container: '#keylist',
+                nodes: 'li',
+                opacity: '.1'
+            });
         });
     });
     var old_percent = 0,
@@ -287,18 +364,32 @@
             sList += (data.value + ' ');
         });
         $('.js-example-basic-multiple').val(null).trigger('change');
-        sList = sList.slice(9, -1);
-        var key = '<div class="madeKey rounded bg-white m-1 pt-2 col-3 align-text-bottom">' +
-            '<button type="button" class="btn btn-sm btn-link float-right" onclick="del(this)">' +
-            '<span class="fa fa-trash fa-1x"></span></button><p class=" key ' +
-            'text-dark">'+sList+'</p></div>';
-        $(".keylist").append(key);
+        sList = sList.slice(9, sList.length-1);
+        //convert sList to have _ instead of spaces (idsList) and make check box id=idsList then select #idsList for genKeys
+        var idsList = sList.replace(/ /g, "-");
+        var key = '<li class="madeKey bg-secondary rounded"> <div class="row pt-2" style="height: 50px"><div ' +
+            'class="col-1"><a ' +
+            'onclick="del' +
+            '(this)"><span ' +
+            'class="btn fa fa-close fa-1x"></span></a></div><div class="col-8" style="height:25px"><p ' +
+            'class="key text-white">'+sList+'</p></div> <span style="height: 20px" class="duplicate badge ' +
+            'badge-success badge-pill ">Dups</span><input type="checkbox" id="'+idsList+'" class="cbx hidden"/><label' +
+            ' ' +
+            'for="'+idsList+'" class="lbl"></label><span style="height: 20px" class="manual badge badge-pill ' +
+            'badge-primary"> Manual ' +
+            '</span></div></li>';
+        $("#keylist").append(key);
     }
 
     function generateKeys() {
         let keys = "";
         $(".key").each(function () {
-            keys += $(this).text();
+            var parts  =$(this).text();
+            var idparts = parts.replace(/ /g, "-")
+            var sort = $('#'+idparts).is(":checked");
+            keys += idparts;
+            keys += '-'
+            keys += sort;
             keys += '_';
         });
         $.getJSON("{% url 'run' %}", {keys: keys}, function (result) {
@@ -413,14 +504,12 @@
                         <object class="" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="640"
                                 height="900"
                                 align="middle" id="qwop"><param name="movie" value="http://m.toogame.com/q/swfs/QWOP.swf"><param name="quality" value="high"><param name="AllowScriptAccess" value="always">><object type="application/x-shockwave-flash" data="http://m.toogame.com/q/swfs/QWOP.swf" width="640" height="400"><param name="movie" value="http://m.toogame.com/q/swfs/QWOP.swf"><param name="quality" value="high"><param name="AllowScriptAccess" value="always"><a href="http://www.adobe.com/go/getflash"><img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash Player"></a></object></object>
-
                     </div>
                 </div>
             </div>
             <hr>
             <div class="container my-3">
-                <a id="next" class="invisible btn btn-success
-                    badge-pill btn-block" href="{% url 'reps' %}">Next</a>
+                <a id="next" class="invisible btn btn-success badge-pill btn-block" href="{% url 'reps' %}">Next</a>
             </div>
         </div>
     </div>
@@ -470,20 +559,12 @@
                             34px" type="button">Create</button>
                     </div>
                 </div>
-                <div class="row">
+                    <ul id="keylist" style="overflow-y:scroll; max-height:30vh; min-height: 5vh; width: 100%;">
 
-                    <div class="col-2"></div>
-                    <div class="col">
-
-                        <div class="container-fluid keylist row" style="background: transparent; overflow-y:scroll; max-height:
-                        35vh; min-height: 5vh">
-                        </div>
-                    </div>
-                </div>
+                    </ul>
                 <hr class="my-2">
                 <div class="row">
-                    <div class="col-4">
-                    </div>
+                    <div class="col-4"></div>
                     <div class="col-4">
                         <button id="keygen" class="btn btn-primary btn-block badge-pill my-2" onclick="generateKeys()"
                                 data-toggle="modal" data-target="#progress" data-backdrop="static" data-keyboard="false">

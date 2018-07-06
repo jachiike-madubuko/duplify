@@ -139,6 +139,7 @@ class repContact(models.Model):
     average = models.IntegerField(null=True, blank=True)
     TYPES_OF_RECORD = (('Undecided', 'Undecided'),
                        ('Duplicate', 'Duplicate'),
+                       ('Manual Check', 'Manual Check'),
                        ('New Record', 'New Record'))
     type = models.CharField(max_length=256, choices=TYPES_OF_RECORD, default='Undecided')
 
@@ -158,7 +159,9 @@ class repContact(models.Model):
                                                                                      "class)s_related",
         related_query_name="%(app_label)s_%(class)sss", null=True,
                                  blank=True)
+    #will be flagged when sorted as dup and CRD does not match
     dupFlag = models.BooleanField(blank=True, default=False)
+    keySortedBy = models.CharField(max_length=256, blank=True)
 
     def __str__(self):
         return '{} {}'.format(self.firstName, self.lastName,)
