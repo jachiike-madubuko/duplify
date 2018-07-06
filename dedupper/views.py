@@ -12,9 +12,8 @@ from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin, RequestConfig
 
 from dedupper.resources import RepContactResource, SFContactResource, DedupTimeResource, DuplifyTimeResource, UploadTimeResource
-from  dedupper.utils import key_generator, makeKeys, convertCSV, my_task
+from  dedupper.utils import key_generator, makeKeys, convertCSV, getProgress
 import csv
-from collections import OrderedDict
 '''
 #TODO change the HTTP request 
 timeout for the running algorithm or 
@@ -27,35 +26,30 @@ https://www.youtube.com/watch?v=P8_wDttTeuk
 '''
 keys= []
 
-#TODO look into make custom commands reset the contacts type and closest matches
-#TODO look make custom command to spit out number of each model
-    #https://docs.djangoproject.com/en/2.0/howto/custom-management-commands/
-#TODO find how to for django celery and bootstrap progress bar
-    #https://www.dangtrinh.com/2013/07/django-celery-display-progress-bar-of.html
-    #https://github.com/czue/celery-progress
-    #https://stackoverflow.com/questions/7380373/django-celery-progress-bar
-
-
 def index(request):
     return render(request, 'dedupper/rep_list_upload.html')
 
 def run(request):
     if request.method == 'GET':
 
-        # move into new method seperate displaying and form submission to get rid of do you want to resubmit form
         keylist = request.GET.get('keys')
-        # read in channel and query SF by channgel for the key gen
-        # channel = request.POST.get('channel')
+        #channel = request.GET.get('channel')
         print('Starting algorithm with {}'.format(keylist))
         keylist = keylist.split("_")
-        partslist = [i.split('-') for i in keylist[:-1]]
+        partslist = [i.split(' ') for i in keylist[:-1]]
         result = key_generator(partslist)
-        # result = key_generator.delay(partslist)
-    # return render(request, "dedupper/loading_page.html", context={'task_id': result.task_id})
-    return JsonResponse({'msg': 'success'}, safe=False)
+    return JsonResponse({'msg': 'success!'}, safe=False)
 
+def progress(request):
+    if request.method == 'GET':
+        reps = len(repContact.objects.all())
+        dups = len(repContact.objects.filter(type='Duplicate'))
+        news = len(repContact.objects.filter(type='New Record'))
+        undies = len(repContact.objects.filter(type='Undecided'))
+        doneKeys, numKeys, currKey, doneReps = getProgress()
+    return JsonResponse({'reps': reps, 'dups':dups, 'news': news, 'undies':undies, 'doneKeys': doneKeys,
+                         'numKeys':numKeys, 'doneReps':doneReps, 'currKey':currKey}, safe=False)
 
-#connect this page with filters config = RequestConfig(request)
 def display(request):
 
     config = RequestConfig(request, paginate={'per_page': 1000})
@@ -97,10 +91,8 @@ def upload(request):
 
 def merge(request, CRD):
     obj = repContact.objects.values().get(CRD=CRD)
-    # print(obj)
     ids = [obj['closest1_contactID'], obj['closest2_contactID'], obj['closest3_contactID']]
     objs = sfcontact.objects.values().filter(ContactID__in=ids)
-    # print(objs)
     fields = [i.name for i in repContact._meta.local_fields]
     mergers = list()
 
@@ -110,10 +102,10 @@ def merge(request, CRD):
             mergers.insert(0, list(objs[i].values()))
         elif objs[i]['ContactID'] == obj['closest2_contactID']:
             del objs[i]['closest_rep_id'], objs[i]['dupFlag'], objs[i]['ContactID']
-            mergers.insert(1, list(objs[i].values()))
+            mergers.insert(len(mergers), list(objs[i].values()))
         else:
             del objs[i]['closest_rep_id'], objs[i]['dupFlag'], objs[i]['ContactID']
-            mergers.insert(2, list(objs[i].values()))
+            mergers.insert(-1, list(objs[i].values()))
 
     del obj['closest1_id'], obj['closest2_id'], obj['closest3_id'], obj['closest1_contactID'], \
         obj['closest2_contactID'], obj['closest3_contactID'], obj['type'], obj['dupFlag'], obj['average']
@@ -124,11 +116,6 @@ def merge(request, CRD):
         obj_map = {i:j for i,j in zip(fields, list(zip(obj,mergers[0],mergers[1])) ) }
     elif len(mergers) == 1:
         obj_map = {i:j for i,j in zip(fields, list(zip(obj,mergers[0])) ) }
-    '''
-        outputs a dictionary of the field as the with a value of each objs corresponding field value
-        example
-        obj_map['title'] = ('free willy', 'home alone', 'toy story')
-    '''
     return render(request, 'dedupper/merge.html', {'objs' : obj_map})
 
 def download(request,type):

@@ -1,5 +1,4 @@
 {% load static %}
-<!-- fix jumbotron so it scrolls-->
 <!doctype html>
 <html lang="en">
 <head>
@@ -11,73 +10,17 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
           integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" />
     <style>
         @import url(https://fonts.googleapis.com/css?family=Roboto:300,500);
-
-        {#body {#}
-        {#  font-family: 'Roboto', sans-serif;#}
-        {#  font-size: 14px;#}
-        {#  text-align: center;#}
-        {#}#}
-         .lbl {
-             position: relative;
-             display: block;
-             height: 20px;
-             width: 44px;
-             background: #898989;
-             border-radius: 100px;
-             cursor: pointer;
-             transition: all 0.3s ease;
+        .jumbotron, .container{
+            overflow-y: auto;
+            scroll-behavior: smooth;
         }
-         .lbl:after {
-             position: absolute;
-             left: -2px;
-             top: -3px;
-             display: block;
-             width: 26px;
-             height: 26px;
-             border-radius: 100px;
-             background: #fff;
-             box-shadow: 0px 3px 3px rgba(0,0,0,0.05);
-             content: '';
-             transition: all 0.3s ease;
-        }
-         .lbl:active:after {
-             transform: scale(1.15, 0.85);
-        }
-         .cbx:checked ~ label {
-             background: #428bff;
-        }
-         .cbx:checked ~ label:after {
-             left: 20px;
-             background: #5bc0ff;
-        }
-         .cbx:disabled ~ label {
-             background: #d5d5d5;
-             pointer-events: none;
-        }
-         .cbx:disabled ~ label:after {
-             background: #bcbdbc;
-        }
-         .cntr {
-             position: absolute;
-             top: 50%;
-             left: 50%;
-             transform: translate(-50%, -50%);
-        }
-         .press {
-             margin-bottom: 40px;
-        }
-         .hidden {
-             display: none;
-        }
-         .jumbotron, .container{
-             overflow-y: auto;
-             scroll-behavior: smooth;
-         }
-         ul:empty::after{
+        ul:empty::after{
             content: attr(data-empty-message);
-         }
+        }
         a {
             text-shadow:
                     -0.125px -0.125px 0 #fff,
@@ -85,153 +28,143 @@
                     -0.125px 0.125px 0 #fff,
                     0.125px 0.125px 0 #fff;
         }
-        
-
     </style>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
 
 </head>
- <body class="bg-secondary"style="overflow: hidden;">
-     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-     <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
+<body class="bg-secondary"style="overflow: hidden;">
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
+<script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
         integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function() {
+        var data = [
+            {% for key,unique in keys %}
+                {
+                    id: {{ forloop.counter0 }},
+                    text:"{{ key }}",
+                    value:'{{ key }}',
+                    uniqueness: {{ unique }}
+                },
+            {% endfor %}
+        ]
+        function colorCode(field) {
+            var cc;
+            if (field.uniqueness >= 75) {
+                cc = 'success';
+            }
+            else if (field.uniqueness >= 25){
+                cc = 'warning';
+            } else{
+                cc = 'danger';
+            }
+            var $field = $('<span>'+field.text + '</span> <span class="badge  badge-pill text-white bg-' + cc + '"> ' +
+                field
+                    .uniqueness + '%' +
+                '</span>');
+            return $field;
+        }
+        $('.js-example-basic-multiple').select2({
+            theme: "bootstrap",
+            placeholderOption: 'first',
+            data: data,
+            {#templateSelection: colorCode,#}
+            templateResult: colorCode
+        });
+    });
+    var old_percent = 0,
+        inter;
+    function bg() {
+        $("body").polygonizr({
+            restNodeMovements: 0,// How long to pause in between new node-movements.
+            duration: 4, // When the cluster updates, this sets speed of nodes.
+            nodeMovementDistance: 400, // Define the maximum distance to move nodes.
+            numberOfNodes: 36,// The number of node nodes to print out.
+            nodeDotSize: 2.5,// Define the maximum size of each node dot.
+            nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
+            nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
+            randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
+            // Define a formula for how to initialize each node dot's position.
+            specifyPolygonMeshNetworkFormation: function (i) {
+                var forEachNode = {// Half a circle and randomized
+                    x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
+                    y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
+                };
+                return forEachNode;
+            },
+            nodeRelations: 15,// Number of relations between nodes.
+            animationFps: 300, // The FPS for the whole canvas.
+            nodeDotColor: "0, 0 0 ",// Sets the color of the nodes in the network (RGB).
+            nodeLineColor: "0, 0, 0 ",// Sets the color of the lines in the network (RGB).
+            nodeFillColor: "0, 0, 0 ",// Sets the color of  triangles in the network (RGB).
+            nodeFillAlpha: 2,// Sets the alpha level for the colors (1-0).
+            nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
+            nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
+            nodeFillSpace: true,// Defines if the triangles in the network should be shown.
+            nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
+            // Define the canvas size and css position.
+            canvasWidth: $(this).width(),
+            canvasHeight: $(this).height(),
+            canvasPosition: "absolute"
 
-     <script>
-function bg() {
+        });
+        $("body").polygonizr({
+            restNodeMovements: 0,// How long to pause in between new node-movements.
+            duration: 8, // When the cluster updates, this sets speed of nodes.
+            nodeMovementDistance: 400, // Define the maximum distance to move nodes.
+            numberOfNodes: 36,// The number of node nodes to print out.
+            nodeDotSize: 1,// Define the maximum size of each node dot.
+            nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
+            nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
+            randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
+            // Define a formula for how to initialize each node dot's position.
+            specifyPolygonMeshNetworkFormation: function (i) {
+                var forEachNode = {// Half a circle and randomized
+                    x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
+                    y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
+                };
+                return forEachNode;
+            },
+            nodeRelations: 15,// Number of relations between nodes.
+            animationFps: 300, // The FPS for the whole canvas.
+            nodeDotColor: "255, 255, 255 ",// Sets the color of the nodes in the network (RGB).
+            nodeLineColor: "255, 255, 255",// Sets the color of the lines in the network (RGB).
+            nodeFillColor: "255, 255, 255 ",// Sets the color of  triangles in the network (RGB).
+            nodeFillAlpha: 3,// Sets the alpha level for the colors (1-0).
+            nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
+            nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
+            nodeFillSpace: true,// Defines if the triangles in the network should be shown.
+            nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
+            // Define the canvas size and css position.
+            canvasWidth: $(this).width(),
+            canvasHeight: $(this).height(),
+            canvasPosition: "absolute"
 
-            $("body").polygonizr({
+        });
+    }
+    bg();
+    var colors = new Array(
+        [127.5,127.5,127.5],
+        [255,255,255],
+        [0,0,0],
+        [255,255,255],
+        [0,0,0],
+        [127.5,127.5,127.5],);
 
-                  restNodeMovements: 0,// How long to pause in between new node-movements.
+    var step = 0;
+    var colorIndices = [0,1,2,3];
 
-                  duration: 4, // When the cluster updates, this sets speed of nodes.
+    //transition speed
+    var gradientSpeed = 0.001;
 
-                  nodeMovementDistance: 400, // Define the maximum distance to move nodes.
+    function updateGradient()
+    {
 
-                  numberOfNodes: 36,// The number of node nodes to print out.
-
-                  nodeDotSize: 2.5,// Define the maximum size of each node dot.
-
-                  nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
-
-                  nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
-
-                 randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
-
-                  // Define a formula for how to initialize each node dot's position.
-                  specifyPolygonMeshNetworkFormation: function (i) {
-                    var forEachNode = {// Half a circle and randomized
-                        x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
-                        y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
-                    };
-                    return forEachNode;
-                  },
-
-                  nodeRelations: 15,// Number of relations between nodes.
-
-                  animationFps: 300, // The FPS for the whole canvas.
-
-                  nodeDotColor: "0, 0 0 ",// Sets the color of the nodes in the network (RGB).
-
-                  nodeLineColor: "0, 0, 0 ",// Sets the color of the lines in the network (RGB).
-
-                  nodeFillColor: "0, 0, 0 ",// Sets the color of  triangles in the network (RGB).
-
-                  nodeFillAlpha: 2,// Sets the alpha level for the colors (1-0).
-
-                  nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
-
-                  nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
-
-                  nodeFillSpace: true,// Defines if the triangles in the network should be shown.
-
-                  nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
-
-                  // Define the canvas size and css position.
-                  canvasWidth: $(this).width(),
-                  canvasHeight: $(this).height(),
-                  canvasPosition: "absolute"
-
-                });
-            $("body").polygonizr({
-
-                  restNodeMovements: 0,// How long to pause in between new node-movements.
-
-                  duration: 8, // When the cluster updates, this sets speed of nodes.
-
-                  nodeMovementDistance: 400, // Define the maximum distance to move nodes.
-
-                  numberOfNodes: 36,// The number of node nodes to print out.
-
-                  nodeDotSize: 1,// Define the maximum size of each node dot.
-
-                  nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
-
-                  nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
-
-                 randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
-
-                  // Define a formula for how to initialize each node dot's position.
-                  specifyPolygonMeshNetworkFormation: function (i) {
-                    var forEachNode = {// Half a circle and randomized
-                        x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
-                        y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
-                    };
-                    return forEachNode;
-                  },
-
-                  nodeRelations: 15,// Number of relations between nodes.
-
-                  animationFps: 300, // The FPS for the whole canvas.
-
-                  nodeDotColor: "255, 255, 255 ",// Sets the color of the nodes in the network (RGB).
-
-                  nodeLineColor: "255, 255, 255",// Sets the color of the lines in the network (RGB).
-
-                  nodeFillColor: "255, 255, 255 ",// Sets the color of  triangles in the network (RGB).
-
-                  nodeFillAlpha: 3,// Sets the alpha level for the colors (1-0).
-
-                  nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
-
-                  nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
-
-                  nodeFillSpace: true,// Defines if the triangles in the network should be shown.
-
-                  nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
-
-                  // Define the canvas size and css position.
-                  canvasWidth: $(this).width(),
-                  canvasHeight: $(this).height(),
-                  canvasPosition: "absolute"
-
-                });
-           }
-        bg();
-
-        var colors = new Array(
-            [127.5,127.5,127.5],
-            [255,255,255],
-            [0,0,0],
-            [255,255,255],
-            [0,0,0],
-            [127.5,127.5,127.5],);
-
-        var step = 0;
-        //color table indices for:
-        // current color left
-        // next color left
-        // current color right
-        // next color right
-        var colorIndices = [0,1,2,3];
-
-        //transition speed
-        var gradientSpeed = 0.001;
-
-        function updateGradient()
-        {
-
-          if ( $===undefined ) return;
+        if ( $===undefined ) return;
 
         var c0_0 = colors[colorIndices[0]];
         var c0_1 = colors[colorIndices[1]];
@@ -249,13 +182,13 @@ function bg() {
         var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
         var color2 = "rgb("+r2+","+g2+","+b2+")";
 
-         $('body').css({
-           background: "-webkit-gradient(linear, left top, right top, from("+color1+"), to("+color2+"))"}).css({
+        $('body').css({
+            background: "-webkit-gradient(linear, left top, right top, from("+color1+"), to("+color2+"))"}).css({
             background: "-moz-linear-gradient(left, "+color1+" 0%, "+color2+" 100%)"});
 
-          step += gradientSpeed;
-          if ( step >= 1 )
-          {
+        step += gradientSpeed;
+        if ( step >= 1 )
+        {
             step %= 1;
             colorIndices[0] = colorIndices[1];
             colorIndices[2] = colorIndices[3];
@@ -265,191 +198,305 @@ function bg() {
             colorIndices[1] = ( colorIndices[1] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
             colorIndices[3] = ( colorIndices[3] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
 
-          }
         }
+    }
+    setInterval(updateGradient,10);
 
-        setInterval(updateGradient,10);
-
-            $.ajaxSetup({data: {
+    $.ajaxSetup({data: {
             csrfmiddlewaretoken: '{{ csrf_token }}'
         }});
-        function create() {
-                var sList = "";
-                $('input[type=checkbox]').each(function () {
-                    var sThisVal = (this.checked ? "1" : "0");
-                    if (sThisVal === "1") {
-                         sList += ( this.id + "-");
-                         $(this).prop("checked", false);
-                    }
-                });
-                sList = sList.slice(0, -1);
-                var key = '<li class="bg-secondary list-group-item">'+
-                    '<button type="button" class="btn btn-sm btn-link float-right" onclick="del(this)">'+
-                    '<span class="fa fa-trash fa-1x"></span></button><h6 class="key">'+sList+'</h6></li>';
-                $(".list-group").append(key);
-        }
-        function generateKeys() {
-            let keys = "";
-            $(".key").each(function () {
-                keys += $(this).text();
-                keys += '_';
-            });
-            $.getJSON("{% url 'run' %}", {keys: keys}, function (result) {
-                $("#progress").modal('dispose');
-                window.location.replace("{% url 'reps' %}");
-            });
-        }
-        function del(item) {
-            $(item).closest(".list-group-item").remove();
-        }
 
-            $('#progress').ajaxStart(function () {
-                alert('ajax start');
-                $(this).modal('show');
-            });
-            $('#progress').ajaxComplete(function () {
-                $(this).modal('hide');
-            });
-    </script>
-    <nav class="navbar navbar-dark bg-info navbar-expand-lg justify-content-between">
-       <h1> <a class="navbar-brand" href="#">Duplify</a></h1>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-              <li class="nav-item active">
+    function update_bar(now) {
+        var p_bar= $(".progress-bar");
+        p_bar.attr('aria-valuenow', now);
+        p_bar.animate({width: now+'%'}, 500);
+    }
+
+    function update_progress(){
+        $.getJSON("{% url 'progress' %}", function (result) {
+            var reps = result['reps'],
+                dups = result['dups'],
+                news = result['news'],
+                undies = result['undies'],
+                doneKeys = result['doneKeys'],
+                doneReps = result['doneReps'],
+                numKeys = result['numKeys'],
+                currKey = result['currKey'];
+            var percent = Math.round(((doneKeys/numKeys)*100) + ((1/numKeys) * (doneReps/reps)*100));
+
+            if (percent > old_percent) {
+                $('#doneReps').text(percent);
+                update_bar(percent);
+            }
+            old_percent=percent;
+
+            $('#totalReps').text(reps);
+            $('#dups').text(dups);
+            $('#new').text(news);
+            $('#undies').text(undies);
+            $('#donekeys').text(doneKeys);
+            $('#numkeys').text(numKeys);
+            $('#currKey').text(currKey);
+
+
+
+            var data = [{
+                x: ['Undecided Record', 'Duplicates', 'New Records'],
+                y: [undies, dups, news],
+                type: 'bar',
+                marker:{
+                    color: ['rgba(0,0,255,1)', 'rgba(255,0,0,1)', 'rgba(0,255,0,1)', ]
+                },
+            }],
+                layout = {
+                title: 'Reps Distribution',
+                xaxis: {
+                    showgrid: false,
+                    zeroline: false
+                },
+                yaxis: {
+                    showline: false,
+                    rangemode: 'tozero'
+                }
+            },
+                fig = {
+                data: data,
+                layout: layout,
+            };
+            $("#repDistro").fadeToggle("slow");
+            setTimeout(function () {Plotly.react('repDistro', fig);}, 500);
+            $("#repDistro").fadeToggle("slow");
+
+            if (percent > 99){
+                clearInterval(inter);
+                $("#next").removeClass("invisible");
+                $(".progress-bar").removeClass("progress-bar-striped ");
+                $(".progress-bar").removeClass("progress-bar-animated");
+                $(".progress-bar").addClass("bg-success");
+                $(".modal-header").text("Duplify is done! Click Next to see the sorted reps.")
+            }
+
+        }).fail(function () {
+        });
+    }
+
+    function create() {
+        var sList;
+        var select_data =  $('.js-example-basic-multiple').select2('data');
+        $.map(select_data, function (data) {
+            sList += (data.value + ' ');
+        });
+        $('.js-example-basic-multiple').val(null).trigger('change');
+        sList = sList.slice(9, -1);
+        var key = '<div class="madeKey rounded bg-white m-1 pt-2 col-3 align-text-bottom">' +
+            '<button type="button" class="btn btn-sm btn-link float-right" onclick="del(this)">' +
+            '<span class="fa fa-trash fa-1x"></span></button><p class=" key ' +
+            'text-dark">'+sList+'</p></div>';
+        $(".keylist").append(key);
+    }
+
+    function generateKeys() {
+        let keys = "";
+        $(".key").each(function () {
+            keys += $(this).text();
+            keys += '_';
+        });
+        $.getJSON("{% url 'run' %}", {keys: keys}, function (result) {
+            $("#progress").modal('dispose');
+        });
+        inter = setInterval(update_progress,  5000);
+    }
+    function del(item) {
+        $(item).closest(".madeKey").remove();
+    }
+    function togglegameon(){
+        $("#qwop").fadeIn("slow");
+    }
+    function togglegameoff(){
+        $("#qwop").hide();
+    }
+</script>
+<nav class="navbar navbar-dark bg-info navbar-expand-lg justify-content-between">
+    <h1> <a class="navbar-brand" href="#">Duplify</a></h1>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
                 <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-              </li>
-              <li class="nav-item">
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="#">Features</a>
-              </li>
-              <li class="nav-item">
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="#">Pricing</a>
-              </li>
-            </ul>
-        </div>
-    </nav>
-    <div class="modal fade" id="progress" tabindex="-1" role="dialog"  aria-hidden="true">
-         <div class="modal-dialog modal-dialog-centered" role="document">
-             <div class="modal-content">
-                 <div class="modal-header">
-                 </div>
-                 <div class="modal-body">
-                     Duplify is now running. Sit back and relax!
-                 </div>
-             </div>
-         </div>
-     </div>
-    <div class="container-fluid row my-5" style=" text-align: center;">
-        <div class="col-1"></div>
-        <div id="keyBuilder" class="col-6">
-            <div class="card bg-dark text-white">
-                <div class="card-body" style="max-height: 85vh">
-                    <h4 class="card-title">Key Builder <form class="navbar-form navbar-left">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search">
-                    <span class="input-group-btn ">
-                        <button type="button" class="btn btn-default bg-white border-top-0 border-bottom-0"><span class="fa fa-search"></span></button>
-                    </span>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="modal fade" id="progress" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header row">
+                Duplify is now running. Sit back and relax!
+            </div>
+            <div class="modal-body">
+                <div role="tabpanel">
+                    <ul class="my-2 nav nav-pills nav-fill text-white" id="pills-tab" role="tablist">
+
+                        <li role="presentation" class="active nav-item badge-pill"><a   href="#uploadTab" aria-controls="uploadTab" role="tab"
+                                                                                        data-toggle="tab"><button
+                                class="nav-link btn btn-block  bg-primary nav-pill badge-pill" onclick="togglegameoff
+                                ()">
+                            Progress</button></a>
+
+                        </li>
+                        <li  id="br"role="presentation" class=" nav-item badge-pill"><a   href="#browseTab" aria-controls="browseTab" role="tab"
+                                                                                          data-toggle="tab"><button
+                                class="nav-link btn  bg-primary btn-block nav-pill badge-pill" onclick="togglegameon()">
+                            Analytics</button></a>
+                        </li>
+                    </ul>
                 </div>
-            </form>
-</h4>
-                    <p class="card-text">Toggle switches for the desired key components</p>
-                    <p class="card-text">Click Create to add the new key</p>
-                        <div class="container-fluid" style="background: transparent; overflow-y:scroll; max-height:
-                        50vh">
-                            <div class="row sw">
-                                {% for key,unique in keys %}
-                                    <div class="  col-4 my-2">
-                                        <div class="row ">
-                                            <div class="col-1"></div>
-                                            <div class="col-10  ">  {{ key|title }}</div>
-                                            <div class="col-1"></div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-2"></div>
-
-                                        <div class="col-3">
-                                            <input type="checkbox" id="{{ key }}" class="cbx hidden"/>
-                                            <label for="{{ key }}" class="lbl"></label>
-                                        </div>
-                                            <div class="col-4"> <span class=" float-left badge
-                                                                         badge-pill
-                                                {% if unique >= 75 %}
-                                                     badge-success
-                                                {% endif %}
-                                                {% if unique >= 25 and unique < 75 %}
-                                                    badge-warning
-                                                {% endif %}
-                                                {% if unique < 25 %}
-                                                    badge-danger
-                                                {% endif %}">
-                                                {{unique}}%</span>
-                                    </div>
-                                            <div class="col-1"></div>
-
-                                    </div>
-                                    </div>
-                                {% endfor %}
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="uploadTab">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated badge-pill" role="progressbar"
+                                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+                                <b id="doneReps">0</b><b>%</b>
                             </div>
                         </div>
-                         <hr class="my-2">
-                        <div class="row">
-                            <div class="col-4"></div>
-                            <div class="col-4">
-                                <button class="btn btn-primary btn-block badge-pill" onclick="create()">Create</button>
+                        <div class='row my-3 alert alert-secondary '>
+                            <div class="col-2"></div>
+                            <div class='col-4'>
+                                <div class='row'>Current Key:</div>
+                                <div class='row'>
+                                    <b id='currKey'> _ </b>
+                                </div>
                             </div>
-                            <div class="col-4"></div>
+                            <div class='col-4'>
+                                <div class='row'>Keys Completed:</div>
+                                <div class='row'><b id='donekeys'>0</b>/<b id='numkeys'>0</b></div>
+                            </div>
+                            <div class="col-2"></div>
+
                         </div>
-                </div>
-            </div>
-        </div>
-        <div id="keyList-channelPicker" class="col-4">
-            <div id="channelPicker" class=" bg-dark text-white card mb-2">
-              <div class="card-body">
-                <h4 class="card-title">Pick a Channel</h4>
-                <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                  <label class="btn btn-outline-primary">
-                    <input type="radio" name="options" id="option2" autocomplete="off"> RC
-                  </label>
-                  <label class="btn btn-outline-primary">
-                    <input type="radio" name="options" id="option3" autocomplete="off"> RD
-                  </label>
-                  <label class="btn btn-outline-primary">
-                    <input type="radio" name="options" id="option3" autocomplete="off"> RM
-                  </label>
-                  <label class="btn btn-outline-primary">
-                    <input type="radio" name="options" id="option3" autocomplete="off"> IMC
-                  </label>
-                  <label class="btn btn-outline-primary">
-                    <input type="radio" name="options" id="option3" autocomplete="off"> EMC
-                  </label>
-                  <label class="btn btn-outline-primary">
-                    <input type="radio" name="options" id="option3" autocomplete="off"> FD
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div id="listOfKeys" class="bg-dark text-white card">
-                <div class="card-body">
-                    <h4 class="card-title">List of Keys</h4>
-                    <p class="card-text">These keys will be generated for the duplicate finding algorithm</p>
-                    <p class="card-text">Click GO to start the algorithm</p>
-                    <div class="container my-2" style="max-height: 300px" >
-                        <ul class="list-group" data-empty-message="Add at least one key before starting the algorithm">
-                            <!-- for default keys  <li class="list-group-item disabled">
-                          <span class="tag tag-default tag-pill float-xs-right">pill3</span> Disabled item
-                      </li> -->
-                        </ul>
+                        <div id="repDistro"><!-- Plotly chart will be drawn inside this DIV --></div>
+                        <script>
+                            var data = [{
+                                x: ['Undecided Record', 'Duplicates', 'New Records'],
+                                y: [0, 0, 0],
+                                type: 'bar',
+                                marker:{
+                                    color: ['rgba(0,0,255,1)', 'rgba(255,0,0,1)', 'rgba(0,255,0,1)', ]
+                                },
+                            }];
+                            var layout = {
+                                title: 'Reps Distribution',
+                                xaxis: {
+                                    showgrid: false,
+                                    zeroline: false
+                                },
+                                yaxis: {
+                                    showline: false,
+                                    rangemode: 'tozero'
+                                },
+                            };
+                            var fig = {
+                                data: data,
+                                layout: layout,
+                            }
+                            Plotly.react('repDistro', fig);
+                        </script></div>
+                    <div role="tabpanel" class="tab-pane" id="browseTab">
+                        <object class="" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="640"
+                                height="900"
+                                align="middle" id="qwop"><param name="movie" value="http://m.toogame.com/q/swfs/QWOP.swf"><param name="quality" value="high"><param name="AllowScriptAccess" value="always">><object type="application/x-shockwave-flash" data="http://m.toogame.com/q/swfs/QWOP.swf" width="640" height="400"><param name="movie" value="http://m.toogame.com/q/swfs/QWOP.swf"><param name="quality" value="high"><param name="AllowScriptAccess" value="always"><a href="http://www.adobe.com/go/getflash"><img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash Player"></a></object></object>
+
                     </div>
                 </div>
             </div>
-                <button id="keygen" class="btn btn-primary btn-block badge-pill my-2" onclick="generateKeys()" data-toggle="modal" data-target="#progress">
-                    <b>GO</b>
-                </button>
+            <hr>
+            <div class="container my-3">
+                <a id="next" class="invisible btn btn-success
+                    badge-pill btn-block" href="{% url 'reps' %}">Next</a>
+            </div>
         </div>
-        <div class="col-sm-1"></div>
     </div>
+</div>
+<div class="container-fluid row my-5" style=" text-align: center;">
+    <div class="col-2"></div>
+    <div id="keyBuilder" class="col-8">
+        <div id="channelPicker" class="bg-dark text-white card mb-2">
+            <div class="card-body">
+                <h4 class="card-title">Pick a Channel</h4>
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-outline-primary">
+                        <input type="radio" name="options" id="option2" autocomplete="off"> RC
+                    </label>
+                    <label class="btn btn-outline-primary">
+                        <input type="radio" name="options" id="option3" autocomplete="off"> RD
+                    </label>
+                    <label class="btn btn-outline-primary">
+                        <input type="radio" name="options" id="option3" autocomplete="off"> RM
+                    </label>
+                    <label class="btn btn-outline-primary">
+                        <input type="radio" name="options" id="option3" autocomplete="off"> IMC
+                    </label>
+                    <label class="btn btn-outline-primary">
+                        <input type="radio" name="options" id="option3" autocomplete="off"> EMC
+                    </label>
+                    <label class="btn btn-outline-primary">
+                        <input type="radio" name="options" id="option3" autocomplete="off"> FD
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="card bg-dark text-white">
+            <div class="card-body" style="max-height: 85vh">
+                <h4 class="card-title">Key Builder </h4>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <button disabled class="  btn-secondary rounded-left col-12" style="height:
+                            34px" type="button"> <span class="fa fa-search fa-1x"></span></button>
+                    </div>
+                    <select class="js-example-basic-multiple col-10" name="states[]"
+                            multiple="multiple">
+
+                    </select>
+                    <div class="input-group-apppend">
+                        <button onclick="create()" class=" btn-primary rounded-right" style="height:
+                            34px" type="button">Create</button>
+                    </div>
+                </div>
+                <div class="row">
+
+                    <div class="col-2"></div>
+                    <div class="col">
+
+                        <div class="container-fluid keylist row" style="background: transparent; overflow-y:scroll; max-height:
+                        35vh; min-height: 5vh">
+                        </div>
+                    </div>
+                </div>
+                <hr class="my-2">
+                <div class="row">
+                    <div class="col-4">
+                    </div>
+                    <div class="col-4">
+                        <button id="keygen" class="btn btn-primary btn-block badge-pill my-2" onclick="generateKeys()"
+                                data-toggle="modal" data-target="#progress" data-backdrop="static" data-keyboard="false">
+                            <b>GO</b>
+                        </button>
+                    </div>
+                    <div class="col-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-2"></div>
+
+</div>
 </body>
 </html>

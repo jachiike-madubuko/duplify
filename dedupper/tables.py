@@ -46,7 +46,6 @@ class RepContactTable(tables.Table):
                    'id', 'canSellDate', 'performanceLeader', 'levelLeader', 'otherEmail', 'workEmail',
                    'personalEmail', 'otherPhone', 'Phone', 'dupFlag', 'type')
 
-
 class SFContactTable(tables.Table):
     merge = tables.LinkColumn('merge_records', args=[tables.A('pk')], attrs={'class': 'btn btn-outline-primary badge-pill',
                                                                              'href':"#" }, text="Merge")

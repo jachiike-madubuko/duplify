@@ -12,7 +12,6 @@ def strip(string):
     newstring = string.replace(" ","")
     return  newstring
 
-
 class simple(models.Model):
     title = models.CharField(max_length=256)
     author = models.CharField(max_length=256)
@@ -43,13 +42,6 @@ class simple(models.Model):
         for part in key_parts:
             key += key_builder[part]
         return key
-
-
-#TODO
-#create contact model
-#create rep_contact and sf_contact that inherit from contact
-#set up model for SF contact
-#for rep_contact make a match_contactID and make it unique
 
 class contact(models.Model):
     CRD = models.CharField( max_length=256, unique=True,  db_column="CRD")
@@ -205,7 +197,6 @@ class repContact(models.Model):
             key += key_builder[part]
         return key
 
-
 class sfcontact(models.Model):
     CRD = models.CharField(max_length=256, db_column="CRD")
     ContactID = models.CharField(max_length=256, blank=True)
@@ -294,11 +285,16 @@ class dedupTime(models.Model):
     id = models.BigAutoField(primary_key=True)
     num_threads = models.IntegerField(null=True, blank=True)
     num_SF = models.IntegerField(null=True, blank=True)
+    num_dup = models.IntegerField(null=True, blank=True)
+    num_new = models.IntegerField(null=True, blank=True)
+    num_undie= models.IntegerField(null=True, blank=True)
     seconds = models.FloatField( null=True, blank=True)
+    avg = models.FloatField( null=True, blank=True)
+    current_key = models.CharField(max_length=256, blank=True, null=True)
     created_on = models. DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
-       return "{} SF records dupped against in {} seconds".format(self.num_SF, self.seconds)
+       return "At {} -- {} dups and {} new".format(self.created_on, self.num_dup, self.num_new)
 
 class duplifyTime(models.Model):
     num_threads = models.IntegerField(null=True, blank=True)
@@ -307,10 +303,9 @@ class duplifyTime(models.Model):
     seconds = models.FloatField( null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
 
+
     def __str__(self):
         return "{} reps <=> {} SF records in {} seconds".format(self.num_rep, self.num_SF, self.seconds)
-
-
 
 class uploadTime(models.Model):
     num_threads = models.IntegerField(default=1, null=True, blank=True)

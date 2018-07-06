@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 import django_heroku
 import dj_database_url
-
+from django.conf.locale.en import formats as en_formats
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -89,6 +89,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'dedupper_app.wsgi.application'
+
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 DATABASES = {
@@ -114,6 +115,17 @@ DATABASES = {
 DATABASES['default'] = dj_database_url.config(
     engine='heroku_connect.db.backends.postgresql'
 )
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'dafi1ss9nanhc2',
+        'USER': 'xkdyqhyazyiycb',
+        'PASSWORD': 'eaa746a26096a351fc3e480236d417309679113b0d790953c077ec8540ac2a98',
+        'HOST': 'ec2-23-23-247-245.compute-1.amazonaws.com',
+        'PORT': '5432',
+    }
+}
 '''
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -133,20 +145,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
-
+en_formats.DATETIME_FORMAT = "%d-%m-%Y_%H:%M:%S"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
@@ -154,4 +161,3 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 django_heroku.settings(locals())
-

@@ -12,158 +12,156 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <title> Duplify | Merge</title>
-      <script>
-           function merge(field) {
-               val = field.id.split('-');
-               $("#"+val[0]).val(val[1]);
-           }
+    <script>
+        function merge(field) {
+            val = field.id.split('-');
+            $("#"+val[0]).val(val[1]);
+        }
 
 
-      </script>
-    <style>
-</style>
-  </head>
-  <body class="bg-dark text-primary" style="overflow: hidden">
+    </script>
+</head>
+<body class="bg-dark text-primary" style="overflow: hidden">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 {# <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>#}
- <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
-    <script>
-function bg() {
+<script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
+<script>
+    function bg() {
 
-            $("body").polygonizr({
+        $("body").polygonizr({
 
-                  restNodeMovements: 0,// How long to pause in between new node-movements.
+            restNodeMovements: 0,// How long to pause in between new node-movements.
 
-                  duration: 4, // When the cluster updates, this sets speed of nodes.
+            duration: 4, // When the cluster updates, this sets speed of nodes.
 
-                  nodeMovementDistance: 400, // Define the maximum distance to move nodes.
+            nodeMovementDistance: 400, // Define the maximum distance to move nodes.
 
-                  numberOfNodes: 36,// The number of node nodes to print out.
+            numberOfNodes: 36,// The number of node nodes to print out.
 
-                  nodeDotSize: 2.5,// Define the maximum size of each node dot.
+            nodeDotSize: 2.5,// Define the maximum size of each node dot.
 
-                  nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
+            nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
 
-                  nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
+            nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
 
-                 randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
+            randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
 
-                  // Define a formula for how to initialize each node dot's position.
-                  specifyPolygonMeshNetworkFormation: function (i) {
-                    var forEachNode = {// Half a circle and randomized
-                        x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
-                        y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
-                    };
-                    return forEachNode;
-                  },
+            // Define a formula for how to initialize each node dot's position.
+            specifyPolygonMeshNetworkFormation: function (i) {
+                var forEachNode = {// Half a circle and randomized
+                    x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
+                    y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
+                };
+                return forEachNode;
+            },
 
-                  nodeRelations: 15,// Number of relations between nodes.
+            nodeRelations: 15,// Number of relations between nodes.
 
-                  animationFps: 300, // The FPS for the whole canvas.
+            animationFps: 300, // The FPS for the whole canvas.
 
-                  nodeDotColor: "0, 0 0 ",// Sets the color of the nodes in the network (RGB).
+            nodeDotColor: "0, 0 0 ",// Sets the color of the nodes in the network (RGB).
 
-                  nodeLineColor: "0, 0, 0 ",// Sets the color of the lines in the network (RGB).
+            nodeLineColor: "0, 0, 0 ",// Sets the color of the lines in the network (RGB).
 
-                  nodeFillColor: "0, 0, 0 ",// Sets the color of  triangles in the network (RGB).
+            nodeFillColor: "0, 0, 0 ",// Sets the color of  triangles in the network (RGB).
 
-                  nodeFillAlpha: 2,// Sets the alpha level for the colors (1-0).
+            nodeFillAlpha: 2,// Sets the alpha level for the colors (1-0).
 
-                  nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
+            nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
 
-                  nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
+            nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
 
-                  nodeFillSpace: true,// Defines if the triangles in the network should be shown.
+            nodeFillSpace: true,// Defines if the triangles in the network should be shown.
 
-                  nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
+            nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
 
-                  // Define the canvas size and css position.
-                  canvasWidth: $(this).width(),
-                  canvasHeight: $(this).height(),
-                  canvasPosition: "absolute"
+            // Define the canvas size and css position.
+            canvasWidth: $(this).width(),
+            canvasHeight: $(this).height(),
+            canvasPosition: "absolute"
 
-                });
-            $("body").polygonizr({
+        });
+        $("body").polygonizr({
 
-                  restNodeMovements: 0,// How long to pause in between new node-movements.
+            restNodeMovements: 0,// How long to pause in between new node-movements.
 
-                  duration: 8, // When the cluster updates, this sets speed of nodes.
+            duration: 8, // When the cluster updates, this sets speed of nodes.
 
-                  nodeMovementDistance: 400, // Define the maximum distance to move nodes.
+            nodeMovementDistance: 400, // Define the maximum distance to move nodes.
 
-                  numberOfNodes: 36,// The number of node nodes to print out.
+            numberOfNodes: 36,// The number of node nodes to print out.
 
-                  nodeDotSize: 1,// Define the maximum size of each node dot.
+            nodeDotSize: 1,// Define the maximum size of each node dot.
 
-                  nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
+            nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
 
-                  nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
+            nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
 
-                 randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
+            randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
 
-                  // Define a formula for how to initialize each node dot's position.
-                  specifyPolygonMeshNetworkFormation: function (i) {
-                    var forEachNode = {// Half a circle and randomized
-                        x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
-                        y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
-                    };
-                    return forEachNode;
-                  },
+            // Define a formula for how to initialize each node dot's position.
+            specifyPolygonMeshNetworkFormation: function (i) {
+                var forEachNode = {// Half a circle and randomized
+                    x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
+                    y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
+                };
+                return forEachNode;
+            },
 
-                  nodeRelations: 15,// Number of relations between nodes.
+            nodeRelations: 15,// Number of relations between nodes.
 
-                  animationFps: 300, // The FPS for the whole canvas.
+            animationFps: 300, // The FPS for the whole canvas.
 
-                  nodeDotColor: "255, 255, 255 ",// Sets the color of the nodes in the network (RGB).
+            nodeDotColor: "255, 255, 255 ",// Sets the color of the nodes in the network (RGB).
 
-                  nodeLineColor: "255, 255, 255",// Sets the color of the lines in the network (RGB).
+            nodeLineColor: "255, 255, 255",// Sets the color of the lines in the network (RGB).
 
-                  nodeFillColor: "255, 255, 255 ",// Sets the color of  triangles in the network (RGB).
+            nodeFillColor: "255, 255, 255 ",// Sets the color of  triangles in the network (RGB).
 
-                  nodeFillAlpha: 3,// Sets the alpha level for the colors (1-0).
+            nodeFillAlpha: 3,// Sets the alpha level for the colors (1-0).
 
-                  nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
+            nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
 
-                  nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
+            nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
 
-                  nodeFillSpace: true,// Defines if the triangles in the network should be shown.
+            nodeFillSpace: true,// Defines if the triangles in the network should be shown.
 
-                  nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
+            nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
 
-                  // Define the canvas size and css position.
-                  canvasWidth: $(this).width(),
-                  canvasHeight: $(this).height(),
-                  canvasPosition: "absolute"
+            // Define the canvas size and css position.
+            canvasWidth: $(this).width(),
+            canvasHeight: $(this).height(),
+            canvasPosition: "absolute"
 
-                });
-           }
-        bg();
+        });
+    }
+    bg();
 
-        var colors = new Array(
-            [127.5,127.5,127.5],
-            [255,255,255],
-            [0,0,0],
-            [255,255,255],
-            [0,0,0],
-            [127.5,127.5,127.5],);
+    var colors = new Array(
+        [127.5,127.5,127.5],
+        [255,255,255],
+        [0,0,0],
+        [255,255,255],
+        [0,0,0],
+        [127.5,127.5,127.5],);
 
-        var step = 0;
-        //color table indices for:
-        // current color left
-        // next color left
-        // current color right
-        // next color right
-        var colorIndices = [0,1,2,3];
+    var step = 0;
+    //color table indices for:
+    // current color left
+    // next color left
+    // current color right
+    // next color right
+    var colorIndices = [0,1,2,3];
 
-        //transition speed
-        var gradientSpeed = 0.001;
+    //transition speed
+    var gradientSpeed = 0.001;
 
-        function updateGradient()
-        {
+    function updateGradient()
+    {
 
-          if ( $===undefined ) return;
+        if ( $===undefined ) return;
 
         var c0_0 = colors[colorIndices[0]];
         var c0_1 = colors[colorIndices[1]];
@@ -181,13 +179,13 @@ function bg() {
         var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
         var color2 = "rgb("+r2+","+g2+","+b2+")";
 
-         $('body').css({
-           background: "-webkit-gradient(linear, left top, right top, from("+color1+"), to("+color2+"))"}).css({
+        $('body').css({
+            background: "-webkit-gradient(linear, left top, right top, from("+color1+"), to("+color2+"))"}).css({
             background: "-moz-linear-gradient(left, "+color1+" 0%, "+color2+" 100%)"});
 
-          step += gradientSpeed;
-          if ( step >= 1 )
-          {
+        step += gradientSpeed;
+        if ( step >= 1 )
+        {
             step %= 1;
             colorIndices[0] = colorIndices[1];
             colorIndices[2] = colorIndices[3];
@@ -197,39 +195,39 @@ function bg() {
             colorIndices[1] = ( colorIndices[1] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
             colorIndices[3] = ( colorIndices[3] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
 
-          }
         }
+    }
 
-        setInterval(updateGradient,10);
-    </script>
+    setInterval(updateGradient,10);
+</script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-      <nav class="navbar navbar-dark bg-dark navbar-expand-lg justify-content-between">
-        <a class="navbar-brand" href="#">Duplify</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-              <li class="nav-item active">
+<nav class="navbar navbar-dark bg-dark navbar-expand-lg justify-content-between">
+    <a class="navbar-brand" href="#">Duplify</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
                 <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-              </li>
-              <li class="nav-item">
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="#">Features</a>
-              </li>
-              <li class="nav-item">
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="#">Pricing</a>
-              </li>
-            </ul>
-            <form class="navbar-form navbar-left">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search">
-                    <span class="input-group-btn ">
-                        <button type="button" class="btn btn-default bg-white border-top-0 border-bottom-0"><span class="fa fa-search"></span></button>
-                    </span>
-                </div>
-            </form>
-        </div>
-    </nav>
+            </li>
+        </ul>
+        <form class="navbar-form navbar-left">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search">
+                <span class="input-group-btn ">
+                    <button type="button" class="btn btn-default bg-white border-top-0 border-bottom-0"><span class="fa fa-search"></span></button>
+                </span>
+            </div>
+        </form>
+    </div>
+</nav>
 <div class="container-fluid row text-white">
 
     <div class="col-11 container mt-3">
@@ -263,24 +261,24 @@ function bg() {
                     <div class="input-group-prepend">
                         <span class="input-group-text bg-dark text-white">{{ key|title }}</span>
                     </div>
-                        <input id="{{ key }}" class="form-control" type="text" placeholder="{{ value|first }}" readonly>
-                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
-                <span class="sr-only">Toggle Dropdown</span>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    {% for val in value  %}
-                        <a class="dropdown-item {% cycle 'alert-primary' 'alert-success' 'alert-warning' 'alert-danger'   %}" href="#" onclick="merge(this) " id="{{ key }}-{{ val }}"> {{ val }}</a>
-                    {% endfor %}
+                    <input id="{{ key }}" class="form-control" type="text" placeholder="{{ value|first }}" readonly>
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                    <span class="sr-only">Toggle Dropdown</span>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        {% for val in value  %}
+                            <a class="dropdown-item {% cycle 'alert-primary' 'alert-success' 'alert-warning' 'alert-danger'   %}" href="#" onclick="merge(this) " id="{{ key }}-{{ val }}"> {{ val }}</a>
+                        {% endfor %}
+                        {% resetcycle %}
+                    </div>
                 </div>
-            </div>
             {% endfor %}
         </div>
-     <div class="row py-2 border-top">
-           <div class="col-4"><a href="{% url 'reps' %}" style="text-decoration: none"><button type="button" class="btn btn-danger btn-lg btn-block">Cancel Merge</button></a></div>
-           <div class="col-4"> <button type="button" class="btn btn-warning btn-lg btn-block">Revert</button></div>
-           <div class="col-4"> <button type="button" class="btn btn-success btn-lg btn-block">Update Record</button></div>
-       </div>
+        <div class="row py-2 border-top">
+            <div class="col-4"><a href="{% url 'reps' %}" style="text-decoration: none"><button type="button" class="btn btn-danger btn-lg btn-block">Cancel Merge</button></a></div>
+            <div class="col-4"> <button type="button" class="btn btn-warning btn-lg btn-block">Revert</button></div>
+            <div class="col-4"> <button type="button" class="btn btn-success btn-lg btn-block">Update Record</button></div>
+        </div>
     </div>
 </div>
 </body>
-
 </html>
