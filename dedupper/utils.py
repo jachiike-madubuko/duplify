@@ -219,8 +219,6 @@ def sort(avg):
     else:
         return dup_rkd[avg]
 
-
-
 def getProgress():
     return doneKeys, totalKeys, currKey, cnt
 
