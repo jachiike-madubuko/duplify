@@ -139,26 +139,27 @@ class repContact(models.Model):
     average = models.IntegerField(null=True, blank=True)
     TYPES_OF_RECORD = (('Undecided', 'Undecided'),
                        ('Duplicate', 'Duplicate'),
+                       ('Manual Check', 'Manual Check'),
                        ('New Record', 'New Record'))
     type = models.CharField(max_length=256, choices=TYPES_OF_RECORD, default='Undecided')
 
     closest1_contactID = models.CharField(max_length=256, blank=True)
     closest1 = models.ForeignKey('sfcontact', on_delete=models.CASCADE, related_name="first_%(app_label)s_%("
                                                                                      "class)s_related",
-        related_query_name="%(app_label)s_%(class)s", null=True,
-                                 blank=True)
+                                 related_query_name="%(app_label)s_%(class)s", null=True, blank=True)
 
     closest2_contactID = models.CharField(max_length=256, blank=True)
     closest2 = models.ForeignKey('sfcontact', on_delete=models.CASCADE, related_name="second_%(app_label)s_%("
                                                                                      "class)s_related",
-        related_query_name="%(app_label)s_%(class)ss", null=True,
-                                 blank=True)
+                                 related_query_name="%(app_label)s_%(class)ss", null=True, blank=True)
+
     closest3_contactID = models.CharField(max_length=256, blank=True)
     closest3 = models.ForeignKey('sfcontact', on_delete=models.CASCADE, related_name="third_%(app_label)s_%("
                                                                                      "class)s_related",
-        related_query_name="%(app_label)s_%(class)sss", null=True,
-                                 blank=True)
+                                 related_query_name="%(app_label)s_%(class)sss", null=True, blank=True)
+
     dupFlag = models.BooleanField(blank=True, default=False)
+    keySortedBy = models.CharField(max_length=256, blank=True)
 
     def __str__(self):
         return '{} {}'.format(self.firstName, self.lastName,)

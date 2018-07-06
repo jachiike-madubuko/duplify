@@ -34,9 +34,9 @@ def run(request):
 
         keylist = request.GET.get('keys')
         #channel = request.GET.get('channel')
-        print('Starting algorithm with {}'.format(keylist))
         keylist = keylist.split("_")
-        partslist = [i.split(' ') for i in keylist[:-1]]
+        partslist = [i.split('-') for i in keylist[:-1]]
+        print(partslist)
         result = key_generator(partslist)
     return JsonResponse({'msg': 'success!'}, safe=False)
 
@@ -56,19 +56,23 @@ def display(request):
     undecided_table = RepContactTable(repContact.objects.filter(type__exact='Undecided'), prefix='U-')  # prefix specified
     duplicate_table = RepContactTable(repContact.objects.filter(type__exact='Duplicate'), prefix='D-')  # prefix specified
     new_record_table = RepContactTable(repContact.objects.filter(type__exact='New Record'), prefix='N-')  # prefix
+    manual_check_table = RepContactTable(repContact.objects.filter(type__exact='Manual Check'), prefix='M-')  # prefix
     # specified
     config.configure(undecided_table)
     config.configure(duplicate_table)
     config.configure(new_record_table)
+    config.configure(manual_check_table)
 
     undecided = RepContactResource().export(repContact.objects.filter(type='Undecided'))
     newRecord = RepContactResource().export(repContact.objects.filter(type='New Record'))
     duplicate = RepContactResource().export(repContact.objects.filter(type='Duplicate'))
+    manual_check = RepContactResource().export(repContact.objects.filter(type='Manual Check'))
 
     return render(request, 'dedupper/sorted.html', {
         'undecided_table': undecided_table,
         'duplicate_table': duplicate_table,
         'new_record_table': new_record_table,
+        'manual_check_table': manual_check_table,
     })
 
 def upload(request):
@@ -126,6 +130,9 @@ def download(request,type):
     elif(type == "NewRecord"):
         filename = 'filename="New Records.csv"'
         type = 'New Record'
+    elif(type == "ManualCheck"):
+        filename = 'filename="Manual Checks.csv"'
+        type = 'Manual Check'
     else:
         filename = 'filename="Undecided Records.csv"'
 
