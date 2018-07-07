@@ -46,9 +46,15 @@ def progress(request):
         dups = len(repContact.objects.filter(type='Duplicate'))
         news = len(repContact.objects.filter(type='New Record'))
         undies = len(repContact.objects.filter(type='Undecided'))
+        manu = len(repContact.objects.filter(type='Manual Check'))
         doneKeys, numKeys, currKey, doneReps = getProgress()
+        keyPercent = round(((doneKeys/numKeys)*100) + ((1/numKeys) * (doneReps/reps)*100),2)
+        repPercent = round( (reps-undies)/reps,2)
+
     return JsonResponse({'reps': reps, 'dups':dups, 'news': news, 'undies':undies, 'doneKeys': doneKeys,
-                         'numKeys':numKeys, 'doneReps':doneReps, 'currKey':currKey}, safe=False)
+                         'numKeys':numKeys, 'doneReps':doneReps, 'currKey':currKey, 'manu':manu,
+                         'keyPercent':keyPercent, 'repPercent': repPercent},
+                        safe=False)
 
 def display(request):
 

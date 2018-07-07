@@ -39,6 +39,7 @@ waiting= True
 sf_list = list(sfcontact.objects.all())
 sf_map=currKey=sort_alg = None
 start=end=cnt=doneKeys=totalKeys = 0
+partslist = list()
 
 
 def convertCSV(file, resource, type='rep', batchSize=3000):
@@ -121,28 +122,29 @@ def findRepDups(rep, keys, numthreads):
 
 def finish(numThreads):
     global end, waiting
-    end = clock()
-    time = end - start
-    duplifyTime.objects.create(num_threads=numThreads, num_SF=len(sf_list), num_rep = len(repContact.objects.all()), seconds = round(time,2))
-    # print('\a')
-    os.system('say "The repp list has been duplified!"')
+    if currKey == partslist[-1]:
+        end = clock()
+        time = end - start
+        duplifyTime.objects.create(num_threads=numThreads, num_SF=len(sf_list), num_rep = len(repContact.objects.all()), seconds = round(time,2))
+        # print('\a')
+        os.system('say "The repp list has been duplified!"')
     waiting=False
 
 def key_generator(partslist):
-    global start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg
-    for key_parts in partslist:
-        if 'phone' in key_parts:
-            index = partslist.index(key_parts)
-            del partslist[index]
-            for i in ['homePhone', 'mobilePhone', 'Phone', 'otherPhone']:
-                new_key_parts = [i if x == 'phone' else x for x in key_parts]
-                partslist.insert(index, new_key_parts)
-        if 'email' in key_parts:
-            index = partslist.index(key_parts)
-            del partslist[index]
-            for i in ['otherEmail', 'personalEmail', 'workEmail']:
-                new_key_parts = [i if x == 'email' else x for x in key_parts]
-                partslist.insert(index, new_key_parts)
+    global start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg, keylist
+    # for key_parts in partslist:
+    #     if 'phone' in key_parts:
+    #         index = partslist.index(key_parts)
+    #         del partslist[index]
+    #         for i in ['homePhone', 'mobilePhone', 'Phone', 'otherPhone']:
+    #             new_key_parts = [i if x == 'phone' else x for x in key_parts]
+    #             partslist.insert(index, new_key_parts)
+    #     if 'email' in key_parts:
+    #         index = partslist.index(key_parts)
+    #         del partslist[index]
+    #         for i in ['otherEmail', 'personalEmail', 'workEmail']:
+    #             new_key_parts = [i if x == 'email' else x for x in key_parts]
+    #             partslist.insert(index, new_key_parts)
     start = clock()
     totalKeys = len(partslist)
     for key_parts in partslist:
@@ -156,6 +158,7 @@ def key_generator(partslist):
         while waiting:
             pass
         doneKeys += 1
+
 
 def makeKeys(headers):
     keys = []
@@ -171,16 +174,8 @@ def makeKeys(headers):
 
     for i in headers:
         if i not in excluded:
-            if i in phoneTypes:
-                phoneUniqueness += repContact.objects.order_by().values_list(i).distinct().count() / total
-            elif i in emailTypes:
-                emailUniqueness += repContact.objects.order_by().values_list(i).distinct().count() / total
-
-            else:
-                uniqueness = repContact.objects.order_by().values_list(i).distinct().count() / total
-                keys.append((i, int(uniqueness * 100)))
-    keys.extend([('phone', int((phoneUniqueness / 4) * 100)), ('email', int((emailUniqueness / 3) * 100))])
-    keys.sort()
+            uniqueness = repContact.objects.order_by().values_list(i).distinct().count() / total
+            keys.append((i, int(uniqueness * 100)))
     return keys
 
 def match_keys(key,key_list):
@@ -210,16 +205,10 @@ def setSortingAlgorithm(min_dup,min_uns):
     #TODO function to loop through the records and resort them based on new RKD
 
 def sort(avg):
-    return dup_rkd[avg]
-
-
-def sort(avg):
     if(sort_alg == 'true'):
         return man_rkd[avg]
     else:
         return dup_rkd[avg]
-
-
 
 def getProgress():
     return doneKeys, totalKeys, currKey, cnt
