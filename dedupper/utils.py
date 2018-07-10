@@ -39,14 +39,14 @@ waiting= True
 sf_list = list(sfcontact.objects.all())
 sf_map=currKey=sort_alg = None
 start=end=cnt=doneKeys=totalKeys = 0
-partslist = list()
+keylist = list()
 
 
 def convertCSV(file, resource, type='rep', batchSize=3000):
     dataset = Dataset()
     headers = ''
     cnt, cnt2 = 0, 0
-    print('converting CSV', str(file))
+    print('converting CSV ', str(file))
     start = clock()
     fileString = ''
     #look into going line by line
@@ -74,7 +74,7 @@ def convertCSV(file, resource, type='rep', batchSize=3000):
 
 def findRepDups(rep, keys, numthreads):
     global cnt
-    start=clock()
+    dup_start=clock()
     rep_key = rep.key(keys)
     sf_keys = [i.key(keys) for i in sf_list]
     sf_map = dict(zip(sf_keys, sf_list))
@@ -82,6 +82,14 @@ def findRepDups(rep, keys, numthreads):
     match_map = list(zip(key_matches, sf_keys))
     match_map = sorted(match_map, reverse=True)
     top1, top2, top3 = [(match_map[i][0], sf_map[match_map[i][1]]) for i in range(3)]
+    # try:
+    #     top1, top2, top3 = [(match_map[i][0], sf_map[match_map[i][1]]) for i in range(3)]
+    # except Exception as e:
+    #     logging.exception(e)
+    #     print("ERROR\n\t match_map:\t{}\n\t key_matches:\t{}\n\t sf_map:\t{}\n\t sf_keys:\t{}\n\t ".format(match_map,
+    #                                                                                                        key_matches,
+    #                                                                                                        sf_map,
+    #                                                                                                        sf_keys))
 
     if top1[0] <= top3[0] + 10 and top1[1].id != top3[1].id:
         rep.average = np.mean([top1[0], top2[0], top3[0]])
@@ -107,46 +115,46 @@ def findRepDups(rep, keys, numthreads):
 
     if rep.CRD != top1[1].CRD:
         rep.dupFlag = True
-    rep.keySortedBy = currKey
+    string_key = '-'.join(currKey)
+    rep.keySortedBy = string_key
     rep.save()
-    time = round(clock()-start, 2)
+    time = round(clock()-dup_start, 2)
     avg = dedupTime.objects.aggregate(Avg('seconds'))['seconds__avg']
     if avg == None:
         avg = 0
+    else:
+        avg = round(avg, 2)
     dups = len(repContact.objects.filter(type='Duplicate'))
     news = len(repContact.objects.filter(type='New Record'))
     undies = len(repContact.objects.filter(type='Undecided'))
-    dedupTime.objects.create(num_SF = len(sf_list), seconds=time, num_threads=numthreads, avg=avg, num_dup=dups,
-                             num_new=news, num_undie=undies, current_key=currKey)
+    dedupTime.objects.create(num_SF = len(sf_list),
+                             seconds=time,
+                             num_threads=numthreads,
+                             avg=avg,
+                             num_dup=dups,
+                             num_new=news,
+                             num_undie=undies,
+                             current_key=currKey)
     cnt += 1
 
 def finish(numThreads):
     global end, waiting
-    if currKey == partslist[-1]:
+    if currKey == keylist[-1]:
         end = clock()
         time = end - start
-        duplifyTime.objects.create(num_threads=numThreads, num_SF=len(sf_list), num_rep = len(repContact.objects.all()), seconds = round(time,2))
-        # print('\a')
+        duplifyTime.objects.create(num_threads=numThreads,
+                                   num_SF=len(sf_list),
+                                   num_rep=len(repContact.objects.all()),
+                                   seconds=round(time, 2)
+                                   )
         os.system('say "The repp list has been duplified!"')
     waiting=False
 
 def key_generator(partslist):
     global start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg, keylist
-    # for key_parts in partslist:
-    #     if 'phone' in key_parts:
-    #         index = partslist.index(key_parts)
-    #         del partslist[index]
-    #         for i in ['homePhone', 'mobilePhone', 'Phone', 'otherPhone']:
-    #             new_key_parts = [i if x == 'phone' else x for x in key_parts]
-    #             partslist.insert(index, new_key_parts)
-    #     if 'email' in key_parts:
-    #         index = partslist.index(key_parts)
-    #         del partslist[index]
-    #         for i in ['otherEmail', 'personalEmail', 'workEmail']:
-    #             new_key_parts = [i if x == 'email' else x for x in key_parts]
-    #             partslist.insert(index, new_key_parts)
     start = clock()
     totalKeys = len(partslist)
+    keylist = partslist
     for key_parts in partslist:
         sort_alg = key_parts.pop()
         currKey = key_parts
@@ -159,18 +167,15 @@ def key_generator(partslist):
             pass
         doneKeys += 1
 
-
 def makeKeys(headers):
     keys = []
     total = repContact.objects.all().count()
     phoneUniqueness = 0
     emailUniqueness = 0
-    # headers.replace('\r\n', '')
-    # headers.replace('\n', '')
-    # headers=headers.split(',')
     phoneTypes = ['Phone', 'homePhone', 'mobilePhone', 'otherPhone']
     emailTypes = ['workEmail', 'personalEmail', 'otherEmail']
-    excluded = ['id', 'average', 'type', 'match_ID', 'closest1_id', 'closest2_id', 'closest3_id', 'closest1_contactID', 'closest2_contactID', 'closest3_contactID', 'dupFlag', ]
+    excluded = ['id', 'average', 'type', 'match_ID', 'closest1_id', 'closest2_id', 'closest3_id',
+                'closest1_contactID', 'closest2_contactID', 'closest3_contactID', 'dupFlag', 'keySortedBy' ]
 
     for i in headers:
         if i not in excluded:
@@ -180,7 +185,7 @@ def makeKeys(headers):
 
 def match_keys(key,key_list):
     for i in key_list:
-        yield match_percentage(key,i)
+        yield match_percentage(key, i)
 
 def match_percentage(key1,key2):
     return fuzz.ratio(key1, key2)

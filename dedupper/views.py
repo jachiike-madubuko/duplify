@@ -14,6 +14,7 @@ from django_tables2.views import SingleTableMixin, RequestConfig
 from dedupper.resources import RepContactResource, SFContactResource, DedupTimeResource, DuplifyTimeResource, UploadTimeResource
 from  dedupper.utils import key_generator, makeKeys, convertCSV, getProgress
 import csv
+import json
 '''
 #TODO change the HTTP request 
 timeout for the running algorithm or 
@@ -25,18 +26,18 @@ http://www.marinamele.com/2013/12/how-to-set-django-app-on-heroku-part-i.html
 https://www.youtube.com/watch?v=P8_wDttTeuk
 '''
 keys= []
-
+global_currKey = None
 def index(request):
     return render(request, 'dedupper/rep_list_upload.html')
 
 def run(request):
+    global keys
     if request.method == 'GET':
-
         keylist = request.GET.get('keys')
         #channel = request.GET.get('channel')
         keylist = keylist.split("_")
         partslist = [i.split('-') for i in keylist[:-1]]
-        print(partslist)
+        keys=partslist
         result = key_generator(partslist)
     return JsonResponse({'msg': 'success!'}, safe=False)
 
@@ -53,8 +54,21 @@ def progress(request):
 
     return JsonResponse({'reps': reps, 'dups':dups, 'news': news, 'undies':undies, 'doneKeys': doneKeys,
                          'numKeys':numKeys, 'doneReps':doneReps, 'currKey':currKey, 'manu':manu,
-                         'keyPercent':keyPercent, 'repPercent': repPercent},
-                        safe=False)
+                         'keyPercent':keyPercent, 'repPercent': repPercent}, safe=False)
+
+def stats(request):
+    key_stats = []
+    if request.method == 'GET':
+        for i in keys:
+            key = '-'.join(i)
+            title = ' '.join(i)
+            undies = len(repContact.objects.filter(type='Undecided', keySortedBy=key))
+            dups = len(repContact.objects.filter(type='Duplicate', keySortedBy=key))
+            news = len(repContact.objects.filter(type='New Record', keySortedBy=key))
+            manu = len(repContact.objects.filter(type='Manual Check', keySortedBy=key))
+            key_stats.append( {'title': title , 'undies': undies, 'dups': dups, 'news': news, 'manu': manu})
+        print(json.dumps(key_stats, indent=4, sort_keys=True))
+    return JsonResponse({'key_stats': key_stats}, safe=False)
 
 def display(request):
 

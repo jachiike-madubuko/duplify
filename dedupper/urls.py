@@ -27,6 +27,7 @@ urlpatterns = [
     path('key-gen/', views.key_gen, name='key-gen'),
     path('run/', views.run, name='run'),
     path('progress/', views.progress, name='progress'),
+    path('stats/', views.stats, name='stats'),
     path('duplify/', views.duplify, name='duplify'), #figure out url reverse
     path('loading/<keylist>', views.loading, name='loading'), #figure out url reverse
     path('sorted/', views.display, name='reps'),
