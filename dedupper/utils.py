@@ -42,7 +42,7 @@ start=end=cnt=doneKeys=totalKeys = 0
 keylist = list()
 
 
-def convertCSV(file, resource, type='rep', batchSize=3000):
+def convert_csv(file, resource, type='rep', batchSize=3000):
     dataset = Dataset()
     headers = ''
     cnt, cnt2 = 0, 0
@@ -72,7 +72,7 @@ def convertCSV(file, resource, type='rep', batchSize=3000):
         uploadTime.objects.create(num_records = len(repContact.objects.all()), batch_size = batchSize, seconds=round(time, 2))
     return dataset.headers
 
-def findRepDups(rep, keys, numthreads):
+def find_rep_dups(rep, keys, numthreads):
     global cnt
     dup_start=clock()
     rep_key = rep.key(keys)
@@ -167,7 +167,7 @@ def key_generator(partslist):
             pass
         doneKeys += 1
 
-def makeKeys(headers):
+def make_keys(headers):
     keys = []
     total = repContact.objects.all().count()
     phoneUniqueness = 0
@@ -181,6 +181,7 @@ def makeKeys(headers):
         if i not in excluded:
             uniqueness = repContact.objects.order_by().values_list(i).distinct().count() / total
             keys.append((i, int(uniqueness * 100)))
+
     return keys
 
 def match_keys(key,key_list):
@@ -200,7 +201,7 @@ def mutate(keys):
             mutant[j]=mutant[j].replace(mutant[j][int(sample(range(len(mutant[j])-1), 1)[0])], choice(string.printable))
     return mutant
 
-def setSortingAlgorithm(min_dup,min_uns):
+def set_sorting_algorithm(min_dup, min_uns):
     global rkd
     rkd = RangeKeyDict({
     (min_dup, 101): 'Duplicate',
@@ -215,7 +216,7 @@ def sort(avg):
     else:
         return dup_rkd[avg]
 
-def getProgress():
+def get_progress():
     return doneKeys, totalKeys, currKey, cnt
 
 
