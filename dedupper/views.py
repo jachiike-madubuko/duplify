@@ -3,7 +3,7 @@ from django.views.generic import TemplateView, ListView
 import django_tables2
 from dedupper.models import dedupTime, duplifyTime, uploadTime,  sfcontact, repContact, progress
 from  dedupper.filters import SimpleFilter
-from dedupper.tables import SimpleTable, ContactTable, RepContactTable
+from dedupper.tables import StatsTable, ContactTable, RepContactTable
 from tablib import Dataset
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
@@ -189,7 +189,9 @@ def stats(request):
             news = len(repContact.objects.filter(type='New Record', keySortedBy=key))
             manu = len(repContact.objects.filter(type='Manual Check', keySortedBy=key))
             key_stats.append( {'title': title , 'undies': undies, 'dups': dups, 'news': news, 'manu': manu})
-        print(json.dumps(key_stats, indent=4, sort_keys=True))
+            stats_table = StatsTable(key_stats)
+        print(stats_table.as_html(request))
+        # print(json.dumps(key_stats, indent=4, sort_keys=True))
     return JsonResponse({'key_stats': key_stats}, safe=False)
 
 def upload(request):

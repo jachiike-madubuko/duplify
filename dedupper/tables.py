@@ -67,3 +67,7 @@ class StatsTable(tables.Table):
     dups = Column()
     news = Column()
     manu = Column()
+
+    class Meta:
+        template_name = 'django_tables2/bootstrap.html'
+        attrs = {'class': 'table table-hover table-striped table-dark'}
