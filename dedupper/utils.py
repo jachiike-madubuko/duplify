@@ -19,6 +19,8 @@ from tablib import Dataset
 import logging
 import time
 from django.db.models import Avg
+
+from operator import itemgetter
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
 
 
@@ -181,7 +183,7 @@ def make_keys(headers):
         if i not in excluded:
             uniqueness = repContact.objects.order_by().values_list(i).distinct().count() / total
             keys.append((i, int(uniqueness * 100)))
-
+    keys.sort(key=itemgetter(1), reverse=True)
     return keys
 
 def match_keys(key,key_list):

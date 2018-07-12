@@ -28,6 +28,7 @@ urlpatterns = [
     path('run/', views.run, name='run'),
     path('progress/', views.progress, name='progress'),
     path('stats/', views.stats, name='stats'),
+    path('flush_db/', views.flush_db, name='flush_db'),
     path('duplify/', views.duplify, name='duplify'), #figure out url reverse
     path('loading/<keylist>', views.loading, name='loading'), #figure out url reverse
     path('sorted/', views.display, name='reps'),

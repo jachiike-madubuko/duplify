@@ -10,7 +10,7 @@ from django.shortcuts import render, redirect
 from dedupper.forms import UploadFileForm
 from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin, RequestConfig
-
+from django.core.management import call_command
 from dedupper.resources import RepContactResource, SFContactResource, DedupTimeResource, DuplifyTimeResource, UploadTimeResource
 from  dedupper.utils import key_generator, make_keys, convert_csv, get_progress
 import csv
@@ -209,4 +209,8 @@ def upload(request):
     keys = make_keys(headers)
 
     return redirect('/key-gen/', {'keys': keys})
+
+def flush_db(request):
+    call_command('flush', interactive=False)
+    return redirect('/')
 

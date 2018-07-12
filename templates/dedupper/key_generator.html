@@ -112,9 +112,9 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
         integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
 <script src="http://yui.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.6.2/mousetrap.min.js"></script>
 <script>
     $(document).ready(function() {
-
         var data = [
             {% for key,unique in keys %}
                 {
@@ -148,7 +148,6 @@
                 e.popover('show');
             });
         }, function () {
-                var e = $(this);
                 e.popover('hide');
             });
         function colorCode(field) {
@@ -172,6 +171,12 @@
             placeholderOption: 'first',
             data: data,
             templateResult: colorCode
+        });
+        $('input').addClass('mousetrap');
+
+        Mousetrap.bind('command+k', function() {
+            //alert('swag');
+            $( "#create" ).trigger( "click" );
         });
 
         YUI().use('sortable', function(Y) {
@@ -447,7 +452,7 @@
                 <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Features</a>
+                <a class="nav-link" href="{% url 'flush_db' %}">Reset</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#">Pricing</a>
@@ -501,11 +506,14 @@
                                 <b id="repPercent">0</b><b>%</b>
                             </div>
                         </div>
+                        <div id="table"></div>
                     </div>
-                    <div role="tabpanel" class="tab-pane" id="browseTab">
-                        <object class="" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="640"
+                    <div role="tabpanel" class="tab-pane container" id="browseTab">
+                        <div class="col-10 mx-auto"> <object class=""
+                                                           classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="640"
                                 height="900"
-                                align="middle" id="qwop"><param name="movie" value="http://m.toogame.com/q/swfs/QWOP.swf"><param name="quality" value="high"><param name="AllowScriptAccess" value="always">><object type="application/x-shockwave-flash" data="http://m.toogame.com/q/swfs/QWOP.swf" width="640" height="400"><param name="movie" value="http://m.toogame.com/q/swfs/QWOP.swf"><param name="quality" value="high"><param name="AllowScriptAccess" value="always"><a href="http://www.adobe.com/go/getflash"><img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash Player"></a></object></object>
+                                align="middle" id="qwop"><param name="movie" value="http://m.toogame.com/q/swfs/QWOP
+                                .swf"><param name="quality" value="high"><param name="AllowScriptAccess" value="always">><object type="application/x-shockwave-flash" data="http://m.toogame.com/q/swfs/QWOP.swf" width="640" height="400"><param name="movie" value="http://m.toogame.com/q/swfs/QWOP.swf"><param name="quality" value="high"><param name="AllowScriptAccess" value="always"><a href="http://www.adobe.com/go/getflash"><img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash Player"></a></object></object> </div>
                     </div>
                 </div>
             </div>
@@ -552,12 +560,12 @@
                         <button disabled class="  btn-secondary rounded-left col-12" style="height:
                             34px" type="button"> <span class="fa fa-search fa-1x"></span></button>
                     </div>
-                    <select autofocus class="js-example-basic-multiple col-10" name="states[]"
+                    <select autofocus class="js-example-basic-multiple col-10 mousetrap" name="states[]"
                             multiple="multiple">
 
                     </select>
                     <div class="input-group-apppend">
-                        <button onclick="create()" class=" btn-primary rounded-right" style="height:
+                        <button id="create" onclick="create()" class=" btn-primary rounded-right" style="height:
                             34px" type="button">Create</button>
                     </div>
                 </div>
