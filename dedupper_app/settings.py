@@ -161,4 +161,7 @@ en_formats.DATETIME_FORMAT = "%d-%m-%Y_%H:%M:%S"
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR + "/staticfiles"
 
+'''
+if local host can't connect, set configs via -> heroku config:set DJANGO_SETTINGS_MODULE=settings.heroku
+'''
 django_heroku.settings(locals())
