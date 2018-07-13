@@ -58,7 +58,7 @@ class SFContactTable(tables.Table):
     class Meta:
         model = sfcontact
         template_name = 'django_tables2/bootstrap.html'
-        attrs = {'class': 'table table-hover table-striped table-dark'}
+        attrs = {'class': 'table table-hover table-striped'}
 
 
 class StatsTable(tables.Table):

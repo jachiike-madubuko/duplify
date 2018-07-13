@@ -162,10 +162,21 @@ def progress(request):
         doneKeys, numKeys, currKey, doneReps = get_progress()
         keyPercent = round(((doneKeys/numKeys)*100) + ((1/numKeys) * (doneReps/reps)*100),2)
         repPercent = round( (reps-undies)/reps,2)
+        key_stats = []
+        for i in keys:
+            key = '-'.join(i)
+            title = ' '.join(i)
+            undies = len(repContact.objects.filter(type='Undecided', keySortedBy=key))
+            dups = len(repContact.objects.filter(type='Duplicate', keySortedBy=key))
+            news = len(repContact.objects.filter(type='New Record', keySortedBy=key))
+            manu = len(repContact.objects.filter(type='Manual Check', keySortedBy=key))
+            key_stats.append({'title': title, 'undies': undies, 'dups': dups, 'news': news, 'manu': manu})
+        stats_table = StatsTable(key_stats)
 
-    return JsonResponse({'reps': reps, 'dups':dups, 'news': news, 'undies':undies, 'doneKeys': doneKeys,
-                         'numKeys':numKeys, 'doneReps':doneReps, 'currKey':currKey, 'manu':manu,
-                         'keyPercent':keyPercent, 'repPercent': repPercent}, safe=False)
+    return JsonResponse({'reps': reps, 'dups': dups, 'news': news, 'undies':undies, 'doneKeys': doneKeys,
+                         'numKeys': numKeys, 'doneReps': doneReps, 'currKey':currKey, 'manu': manu,
+                         'keyPercent': keyPercent, 'repPercent': repPercent, 'table': stats_table.as_html(request)},
+                        safe=False)
 
 def run(request):
     global keys
@@ -178,21 +189,6 @@ def run(request):
         result = key_generator(partslist)
     return JsonResponse({'msg': 'success!'}, safe=False)
 
-def stats(request):
-    key_stats = []
-    if request.method == 'GET':
-        for i in keys:
-            key = '-'.join(i)
-            title = ' '.join(i)
-            undies = len(repContact.objects.filter(type='Undecided', keySortedBy=key))
-            dups = len(repContact.objects.filter(type='Duplicate', keySortedBy=key))
-            news = len(repContact.objects.filter(type='New Record', keySortedBy=key))
-            manu = len(repContact.objects.filter(type='Manual Check', keySortedBy=key))
-            key_stats.append( {'title': title , 'undies': undies, 'dups': dups, 'news': news, 'manu': manu})
-            stats_table = StatsTable(key_stats)
-        print(stats_table.as_html(request))
-        # print(json.dumps(key_stats, indent=4, sort_keys=True))
-    return JsonResponse({'key_stats': key_stats}, safe=False)
 
 def upload(request):
     global export_headers, keys
