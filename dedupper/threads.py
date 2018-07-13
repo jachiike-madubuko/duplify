@@ -30,11 +30,10 @@ class DuplifyThread(threading.Thread):
                 if command:
                     d = command.pop()
                     q.put(d)
-            if dead_threads == numThreads:
+            if dead_threads >= numThreads:
                 print('all consumer threads dead. producer stopped')
                 stop(self)
                 dedupper.utils.finish(numThreads)
-
         return
 
 class DedupThread(threading.Thread):
@@ -64,8 +63,8 @@ def updateQ(newQ):
 
 def stop(x):
     global dead_threads
-    x.event.set()
     dead_threads+=1
+    x.event.set()
     logging.debug('bye: {}/{} threads killed'.format(dead_threads,numThreads))
 
 def dedup(repNkey):
@@ -75,10 +74,11 @@ def makeThreads():
     return [DedupThread(name='dedupper' + str(i+1)) for i in range(numThreads)]
 
 def startThreads():
-    global producer, consumers, dead_threads
+    global producer, consumers, dead_threads, numThreads
     dead_threads = 0
     producer = DuplifyThread(name='producer')
     consumers = makeThreads()
+    numThreads = len(consumers)
     producer.start()
     [x.start() for x in consumers]
 
