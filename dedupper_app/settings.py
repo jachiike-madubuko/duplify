@@ -102,8 +102,8 @@ DATABASES = {
         'PORT': '',
     }
 }
-db_from_env = dj_database_url.config(conn_max_age=500)
-DATABASES['default'].update(db_from_env)
+# db_from_env = dj_database_url.config(conn_max_age=500)
+# DATABASES['default'].update(db_from_env)
 
 '''
 HEROKU_CONNECT_DATABASE_URL = os.environ['HEROKU_CONNECT_DATABASE_URL']
@@ -160,4 +160,4 @@ en_formats.DATETIME_FORMAT = "%d-%m-%Y_%H:%M:%S"
 
 STATIC_URL = '/static/'
 
-django_heroku.settings(locals())
+# django_heroku.settings(locals())
