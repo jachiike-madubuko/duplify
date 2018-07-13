@@ -27,7 +27,7 @@ SECRET_KEY = 'ulm$oueq%7j8ao9(@7j_y_rc-(!0b!!u***q2(5bx(-$!!teyx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com']
+ALLOWED_HOSTS = ['127.0.0.1'] # '.herokuapp.com']
 
 #yo mama
 # Application definition
@@ -98,7 +98,7 @@ DATABASES = {
         'NAME': 'falcon_dup',
         'USER': 'jachi',
         'PASSWORD': '7924',
-        'HOST': 'localhost',
+        'HOST': '127.0.0.1',
         'PORT': '5432',
     }
 }
@@ -161,4 +161,4 @@ en_formats.DATETIME_FORMAT = "%d-%m-%Y_%H:%M:%S"
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR + "/staticfiles"
 
-# django_heroku.settings(locals())
+django_heroku.settings(locals())
