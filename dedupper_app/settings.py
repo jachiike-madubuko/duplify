@@ -98,7 +98,7 @@ DATABASES = {
         'NAME': 'falcon_dup',
         'USER': 'jachi',
         'PASSWORD': '7924',
-        'HOST': '127.0.0.1',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }
