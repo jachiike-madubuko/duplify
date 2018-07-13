@@ -159,7 +159,7 @@ en_formats.DATETIME_FORMAT = "%d-%m-%Y_%H:%M:%S"
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR + "/staticfiles"
+STATIC_ROOT = os.path.join(BASE_DIR, "/staticfiles")
 
 '''
 if local host can't connect, set configs via -> heroku config:set DJANGO_SETTINGS_MODULE=settings.heroku
