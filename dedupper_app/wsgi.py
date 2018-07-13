@@ -14,9 +14,7 @@ from whitenoise.django import DjangoWhiteNoise
 import sys
 from dedupper_app.settings import BASE_DIR
 
-path = BASE_DIR
-if path not in sys.path:
-    sys.path.append(path)
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "dedupper_app.settings")
 
 application = get_wsgi_application()
