@@ -159,5 +159,6 @@ en_formats.DATETIME_FORMAT = "%d-%m-%Y_%H:%M:%S"
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR + "/staticfiles"
 
 # django_heroku.settings(locals())
