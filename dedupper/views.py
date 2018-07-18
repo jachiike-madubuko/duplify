@@ -71,7 +71,6 @@ def download(request,type):
     response['Content-Disposition'] = 'attachment; '+filename
 
     writer = csv.writer(response)
-    writer.writerow(export_headers)
 
     users = repContact.objects.filter(type = type)
     dataset = rep_resource.export(users)

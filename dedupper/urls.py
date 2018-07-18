@@ -35,3 +35,4 @@ urlpatterns = [
     path('sorted/export/<type>', views.download, name='export'),
     path('sorted/report/<type>', views.download_times, name='report'),
 ]
+

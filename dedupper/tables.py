@@ -4,7 +4,6 @@ from dedupper.models import simple, contact, repContact, sfcontact
 from django_tables2.utils import AttributeDict
 from django.utils.safestring import mark_safe
 
-
 class SimpleTable(tables.Table):
 
     merge = tables.LinkColumn('merge_records', args=[tables.A('pk')], attrs={'class': 'btn btn-outline-primary', 'href':"#" }, text="Merge")
@@ -69,4 +68,4 @@ class StatsTable(tables.Table):
 
     class Meta:
         template_name = 'django_tables2/bootstrap.html'
-        attrs = {'class': 'table table-hover table-striped'}
+        attrs = {'class': 'table table-hover table-striped table-condensed'}

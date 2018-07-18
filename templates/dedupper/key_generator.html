@@ -142,7 +142,13 @@
         }
         function colorCode(field) {
             //function to call for this sorting, that returns cc
-            var $field = $('<span><b>'+field.text + '</b></span> <b><strong>| </strong> </b> Rep Uniquness:<span class="badge  badge-pill text-white bg-' + pill_color(field.rep_uniqueness) + '"> ' +field.rep_uniqueness + '%' +'</span> Rep Utiliy:<span class="badge  badge-pill text-white bg-' + pill_color(field.rep_utility) + '"> ' +field.rep_utility + '%' +'</span> SF Uniquness:<span class="badge  badge-pill text-white bg-' + pill_color(field.sf_uniqueness) + '"> ' +field.sf_uniqueness + '%' +'</span> SF Utility:<span class="badge  badge-pill text-white bg-' + pill_color(field.sf_utility) + '"> ' +field.sf_utility + '%' +'</span> ' );
+            var $field = $('<tr><td><b>'+field.text + ' |</b></td>  <td ' +
+                'class="badge  badge-pill text-white bg-' + pill_color(field.rep_uniqueness) + '">Rep Uniquness: ' +field
+                    .rep_uniqueness + '%' +'</td> <td class="badge  badge-pill text-white bg-' +
+                pill_color(field.rep_utility) + '"> Rep Utiliy: ' +field.rep_utility + '%' +'</td> <td ' +
+                'class="badge  badge-pill text-white bg-' + pill_color(field.sf_uniqueness) + '"> SF Uniquness: ' +field
+                    .sf_uniqueness + '%' +'</td> <td class="badge  badge-pill text-white bg-' +
+                pill_color(field.sf_utility) + '">SF Utility: ' +field.sf_utility + '%' +'</td></tr>' );
             return $field;
         }
         $('.js-example-basic-multiple').select2({
@@ -491,8 +497,8 @@
     </div>
 </div>
 <div class="container-fluid row my-5" style=" text-align: center;">
-    <div class="col-2"></div>
-    <div id="keyBuilder" class="col-8">
+    <div class="col-1"></div>
+    <div id="keyBuilder" class="col-10">
         <div id="channelPicker" class="bg-dark text-white card mb-2">
             <div class="card-body">
                 <h4 class="card-title">Pick a Channel</h4>
@@ -552,7 +558,7 @@
             </div>
         </div>
     </div>
-    <div class="col-2"></div>
+    <div class="col-1"></div>
 
 </div>
 </body>
