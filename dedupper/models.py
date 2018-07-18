@@ -9,6 +9,9 @@ from __future__ import unicode_literals
 from django.db import models
 
 def strip(string):
+    #check if string is blank, then add NULL
+    if string == '':
+        return 'NULL'
     newstring = string.replace(" ","")
     return  newstring
 

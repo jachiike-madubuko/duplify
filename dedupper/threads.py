@@ -30,7 +30,7 @@ class DuplifyThread(threading.Thread):
                 if command:
                     d = command.pop()
                     q.put(d)
-            if dead_threads >= numThreads:
+            if dead_threads >= numThreads-1:
                 print('all consumer threads dead. producer stopped')
                 stop(self)
                 dedupper.utils.finish(numThreads)
@@ -79,6 +79,9 @@ def startThreads():
     producer = DuplifyThread(name='producer')
     consumers = makeThreads()
     numThreads = len(consumers)
+    print("new number of threads {}".format(numThreads))
     producer.start()
-    [x.start() for x in consumers]
+    start_line = [x.start() for x in consumers]
+
+
 

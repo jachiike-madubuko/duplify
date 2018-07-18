@@ -21,8 +21,8 @@ from django.conf.urls import url, include
 urlpatterns = [
     path('dedupper/', include('dedupper.urls')),
     path('', include('dedupper.urls')),
-    path(r'^jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),  # Django JET dashboard URLS
-    path(r'^jet/', include('jet.urls', 'jet')),  # Django JET URLS
+    path(r'jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),  # Django JET dashboard URLS
+    path(r'jet/', include('jet.urls', 'jet')),  # Django JET URLS
     path('admin/', admin.site.urls),
     url(r'^celery-progress/', include('celery_progress.urls')),  # the endpoint is configurable
 ]

@@ -163,7 +163,8 @@
             });
         });
     });
-    var old_percent = 0,
+    var old_repPercent = 0,
+        old_keyPercent = 0,
         inter;
     function bg() {
         $("body").polygonizr({
@@ -314,15 +315,16 @@
                 table = result['table'];
                 $("#table").html(table);
 
-            if (keyPercent > old_percent) {
+            if (keyPercent > old_keyPercent) {
                 $('#keyPercent').text(keyPercent);
                 update_bar(keyPercent);
             }
-            if (repPercent > old_percent) {
-                $('#keyPercent').text(keyPercent);
-                update_bar(keyPercent);
+            if (repPercent > old_repPercent) {
+                $('#repPercent').text(repPercent);
+                update_bar(repPercent);
             }
-            old_percent=percent;
+            old_repPercent=repPercent;
+            old_keyPercent=keyPercent;
 
             $('#totalReps').text(reps);
             $('#dups').text(dups);

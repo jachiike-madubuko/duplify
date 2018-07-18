@@ -12,7 +12,7 @@ from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin, RequestConfig
 from django.core.management import call_command
 from dedupper.resources import RepContactResource, SFContactResource, DedupTimeResource, DuplifyTimeResource, UploadTimeResource
-from  dedupper.utils import key_generator, make_keys, convert_csv, get_progress
+from  dedupper.utils import key_generator, make_keys, convert_csv, get_progress, set_sorting_algorithm
 import csv
 import json
 '''
@@ -120,8 +120,11 @@ def key_gen(request):
     key = make_keys(list(list(repContact.objects.all().values())[0].keys()))
     return render(request, 'dedupper/key_generator.html', {'keys': key})
 
-def loading(request,keylist):
-    return render(request, 'dedupper/loading_page.html', {'keylist':keylist})
+def resort(request):
+    if request.method == 'GET':
+        print('resorting')
+        set_sorting_algorithm(int(request.GET.get('upper_thres')), int(request.GET.get('lower_thres')))
+    return JsonResponse({'msg': 'success!'}, safe=False)
 
 def merge(request, CRD):
     obj = repContact.objects.values().get(CRD=CRD)
@@ -188,7 +191,6 @@ def run(request):
         keys=partslist
         result = key_generator(partslist)
     return JsonResponse({'msg': 'success!'}, safe=False)
-
 
 def upload(request):
     global export_headers, keys

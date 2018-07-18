@@ -60,7 +60,6 @@ class SFContactTable(tables.Table):
         template_name = 'django_tables2/bootstrap.html'
         attrs = {'class': 'table table-hover table-striped'}
 
-
 class StatsTable(tables.Table):
     title = Column()
     undies = Column()
@@ -70,4 +69,4 @@ class StatsTable(tables.Table):
 
     class Meta:
         template_name = 'django_tables2/bootstrap.html'
-        attrs = {'class': 'table table-hover table-striped table-dark'}
+        attrs = {'class': 'table table-hover table-striped'}
