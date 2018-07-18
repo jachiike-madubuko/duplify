@@ -66,15 +66,17 @@ def download(request,type):
     else:
         filename = 'filename="Undecided Records.csv"'
 
+    rep_resource = RepContactResource()
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; '+filename
 
     writer = csv.writer(response)
     writer.writerow(export_headers)
 
-    users = repContact.objects.filter(type = type).values_list(*export_headers)
-    for user in users:
-        writer.writerow(user)
+    users = repContact.objects.filter(type = type)
+    dataset = rep_resource.export(users)
+    for line in dataset:
+        writer.writerow(line)
 
     return response
 

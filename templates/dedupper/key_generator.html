@@ -116,30 +116,33 @@
 <script>
     $(document).ready(function() {
         var data = [
-            {% for key,unique in keys %}
+            {% for key, rep_uniqueness, rep_utility, sf_uniqueness, sf_utility, score in keys %}
                 {
                     id: {{ forloop.counter0 }},
                     text:"{{ key }}",
                     value:'{{ key }}',
-                    uniqueness: {{ unique }}
+                    rep_uniqueness: {{ rep_uniqueness }},
+                    rep_utility: {{ rep_utility }},
+                    sf_uniqueness: {{ sf_uniqueness }},
+                    sf_utility: {{ sf_utility }}
                 },
             {% endfor %}
         ]
-
-        function colorCode(field) {
+        function pill_color(percentage) {
             var cc;
-            if (field.uniqueness >= 75) {
+             if (percentage >= 75) {
                 cc = 'success';
             }
-            else if (field.uniqueness >= 25){
+            else if (percentage >= 25){
                 cc = 'warning';
             } else{
                 cc = 'danger';
             }
-            var $field = $('<span>'+field.text + '</span> <span class="badge  badge-pill text-white bg-' + cc + '"> ' +
-                field
-                    .uniqueness + '%' +
-                '</span>');
+            return cc;
+        }
+        function colorCode(field) {
+            //function to call for this sorting, that returns cc
+            var $field = $('<span><b>'+field.text + '</b></span> <b><strong>| </strong> </b> Rep Uniquness:<span class="badge  badge-pill text-white bg-' + pill_color(field.rep_uniqueness) + '"> ' +field.rep_uniqueness + '%' +'</span> Rep Utiliy:<span class="badge  badge-pill text-white bg-' + pill_color(field.rep_utility) + '"> ' +field.rep_utility + '%' +'</span> SF Uniquness:<span class="badge  badge-pill text-white bg-' + pill_color(field.sf_uniqueness) + '"> ' +field.sf_uniqueness + '%' +'</span> SF Utility:<span class="badge  badge-pill text-white bg-' + pill_color(field.sf_utility) + '"> ' +field.sf_utility + '%' +'</span> ' );
             return $field;
         }
         $('.js-example-basic-multiple').select2({
@@ -532,7 +535,7 @@
                             34px" type="button">Create</button>
                     </div>
                 </div>
-                    <ul id="keylist" style="overflow-y:scroll; max-height:30vh; min-height: 5vh; width: 100%;">
+                    <ul id="keylist" style="overflow-y:auto; max-height:30vh; min-height: 5vh; width: 100%;">
 
                     </ul>
                 <hr class="my-2">

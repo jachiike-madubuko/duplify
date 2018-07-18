@@ -15,6 +15,7 @@ producer= consumers = None
 numThreads = 12
 stopper = True
 dead_threads = 0
+last_thread_killed=0
 
 class DuplifyThread(threading.Thread):
     def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None):
@@ -31,7 +32,7 @@ class DuplifyThread(threading.Thread):
                     d = command.pop()
                     q.put(d)
             if dead_threads >= numThreads-1:
-                print('all consumer threads dead. producer stopped')
+                logging.debug('all consumer threads dead. producer stopped')
                 stop(self)
                 dedupper.utils.finish(numThreads)
         return
@@ -46,14 +47,17 @@ class DedupThread(threading.Thread):
 
     def run(self):
         while not self.event.is_set():
-            ''' switch based on name of consumer thread
-            face should look at a static variable
-            'action' updated after q.get '''
+            if last_thread_killed != 0:
+                logging.debug('Time is last killed thread is {}'.format(time.perf_counter()-last_thread_killed))
             if not q.empty():
                 dedup(q.get())
             else:
-                logging.debug('Queue empty, stopping thread')
+                logging.debug('Queue empty, stopping thread.')
                 stop(self)
+            if time.perf_counter()-last_thread_killed> 30  and last_thread_killed != 0:
+                logging.debug('AUTO-KILL')
+                stop(self)
+
         return
 
 def updateQ(newQ):
@@ -62,8 +66,9 @@ def updateQ(newQ):
     startThreads()
 
 def stop(x):
-    global dead_threads
+    global dead_threads, last_thread_killed
     dead_threads+=1
+    last_thread_killed = time.perf_counter()
     x.event.set()
     logging.debug('bye: {}/{} threads killed'.format(dead_threads,numThreads))
 
@@ -74,14 +79,13 @@ def makeThreads():
     return [DedupThread(name='dedupper' + str(i+1)) for i in range(numThreads)]
 
 def startThreads():
-    global producer, consumers, dead_threads, numThreads
+    global producer, consumers, dead_threads, numThreads,last_thread_killed
     dead_threads = 0
+    last_thread_killed = 0
     producer = DuplifyThread(name='producer')
     consumers = makeThreads()
     numThreads = len(consumers)
     print("new number of threads {}".format(numThreads))
     producer.start()
-    start_line = [x.start() for x in consumers]
-
-
+    [x.start() for x in consumers]
 

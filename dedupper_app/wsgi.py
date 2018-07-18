@@ -11,6 +11,8 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 from whitenoise.django import DjangoWhiteNoise
+import sys
+from dedupper_app.settings import BASE_DIR
 
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "dedupper_app.settings")

@@ -16,10 +16,15 @@ class UploadTimeResource(resources.ModelResource):
         model = uploadTime
 
 class RepContactResource(resources.ModelResource):
+    sales_force_link = Field()
 
     class Meta:
         model = repContact
         exclude = ('closest1','closest2','closest3','average','type','dupFlag')
+
+    def dehydrate_sales_force_link(self, repcontact):
+        return 'https://na30.salesforce.com/{} '.format(repcontact.closest1_contactID)
+
 
 class SFContactResource(resources.ModelResource):
     class Meta:

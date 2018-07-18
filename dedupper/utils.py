@@ -9,7 +9,7 @@ import dedupper.threads
 import os
 from dedupper.models import progress, repContact, sfcontact, dedupTime, duplifyTime, uploadTime
 import string
-from time import clock
+from time import perf_counter
 from random import *
 from range_key_dict import RangeKeyDict
 from fuzzywuzzy import fuzz
@@ -18,7 +18,6 @@ import numpy as np
 from tablib import Dataset
 import logging
 import time
-import Levenshtein
 from django.db.models import Avg
 from fuzzyset import FuzzySet
 from operator import itemgetter
@@ -51,7 +50,7 @@ def convert_csv(file, resource, type='rep', batchSize=3000):
     headers = ''
     cnt, cnt2 = 0, 0
     print('converting CSV ', str(file))
-    start = clock()
+    start = perf_counter()
     fileString = ''
     #look into going line by line
     for chunk in file.open():
@@ -68,7 +67,7 @@ def convert_csv(file, resource, type='rep', batchSize=3000):
             fileString = headers
     dataset.csv = fileString
     resource.import_data(dataset, dry_run=False)
-    end = clock()
+    end = perf_counter()
     time = end - start
     if type == 'SF':
         uploadTime.objects.create(num_records = len(sfcontact.objects.all()), batch_size= batchSize, seconds=round(time, 2))
@@ -78,7 +77,7 @@ def convert_csv(file, resource, type='rep', batchSize=3000):
 
 def find_rep_dups(rep, keys, numthreads):
     global cnt
-    dup_start=clock()
+    dup_start=perf_counter()
     rep_key = rep.key(keys[:-1])
     if 'NULL' in rep_key:
         return 0
@@ -120,15 +119,16 @@ def find_rep_dups(rep, keys, numthreads):
     string_key = '-'.join(currKey)
     rep.keySortedBy = string_key
     rep.save()
-    time = round(clock()-dup_start, 2)
+    time = round(perf_counter()-dup_start, 2)
+
+    dups = len(repContact.objects.filter(type='Duplicate'))
+    news = len(repContact.objects.filter(type='New Record'))
+    undies = len(repContact.objects.filter(type='Undecided'))
     avg = dedupTime.objects.aggregate(Avg('seconds'))['seconds__avg']
     if avg == None:
         avg = 0
     else:
         avg = round(avg, 2)
-    dups = len(repContact.objects.filter(type='Duplicate'))
-    news = len(repContact.objects.filter(type='New Record'))
-    undies = len(repContact.objects.filter(type='Undecided'))
     dedupTime.objects.create(num_SF = len(sf_list),
                              seconds=time,
                              num_threads=numthreads,
@@ -142,7 +142,7 @@ def find_rep_dups(rep, keys, numthreads):
 def finish(numThreads):
     global end, waiting
     if currKey == keylist[-1]:
-        end = clock()
+        end = perf_counter()
         time = end - start
         duplifyTime.objects.create(num_threads=numThreads,
                                    num_SF=len(sf_list),
@@ -171,7 +171,7 @@ def fuzzyset_alg(key, key_list):
 
 def key_generator(partslist):
     global start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg, keylist, sf_keys
-    start = clock()
+    start = perf_counter()
     totalKeys = len(partslist)
     keylist = partslist
     for key_parts in partslist:
@@ -192,7 +192,8 @@ def key_generator(partslist):
 
 def make_keys(headers):
     keys = []
-    total = sfcontact.objects.all().count()
+    rep_total = repContact.objects.all().count()
+    sf_total = sfcontact.objects.all().count()
     phoneUniqueness = 0
     emailUniqueness = 0
     phoneTypes = ['Phone', 'homePhone', 'mobilePhone', 'otherPhone']
@@ -202,15 +203,24 @@ def make_keys(headers):
 
     for i in headers:
         if i not in excluded:
-            uniqueness = sfcontact.objects.order_by().values_list(i).distinct().count() / total
-            'need criteria for good key, based on uniqueness and blankness of the reps and SF contacts for each field'
-            keys.append((i, int(uniqueness * 100)))
-    keys.sort(key=itemgetter(1), reverse=True)
+            kwargs = {
+                '{}__{}'.format(i, 'exact'):''
+            }
+            rp_uniqueness = repContact.objects.order_by().values_list(i).distinct().count() / rep_total
+            rp_utility = (len(repContact.objects.all()) - len(repContact.objects.filter(**kwargs))) /rep_total
+            sf_uniqueness = sfcontact.objects.order_by().values_list(i).distinct().count() / sf_total
+            sf_utility = (len(sfcontact.objects.all()) - len(sfcontact.objects.filter(**kwargs))) /sf_total
+            score = (rp_uniqueness + rp_utility + sf_uniqueness + sf_utility)/4
+            keys.append((i, int(rp_uniqueness * 100), int(rp_utility * 100), int(sf_uniqueness * 100), int(sf_utility * 100), score))
+    keys.sort(key=itemgetter(5), reverse=True)
     return keys
 
 def match_keys(key,key_list):
     for i in key_list:
-        yield Levenshtein.ratio(key, i)
+        yield match_percentage(key, i)
+
+def match_percentage(key1,key2):
+    return fuzz.ratio(key1, key2)
 
 def mutate(keys):
     mutant = keys.copy()

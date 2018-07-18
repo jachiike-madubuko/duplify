@@ -27,7 +27,7 @@ SECRET_KEY = 'ulm$oueq%7j8ao9(@7j_y_rc-(!0b!!u***q2(5bx(-$!!teyx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com']
+ALLOWED_HOSTS = []
 
 #yo mama
 # Application definition
@@ -42,13 +42,14 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'dedupper.apps.DedupperConfig',
     'django.contrib.postgres',
     'django_tables2',
     'django_filters',
     'import_export',
-    'celery_progress',
+    # 'celery_progress',
 
    # 'heroku_connect',
    # 'connect_client',
@@ -59,6 +60,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -98,12 +100,12 @@ DATABASES = {
         'NAME': 'falcon_dup',
         'USER': 'jachi',
         'PASSWORD': '7924',
-        'HOST': 'localhost',
-        'PORT': '',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
-db_from_env = dj_database_url.config(conn_max_age=500)
-DATABASES['default'].update(db_from_env)
+# db_from_env = dj_database_url.config(conn_max_age=500)
+# DATABASES['default'].update(db_from_env)
 
 '''
 HEROKU_CONNECT_DATABASE_URL = os.environ['HEROKU_CONNECT_DATABASE_URL']
@@ -159,5 +161,9 @@ en_formats.DATETIME_FORMAT = "%d-%m-%Y_%H:%M:%S"
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "/staticfiles")
 
+'''
+if local host can't connect, set configs via -> heroku config:set DJANGO_SETTINGS_MODULE=settings.heroku
+'''
 django_heroku.settings(locals())
