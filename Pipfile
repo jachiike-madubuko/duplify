@@ -72,6 +72,7 @@ kombu = "==4.2.1"
 "psycopg2-binary" = "==2.7.4"
 randomdict = "==0.2.0"
 vine = "==1.1.4"
+fuzzyset = "==0.0.13"
 
 [dev-packages]
 
