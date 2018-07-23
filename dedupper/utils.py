@@ -47,28 +47,32 @@ keylist = list()
 
 
 def convert_csv(file):
-    headers = ''
-    cnt, cnt2 = 0, 0
     print('converting CSV: ', str(file))
-    start = perf_counter()
-    fileString = ''
     pd_csv = pd.read_csv(file, encoding = "utf-8")
-
     return list(pd_csv), pd_csv
 
 
 def load_csv2db(csv, header_map, resource, file_type='rep'):
+    start = perf_counter()
     dataset = Dataset()
-    csv['id'] = np.nan
-
-    dataset.csv = csv.to_csv()
+    pd_csv = csv
+    print(list(pd_csv))
+    print(header_map)
+    try:
+        pd_csv.rename(columns=header_map, inplace=True)
+        pd_csv['id'] = np.nan
+    except:
+        print("lost the pandas csv")
+    print(list(pd_csv))
+    dataset.csv = pd_csv.to_csv()
     results = resource.import_data(dataset, dry_run=False)
     end = perf_counter()
     time = end - start
-    if file_type == 'SF':
-        uploadTime.objects.create(num_records = len(sfcontact.objects.all()),seconds=round(time, 2))
-    else:
+    if file_type == 'rep':
         uploadTime.objects.create(num_records = len(repContact.objects.all()), seconds=round(time, 2))
+    else:
+        uploadTime.objects.create(num_records = len(sfcontact.objects.all()),seconds=round(time, 2))
+
 
 
 def find_rep_dups(rep, keys, numthreads):
@@ -217,7 +221,7 @@ def make_keys(headers):
     emailUniqueness = 0
     phoneTypes = ['Phone', 'homePhone', 'mobilePhone', 'otherPhone']
     emailTypes = ['workEmail', 'personalEmail', 'otherEmail']
-    excluded = ['id', 'average', 'type', 'match_ID', 'closest1_id', 'closest2_id', 'closest3_id',
+    excluded = ['id', 'average', 'type', 'match_ID', 'closest1', 'closest2', 'closest3',
                 'closest1_contactID', 'closest2_contactID', 'closest3_contactID', 'dupFlag', 'keySortedBy' ]
 
     for i in headers:

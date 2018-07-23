@@ -12,7 +12,7 @@ from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin, RequestConfig
 from django.core.management import call_command
 from dedupper.resources import RepContactResource, SFContactResource, DedupTimeResource, DuplifyTimeResource, UploadTimeResource
-from  dedupper.utils import key_generator, make_keys, convert_csv, get_progress, set_sorting_algorithm
+from  dedupper.utils import *
 import csv
 import json
 '''
@@ -26,6 +26,7 @@ http://www.marinamele.com/2013/12/how-to-set-django-app-on-heroku-part-i.html
 https://www.youtube.com/watch?v=P8_wDttTeuk
 '''
 keys= []
+pd_sf_csv = pd_rep_csv= None
 
 def display(request):
 
@@ -115,12 +116,19 @@ def duplify(request):
     return JsonResponse({'task_id': result.task_id}, safe=False)
 
 def import_csv(request):
+    repcontact_resource = RepContactResource()
+    sfcontact_resource = SFContactResource()
     if request.method == 'GET':
         sf_header_map = request.GET.get('sf_map')
         rep_header_map = request.GET.get('rep_map')
 
-        print(request.GET.get('sf_map'))
-        print(request.GET.get('rep_map'))
+        sf_header_map = json.loads(sf_header_map)
+        rep_header_map = json.loads(rep_header_map)
+
+        load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
+        load_csv2db(pd_sf_csv, sf_header_map, sfcontact_resource, file_type='SF')
+
+
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 
@@ -128,12 +136,12 @@ def index(request):
     return render(request, 'dedupper/rep_list_upload.html')
 
 def map(request):
-    rep_exclude =  ('id','average', 'type', 'closest1_contactID', 'closest1_id', 'closest2_contactID', 'closest2_id', 'closest3_contactID', 'closest3_id', 'dupFlag', 'keySortedBy')
-    rep_key = list(list(repContact.objects.all().values())[0].keys())
+    rep_exclude = ('id', 'average', 'type', 'closest1_contactID', 'closest1', 'closest2_contactID', 'closest2', 'closest3_contactID', 'closest3', 'dupFlag', 'keySortedBy')
+    rep_key = [i.name for i in repContact._meta.local_fields]
     rep_key = [j for j in rep_key if j not in rep_exclude]
 
-    sf_exclude =  ('id','average', 'type', 'closest_rep_id', 'closest1_contactID', 'closest1_id', 'closest2_contactID', 'closest2_id', 'closest3_contactID', 'closest3_id', 'dupFlag', 'keySortedBy')
-    sf_key = list(list(sfcontact.objects.all().values())[0].keys())
+    sf_exclude =  ('id', 'closest_rep', 'dupFlag')
+    sf_key = [i.name for i in sfcontact._meta.local_fields]
     sf_key = [j for j in sf_key if j not in sf_exclude]
 
     rep_headers= request.session['repCSV_headers']
@@ -146,7 +154,7 @@ def map(request):
 
 def key_gen(request):
     try:
-        key = make_keys(list(list(repContact.objects.all().values())[0].keys()))
+        key = make_keys([i.name for i in repContact._meta.local_fields])
     except:
         key = [('error', 100, 0, 100, 0, 100)]
     return render(request, 'dedupper/key_generator.html', {'keys': key})
@@ -224,28 +232,21 @@ def run(request):
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def upload(request):
-    global export_headers, keys
-    repcontact_resource = RepContactResource()
-    sfcontact_resource = SFContactResource()
-    dataset = Dataset()
+    global export_headers, keys, pd_sf_csv, pd_rep_csv
 
     print('uploading file')
     form = UploadFileForm(request.POST, request.FILES)
     repCSV = request.FILES['repFile']
     sfCSV = request.FILES['sfFile']
-
     rep_headers, pd_rep_csv = convert_csv(repCSV)
     request.session['repCSV_headers'] = rep_headers
-    request.session['repCSV'] = pd_rep_csv
     export_headers = rep_headers
 
     sf_headers, pd_sf_csv= convert_csv(sfCSV)
     request.session['sfCSV_headers'] = sf_headers
-    request.session['sfCSV'] = pd_sf_csv
-
     # keys = make_keys(headers)
 
-    return redirect('/key-gen/', {'keys': keys})
+    return redirect('/map/')
 
 def flush_db(request):
     call_command('flush', interactive=False)

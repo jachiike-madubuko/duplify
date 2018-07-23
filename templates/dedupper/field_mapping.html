@@ -267,8 +267,8 @@
             {% for key in rep_key %}
 
                 Y.one('.rep-{{ key }}').plug(Y.Plugin.Drop).drop.on('drop:hit', function(e) {
-                    Y.one('.rep-{{ key }}').plug(Y.Plugin.Drop).set('innerHTML', 'is mapped to: <strong>' + e.drag.get('node').get('innerHTML') + '</strong>');
-                    rep_mapping[$('.rep-{{ key }}').attr('id')] = e.drag.get('node').get('innerHTML');
+                    Y.one('.rep-{{ key }}').plug(Y.Plugin.Drop).set('innerHTML', ' mapped to: <strong>' + e.drag.get('node').get('innerHTML') + '</strong>');
+                    rep_mapping[e.drag.get('node').get('innerHTML') ] = $('.rep-{{ key }}').attr('id');
 
                 });
             {% endfor %}
@@ -276,8 +276,8 @@
             {% for key in sf_key %}
 
                 Y.one('.sf-{{ key }}').plug(Y.Plugin.Drop).drop.on('drop:hit', function(e) {
-                    Y.one('.sf-{{ key }}').plug(Y.Plugin.Drop).set('innerHTML', 'is mapped to: <strong>' + e.drag.get('node').get('innerHTML') + '</strong>');
-                    sf_mapping[$('.sf-{{ key }}').attr('id')] = e.drag.get('node').get('innerHTML');
+                    Y.one('.sf-{{ key }}').plug(Y.Plugin.Drop).set('innerHTML', ' mapped to: <strong>' + e.drag.get('node').get('innerHTML') + '</strong>');
+                    sf_mapping[e.drag.get('node').get('innerHTML') ] = $('.sf-{{ key }}').attr('id');
 
                 });
             {% endfor %}
@@ -294,7 +294,7 @@
     }
 
     function map_headers() {
-        $.getJSON("{% url 'import_csv' %}", {sf_map: sf_mapping, rep_map: rep_mapping }, function (result) {
+        $.getJSON("{% url 'import_csv' %}", {sf_map: JSON.stringify(sf_mapping), rep_map: JSON.stringify(rep_mapping) }, function (result) {
             alert(result['msg']);
 
         });
@@ -339,7 +339,7 @@
 
             <div class="row container" style="overflow: auto; max-height: 85vh">
                 {% for key in rep_key %}
-                    <div class="card col-4">{{ key }} <div  id="{{ key }}" class="rep-{{ key }} bg-primary badge-pill mb-2 py-2 ">Map to me</div></div>
+                    <div class="card col-3  my-2 text-center ">{{ key }} <div  id="{{ key }}" class="rep-{{ key }} bg-primary rounded mb-2 py-2 text-white  ">Map to me</div></div>
                 {% endfor %}
             </div>
         </div>
@@ -362,7 +362,7 @@
 
             <div class="row container" style="overflow: auto; max-height: 85vh">
                 {% for key in sf_key %}
-                    <div class="card col-4">{{ key }} <div id="{{ key }}" class="sf-{{ key }} bg-primary badge-pill  mb-2 py-2 ">Map to me</div></div>
+                    <div class="card col-3 my-2">{{ key }} <div id="{{ key }}" class="sf-{{ key }} bg-primary rounded mb-2 py-2 text-white ">Map to me</div></div>
                 {% endfor %}
             </div>
         </div>
