@@ -114,11 +114,41 @@ def duplify(request):
 
     return JsonResponse({'task_id': result.task_id}, safe=False)
 
+def import_csv(request):
+    if request.method == 'GET':
+        sf_header_map = request.GET.get('sf_map')
+        rep_header_map = request.GET.get('rep_map')
+
+        print(request.GET.get('sf_map'))
+        print(request.GET.get('rep_map'))
+    return JsonResponse({'msg': 'success!'}, safe=False)
+
+
 def index(request):
     return render(request, 'dedupper/rep_list_upload.html')
 
+def map(request):
+    rep_exclude =  ('id','average', 'type', 'closest1_contactID', 'closest1_id', 'closest2_contactID', 'closest2_id', 'closest3_contactID', 'closest3_id', 'dupFlag', 'keySortedBy')
+    rep_key = list(list(repContact.objects.all().values())[0].keys())
+    rep_key = [j for j in rep_key if j not in rep_exclude]
+
+    sf_exclude =  ('id','average', 'type', 'closest_rep_id', 'closest1_contactID', 'closest1_id', 'closest2_contactID', 'closest2_id', 'closest3_contactID', 'closest3_id', 'dupFlag', 'keySortedBy')
+    sf_key = list(list(sfcontact.objects.all().values())[0].keys())
+    sf_key = [j for j in sf_key if j not in sf_exclude]
+
+    rep_headers= request.session['repCSV_headers']
+    sf_headers= request.session['sfCSV_headers']
+    return render(request, 'dedupper/field_mapping.html', {'rep_key': rep_key,
+                                                           'rep_csv': rep_headers,
+                                                           'sf_key': sf_key,
+                                                           'sf_csv': sf_headers}
+                  )
+
 def key_gen(request):
-    key = make_keys(list(list(repContact.objects.all().values())[0].keys()))
+    try:
+        key = make_keys(list(list(repContact.objects.all().values())[0].keys()))
+    except:
+        key = [('error', 100, 0, 100, 0, 100)]
     return render(request, 'dedupper/key_generator.html', {'keys': key})
 
 def resort(request):
@@ -203,11 +233,17 @@ def upload(request):
     form = UploadFileForm(request.POST, request.FILES)
     repCSV = request.FILES['repFile']
     sfCSV = request.FILES['sfFile']
-    headers = convert_csv(repCSV, repcontact_resource, batchSize=100)
-    export_headers = headers
-    convert_csv(sfCSV, sfcontact_resource, type='SF', batchSize=100)
 
-    keys = make_keys(headers)
+    rep_headers, pd_rep_csv = convert_csv(repCSV)
+    request.session['repCSV_headers'] = rep_headers
+    request.session['repCSV'] = pd_rep_csv
+    export_headers = rep_headers
+
+    sf_headers, pd_sf_csv= convert_csv(sfCSV)
+    request.session['sfCSV_headers'] = sf_headers
+    request.session['sfCSV'] = pd_sf_csv
+
+    # keys = make_keys(headers)
 
     return redirect('/key-gen/', {'keys': keys})
 

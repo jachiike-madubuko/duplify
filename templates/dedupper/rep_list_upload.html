@@ -215,7 +215,7 @@
                     $.wait( function(){ $(".files").addClass("invisible") }, 3);
 
                 }else {
-                    e.preventDefault(); //prevent the default action
+                   // e.preventDefault(); //prevent the default action
                     $(".format").removeClass("invisible");//.delay(5).addClass("invisible");
                     $.wait(function () {
                         $(".format").addClass("invisible")
@@ -256,9 +256,9 @@
 
     <div class="row">
         <div class="col-3"></div>
-        <div class="card col-6  my-5" style="background: transparent">
+        <div class="card col-6  my-5 " style="background: transparent">
             <div class="card-header text-white text-center"> <h3> File Upload </h3></div>
-            <div class="card-body">
+            <div class="card-body ">
                 {% block content %}
                     <form method="post" action="/keys/" enctype="multipart/form-data">
                         {% csrf_token %}
@@ -266,7 +266,7 @@
                         <h6 class="card-text text-white text-center">Upload Rep List Here</h6>
                         <div class="custom-file ">
 
-                            <input type="file" class="custom-file-input" id="repFile" name="repFile"
+                            <input type="file" class=" badge-pill custom-file-input" id="repFile" name="repFile"
                                    onchange="filename(this, '.rep')">
                             <label class=" custom-file-label rep" for="repFile">Choose file</label>
                         </div>

@@ -50,7 +50,6 @@ INSTALLED_APPS = [
     'django_filters',
     'import_export',
     # 'celery_progress',
-
    # 'heroku_connect',
    # 'connect_client',
 

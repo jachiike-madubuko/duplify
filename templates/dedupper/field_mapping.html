@@ -2,26 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Duplify | Upload</title>
+    <title>Duplify | Mapping</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <style>
         /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#b8e1fc+0,a9d2f3+10,90bae4+25,90bcea+37,90bff0+50,6ba8e5+51,a2daf5+83,bdf3fd+100;Blue+Gloss+%231 */
 
 
-</style>
+    </style>
 </head>
-<body class="bg-dark" style="transition: 2s; overflow: hidden">
+<body class="bg-dark" style="transition: 2s; overflow: auto">
 
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
         integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
 
 <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
+<script src="http://yui.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
+
 <script>
     //TODO add in welcoming: "Welcome to Duplify"<->fade in with polygonizr
     //TODO fade out then fade in chain of Start by uploading your rep list here and your salesforce report here-fade out
+
+    var rep_mapping = {};
+    var sf_mapping = {};
     function filename(file, label) {
         var name = $(file).val().replace("C:\\fakepath\\","");
 
@@ -215,7 +220,7 @@
                     $.wait( function(){ $(".files").addClass("invisible") }, 3);
 
                 }else {
-                   // e.preventDefault(); //prevent the default action
+                    // e.preventDefault(); //prevent the default action
                     $(".format").removeClass("invisible");//.delay(5).addClass("invisible");
                     $.wait(function () {
                         $(".format").addClass("invisible")
@@ -225,77 +230,143 @@
             } });
     }
 
+    $(document).ready(function() {
+        YUI().use('dd-delegate', 'dd-drop-plugin', 'dd-constrain' ,function(Y) {
+            var rep_del = new Y.DD.Delegate({
+                container: '#rep-cont',
+                nodes: '.rep-field'
+            });
+
+            rep_del.dd.plug(Y.Plugin.DDConstrained, {
+                constrain2node: '.rep'
+            });
+
+            rep_del.on('drag:end', function(e) {
+                rep_del.get('currentNode').setStyles({
+                    top: 0,
+                    left: 0
+                });
+            });
+
+            var sf_del = new Y.DD.Delegate({
+                container: '#sf-cont',
+                nodes: '.sf-field'
+            });
+
+
+            sf_del.dd.plug(Y.Plugin.DDConstrained, {
+                constrain2node: '.sf'
+            });
+
+            sf_del.on('drag:end', function(e) {
+                sf_del.get('currentNode').setStyles({
+                    top: 0,
+                    left: 0
+                });
+            });
+            {% for key in rep_key %}
+
+                Y.one('.rep-{{ key }}').plug(Y.Plugin.Drop).drop.on('drop:hit', function(e) {
+                    Y.one('.rep-{{ key }}').plug(Y.Plugin.Drop).set('innerHTML', 'is mapped to: <strong>' + e.drag.get('node').get('innerHTML') + '</strong>');
+                    rep_mapping[$('.rep-{{ key }}').attr('id')] = e.drag.get('node').get('innerHTML');
+
+                });
+            {% endfor %}
+
+            {% for key in sf_key %}
+
+                Y.one('.sf-{{ key }}').plug(Y.Plugin.Drop).drop.on('drop:hit', function(e) {
+                    Y.one('.sf-{{ key }}').plug(Y.Plugin.Drop).set('innerHTML', 'is mapped to: <strong>' + e.drag.get('node').get('innerHTML') + '</strong>');
+                    sf_mapping[$('.sf-{{ key }}').attr('id')] = e.drag.get('node').get('innerHTML');
+
+                });
+            {% endfor %}
+        });
+    });
+
+
+    function f() {
+        if (confirm('WARNING: You are about to erase all records in the database.')) {
+            window.location.replace("{% url 'flush_db' %}");
+        } else {
+            // Do nothing!
+        }
+    }
+
+    function map_headers() {
+        $.getJSON("{% url 'import_csv' %}", {sf_map: sf_mapping, rep_map: rep_mapping }, function (result) {
+            alert(result['msg']);
+
+        });
+    }
 
 </script>
-<nav class="navbar navbar-light navbar-expand-lg justify-content-between" style="background: transparent">
-    <a class="navbar-brand" href="#"> <h3>Duplify</h3></a>
+<nav class="navbar navbar-dark bg-dark navbar-expand-lg justify-content-between sticky-top">
+    <h1> <a class="navbar-brand" href="#">Duplify</a></h1>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
             <li class="nav-item active">
-                <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/admin">Admin</a>
+                <a class="nav-link" href="javascript:f()">Reset</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#">Pricing</a>
             </li>
         </ul>
     </div>
+    <button class="btn btn-success badge-pill" type="button" onclick="map_headers()">
+        <b >Map Headers</b>
+    </button>
 </nav>
-<div class="alert format alert-warning alert-dismissible invisible text-center" role="alert">
-    <b>Files must be csv format</b>
-</div>
-<div class="alert files alert-warning alert-dismissible invisible text-center" role="alert">
-    <b>Upload a rep list and a SF report before continuing</b>
-</div>
-<div class="container" style="padding-top: 50px;  height: 100%; width: 80%;">
+<div class="container-fluid">
+    <div class="row rep mt-1">
+        <div id="rep-cont" class="col-3">
+            <h2 class="alert-info"> Rep CSV Fields </h2>
+            <ul class="list-group" style="overflow: auto; max-height: 85vh">
+                {% for head in rep_csv %}
 
-    <div class="row">
-        <div class="col-3"></div>
-        <div class="card col-6  my-5 " style="background: transparent">
-            <div class="card-header text-white text-center"> <h3> File Upload </h3></div>
-            <div class="card-body ">
-                {% block content %}
-                    <form method="post" action="/keys/" enctype="multipart/form-data">
-                        {% csrf_token %}
+                    <li class="rep-field list-group-item list-group-item-primary">{{ head }}</li>
+                {%  endfor %}
+            </ul>
+        </div>
+        <div class="col">
+            <h2 class="alert-info"> Rep Database Fields </h2>
 
-                        <h6 class="card-text text-white text-center">Upload Rep List Here</h6>
-                        <div class="custom-file ">
-
-                            <input type="file" class=" badge-pill custom-file-input" id="repFile" name="repFile"
-                                   onchange="filename(this, '.rep')">
-                            <label class=" custom-file-label rep" for="repFile">Choose file</label>
-                        </div>
-
-                        <h6 class="card-text text-white mt-5 text-center">Upload SF Report Here</h6>
-                        <div class="custom-file text-white">
-
-                            <input type="file" class="custom-file-input" id="sfFile" name="sfFile"
-                                   onchange="filename(this, '.sf')">
-                            <label class=" custom-file-label sf" for="sfFile">Choose file</label>
-                        </div>
-                        <hr class="my-3">
-
-                        <div class="row">
-                            <div  class="col-4"></div>
-                            <div  class="col-4">
-                                <button type="Submit" onclick="verify()" class="btn-success btn-large btn-block
-                                        badge-pill
-                                        float-right"><h5 class="my-2">Upload</h5></button>
-                            </div>
-                            <div  class="col-4"></div>
-                        </div>
-                    </form>
-                {% endblock %}
+            <div class="row container" style="overflow: auto; max-height: 85vh">
+                {% for key in rep_key %}
+                    <div class="card col-4">{{ key }} <div  id="{{ key }}" class="rep-{{ key }} bg-primary badge-pill mb-2 py-2 ">Map to me</div></div>
+                {% endfor %}
             </div>
         </div>
-        <div class="col-3"></div>
+    </div>
+    <hr>
+    <div class="row sf mb-3">
+
+        <div id="sf-cont" class="col-3">
+            <h2 class="alert-info"> SF CSV Fields </h2>
+            <ul class="list-group " style="overflow: auto; max-height: 85vh">
+                {% for head in sf_csv %}
+
+                    <li class="sf-field list-group-item list-group-item-primary">{{ head }}</li>
+                {%  endfor %}
+
+            </ul>
+        </div>
+        <div class="col">
+            <h2 class="alert-info"> SF Database Fields </h2>
+
+            <div class="row container" style="overflow: auto; max-height: 85vh">
+                {% for key in sf_key %}
+                    <div class="card col-4">{{ key }} <div id="{{ key }}" class="sf-{{ key }} bg-primary badge-pill  mb-2 py-2 ">Map to me</div></div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </div>
-
 </body>
 </html>

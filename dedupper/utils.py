@@ -22,6 +22,7 @@ from django.db.models import Avg
 from fuzzyset import FuzzySet
 from operator import itemgetter
 import ast
+import pandas as pd
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
 
 
@@ -37,7 +38,6 @@ man_rkd = RangeKeyDict({
     (0, 70): 'New Record'
 })
 
-
 waiting= True
 sf_list = list(sfcontact.objects.all())
 sf_map=currKey=sort_alg = None
@@ -46,35 +46,30 @@ start=end=cnt=doneKeys=totalKeys = 0
 keylist = list()
 
 
-def convert_csv(file, resource, type='rep', batchSize=3000):
-    dataset = Dataset()
+def convert_csv(file):
     headers = ''
     cnt, cnt2 = 0, 0
-    print('converting CSV ', str(file))
+    print('converting CSV: ', str(file))
     start = perf_counter()
     fileString = ''
-    #look into going line by line
-    for chunk in file.open():
-        fileString += chunk.decode("utf-8")
-        if cnt == 0:
-            headers=fileString
-        cnt+=1
-        if cnt == batchSize:
-            print('importing data' + '.'*((cnt2%3)+1))
-            cnt2+=1
-            cnt = 1
-            dataset.csv = fileString
-            resource.import_data(dataset, dry_run=False)
-            fileString = headers
-    dataset.csv = fileString
-    resource.import_data(dataset, dry_run=False)
+    pd_csv = pd.read_csv(file, encoding = "utf-8")
+
+    return list(pd_csv), pd_csv
+
+
+def load_csv2db(csv, header_map, resource, file_type='rep'):
+    dataset = Dataset()
+    csv['id'] = np.nan
+
+    dataset.csv = csv.to_csv()
+    results = resource.import_data(dataset, dry_run=False)
     end = perf_counter()
     time = end - start
-    if type == 'SF':
-        uploadTime.objects.create(num_records = len(sfcontact.objects.all()), batch_size= batchSize, seconds=round(time, 2))
+    if file_type == 'SF':
+        uploadTime.objects.create(num_records = len(sfcontact.objects.all()),seconds=round(time, 2))
     else:
-        uploadTime.objects.create(num_records = len(repContact.objects.all()), batch_size = batchSize, seconds=round(time, 2))
-    return dataset.headers
+        uploadTime.objects.create(num_records = len(repContact.objects.all()), seconds=round(time, 2))
+
 
 def find_rep_dups(rep, keys, numthreads):
     global cnt
