@@ -83,38 +83,38 @@ def find_rep_dups(rep, keys, numthreads):
         return 0
 
     sf_map = dict(zip(sf_keys, sf_list))
-    top1, top2, top3 = fuzzyset_alg(rep_key, sf_keys)
-    for i in [top1, top2, top3]:
-        i[0] = sf_map[i[0]]
+    closest = fuzzyset_alg(rep_key, sf_keys)
+    for i in closest:
+        i[0] = sf_map[i[0]] #replace key with sf contact record
     # try:
-    #     top1, top2, top3 = [(match_map[i][0], sf_map[match_map[i][1]]) for i in range(3)]
+    #     closest[0], closest[1], closest[2] = [(match_map[i][0], sf_map[match_map[i][1]]) for i in range(3)]
     # except Exception as e:
     #     logging.exception(e)
     #     print("ERROR\n\t match_map:\t{}\n\t key_matches:\t{}\n\t sf_map:\t{}\n\t sf_keys:\t{}\n\t ".format(match_map,
     #                                                                                                        key_matches,
     #                                                                                                        sf_map,
     #                                                                                                        sf_keys))
-    if top1[1] <= top3[1] + 5 and top1[0].id != top3[0].id:
-        rep.average = np.mean([top1[1], top2[1], top3[1]])
-        rep.closest1 = top1[0]
-        rep.closest2 = top2[0]
-        rep.closest3 = top3[0]
-        rep.closest1_contactID = top1[0].ContactID
-        rep.closest2_contactID = top2[0].ContactID
-        rep.closest3_contactID = top3[0].ContactID
-    elif top1[1] <= top2[1] + 5 and top1[0].id != top2[0].id:
-        rep.average = np.mean([top1[1], top2[1]])
-        rep.closest1 = top1[0]
-        rep.closest2 = top2[0]
-        rep.closest1_contactID = top1[0].ContactID
-        rep.closest2_contactID = top2[0].ContactID
+    if closest[0][1] <= closest[-1][1] + 5 and len(closest) == 3:
+        rep.average = np.mean([closest[0][1], closest[1][1], closest[2][1]])
+        rep.closest1 = closest[0][0]
+        rep.closest2 = closest[1][0]
+        rep.closest3 = closest[2][0]
+        rep.closest1_contactID = closest[0][0].ContactID
+        rep.closest2_contactID = closest[1][0].ContactID
+        rep.closest3_contactID = closest[2][0].ContactID
+    elif closest[0][1] <= closest[-1][1] + 5 and len(closest) == 2:
+        rep.average = np.mean([closest[0][1], closest[1][1]])
+        rep.closest1 = closest[0][0]
+        rep.closest2 = closest[1][0]
+        rep.closest1_contactID = closest[0][0].ContactID
+        rep.closest2_contactID = closest[1][0].ContactID
     else:
-        rep.average = top1[1]
-        rep.closest1 = top1[0]
-        rep.closest1_contactID = top1[0].ContactID
+        rep.average = closest[0][1]
+        rep.closest1 = closest[0][0]
+        rep.closest1_contactID = closest[0][0].ContactID
     rep.type = sort(rep.average)
 
-    if rep.CRD != top1[0].CRD:
+    if rep.CRD != closest[0][0].CRD:
         rep.dupFlag = True
     string_key = '-'.join(currKey)
     rep.keySortedBy = string_key
@@ -163,11 +163,15 @@ def fuzzyset_alg(key, key_list):
             added.extend(*matched)
             del added[-1]  #remove rep's key from list
             added[1] *= 100
+            '''
+            [0] the sf key
+            [1] match percentage
+            '''
             candidates.append(added)
         except:
             pass
     candidates.sort(key=lambda x: x[1], reverse=True)
-    return candidates[0:3]
+    return candidates[:3]
 
 def key_generator(partslist):
     global start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg, keylist, sf_keys
