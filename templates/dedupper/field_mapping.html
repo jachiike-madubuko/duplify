@@ -296,7 +296,7 @@
     function map_headers() {
         $.getJSON("{% url 'import_csv' %}", {sf_map: JSON.stringify(sf_mapping), rep_map: JSON.stringify(rep_mapping) }, function (result) {
             alert(result['msg']);
-
+            document.location.replace("{% url 'key-gen' %}");
         });
     }
 

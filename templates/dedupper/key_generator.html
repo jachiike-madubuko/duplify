@@ -398,7 +398,7 @@
         $.getJSON("{% url 'run' %}", {keys: keys}, function (result) {
             $("#progress").modal('dispose');
         });
-        inter = setInterval(update_progress,  30000);
+        inter = setInterval(update_progress,  15000);
     }
     function del(item) {
         $(item).closest(".madeKey").remove();

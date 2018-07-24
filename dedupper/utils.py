@@ -81,8 +81,6 @@ def find_rep_dups(rep, keys, numthreads):
     rep_key = rep.key(keys[:-1])
     if 'NULL' in rep_key:
         return 0
-
-    sf_map = dict(zip(sf_keys, sf_list))
     closest = fuzzyset_alg(rep_key, sf_keys)
     for i in closest:
         i[0] = sf_map[i[0]] #replace key with sf contact record
@@ -174,7 +172,7 @@ def fuzzyset_alg(key, key_list):
     return candidates[:3]
 
 def key_generator(partslist):
-    global start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg, keylist, sf_keys
+    global start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg, keylist, sf_keys, sf_map
     start = perf_counter()
     totalKeys = len(partslist)
     keylist = partslist
@@ -207,7 +205,8 @@ def key_generator(partslist):
         if not multi_key:
             sf_keys = [i.key(key_parts[:-1]) for i in sf_list if "NULL" not in i.key(key_parts[:-1]) ] #only returns    
         '''
-        sf_keys = [i.key(key_parts[:-1]) for i in sf_list if "NULL" not in i.key(key_parts[:-1]) ] #only returns
+        sf_map = {i.key(key_parts[:-1]) : i for i in sf_list if "NULL" not in i.key(key_parts[:-1]) } #only returns
+        sf_keys = sf_map.keys()
         # sf_keys
         # that
         # have all the fields in the key
