@@ -5,13 +5,16 @@
     <title>Duplify | Mapping</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" />
+
     <style>
         /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#b8e1fc+0,a9d2f3+10,90bae4+25,90bcea+37,90bff0+50,6ba8e5+51,a2daf5+83,bdf3fd+100;Blue+Gloss+%231 */
 
 
     </style>
 </head>
-<body class="bg-dark" style="transition: 2s; overflow: auto">
+<body class="bg-dark" style="transition: 2s; overflow: hidden">
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
@@ -19,7 +22,9 @@
         integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
 
 <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
 <script src="http://yui.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
+
 
 <script>
     //TODO add in welcoming: "Welcome to Duplify"<->fade in with polygonizr
@@ -27,6 +32,8 @@
 
     var rep_mapping = {};
     var sf_mapping = {};
+
+
     function filename(file, label) {
         var name = $(file).val().replace("C:\\fakepath\\","");
 
@@ -282,6 +289,60 @@
                 });
             {% endfor %}
         });
+
+        var rep_data = [
+            {
+                id: 0,
+                text: '',
+                value: 'placeholder'
+            },
+            {% for key in rep_csv %}
+                {
+                    id: {{ forloop.counter }},
+                    text:"{{ key }}",
+                    value:'{{ key }}',
+                },
+            {% endfor %}
+        ];
+
+        var sf_data = [
+            {
+                id: 0,
+                text: '',
+                value: 'placeholder',
+
+            },
+            {% for key in sf_csv %}
+
+                {
+                    id: {{ forloop.counter}},
+                    text:"{{ key }}",
+                    value:'{{ key }}',
+                },
+            {% endfor %}
+        ];
+        $('.rep-select').select2({
+            theme: "bootstrap",
+            placeholder: 'Map a column to this field',
+            data: rep_data,
+            templateSelection: function (data, container) {
+                $(data.element).attr('data-name', data.value);
+                return data.text;
+
+            }
+        });
+        $('.sf-select').select2({
+            theme: "bootstrap",
+            placeholder: 'Map a column to this field',
+            data: sf_data,
+            templateSelection: function (data, container) {
+                $(data.element).attr('data-name', data.value);
+                return data.text;
+            }
+        });
+
+
+
     });
 
 
@@ -294,9 +355,27 @@
     }
 
     function map_headers() {
-        $.getJSON("{% url 'import_csv' %}", {sf_map: JSON.stringify(sf_mapping), rep_map: JSON.stringify(rep_mapping) }, function (result) {
-            alert(result['msg']);
-            document.location.replace("{% url 'key-gen' %}");
+
+        $('.rep-select').each( function() {
+            var x = $(this).find(':selected').data('name');
+            var par = $(this).parent().children('p').text();
+            if (x.localeCompare("placeholder") != 0){
+                rep_mapping[x] = par;
+            }
+        });
+        alert('rep map => ' +JSON.stringify(rep_mapping));
+
+        $('.sf-select').each( function() {
+            var x = $(this).find(':selected').data('name');
+            var par = $(this).parent().children('p').text();
+            if (x.localeCompare("placeholder") != 0) {
+                sf_mapping[x] = par;
+            }
+        });
+        alert('sf map => ' +JSON.stringify(sf_mapping));
+        $.getJSON("{% url 'import_csv' %}", {sf_map: JSON.stringify(sf_mapping), rep_map: JSON.stringify
+          (rep_mapping) }, function (result) {
+           window.location.replace("{% url 'key-gen' %}");
         });
     }
 
@@ -323,46 +402,30 @@
         <b >Map Headers</b>
     </button>
 </nav>
-<div class="container-fluid">
+<div class="container-fluid " style="overflow: auto; max-height: 90vh">
     <div class="row rep mt-1">
-        <div id="rep-cont" class="col-3">
-            <h2 class="alert-info"> Rep CSV Fields </h2>
-            <ul class="list-group" style="overflow: auto; max-height: 85vh">
-                {% for head in rep_csv %}
-
-                    <li class="rep-field list-group-item list-group-item-primary">{{ head }}</li>
-                {%  endfor %}
-            </ul>
-        </div>
         <div class="col">
-            <h2 class="alert-info"> Rep Database Fields </h2>
+            <h2 class="alert-dark text-center badge-pill"> Rep Field Mapping </h2>
 
-            <div class="row container" style="overflow: auto; max-height: 85vh">
+            <div class="row container-fluid">
                 {% for key in rep_key %}
-                    <div class="card col-3  my-2 text-center ">{{ key }} <div  id="{{ key }}" class="rep-{{ key }} bg-primary rounded mb-2 py-2 text-white  ">Map to me</div></div>
+                    <div class="card col-4  my-2 p-0 text-center bg-dark  text-white  "> <p>{{ key }}</p>
+                        <select autofocus class=" rep-{{ key }} rep-select container-fluid mousetrap" name="states[]"></select>
+                    </div>
+
                 {% endfor %}
             </div>
         </div>
     </div>
     <hr>
     <div class="row sf mb-3">
-
-        <div id="sf-cont" class="col-3">
-            <h2 class="alert-info"> SF CSV Fields </h2>
-            <ul class="list-group " style="overflow: auto; max-height: 85vh">
-                {% for head in sf_csv %}
-
-                    <li class="sf-field list-group-item list-group-item-primary">{{ head }}</li>
-                {%  endfor %}
-
-            </ul>
-        </div>
         <div class="col">
-            <h2 class="alert-info"> SF Database Fields </h2>
-
-            <div class="row container" style="overflow: auto; max-height: 85vh">
+            <h2 class="alert-dark text-center badge-pill"> SF Field Mapping </h2>
+            <div class="row container-fluid">
                 {% for key in sf_key %}
-                    <div class="card col-3 my-2">{{ key }} <div id="{{ key }}" class="sf-{{ key }} bg-primary rounded mb-2 py-2 text-white ">Map to me</div></div>
+                    <div class="card col-4 my-2 p-0 text-center bg-dark  text-white " id="{{ key }}"> <p>{{ key }}</p>
+                        <select autofocus class=" rep-{{ key }} sf-select col-12 mousetrap" name="states[]"></select>
+                    </div>
                 {% endfor %}
             </div>
         </div>

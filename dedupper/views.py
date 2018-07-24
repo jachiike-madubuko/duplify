@@ -146,6 +146,7 @@ def map(request):
 
     rep_headers= request.session['repCSV_headers']
     sf_headers= request.session['sfCSV_headers']
+    [i.sort(key=lambda x: x.lower()) for i in [rep_key, rep_headers,sf_key,sf_headers ]]
     return render(request, 'dedupper/field_mapping.html', {'rep_key': rep_key,
                                                            'rep_csv': rep_headers,
                                                            'sf_key': sf_key,

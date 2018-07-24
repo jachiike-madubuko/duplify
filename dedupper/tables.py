@@ -35,7 +35,6 @@ class RepContactTable(tables.Table):
     def render_merge(self, record):
         href = record.CRD
         return mark_safe('<a id="yo" class="btn btn-outline-primary" onclick="merge()" href="'+str(href)+'" Merge>Merge</a>')
-
     class Meta:
         model = repContact
         template_name = 'django_tables2/bootstrap.html'
@@ -49,7 +48,6 @@ class RepContactTable(tables.Table):
 class SFContactTable(tables.Table):
     merge = tables.LinkColumn('merge_records', args=[tables.A('pk')], attrs={'class': 'btn btn-outline-primary badge-pill',
                                                                              'href': "#"}, text="Merge")
-
     def render_merge(self, record):
         href = record.CRD
         return mark_safe('<a id="yo" class="btn btn-outline-primary" onclick="merge()" href="'+str(href)+'" Merge>Merge</a>')
@@ -65,7 +63,6 @@ class StatsTable(tables.Table):
     dups = Column()
     news = Column()
     manu = Column()
-
     class Meta:
         template_name = 'django_tables2/bootstrap.html'
         attrs = {'class': 'table table-hover table-striped table-condensed'}
