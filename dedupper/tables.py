@@ -38,7 +38,7 @@ class RepContactTable(tables.Table):
     class Meta:
         model = repContact
         template_name = 'django_tables2/bootstrap.html'
-        attrs = {'class' : 'table table-hover table-striped table-dark' }
+        attrs = {'class' : 'table table-hover table-striped table-dark table-condensed' }
         sequence = ('closest1', 'closest1_contactID', 'closest2', 'closest2_contactID', 'closest3', 'closest3_contactID', 'merge',
                     'average', '...')
         exclude = ('cansellDate', 'levelGroup', 'regionalLeader', 'boaName', 'fieldTrainerLeader',

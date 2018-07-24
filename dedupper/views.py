@@ -204,7 +204,7 @@ def progress(request):
         manu = len(repContact.objects.filter(type='Manual Check'))
         doneKeys, numKeys, currKey, doneReps = get_progress()
         keyPercent = round(((doneKeys/numKeys)*100) + ((1/numKeys) * (doneReps/reps)*100),2)
-        repPercent = round( (reps-undies)/reps,2)
+        repPercent = round(100*(reps-undies)/reps,2)
         key_stats = []
         for i in keys:
             key = '-'.join(i)

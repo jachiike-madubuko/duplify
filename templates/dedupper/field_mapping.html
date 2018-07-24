@@ -363,7 +363,6 @@
                 rep_mapping[x] = par;
             }
         });
-        alert('rep map => ' +JSON.stringify(rep_mapping));
 
         $('.sf-select').each( function() {
             var x = $(this).find(':selected').data('name');
@@ -372,7 +371,6 @@
                 sf_mapping[x] = par;
             }
         });
-        alert('sf map => ' +JSON.stringify(sf_mapping));
         $.getJSON("{% url 'import_csv' %}", {sf_map: JSON.stringify(sf_mapping), rep_map: JSON.stringify
           (rep_mapping) }, function (result) {
            window.location.replace("{% url 'key-gen' %}");

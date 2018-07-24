@@ -169,7 +169,10 @@ def fuzzyset_alg(key, key_list):
         except:
             pass
     candidates.sort(key=lambda x: x[1], reverse=True)
-    return candidates[:3]
+    top_candi = candidates[:10]
+    finalist = [[i[0], fuzz.ratio(key, i[0])] for i in top_candi]
+    finalist.sort(key=lambda x: x[1], reverse=True)
+    return finalist[:3]
 
 def key_generator(partslist):
     global start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg, keylist, sf_keys, sf_map
