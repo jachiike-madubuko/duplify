@@ -9,7 +9,7 @@
         /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#b8e1fc+0,a9d2f3+10,90bae4+25,90bcea+37,90bff0+50,6ba8e5+51,a2daf5+83,bdf3fd+100;Blue+Gloss+%231 */
 
 
-</style>
+    </style>
 </head>
 <body class="bg-dark" style="transition: 2s; overflow: hidden">
 
@@ -215,7 +215,7 @@
                     $.wait( function(){ $(".files").addClass("invisible") }, 3);
 
                 }else {
-                   // e.preventDefault(); //prevent the default action
+                    // e.preventDefault(); //prevent the default action
                     $(".format").removeClass("invisible");//.delay(5).addClass("invisible");
                     $.wait(function () {
                         $(".format").addClass("invisible")
@@ -256,14 +256,14 @@
 
     <div class="row">
         <div class="col-3"></div>
-        <div class="card col-6  my-5 " style="background: transparent">
-            <div class="card-header text-white text-center"> <h3> File Upload </h3></div>
+        <div class="card col-6  my-5 bg-secondary ">
+            <div class="card-header  text-center"> <h3> File Upload </h3></div>
             <div class="card-body ">
                 {% block content %}
                     <form method="post" action="/keys/" enctype="multipart/form-data">
                         {% csrf_token %}
 
-                        <h6 class="card-text text-white text-center">Upload Rep List Here</h6>
+                        <h6 class="card-text  text-center">Upload Rep List Here</h6>
                         <div class="custom-file ">
 
                             <input type="file" class=" badge-pill custom-file-input" id="repFile" name="repFile"
@@ -271,8 +271,8 @@
                             <label class=" custom-file-label rep" for="repFile">Choose file</label>
                         </div>
 
-                        <h6 class="card-text text-white mt-5 text-center">Upload SF Report Here</h6>
-                        <div class="custom-file text-white">
+                        <h6 class="card-text  mt-5 text-center">Upload SF Report Here</h6>
+                        <div class="custom-file ">
 
                             <input type="file" class="custom-file-input" id="sfFile" name="sfFile"
                                    onchange="filename(this, '.sf')">
@@ -283,7 +283,7 @@
                         <div class="row">
                             <div  class="col-4"></div>
                             <div  class="col-4">
-                                <button type="Submit" onclick="verify()" class="btn-success btn-large btn-block
+                                <button type="Submit" onclick="verify()" class="btn btn-success btn-large btn-block
                                         badge-pill
                                         float-right"><h5 class="my-2">Upload</h5></button>
                             </div>

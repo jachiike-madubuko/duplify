@@ -357,6 +357,9 @@
                 $(".progress-bar").removeClass("progress-bar-striped ");
                 $(".progress-bar").removeClass("progress-bar-animated");
                 $(".progress-bar").addClass("bg-success");
+                $('#keyPercent').text(100);
+                $('#repPercent').text(100);
+                $(".progress-bar").animate({width: '100%'},5);
                 $(".modal-header").text("Duplify is done! Click Next to see the sorted reps.")
             }
 
