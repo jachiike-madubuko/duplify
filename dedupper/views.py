@@ -15,6 +15,8 @@ from dedupper.resources import RepContactResource, SFContactResource, DedupTimeR
 from  dedupper.utils import *
 import csv
 import json
+import pickle
+from django.conf import settings
 '''
 #TODO change the HTTP request 
 timeout for the running algorithm or 
@@ -26,7 +28,6 @@ http://www.marinamele.com/2013/12/how-to-set-django-app-on-heroku-part-i.html
 https://www.youtube.com/watch?v=P8_wDttTeuk
 '''
 keys= []
-pd_sf_csv = pd_rep_csv= None
 
 def display(request):
 
@@ -124,6 +125,14 @@ def import_csv(request):
 
         sf_header_map = json.loads(sf_header_map)
         rep_header_map = json.loads(rep_header_map)
+
+        with open(settings.REP_CSV, 'rb') as file:
+            pd_rep_csv =pickle.load(file)
+            print('pickle load reps')
+
+        with open(settings.SF_CSV, 'rb') as file:
+            pd_sf_csv = pickle.load(file)
+            print('pickle load sf')
 
         load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
         load_csv2db(pd_sf_csv, sf_header_map, sfcontact_resource, file_type='SF')
@@ -233,7 +242,7 @@ def run(request):
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def upload(request):
-    global export_headers, keys, pd_sf_csv, pd_rep_csv
+    global export_headers, keys
 
     print('uploading file')
     form = UploadFileForm(request.POST, request.FILES)
@@ -246,6 +255,13 @@ def upload(request):
     sf_headers, pd_sf_csv= convert_csv(sfCSV)
     request.session['sfCSV_headers'] = sf_headers
     # keys = make_keys(headers)
+    with open(settings.REP_CSV, 'wb') as file:
+        pickle.dump(pd_rep_csv, file)
+        print('pickle dump reps')
+
+    with open(settings.SF_CSV, 'wb') as file:
+        pickle.dump(pd_sf_csv, file)
+        print('pickle dump sf')
 
     return redirect('/map/')
 

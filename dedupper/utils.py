@@ -128,7 +128,7 @@ def finish(numThreads):
     waiting=False
 
 def fuzzyset_alg(key, key_list):
-    finder = FuzzySet()
+    finder = FuzzySet(use_levenshtein=False)
     finder.add(key)
     candidates = list()
     for i in key_list:
@@ -207,7 +207,7 @@ def load_csv2db(csv, header_map, resource, file_type='rep'):
     dataset = Dataset()
     pd_csv = csv
     print(list(pd_csv))
-    print(header_map)
+    print(json.dumps(header_map, indent=4))
     try:
         pd_csv.rename(columns=header_map, inplace=True)
         pd_csv['id'] = np.nan
