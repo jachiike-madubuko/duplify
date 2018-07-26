@@ -13,7 +13,6 @@ import os
 import dj_database_url
 import django_heroku
 from django.conf.locale.en import formats as en_formats
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -65,6 +64,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'dedupper_app.urls'
+IMPORT_EXPORT_USE_TRANSACTIONS = True
+
 
 TEMPLATES = [
     {
@@ -85,10 +86,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'dedupper_app.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -99,6 +98,22 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+# db_from_env = dj_database_url.config(conn_max_age=500)
+# DATABASES['default'].update(db_from_env)
+
+'''
+HEROKU_CONNECT_DATABASE_URL = os.environ['HEROKU_CONNECT_DATABASE_URL']
+HEROKU_CONNECT_SCHEMA = os.environ['HEROKU_CONNECT_SCHEMA']
+DATABASES = {
+    'default': dj_database_url.config(default=HEROKU_CONNECT_DATABASE_URL),
+}
+
+DATABASES['default'] = dj_database_url.config(
+    engine='heroku_connect.db.backends.postgresql'
+)
+'''
+# Password validation
+# https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -151,3 +166,6 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
+
+REP_CSV = os.path.join(BASE_DIR, 'uploads', 'rep_csv.pkl')
+SF_CSV = os.path.join(BASE_DIR, 'uploads', 'sf_csv.pkl')

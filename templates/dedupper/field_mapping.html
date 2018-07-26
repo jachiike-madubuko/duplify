@@ -358,24 +358,22 @@
 
         $('.rep-select').each( function() {
             var x = $(this).find(':selected').data('name');
-            var par = $(this).parent().children('p').text();
+            var par = $(this).parent().children('div').children('p').text();
             if (x.localeCompare("placeholder") != 0){
                 rep_mapping[x] = par;
             }
         });
-        alert('rep map => ' +JSON.stringify(rep_mapping));
 
         $('.sf-select').each( function() {
             var x = $(this).find(':selected').data('name');
-            var par = $(this).parent().children('p').text();
+            var par = $(this).parent().children('div').children('p').text();
             if (x.localeCompare("placeholder") != 0) {
                 sf_mapping[x] = par;
             }
         });
-        alert('sf map => ' +JSON.stringify(sf_mapping));
         $.getJSON("{% url 'import_csv' %}", {sf_map: JSON.stringify(sf_mapping), rep_map: JSON.stringify
-          (rep_mapping) }, function (result) {
-           window.location.replace("{% url 'key-gen' %}");
+            (rep_mapping) }, function (result) {
+            window.location.replace("{% url 'key-gen' %}");
         });
     }
 
@@ -402,29 +400,35 @@
         <b >Map Headers</b>
     </button>
 </nav>
-<div class="container-fluid " style="overflow: auto; max-height: 90vh">
-    <div class="row rep mt-1">
+<div class="container-fluid row" style="overflow: auto; max-height: 90vh">
+    <div class="col rep mt-1">
         <div class="col">
             <h2 class="alert-dark text-center badge-pill"> Rep Field Mapping </h2>
 
             <div class="row container-fluid">
                 {% for key in rep_key %}
-                    <div class="card col-4  my-2 p-0 text-center bg-dark  text-white  "> <p>{{ key }}</p>
-                        <select autofocus class=" rep-{{ key }} rep-select container-fluid mousetrap" name="states[]"></select>
+                    <div class="input-group mb-3 col-12">
+                        <div class="input-group-prepend px-auto">
+                            <p class="input-group-text bg-dark text-white" id="basic-addon3 " style="height: 34px; width: 200px">{{ key }}</p>
+                        </div>
+                        <select autofocus class=" rep-{{ key }} rep-select mousetrap py-5 col-8" name="states[]"></select>
                     </div>
 
                 {% endfor %}
             </div>
         </div>
     </div>
-    <hr>
-    <div class="row sf mb-3">
+
+    <div class="col sf mb-3">
         <div class="col">
             <h2 class="alert-dark text-center badge-pill"> SF Field Mapping </h2>
             <div class="row container-fluid">
                 {% for key in sf_key %}
-                    <div class="card col-4 my-2 p-0 text-center bg-dark  text-white " id="{{ key }}"> <p>{{ key }}</p>
-                        <select autofocus class=" rep-{{ key }} sf-select col-12 mousetrap" name="states[]"></select>
+                    <div class="input-group mb-3 col-12 shadow-lg">
+                        <div class="input-group-prepend px-auto">
+                            <p class="input-group-text bg-dark text-white" id="basic-addon3 " style="height: 34px; width: 200px">{{ key }}</p>
+                        </div>
+                        <select autofocus class=" sf-{{ key }} sf-select mousetrap py-5 col-8" name="states[]"></select>
                     </div>
                 {% endfor %}
             </div>

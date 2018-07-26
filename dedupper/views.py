@@ -15,6 +15,8 @@ from dedupper.resources import RepContactResource, SFContactResource, DedupTimeR
 from  dedupper.utils import *
 import csv
 import json
+import pickle
+from django.conf import settings
 '''
 #TODO change the HTTP request 
 timeout for the running algorithm or 
@@ -26,7 +28,6 @@ http://www.marinamele.com/2013/12/how-to-set-django-app-on-heroku-part-i.html
 https://www.youtube.com/watch?v=P8_wDttTeuk
 '''
 keys= []
-pd_sf_csv = pd_rep_csv= None
 
 def display(request):
 
@@ -54,7 +55,9 @@ def display(request):
     })
 
 def download(request,type):
-    export_headers = list(list(repContact.objects.all().values())[0].keys())
+    fields = ('SF link', 'CRD', 'firstName', 'lastName', 'suffix', 'canSellDate', 'levelGroup', 'mailingStreet', 'mailingCity',
+              'mailingStateProvince', 'mailingZipPostalCode', 'territory', 'Phone', 'homePhone', 'mobilePhone',
+              'otherPhone', 'workEmail', 'personalEmail', 'otherEmail', 'keySortedBy')
 
     if(type == "Duplicate"):
         filename = 'filename="Duplicates.csv"'
@@ -72,6 +75,7 @@ def download(request,type):
     response['Content-Disposition'] = 'attachment; '+filename
 
     writer = csv.writer(response)
+    writer.writerow(fields)
 
     users = repContact.objects.filter(type = type)
     dataset = rep_resource.export(users)
@@ -125,12 +129,19 @@ def import_csv(request):
         sf_header_map = json.loads(sf_header_map)
         rep_header_map = json.loads(rep_header_map)
 
+        with open(settings.REP_CSV, 'rb') as file:
+            pd_rep_csv =pickle.load(file)
+            print('pickle load reps')
+
+        with open(settings.SF_CSV, 'rb') as file:
+            pd_sf_csv = pickle.load(file)
+            print('pickle load sf')
+
         load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
         load_csv2db(pd_sf_csv, sf_header_map, sfcontact_resource, file_type='SF')
 
 
     return JsonResponse({'msg': 'success!'}, safe=False)
-
 
 def index(request):
     return render(request, 'dedupper/rep_list_upload.html')
@@ -204,7 +215,7 @@ def progress(request):
         manu = len(repContact.objects.filter(type='Manual Check'))
         doneKeys, numKeys, currKey, doneReps = get_progress()
         keyPercent = round(((doneKeys/numKeys)*100) + ((1/numKeys) * (doneReps/reps)*100),2)
-        repPercent = round( (reps-undies)/reps,2)
+        repPercent = round(100*(reps-undies)/reps,2)
         key_stats = []
         for i in keys:
             key = '-'.join(i)
@@ -233,7 +244,7 @@ def run(request):
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def upload(request):
-    global export_headers, keys, pd_sf_csv, pd_rep_csv
+    global export_headers, keys
 
     print('uploading file')
     form = UploadFileForm(request.POST, request.FILES)
@@ -246,6 +257,13 @@ def upload(request):
     sf_headers, pd_sf_csv= convert_csv(sfCSV)
     request.session['sfCSV_headers'] = sf_headers
     # keys = make_keys(headers)
+    with open(settings.REP_CSV, 'wb') as file:
+        pickle.dump(pd_rep_csv, file)
+        print('pickle dump reps')
+
+    with open(settings.SF_CSV, 'wb') as file:
+        pickle.dump(pd_sf_csv, file)
+        print('pickle dump sf')
 
     return redirect('/map/')
 
