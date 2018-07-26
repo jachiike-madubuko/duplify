@@ -55,9 +55,11 @@ def find_rep_dups(rep, keys, numthreads):
     dup_start=perf_counter()
     rep_key = rep.key(keys[:-1])
     if 'NULL' in rep_key:
+        logging.debug("bad rep key")
         return 0
     closest = fuzzyset_alg(rep_key, sf_keys)
     if len(closest) == 0:
+        logging.debug("no close matches")
         return
     for i in closest:
         i[0] = sf_map[i[0]] #replace key with sf contact record
@@ -89,8 +91,8 @@ def find_rep_dups(rep, keys, numthreads):
         rep.closest1_contactID = closest[0][0].ContactID
     rep.type = sort(rep.average)
 
-    if rep.CRD != closest[0][0].CRD:
-        rep.dupFlag = True
+    if rep.type=='Duplicate' and rep.CRD != closest[0][0].CRD :
+        rep.type = 'Manual Check'
     string_key = '-'.join(currKey)
     rep.keySortedBy = string_key
     rep.save()
@@ -128,7 +130,7 @@ def finish(numThreads):
     waiting=False
 
 def fuzzyset_alg(key, key_list):
-    finder = FuzzySet(use_levenshtein=False)
+    finder = FuzzySet()
     finder.add(key)
     candidates = list()
     for i in key_list:
@@ -197,6 +199,7 @@ def key_generator(partslist):
         # that
         # have all the fields in the key
         rep_list = list(repContact.objects.filter(type='Undecided'))
+        print('adding {} items to the Q'.format(len(rep_list)))
         dedupper.threads.updateQ([[rep, key_parts] for rep in rep_list])
         while waiting:
             pass

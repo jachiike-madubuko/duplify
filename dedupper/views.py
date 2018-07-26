@@ -55,7 +55,9 @@ def display(request):
     })
 
 def download(request,type):
-    export_headers = list(list(repContact.objects.all().values())[0].keys())
+    fields = ('SF link', 'CRD', 'firstName', 'lastName', 'suffix', 'canSellDate', 'levelGroup', 'mailingStreet', 'mailingCity',
+              'mailingStateProvince', 'mailingZipPostalCode', 'territory', 'Phone', 'homePhone', 'mobilePhone',
+              'otherPhone', 'workEmail', 'personalEmail', 'otherEmail', 'keySortedBy')
 
     if(type == "Duplicate"):
         filename = 'filename="Duplicates.csv"'
@@ -73,6 +75,7 @@ def download(request,type):
     response['Content-Disposition'] = 'attachment; '+filename
 
     writer = csv.writer(response)
+    writer.writerow(fields)
 
     users = repContact.objects.filter(type = type)
     dataset = rep_resource.export(users)
@@ -139,7 +142,6 @@ def import_csv(request):
 
 
     return JsonResponse({'msg': 'success!'}, safe=False)
-
 
 def index(request):
     return render(request, 'dedupper/rep_list_upload.html')

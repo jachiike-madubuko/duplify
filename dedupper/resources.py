@@ -20,7 +20,8 @@ class RepContactResource(resources.ModelResource):
 
     class Meta:
         model = repContact
-        exclude = ('closest1','closest2','closest3','average','type','dupFlag')
+        fields = ('id','CRD', 'firstName', 'lastName', 'suffix', 'canSellDate', 'levelGroup', 'mailingStreet', 'mailingCity', 'mailingStateProvince', 'mailingZipPostalCode', 'territory', 'Phone', 'homePhone', 'mobilePhone', 'otherPhone', 'workEmail', 'personalEmail', 'otherEmail', 'keySortedBy')
+        # exclude = ('closest1','closest2','closest3','average','type','dupFlag')
 
     def dehydrate_sales_force_link(self, repcontact):
         return 'https://na30.salesforce.com/{} '.format(repcontact.closest1_contactID)

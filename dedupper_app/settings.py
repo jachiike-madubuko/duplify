@@ -168,4 +168,4 @@ if local host can't connect, set configs via -> heroku config:set DJANGO_SETTING
 django_heroku.settings(locals())
 
 REP_CSV = os.path.join(BASE_DIR, 'uploads', 'rep_csv.pkl')
-SF_CSV = os.path.join(BASE_DIR, 'uploads', 'SF_csv.pkl')
+SF_CSV = os.path.join(BASE_DIR, 'uploads', 'sf_csv.pkl')
