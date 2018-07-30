@@ -201,6 +201,41 @@ class repContact(models.Model):
             key += key_builder[part]
         return key
 
+    def key_list(self, key_parts):
+        key_list = []
+
+        key_builder = {
+            'CRD': strip(self.CRD),
+            'firstName': strip(self.firstName),
+            'lastName': strip(self.lastName),
+            'suffix': strip(self.suffix),
+            'canSellDate': strip(self.canSellDate),
+            'levelGroup': strip(self.levelGroup),
+            'mailingStreet': strip(self.mailingStreet),
+            'mailingCity': strip(self.mailingCity),
+            'mailingStateProvince': strip(self.mailingStateProvince),
+            'mailingZipPostalCode': strip(self.mailingZipPostalCode),
+            'territory': strip(self.territory),
+            'Phone': strip(self.Phone),
+            'homePhone': strip(self.homePhone),
+            'mobilePhone': strip(self.mobilePhone),
+            'otherPhone': strip(self.otherPhone),
+            'workEmail': strip(self.workEmail),
+            'personalEmail': strip(self.personalEmail),
+            'otherEmail': strip(self.otherEmail),
+            'area': strip(self.area),
+            'region': strip(self.region),
+            'regionalLeader': strip(self.regionalLeader),
+            'levelLeader': strip(self.levelLeader),
+            'fieldTrainerLeader': strip(self.fieldTrainerLeader),
+            'performanceLeader': strip(self.performanceLeader),
+            'boaName': strip(self.boaName),
+        }
+
+        for part in key_parts:
+            key_list.append(key_builder[part])
+        return key_list
+
 class sfcontact(models.Model):
     CRD = models.CharField(max_length=256, db_column="CRD")
     ContactID = models.CharField(max_length=256, blank=True)
@@ -269,6 +304,42 @@ class sfcontact(models.Model):
         for part in key_parts:
             key += key_builder[part]
         return key
+
+    def key_list(self, key_parts):
+        key_list = []
+
+        key_builder = {
+            'CRD': strip(self.CRD),
+            'ContactID': strip(self.ContactID),
+            'firstName': strip(self.firstName),
+            'lastName': strip(self.lastName),
+            'suffix': strip(self.suffix),
+            'canSellDate': strip(self.canSellDate),
+            'levelGroup': strip(self.levelGroup),
+            'mailingStreet': strip(self.mailingStreet),
+            'mailingCity': strip(self.mailingCity),
+            'mailingStateProvince': strip(self.mailingStateProvince),
+            'mailingZipPostalCode': strip(self.mailingZipPostalCode),
+            'territory': strip(self.territory),
+            'Phone': strip(self.Phone),
+            'homePhone': strip(self.homePhone),
+            'mobilePhone': strip(self.mobilePhone),
+            'otherPhone': strip(self.otherPhone),
+            'workEmail': strip(self.workEmail),
+            'personalEmail': strip(self.personalEmail),
+            'otherEmail': strip(self.otherEmail),
+            'area': strip(self.area),
+            'region': strip(self.region),
+            'regionalLeader': strip(self.regionalLeader),
+            'levelLeader': strip(self.levelLeader),
+            'fieldTrainerLeader': strip(self.fieldTrainerLeader),
+            'performanceLeader': strip(self.performanceLeader),
+            'boaName': strip(self.boaName),
+        }
+
+        for part in key_parts:
+            key_list.append(key_builder[part])
+        return key_list
 
 class progress(models.Model):
     label = models.CharField(max_length=256, blank=True)

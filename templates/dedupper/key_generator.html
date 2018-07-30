@@ -407,7 +407,7 @@
         $.getJSON("{% url 'run' %}", {keys: keys}, function (result) {
             $("#progress").modal('dispose');
         });
-        inter = setInterval(update_progress,  15000);
+        inter = setInterval(update_progress,  5000);
     }
     function del(item) {
         $(item).closest(".madeKey").remove();
@@ -559,7 +559,7 @@
                     <div class="col-4">
                         <button id="keygen" class="btn btn-primary btn-block badge-pill my-2" onclick="generateKeys()"
                                 data-toggle="modal" data-target="#progress" data-backdrop="static" data-keyboard="false">
-                            <b>GO</b>
+                            <b>Duplify!</b>
                         </button>
                     </div>
                     <div class="col-4"></div>

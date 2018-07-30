@@ -39,9 +39,7 @@ man_rkd = RangeKeyDict({
 
 waiting= True
 keylist = list()
-sf_keys = list()
-sf_list = list(sfcontact.objects.all())
-sf_map=currKey=sort_alg=None
+currKey=sort_alg=None
 start=end=cnt=doneKeys=totalKeys=0
 
 
@@ -57,20 +55,23 @@ def find_rep_dups(rep, keys, numthreads):
     if 'NULL' in rep_key:
         logging.debug("bad rep key")
         return 0
+    search_party =  sfcontact.objects.none()
+    for key in keys[:-1]:
+        kwargs = {
+            f'{key}__icontains' : f'{rep.key([key])}'
+        }
+        # queryset of Sfcontacts that have a matching field with the rep
+        search_party = search_party.union(sfcontact.objects.filter(**kwargs))
+    #create sf_map and sf_keys
+    sf_map = {i.key(keys[:-1]): i for i in search_party if "NULL" not in i.key(keys[:-1])}  # only returns
+    sf_keys = sf_map.keys()
+
     closest = fuzzyset_alg(rep_key, sf_keys)
     if len(closest) == 0:
         logging.debug("no close matches")
         return
     for i in closest:
         i[0] = sf_map[i[0]] #replace key with sf contact record
-    # try:
-    #     closest[0], closest[1], closest[2] = [(match_map[i][0], sf_map[match_map[i][1]]) for i in range(3)]
-    # except Exception as e:
-    #     logging.exception(e)
-    #     print("ERROR\n\t match_map:\t{}\n\t key_matches:\t{}\n\t sf_map:\t{}\n\t sf_keys:\t{}\n\t ".format(match_map,
-    #                                                                                                        key_matches,
-    #                                                                                                        sf_map,
-    #                                                                                                        sf_keys))
     if closest[0][1] <= closest[-1][1] + 10 and len(closest) == 3:
         rep.average = np.mean([closest[0][1], closest[1][1], closest[2][1]])
         rep.closest1 = closest[0][0]
@@ -91,7 +92,7 @@ def find_rep_dups(rep, keys, numthreads):
         rep.closest1_contactID = closest[0][0].ContactID
     rep.type = sort(rep.average)
 
-    if rep.type=='Duplicate' and rep.CRD != closest[0][0].CRD :
+    if rep.type=='Duplicate' and rep.CRD != '' and  closest[0][0].CRD != '' and  rep.CRD != closest[0][0].CRD :
         rep.type = 'Manual Check'
     string_key = '-'.join(currKey)
     rep.keySortedBy = string_key
@@ -106,7 +107,7 @@ def find_rep_dups(rep, keys, numthreads):
         avg = 0
     else:
         avg = round(avg, 2)
-    dedupTime.objects.create(num_SF = len(sf_list),
+    dedupTime.objects.create(
                              seconds=time,
                              num_threads=numthreads,
                              avg=avg,
@@ -122,8 +123,6 @@ def finish(numThreads):
         end = perf_counter()
         time = end - start
         duplifyTime.objects.create(num_threads=numThreads,
-                                   num_SF=len(sf_list),
-                                   num_rep=len(repContact.objects.all()),
                                    seconds=round(time, 2)
                                    )
         os.system('say "The repp list has been duplified!"')
@@ -153,12 +152,12 @@ def fuzzyset_alg(key, key_list):
     finalist = [[i[0], fuzz.ratio(key, i[0])] for i in top_candi]
     finalist.sort(key=lambda x: x[1], reverse=True)
     if len(finalist) > 0:
-        return finalist[:1]
+        return finalist[:3]
     else:
         return []
 
 def key_generator(partslist):
-    global start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg, keylist, sf_keys, sf_map
+    global start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg, keylist
     start = perf_counter()
     totalKeys = len(partslist)
     keylist = partslist
@@ -191,10 +190,8 @@ def key_generator(partslist):
         if not multi_key:
             sf_keys = [i.key(key_parts[:-1]) for i in sf_list if "NULL" not in i.key(key_parts[:-1]) ] #only returns    
         '''
-        sf_map = {i.key(key_parts[:-1]) : i for i in sf_list if "NULL" not in i.key(key_parts[:-1]) } #only returns
-        sf_print_map = {i.key(key_parts[:-1]) : str(i) for i in sf_list if "NULL" not in i.key(key_parts[:-1]) } #only returns
+       # sf_print_map = {i.key(key_parts[:-1]) : str(i) for i in sf_list if "NULL" not in i.key(key_parts[:-1]) } #only returns
         # print(json.dumps(sf_print_map, indent=4))
-        sf_keys = sf_map.keys()
         # sf_keys
         # that
         # have all the fields in the key
