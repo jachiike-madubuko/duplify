@@ -57,12 +57,9 @@ def find_rep_dups(rep, keys, numthreads):
         return 0
     search_party =  sfcontact.objects.none()
     for key in keys[:-1]:
-        kwargs = {
-            f'{key}__icontains' : f'{rep.key([key])}'
-        }
+        kwargs = { f'{key}__icontains' : f'{rep.key([key])}' }
         # queryset of Sfcontacts that have a matching field with the rep
         search_party = search_party.union(sfcontact.objects.filter(**kwargs))
-    #create sf_map and sf_keys
     sf_map = {i.key(keys[:-1]): i for i in search_party if "NULL" not in i.key(keys[:-1])}  # only returns
     sf_keys = sf_map.keys()
 
