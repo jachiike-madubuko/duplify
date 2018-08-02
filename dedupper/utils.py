@@ -139,7 +139,7 @@ def find_rep_dups(rep, keys, numthreads):
     string_key = '-'.join(currKey)
     rep.keySortedBy = string_key
     rep.save()
-    logging.debug(f'{rep.firstName} sorted as {rep.type} with {rep.keySortedBy} key ')
+    # logging.debug(f'{rep.firstName} sorted as {rep.type} with {rep.keySortedBy} key ')
     time = round(perf_counter()-dup_start, 2)
 
     dups = len(repContact.objects.filter(type='Duplicate'))
@@ -159,12 +159,12 @@ def find_rep_dups(rep, keys, numthreads):
                              num_undie=undies,
                              current_key=currKey)
     cnt += 1
-    # del time, avg, dups, news, undies, string_key, sf_map, sf_keys, search_party, dup_start, rep_key
+    del time, avg, dups, news, undies, string_key, sf_map, sf_keys, search_party, dup_start, rep_key
 
 def finish(numThreads):
     global end, waiting
-    # c = collect()                   #garbage collection
-    # logging.debug(f'# of garbage collected = {c}')
+    c = collect()                   #garbage collection
+    logging.debug(f'# of garbage collected = {c}')
     if currKey == keylist[-1]:
         for i in list(repContact.objects.filter(type='Undecided')):
             i.type = last_key_sorting_range[i.average]
@@ -200,7 +200,7 @@ def fuzzyset_alg(key, key_list):
     top_candi = candidates[:10]
     finalist = [[i[0], fuzz.ratio(key, i[0])] for i in top_candi]
     finalist.sort(key=lambda x: x[1], reverse=True)
-    # del finder, candidates, top_candi
+    del finder, candidates, top_candi
     if len(finalist) > 0:
         return finalist[:3]
     else:
