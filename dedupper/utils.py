@@ -26,15 +26,23 @@ import pandas as pd
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
 
 
-dup_rkd = RangeKeyDict({
-    (98, 101): 'Duplicate',
-    (70, 98): 'Undecided',
-    (0, 70): 'New Record'
+standard_sorting_range = RangeKeyDict({
+    (97, 101): 'Duplicate',
+    (90, 97): 'Manual Check',
+    (0, 90): 'Undecided'
 })
-man_rkd = RangeKeyDict({
-    (98, 101): 'Manual Check',
-    (70, 98): 'Undecided',
-    (0, 70): 'New Record'
+last_key_sorting_range = RangeKeyDict({
+    (97, 101): 'Duplicate',
+    (90, 97): 'Manual Check',
+    (0, 90): 'New Record'
+})
+manual_sorting_range = RangeKeyDict({
+    (97, 101): 'Manual Check',
+    (0, 97): 'Undecided',
+})
+last_manual_sorting_range = RangeKeyDict({
+    (97, 101): 'Manual Check',
+    (0, 97): 'New Record'
 })
 
 waiting= True
@@ -65,11 +73,18 @@ def find_rep_dups(rep, keys, numthreads):
 
     closest = fuzzyset_alg(rep_key, sf_keys)
     if len(closest) == 0:
-        logging.debug("no close matches")
-        return
+         logging.debug("no close matches")
+         if currKey == keylist[-1]:
+            string_key = '-'.join(currKey)
+            rep.keySortedBy = string_key
+            rep.type = sort(1)
+            rep.save()
+            return
+         else:
+            return
     for i in closest:
         i[0] = sf_map[i[0]] #replace key with sf contact record
-    if closest[0][1] <= closest[-1][1] + 10 and len(closest) == 3:
+    if len(closest) == 3  and closest[0][1] <= closest[-1][1] + 10 :
         rep.average = np.mean([closest[0][1], closest[1][1], closest[2][1]])
         rep.closest1 = closest[0][0]
         rep.closest2 = closest[1][0]
@@ -77,7 +92,7 @@ def find_rep_dups(rep, keys, numthreads):
         rep.closest1_contactID = closest[0][0].ContactID
         rep.closest2_contactID = closest[1][0].ContactID
         rep.closest3_contactID = closest[2][0].ContactID
-    elif closest[0][1] <= closest[-1][1] + 10 and len(closest) == 2:
+    elif  len(closest) == 2 and closest[0][1] <= closest[-1][1] + 5:
         rep.average = np.mean([closest[0][1], closest[1][1]])
         rep.closest1 = closest[0][0]
         rep.closest2 = closest[1][0]
@@ -94,6 +109,7 @@ def find_rep_dups(rep, keys, numthreads):
     string_key = '-'.join(currKey)
     rep.keySortedBy = string_key
     rep.save()
+    logging.debug(f'{rep.firstName} sorted as {rep.type} with {rep.keySortedBy} key ')
     time = round(perf_counter()-dup_start, 2)
 
     dups = len(repContact.objects.filter(type='Duplicate'))
@@ -117,6 +133,9 @@ def find_rep_dups(rep, keys, numthreads):
 def finish(numThreads):
     global end, waiting
     if currKey == keylist[-1]:
+        for i in list(repContact.objects.filter(type='Undecided')):
+            i.type = last_key_sorting_range[i.average]
+            i.save()
         end = perf_counter()
         time = end - start
         duplifyTime.objects.create(num_threads=numThreads,
@@ -208,11 +227,11 @@ def load_csv2db(csv, header_map, resource, file_type='rep'):
     try:
         pd_csv.rename(columns=header_map, inplace=True)
         pd_csv['id'] = np.nan
+        dataset.csv = pd_csv.to_csv()
+        resource.import_data(dataset, dry_run=False)
+        print(list(pd_csv))
     except:
         print("lost the pandas csv")
-    print(list(pd_csv))
-    dataset.csv = pd_csv.to_csv()
-    results = resource.import_data(dataset, dry_run=False)
     end = perf_counter()
     time = end - start
     if file_type == 'rep':
@@ -263,15 +282,14 @@ def mutate(keys):
     return mutant
 
 def set_sorting_algorithm(min_dup, min_uns):
-    global dup_rkd, man_rkd
+    global standard_sorting_range, manual_sorting_range
     cnt=0
-    dup_rkd = RangeKeyDict({
-    (min_dup, 101): 'Duplicate',
-    (min_uns, min_dup): 'Undecided',
-    (0, min_uns): 'New Record'
+    standard_sorting_range = RangeKeyDict({
+    (min_dup, 101): 'Manual Check',
+    (0, min_dup): 'Undecided',
 })
 
-    man_rkd = RangeKeyDict({
+    manual_sorting_range = RangeKeyDict({
     (min_dup, 101): 'Manual Check',
     (min_uns, min_dup): 'Undecided',
     (0, min_uns): 'New Record'
@@ -280,13 +298,15 @@ def set_sorting_algorithm(min_dup, min_uns):
         cnt+=1
         if rep.keySortedBy != '':
             keys = rep.keySortedBy.split('-')
-            if keys[-1] == 'true':
-                rep.type = man_rkd[rep.average]
+            if keys == keylist[-1]:
+                rep.type = last_key_sorting_range[rep.average]
+            elif keys[-1] == 'true':
+                rep.type = manual_sorting_range[rep.average]
             else:
-                rep.type = dup_rkd[rep.average]
+                rep.type = standard_sorting_range[rep.average]
             rep.save()
         else:
-            rep.type = dup_rkd[rep.average]
+            rep.type = standard_sorting_range[rep.average]
             rep.save()
             print('{}-{}'.format(rep.type, rep.average))
 
@@ -294,10 +314,14 @@ def set_sorting_algorithm(min_dup, min_uns):
             print('re-sort #{}'.format(cnt))
 
 def sort(avg):
-    if(sort_alg == 'true'):
-        return man_rkd[avg]
+    if sort_alg == 'true' and currKey == keylist[-1]:
+        return last_manual_sorting_range[avg]
+    elif sort_alg == 'true':
+        return manual_sorting_range[avg]
+    elif currKey == keylist[-1]:
+        return last_key_sorting_range[avg]
     else:
-        return dup_rkd[avg]
+        return standard_sorting_range[avg]
 
 def get_progress():
     return doneKeys, totalKeys, currKey, cnt
