@@ -45,7 +45,14 @@ class simple(models.Model):
         for part in key_parts:
             key += key_builder[part]
         return key
+'''
+from heroku_connect.db import models as hc_models
 
+class Contact(hc_models.HerokuConnectModel):
+    sf_object_name= 'Contact'
+    
+    
+'''
 class contact(models.Model):
     CRD = models.CharField( max_length=256, unique=True,  db_column="CRD")
     firstName = models.CharField(max_length=256, blank=True)
@@ -111,7 +118,7 @@ class contact(models.Model):
         return key
 
 '''
-mdl.repContact.objects.update(type='Undecided', closest1='', closest2='', closest3='', closest1_contactID='', closest2_contactID='', closest3_contactID='', average=None)
+mdl.repContact.objects.update(type='Undecided', keySortedBy='',closest1='', closest2='', closest3='', closest1_contactID='', closest2_contactID='', closest3_contactID='', average=None)
 '''
 class repContact(models.Model):
     CRD = models.CharField(max_length=256, db_column="CRD")

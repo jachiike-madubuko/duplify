@@ -23,6 +23,7 @@ from fuzzyset import FuzzySet
 from operator import itemgetter
 import json
 import pandas as pd
+from gc import collect
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
 
 
@@ -53,7 +54,13 @@ start=end=cnt=doneKeys=totalKeys=0
 
 def convert_csv(file):
     print('converting CSV: ', str(file))
-    pd_csv = pd.read_csv(file, encoding = "utf-8")
+    # print('utf-8')
+    # pd_csv = pd.read_csv(file, encoding = "utf-8", delimiter=',')
+    # print('iso8859_15')
+    # pd_csv = pd.read_csv(file, encoding = "iso8859_15", delimiter=',')
+    print('cp1252')
+    pd_csv = pd.read_csv(file, encoding = "cp1252", delimiter=',')  #western european
+
     return list(pd_csv), pd_csv
 
 def find_rep_dups(rep, keys, numthreads):
@@ -64,6 +71,29 @@ def find_rep_dups(rep, keys, numthreads):
         logging.debug("bad rep key")
         return 0
     search_party =  sfcontact.objects.none()
+    # TODO test this one to many code
+    '''
+    for n,i in enumerate(key_parts):
+        if 'Phone' in i:
+            multi_key = True
+            sf_keys = []
+            for j in ['mobilePhone', 'homePhone', 'otherPhone', 'Phone']:
+                vary_key = key_parts.copy()
+                vary_key[n] = j
+                addon = [i.key(vary_key[:-1]) for i in sf_list if "NULL" not in i.key(vary_key[:-1]) ]
+                sf_keys.extend(addon)
+        elif 'Email' in i:
+            multi_key = True
+            sf_keys = []
+            for j in ['workEmail', 'personalEmail', 'otherEmail']:
+                vary_key = key_parts.copy()
+                vary_key[n] = j
+                addon = [i.key(vary_key[:-1]) for i in sf_list if "NULL" not in i.key(vary_key[:-1]) ]
+                sf_keys.extend(addon)
+    if not multi_key:
+        sf_keys = [i.key(key_parts[:-1]) for i in sf_list if "NULL" not in i.key(key_parts[:-1]) ] #only returns    
+    '''
+
     for key in keys[:-1]:
         kwargs = { f'{key}__icontains' : f'{rep.key([key])}' }
         # queryset of Sfcontacts that have a matching field with the rep
@@ -129,9 +159,12 @@ def find_rep_dups(rep, keys, numthreads):
                              num_undie=undies,
                              current_key=currKey)
     cnt += 1
+    # del time, avg, dups, news, undies, string_key, sf_map, sf_keys, search_party, dup_start, rep_key
 
 def finish(numThreads):
     global end, waiting
+    # c = collect()                   #garbage collection
+    # logging.debug(f'# of garbage collected = {c}')
     if currKey == keylist[-1]:
         for i in list(repContact.objects.filter(type='Undecided')):
             i.type = last_key_sorting_range[i.average]
@@ -167,6 +200,7 @@ def fuzzyset_alg(key, key_list):
     top_candi = candidates[:10]
     finalist = [[i[0], fuzz.ratio(key, i[0])] for i in top_candi]
     finalist.sort(key=lambda x: x[1], reverse=True)
+    # del finder, candidates, top_candi
     if len(finalist) > 0:
         return finalist[:3]
     else:
@@ -184,34 +218,7 @@ def key_generator(partslist):
         print('starting key: {}'.format(key_parts))
         waiting = True
         multi_key = False
-        #TODO test this one to many code
-        '''
-        for n,i in enumerate(key_parts):
-            if 'Phone' in i:
-                multi_key = True
-                sf_keys = []
-                for j in ['mobilePhone', 'homePhone', 'otherPhone', 'Phone']:
-                    vary_key = key_parts.copy()
-                    vary_key[n] = j
-                    addon = [i.key(vary_key[:-1]) for i in sf_list if "NULL" not in i.key(vary_key[:-1]) ]
-                    sf_keys.extend(addon)
-            elif 'Email' in i:
-                multi_key = True
-                sf_keys = []
-                for j in ['workEmail', 'personalEmail', 'otherEmail']:
-                    vary_key = key_parts.copy()
-                    vary_key[n] = j
-                    addon = [i.key(vary_key[:-1]) for i in sf_list if "NULL" not in i.key(vary_key[:-1]) ]
-                    sf_keys.extend(addon)
-        if not multi_key:
-            sf_keys = [i.key(key_parts[:-1]) for i in sf_list if "NULL" not in i.key(key_parts[:-1]) ] #only returns    
-        '''
-       # sf_print_map = {i.key(key_parts[:-1]) : str(i) for i in sf_list if "NULL" not in i.key(key_parts[:-1]) } #only returns
-        # print(json.dumps(sf_print_map, indent=4))
-        # sf_keys
-        # that
-        # have all the fields in the key
-        rep_list = list(repContact.objects.filter(type='Undecided'))
+        rep_list = repContact.objects.filter(type='Undecided')
         print('adding {} items to the Q'.format(len(rep_list)))
         dedupper.threads.updateQ([[rep, key_parts] for rep in rep_list])
         while waiting:
@@ -222,7 +229,7 @@ def load_csv2db(csv, header_map, resource, file_type='rep'):
     start = perf_counter()
     dataset = Dataset()
     pd_csv = csv
-    print(list(pd_csv))
+    # print(list(pd_csv))
     print(json.dumps(header_map, indent=4))
     try:
         pd_csv.rename(columns=header_map, inplace=True)
