@@ -153,7 +153,11 @@ def index(request):
 
 def key_gen(request):
     try:
-        key = make_keys([i.name for i in repContact._meta.local_fields])
+        if  'key_n_stats' in request.session:
+            key =  request.session['key_n_stats']
+        else:
+            key = make_keys([i.name for i in repContact._meta.local_fields])
+            request.session['key_n_stats'] = key
     except:
         key = [('error', 100, 0, 100, 0, 100)]
     return render(request, 'dedupper/key_generator.html', {'keys': key})
