@@ -33,7 +33,7 @@ class RepContactTable(tables.Table):
                                                                              'href': "#"}, text="Merge")
 
     def render_merge(self, record):
-        href = record.CRD
+        href = record.id
         return mark_safe('<a id="yo" class="btn btn-outline-primary" onclick="merge()" href="'+str(href)+'" Merge>Merge</a>')
     class Meta:
         model = repContact

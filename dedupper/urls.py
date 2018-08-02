@@ -33,7 +33,7 @@ urlpatterns = [
     path('duplify/', views.duplify, name='duplify'), #figure out url reverse
     path('resort/', views.resort, name='resort'), #figure out url reverse
     path('sorted/', views.display, name='reps'),
-    path('sorted/<CRD>', views.merge, name='merge'),
+    path('sorted/<id>', views.merge, name='merge'),
     path('sorted/export/<type>', views.download, name='export'),
     path('sorted/report/<type>', views.download_times, name='report'),
 ]

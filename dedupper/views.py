@@ -17,6 +17,7 @@ import csv
 import json
 import pickle
 from django.conf import settings
+from difflib import SequenceMatcher as SeqMat
 '''
 #TODO change the HTTP request 
 timeout for the running algorithm or 
@@ -55,9 +56,9 @@ def display(request):
     })
 
 def download(request,type):
-    fields = ('SF link', 'CRD', 'firstName', 'lastName', 'suffix', 'canSellDate', 'levelGroup', 'mailingStreet', 'mailingCity',
-              'mailingStateProvince', 'mailingZipPostalCode', 'territory', 'Phone', 'homePhone', 'mobilePhone',
-              'otherPhone', 'workEmail', 'personalEmail', 'otherEmail', 'keySortedBy')
+    fields = ('SF link', 'id','CRD', 'First', 'Last', 'Street', 'City',
+              'State', 'Zip', 'Phone', 'Home Phone', 'Mobile Phone',
+              'Other Phone', 'Work Email', 'Personal Email', 'Other Email', 'Match Score', 'Key' )
 
     if(type == "Duplicate"):
         filename = 'filename="Duplicates.csv"'
@@ -119,6 +120,10 @@ def duplify(request):
 
     return JsonResponse({'task_id': result.task_id}, safe=False)
 
+def flush_db(request):
+    call_command('flush', interactive=False)
+    return redirect('/')
+
 def import_csv(request):
     repcontact_resource = RepContactResource()
     sfcontact_resource = SFContactResource()
@@ -146,24 +151,6 @@ def import_csv(request):
 def index(request):
     return render(request, 'dedupper/rep_list_upload.html')
 
-def map(request):
-    rep_exclude = ('id', 'average', 'type', 'closest1_contactID', 'closest1', 'closest2_contactID', 'closest2', 'closest3_contactID', 'closest3', 'dupFlag', 'keySortedBy')
-    rep_key = [i.name for i in repContact._meta.local_fields]
-    rep_key = [j for j in rep_key if j not in rep_exclude]
-
-    sf_exclude =  ('id', 'closest_rep', 'dupFlag')
-    sf_key = [i.name for i in sfcontact._meta.local_fields]
-    sf_key = [j for j in sf_key if j not in sf_exclude]
-
-    rep_headers= request.session['repCSV_headers']
-    sf_headers= request.session['sfCSV_headers']
-    [i.sort(key=lambda x: x.lower()) for i in [rep_key, rep_headers,sf_key,sf_headers ]]
-    return render(request, 'dedupper/field_mapping.html', {'rep_key': rep_key,
-                                                           'rep_csv': rep_headers,
-                                                           'sf_key': sf_key,
-                                                           'sf_csv': sf_headers}
-                  )
-
 def key_gen(request):
     try:
         key = make_keys([i.name for i in repContact._meta.local_fields])
@@ -171,14 +158,27 @@ def key_gen(request):
         key = [('error', 100, 0, 100, 0, 100)]
     return render(request, 'dedupper/key_generator.html', {'keys': key})
 
-def resort(request):
-    if request.method == 'GET':
-        print('resorting')
-        set_sorting_algorithm(int(request.GET.get('upper_thres')), int(request.GET.get('lower_thres')))
-    return JsonResponse({'msg': 'success!'}, safe=False)
+def map(request):
+    exclude = ('id', 'average', 'type', 'closest1_contactID', 'closest1', 'closest2_contactID', 'closest2', 'closest3_contactID', 'closest3', 'dupFlag', 'keySortedBy', 'closest_rep')
+    rep_key = [i.name for i in repContact._meta.local_fields if i.name not in exclude]
+    sf_key = [i.name for i in sfcontact._meta.local_fields if i.name not in exclude]
+    [i.sort(key=lambda x: x.lower()) for i in [rep_key,sf_key ]]
 
-def merge(request, CRD):
-    obj = repContact.objects.values().get(CRD=CRD)
+    rep_headers= request.session['repCSV_headers']
+    sf_headers= request.session['sfCSV_headers']
+
+    rep_dropdown = {i: sorted(rep_headers, key= lambda x: SeqMat(None, x, i).ratio(), reverse=True) for i in rep_key}
+    sf_dropdown = {i: sorted(sf_headers, key= lambda x: SeqMat(None, x, i).ratio(), reverse=True) for i in sf_key}
+    # print(json.dumps(rep_dropdown, indent=4))
+    # print(json.dumps(sf_dropdown, indent=4))
+
+    return render(request, 'dedupper/field_mapping.html', {'rep_dropdown': rep_dropdown,
+                                                           'sf_dropdown': sf_dropdown
+                                                           }
+                  )
+
+def merge(request, id):
+    obj = repContact.objects.values().get(id=id)
     ids = [obj['closest1_contactID'], obj['closest2_contactID'], obj['closest3_contactID']]
     objs = sfcontact.objects.values().filter(ContactID__in=ids)
     fields = [i.name for i in repContact._meta.local_fields]
@@ -232,6 +232,12 @@ def progress(request):
                          'keyPercent': keyPercent, 'repPercent': repPercent, 'table': stats_table.as_html(request)},
                         safe=False)
 
+def resort(request):
+    if request.method == 'GET':
+        print('resorting')
+        set_sorting_algorithm(int(request.GET.get('upper_thres')), int(request.GET.get('lower_thres')))
+    return JsonResponse({'msg': 'success!'}, safe=False)
+
 def run(request):
     global keys
     if request.method == 'GET':
@@ -266,8 +272,4 @@ def upload(request):
         print('pickle dump sf')
 
     return redirect('/map/')
-
-def flush_db(request):
-    call_command('flush', interactive=False)
-    return redirect('/')
 
