@@ -18,6 +18,7 @@ import json
 import pickle
 from django.conf import settings
 from difflib import SequenceMatcher as SeqMat
+from math import floor
 '''
 #TODO change the HTTP request 
 timeout for the running algorithm or 
@@ -94,11 +95,45 @@ def download_times(request,type):
         filename = 'filename="Duplify Times.csv"'
         times = duplifyTime.objects.all().values_list()
         export_headers = [i.name for i in duplifyTime._meta.local_concrete_fields]
+    elif(type == "A"):
+        if 'repCSV_name' in request.session:
+            repCSV_name = request.session['repCSV_name']
+        else:
+            repCSV_name = 'a Rep list'
+
+        if 'sfCSV_name' in request.session:
+            sfCSV_name = request.session['sfCSV_name']
+        else:
+            sfCSV_name = 'a Salesforce Channel'
+        total_reps = repContact.objects.all().count()
+        total_sf = sfcontact.objects.all().count()
+        total_dups = repContact.objects.filter(type='Duplicate').count()
+        percent_dups = round((total_dups/total_reps)*100,1)
+        total_news = repContact.objects.filter(type='New Record').count()
+        percent_news = round((total_news/total_reps)*100,1)
+        time_hours = round(((duplifyTime.objects.get(pk=1).seconds/60)/60),2)
+        audit_info = []
+        audit_info.append(f"Duplify Audit of {repCSV_name} duped against {sfCSV_name}")
+        audit_info.append("")
+        audit_info.append(f"Number of Records in Rep List: {total_reps}")
+        audit_info[-1] += f"\t Number of Records in {sfCSV_name[2:]}: {total_sf}"
+        audit_info.append(f"Number of Duplicate Records in the Rep List: {total_dups}({percent_dups}%)")
+        audit_info.append(f"Number of New Records in the Rep List: {total_news}({percent_news}%)")
+        audit_info.append(f"Time: {floor(time_hours)} hours and {round((time_hours%floor(time_hours))*60)} minutes")
+        audit_info.append("")
+        audit_info.append("Thank you for using Duplify!")
+
+        filename = 'filename="Audit.txt"'
+        response = HttpResponse(content_type='text/text')
+        response['Content-Disposition'] = 'attachment; ' + filename
+        writer = csv.writer(response, delimiter='\n')
+        for info in audit_info:
+            writer.writerow(info)
+        return response
     else:
         filename = 'filename="Upload Times.csv"'
         times = uploadTime.objects.all().values_list()
         export_headers = [i.name for i in uploadTime._meta.local_concrete_fields]
-
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; '+filename
@@ -149,6 +184,16 @@ def import_csv(request):
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def index(request):
+    '''
+    :param request:
+    :return:
+    Saleforce login:
+
+    from simple_salesforce import Salesforce
+    sf = Salesforce(password='password', username='myemail@example.com', organizationId='D36000001DkQo')
+    https://developer.salesforce.com/blogs/developer-relations/2014/01/python-and-the-force-com-rest-api-simple-simple-salesforce-example.html
+    https://github.com/simple-salesforce/simple-salesforce
+    '''
     return render(request, 'dedupper/rep_list_upload.html')
 
 def key_gen(request):
@@ -208,7 +253,7 @@ def merge(request, id):
         obj_map = {i:j for i,j in zip(fields, list(zip(obj,mergers[0],mergers[1])) ) }
     elif len(mergers) == 1:
         obj_map = {i:j for i,j in zip(fields, list(zip(obj,mergers[0])) ) }
-    return render(request, 'dedupper/merge.html', {'objs' : obj_map})
+    return render(request, 'dedupper/sort_view.html', {'objs' : obj_map})
 
 def progress(request):
     if request.method == 'GET':
@@ -260,6 +305,8 @@ def upload(request):
     form = UploadFileForm(request.POST, request.FILES)
     repCSV = request.FILES['repFile']
     sfCSV = request.FILES['sfFile']
+    request.session['repCSV_name'] = str(repCSV)
+    request.session['sfCSV_name'] = str(sfCSV)
     rep_headers, pd_rep_csv = convert_csv(repCSV)
     request.session['repCSV_headers'] = rep_headers
     export_headers = rep_headers

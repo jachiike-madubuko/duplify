@@ -50,8 +50,33 @@ from heroku_connect.db import models as hc_models
 
 class Contact(hc_models.HerokuConnectModel):
     sf_object_name= 'Contact'
-    
-    
+
+    CRD = hc_models.Text( sf_field_name='CRD__c', max_length=80)
+
+    name = hc_models.Text( sf_field_name='Name', max_length=80)
+    firstName = hc_models.Text( sf_field_name='FirstName', max_length=80)
+    middleName = hc_models.Text( sf_field_name='MiddleName', max_length=80)
+    lastName = hc_models.Text( sf_field_name='LastName', max_length=80)
+    suffix = hc_models.Text( sf_field_name='Suffix', max_length=80)
+
+    mailingStreet = hc_models.Text( sf_field_name='MailingStreet', max_length=80)
+    mailingCity = hc_models.Text( sf_field_name='MailingCity', max_length=80)
+    mailingState = hc_models.Text( sf_field_name='MailingState', max_length=80)
+    mailingPostalCode = hc_models.Text( sf_field_name='MailingPostalCode', max_length=80)
+
+    Phone = hc_models.Phone( sf_field_name='Phone', max_length=80)
+    mobilePhone = hc_models.Phone( sf_field_name='MobilePhone', max_length=80)
+    homePhone = hc_models.Phone( sf_field_name='HomePhone', max_length=80)
+    otherPhone = hc_models.Phone( sf_field_name='OtherPhone', max_length=80)
+
+    email = hc_models.Email(sf_field_name='Email')
+    otherEmail = hc_models.Email(sf_field_name='Other_Email__c')
+    personalEmail = hc_models.Email(sf_field_name='Personal_Email__c')
+    department = hc_models.Text(sf_field_name='Department', max_length=80)
+    title = hc_models.Text(sf_field_name='Title', max_length=80)
+
+    def __str__(self):
+        return self.name
 '''
 class contact(models.Model):
     CRD = models.CharField( max_length=256, unique=True,  db_column="CRD")

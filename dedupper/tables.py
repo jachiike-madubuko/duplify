@@ -30,11 +30,11 @@ class ContactTable(tables.Table):
 
 class RepContactTable(tables.Table):
     merge = tables.LinkColumn('merge_records', args=[tables.A('pk')], attrs={'class': 'btn btn-outline-primary badge-pill',
-                                                                             'href': "#"}, text="Merge")
+                                                                             'href': "#"}, text="Sort")
 
     def render_merge(self, record):
         href = record.id
-        return mark_safe('<a id="yo" class="btn btn-outline-primary" onclick="merge()" href="'+str(href)+'" Merge>Merge</a>')
+        return mark_safe('<a id="yo" class="btn btn-outline-primary" onclick="merge()" href="'+str(href)+'" Merge>Sort</a>')
     class Meta:
         model = repContact
         template_name = 'django_tables2/bootstrap.html'
@@ -47,10 +47,10 @@ class RepContactTable(tables.Table):
 
 class SFContactTable(tables.Table):
     merge = tables.LinkColumn('merge_records', args=[tables.A('pk')], attrs={'class': 'btn btn-outline-primary badge-pill',
-                                                                             'href': "#"}, text="Merge")
+                                                                             'href': "#"}, text="Sort")
     def render_merge(self, record):
         href = record.CRD
-        return mark_safe('<a id="yo" class="btn btn-outline-primary" onclick="merge()" href="'+str(href)+'" Merge>Merge</a>')
+        return mark_safe('<a id="yo" class="btn btn-outline-primary" onclick="merge()" href="'+str(href)+'" Merge>Sort</a>')
 
     class Meta:
         model = sfcontact

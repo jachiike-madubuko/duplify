@@ -253,17 +253,18 @@
                 3rd Closest Match in SF
             </div>
         </div>
-        <table class="fields row" style="overflow-y:auto; scroll-behavior: smooth; max-height: 72vh; min-height: 72vh;" >
+        <div class="row" style="overflow-y:auto; scroll-behavior: smooth; max-height: 72vh; min-height: 72vh;">
+           <table class="fields table table-hover table-dark"  >
             {% for key, value in objs.items %}
                 <tr>
-                    <th scope="row">{{ key|title }}</th>
+                    <th scope="row" class="bg-dark text-white">{{ key|title }}</th>
                     {% for val in value  %}
-                        <td class="{% cycle 'table-primary' 'table-success' 'table-warning' 'table-danger' %}" id="{{ key }}-{{ val }}"> {{ val }}</td>
+                        <td  id="{{ key }}-{{ val }}"> {{ val }}</td>
                     {% endfor %}
-                    {% resetcycle %}
                 </tr>
             {% endfor %}
         </table>
+        </div>
         <div class="row py-2 border-top">
             <div class="col-4"><a href="{% url 'reps' %}" style="text-decoration: none"><button type="button" class="btn btn-danger btn-lg btn-block">Cancel Sort</button></a></div>
             <div class="col-4"> <button type="button" class="btn btn-warning btn-lg btn-block">Resort</button></div>

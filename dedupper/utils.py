@@ -29,21 +29,21 @@ from gc import collect
 
 standard_sorting_range = RangeKeyDict({
     (97, 101): 'Duplicate',
-    (90, 97): 'Manual Check',
-    (0, 90): 'Undecided'
+    (95, 97): 'Manual Check',
+    (0, 95): 'Undecided'
 })
 last_key_sorting_range = RangeKeyDict({
     (97, 101): 'Duplicate',
-    (90, 97): 'Manual Check',
-    (0, 90): 'New Record'
+    (95, 97): 'Manual Check',
+    (0, 95): 'New Record'
 })
 manual_sorting_range = RangeKeyDict({
-    (97, 101): 'Manual Check',
-    (0, 97): 'Undecided',
+    (95, 101): 'Manual Check',
+    (0, 95): 'Undecided',
 })
 last_manual_sorting_range = RangeKeyDict({
-    (97, 101): 'Manual Check',
-    (0, 97): 'New Record'
+    (95, 101): 'Manual Check',
+    (0, 95): 'New Record'
 })
 
 waiting= True
@@ -51,6 +51,7 @@ keylist = list()
 currKey=sort_alg=None
 start=end=cnt=doneKeys=totalKeys=0
 
+#TODO finish phone/eemail multi sf field mapping
 
 def convert_csv(file):
     print('converting CSV: ', str(file))
@@ -95,9 +96,39 @@ def find_rep_dups(rep, keys, numthreads):
     '''
 
     for key in keys[:-1]:
+        if 'Phone' in key:
+            for type_of_phone in ['mobilePhone', 'homePhone', 'otherPhone', 'Phone']:
+                kwargs = {f'{type_of_phone}__icontains': f'{rep.key([key])}'}
+                # queryset of Sfcontacts that have a matching field with the rep
+                search_party = search_party.union(sfcontact.objects.filter(**kwargs))
+        if 'Email' in key:
+            for type_of_email in ['workEmail', 'personalEmail', 'otherEmail']:
+                kwargs = {f'{type_of_email}__icontains': f'{rep.key([key])}'}
+                # queryset of Sfcontacts that have a matching field with the rep
+                search_party = search_party.union(sfcontact.objects.filter(**kwargs))
+
         kwargs = { f'{key}__icontains' : f'{rep.key([key])}' }
         # queryset of Sfcontacts that have a matching field with the rep
         search_party = search_party.union(sfcontact.objects.filter(**kwargs))
+    '''
+    for n, i in enumerate(key):
+    if 'Phone' in i:
+        multi_key = True
+        sf_keys = []
+        for j in ['mobilePhone', 'homePhone', 'otherPhone', 'Phone']:
+            vary_key = key_parts.copy()
+            vary_key[n] = j
+            addon = [i.key(vary_key[:-1]) for i in sf_list if "NULL" not in i.key(vary_key[:-1])]
+            sf_keys.extend(addon)
+    elif 'Email' in i:
+        multi_key = True
+        sf_keys = []
+        for j in ['workEmail', 'personalEmail', 'otherEmail']:
+            vary_key = key_parts.copy()
+            vary_key[n] = j
+            addon = [i.key(vary_key[:-1]) for i in sf_list if "NULL" not in i.key(vary_key[:-1])]
+            sf_keys.extend(addon)
+    '''
     sf_map = {i.key(keys[:-1]): i for i in search_party if "NULL" not in i.key(keys[:-1])}  # only returns
     sf_keys = sf_map.keys()
 
@@ -218,7 +249,8 @@ def key_generator(partslist):
         print('starting key: {}'.format(key_parts))
         waiting = True
         multi_key = False
-        rep_list = repContact.objects.filter(type='Undecided')
+        string_key = '-'.join(currKey)
+        rep_list = repContact.objects.filter(type='Undecided').exclude(keySortedBy=string_key)
         print('adding {} items to the Q'.format(len(rep_list)))
         dedupper.threads.updateQ([[rep, key_parts] for rep in rep_list])
         while waiting:
