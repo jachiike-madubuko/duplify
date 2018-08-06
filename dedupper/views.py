@@ -19,6 +19,7 @@ import pickle
 from django.conf import settings
 from difflib import SequenceMatcher as SeqMat
 from math import floor
+from simple_salesforce import Salesforce
 '''
 #TODO change the HTTP request 
 timeout for the running algorithm or 
@@ -36,30 +37,31 @@ def getreq():
     return req
 
 def display(request):
-    global req
-    req=request
-    config = RequestConfig(request, paginate={'per_page': 1000})
-    undecided_table = RepContactTable(repContact.objects.filter(type__exact='Undecided'), prefix='U-')  # prefix specified
+    # global req
+    # req=request
+    config = RequestConfig(request, paginate={'per_page': 500})
+    # undecided_table = RepContactTable(repContact.objects.filter(type__exact='Undecided'), prefix='U-')  # prefix specified
     duplicate_table = RepContactTable(repContact.objects.filter(type__exact='Duplicate'), prefix='D-')  # prefix specified
-    new_record_table = RepContactTable(repContact.objects.filter(type__exact='New Record'), prefix='N-')  # prefix
-    manual_check_table = RepContactTable(repContact.objects.filter(type__exact='Manual Check'), prefix='M-')  # prefix
-    # specified
-    config.configure(undecided_table)
+    # new_record_table = RepContactTable(repContact.objects.filter(type__exact='New Record'), prefix='N-')  # prefix
+    # manual_check_table = RepContactTable(repContact.objects.filter(type__exact='Manual Check'), prefix='M-')  # prefix
+    # # specified
+    # config.configure(undecided_table)
     config.configure(duplicate_table)
-    config.configure(new_record_table)
-    config.configure(manual_check_table)
+    # config.configure(new_record_table)
+    # config.configure(manual_check_table)
+    #
+    # undecided = RepContactResource().export(repContact.objects.filter(type='Undecided'))
+    # newRecord = RepContactResource().export(repContact.objects.filter(type='New Record'))
+    # duplicate = RepContactResource().export(repContact.objects.filter(type='Duplicate'))
+    # manual_check = RepContactResource().export(repContact.objects.filter(type='Manual Check'))
 
-    undecided = RepContactResource().export(repContact.objects.filter(type='Undecided'))
-    newRecord = RepContactResource().export(repContact.objects.filter(type='New Record'))
-    duplicate = RepContactResource().export(repContact.objects.filter(type='Duplicate'))
-    manual_check = RepContactResource().export(repContact.objects.filter(type='Manual Check'))
-
-    return render(request, 'dedupper/sorted.html', {
-        'undecided_table': undecided_table,
-        'duplicate_table': duplicate_table,
-        'new_record_table': new_record_table,
-        'manual_check_table': manual_check_table,
-    })
+    return render(request, 'dedupper/sorted.html', { 'new_record_table': duplicate_table})
+    #               , {
+    #     'undecided_table': undecided_table,
+    #     'duplicate_table': duplicate_table,
+    #     'new_record_table': new_record_table,
+    #     'manual_check_table': manual_check_table,
+    # })
 
 
 def closest(request):
@@ -68,7 +70,6 @@ def closest(request):
         close_id1 = request.GET.get('close1')
         close_id2 = request.GET.get('close2')
         close_id3 = request.GET.get('close3')
-        print("id: {}\n c1: {}\n c2: {}\n c3: {}\n ".format(id,close_id1,close_id2,close_id3))
         table = SFContactTable( sfcontact.objects.filter(pk__in=[close_id1, close_id2, close_id3]))
         rep_table = RepContactTable(repContact.objects.filter(pk=id))
         return JsonResponse({ 'table': table.as_html(request),
@@ -78,9 +79,12 @@ def closest(request):
 def turn_table(request):
     if request.method == 'GET':
         type =  request.GET.get('type')
+        print(type)
         table = RepContactTable(repContact.objects.filter(type=type))
-
-        return JsonResponse({ 'table': table.as_html(request)}, safe=False)
+        config = RequestConfig(request, paginate={'per_page': 500})
+        config.configure(table)
+        print('sending table')
+        return JsonResponse({ 'table': table.as_html(request) }, safe=False)
 
 def download(request,type):
     fields = ('SF link', 'id','CRD', 'First', 'Last', 'Street', 'City',
@@ -232,6 +236,18 @@ def key_gen(request):
     except:
         key = [('error', 100, 0, 100, 0, 100)]
     return render(request, 'dedupper/key_generator.html', {'keys': key})
+
+def login(request):
+    u = request.GET.get('username')
+    p = request.GET.get('password')
+    try:
+        sf = Salesforce(username=u, password=p, organizationId='00D36000001DkQo')
+        msg= 'success'
+    except:
+        msg = 'failure'
+
+    return JsonResponse({'msg': msg}, safe=False)
+
 
 def map(request):
     exclude = ('id', 'average', 'type', 'closest1_contactID', 'closest1', 'closest2_contactID', 'closest2', 'closest3_contactID', 'closest3', 'dupFlag', 'keySortedBy', 'closest_rep')
