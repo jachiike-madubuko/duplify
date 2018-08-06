@@ -30,16 +30,54 @@
             z-index: 1090;
         }
 
+        .popover-body{
+
+        }
+
     </style>
 </head>
 <body class="bg-dark text-white" style="overflow: hidden">
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-<script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.bundle.min.js"></script><script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
 <script>
+    function prevent(e){
+        e.preventDefault();
+    }
 
     $(function () {
+        $(".popover").css({"max-width": "auto"});
+        $(".popover-body").css({"max-width": "auto"});
+        {#$('[data-toggle="tooltip"]').tooltip();#}
+
+        $('[data-toggle="popover"]').popover({
+            html:true,
+            placement:'bottom',
+            container: 'body',
+            trigger: 'focus',
+            content:function(){
+
+                var id = 'id-'+ $.now();
+                var a = $(this).data('id');
+                var x = $(this).data('id1');
+                var y = $(this).data('id2');
+                var z = $(this).data('id3');
+                $.getJSON("{% url 'closest' %}",{id:a, close1:x, close2:y, close3:z, }, function (result){
+                    var content = result['table'];
+                    $('#'+id).html(content);
+                });
+                return '<div id="'+id+'"> Loading... </div>';
+            }
+        });
+
+        $('.btn').on('shown.bs.popover', function () {
+          $('.popover').css('max-width', "100%");
+
+        });
+
+
+
+
+
         document.getElementById("new-undi").defaultValue- "70";
         document.getElementById("undi-dup").defaultValue- "98";
 
@@ -61,7 +99,22 @@
             $(".bg-warning").width(thres+'%');
             $(".bg-success").width(100-u_d+'%');
         });
+
+
     });
+
+
+    function merge(ids) {
+        alert('merge');
+        $.getJSON("{% url 'closest' %}",{x:ids}, function (result){
+            $("#table").html(result['table']);
+            $("#rep-table").html(result['rep-table']);
+        });
+    }
+
+    function content() {
+        alert('money');
+    }
 
     function resort() {
         let n_u = Number($("#new-undi").val());
@@ -278,6 +331,19 @@
         </ul>
     </div>
 </nav>
+<div class="modal fade table-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div id="rep-table" class="row" style="overflow-x: auto;">
+
+            </div>
+            <div id="table" class="row text-dark" style="overflow-x: auto;">
+
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal fade text-dark" id="exampleModalCenter" tabindex="-1" role="dialog"
      aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">

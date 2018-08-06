@@ -3,7 +3,7 @@ from django.views.generic import TemplateView, ListView
 import django_tables2
 from dedupper.models import dedupTime, duplifyTime, uploadTime,  sfcontact, repContact, progress
 from  dedupper.filters import SimpleFilter
-from dedupper.tables import StatsTable, ContactTable, RepContactTable
+from dedupper.tables import StatsTable, SFContactTable, RepContactTable
 from tablib import Dataset
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
@@ -30,9 +30,14 @@ http://www.marinamele.com/2013/12/how-to-set-django-app-on-heroku-part-i.html
 https://www.youtube.com/watch?v=P8_wDttTeuk
 '''
 keys= []
+req=None
+
+def getreq():
+    return req
 
 def display(request):
-
+    global req
+    req=request
     config = RequestConfig(request, paginate={'per_page': 1000})
     undecided_table = RepContactTable(repContact.objects.filter(type__exact='Undecided'), prefix='U-')  # prefix specified
     duplicate_table = RepContactTable(repContact.objects.filter(type__exact='Duplicate'), prefix='D-')  # prefix specified
@@ -55,6 +60,27 @@ def display(request):
         'new_record_table': new_record_table,
         'manual_check_table': manual_check_table,
     })
+
+
+def closest(request):
+    if request.method == 'GET':
+        id = request.GET.get('id')
+        close_id1 = request.GET.get('close1')
+        close_id2 = request.GET.get('close2')
+        close_id3 = request.GET.get('close3')
+        print("id: {}\n c1: {}\n c2: {}\n c3: {}\n ".format(id,close_id1,close_id2,close_id3))
+        table = SFContactTable( sfcontact.objects.filter(pk__in=[close_id1, close_id2, close_id3]))
+        rep_table = RepContactTable(repContact.objects.filter(pk=id))
+        return JsonResponse({ 'table': table.as_html(request),
+                             'rep-table': rep_table.as_html(request)}, safe=False)
+        # return  JsonResponse({'rep-table': 'tits'})
+
+def turn_table(request):
+    if request.method == 'GET':
+        type =  request.GET.get('type')
+        table = RepContactTable(repContact.objects.filter(type=type))
+
+        return JsonResponse({ 'table': table.as_html(request)}, safe=False)
 
 def download(request,type):
     fields = ('SF link', 'id','CRD', 'First', 'Last', 'Street', 'City',
@@ -244,8 +270,7 @@ def merge(request, id):
             del objs[i]['closest_rep_id'], objs[i]['dupFlag'], objs[i]['ContactID']
             mergers.insert(-1, list(objs[i].values()))
 
-    del obj['closest1_id'], obj['closest2_id'], obj['closest3_id'], obj['closest1_contactID'], \
-        obj['closest2_contactID'], obj['closest3_contactID'], obj['type'], obj['dupFlag'], obj['average']
+    del obj['closest1_id'], obj['closest2_id'], obj['closest3_id'], obj['closest1_contactID'], obj['closest2_contactID'], obj['closest3_contactID'], obj['type'], obj['dupFlag'], obj['average']
     obj = list(obj.values())
     if len(mergers) == 3:
         obj_map = {i:j for i,j in zip(fields, list(zip(obj,mergers[0],mergers[1],mergers[2])) ) }

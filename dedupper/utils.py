@@ -53,6 +53,10 @@ start=end=cnt=doneKeys=totalKeys=0
 
 #TODO finish phone/eemail multi sf field mapping
 
+#TODO add docstrings go to realpython.com/documenting-python-code/
+#TODO update documentation go to dbader.org/blog/write-a-great-readme-for-your-github-project
+#TODO django test cases realpython <--
+
 def convert_csv(file):
     print('converting CSV: ', str(file))
     # print('utf-8')

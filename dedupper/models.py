@@ -198,6 +198,37 @@ class repContact(models.Model):
 
     def __str__(self):
         return '{} {}'.format(self.firstName, self.lastName,)
+
+    def full_name(self):
+        return '{} {}'.format(self.firstName, self.lastName)
+
+    def email(self):
+        if self.workEmail != '':
+            email = self.workEmail
+        elif self.otherEmail != '':
+            email = self.otherEmail
+        elif self.personalEmail != '':
+            email = self.personalEmail
+        else:
+            email = ''
+        return '{}'.format(email)
+
+    def phone(self):
+        if self.Phone != '':
+            email = self.Phone
+        elif self.otherPhone != '':
+            email = self.otherPhone
+        elif self.mobilePhone != '':
+            email = self.mobilePhone
+        elif self.homePhone != '':
+            email = self.homePhone
+        else:
+            email = ''
+        return '{}'.format(email)
+
+    def locale(self):
+        return '{}, {} {}'.format(self.mailingCity, self.mailingStateProvince, self.mailingZipPostalCode)
+
     def key(self, key_parts):
         key = ''
 
@@ -267,6 +298,37 @@ class sfcontact(models.Model):
 
     def __str__(self):
         return '{} {}'.format(self.firstName, self.lastName,)
+
+    def full_name(self):
+        return '{} {}'.format(self.firstName, self.lastName)
+
+    def email(self):
+        if self.workEmail != '':
+            email = self.workEmail
+        elif self.otherEmail != '':
+            email = self.otherEmail
+        elif self.personalEmail != '':
+            email = self.personalEmail
+        else:
+            email = ''
+        return '{}'.format(email)
+
+    def phone(self):
+        if self.Phone != '':
+            email = self.Phone
+        elif self.otherPhone != '':
+            email = self.otherPhone
+        elif self.mobilePhone != '':
+            email = self.mobilePhone
+        elif self.homePhone != '':
+            email = self.homePhone
+        else:
+            email = ''
+        return '{}'.format(email)
+
+    def locale(self):
+        return '{}, {} {}'.format(self.mailingCity, self.mailingStateProvince, self.mailingZipPostalCode)
+
     def key(self, key_parts):
         key = ''
         key_builder = {

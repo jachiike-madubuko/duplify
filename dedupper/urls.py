@@ -28,6 +28,7 @@ urlpatterns = [
     path('run/', views.run, name='run'),
     path('map/', views.map, name='map'),
     path('progress/', views.progress, name='progress'),
+    path('closest/', views.closest, name='closest'),
     path('import_csv/', views.import_csv, name='import_csv'),
     path('flush_db/', views.flush_db, name='flush_db'),
     path('duplify/', views.duplify, name='duplify'), #figure out url reverse
