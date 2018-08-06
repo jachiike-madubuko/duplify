@@ -40,9 +40,15 @@ class RepContactTable(tables.Table):
 
     def render_sort(self, record):
         href = str(record.id)
-        href1 = str(record.closest1.id)
-        href2 = str(record.closest2.id)
-        href3 = str(record.closest3.id)
+        href1 = ''
+        href2 = ''
+        href3 = ''
+        if record.closest1:
+            href1 = str(record.closest1.id)
+        if record.closest2:
+            href2 = str(record.closest2.id)
+        if record.closest3:
+            href3 = str(record.closest3.id)
         return mark_safe('<button type="button" class="btn btn-secondary" data-container="body" data-toggle="popover" data-placement="top" data-content="" data-id="'+href+'" data-id1="'+href1+'" data-id2="' +href2+'" data-id3="' +href3+'">SORT</button>')
     class Meta:
         model = repContact
