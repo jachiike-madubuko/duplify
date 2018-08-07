@@ -70,13 +70,19 @@ def closest(request):
         close_id1 = request.GET.get('close1')
         close_id2 = request.GET.get('close2')
         close_id3 = request.GET.get('close3')
+        html_table1=html_table2=html_table3=''
+
         if close_id1 != '':
             table1 = SFContactTable( sfcontact.objects.filter(pk=close_id1))
+            html_table1 = table1.as_html(request)
         if close_id2 != '':
             table2 = SFContactTable( sfcontact.objects.filter(pk=close_id2))
+            html_table2 = table2.as_html(request)
         if close_id3 != '':
             table3 = SFContactTable( sfcontact.objects.filter(pk=close_id3))
-        return JsonResponse({ 'table1': table1.as_html(request), 'table2': table2.as_html(request), 'table3': table3.as_html(request)}, safe=False)
+            html_table3 = table3.as_html(request)
+
+        return JsonResponse({ 'table1': html_table1, 'table2':html_table2, 'table3': html_table3}, safe=False)
         # return  JsonResponse({'rep-table': 'tits'})
 
 def turn_table(request):
@@ -152,7 +158,7 @@ def download_times(request,type):
         audit_info[-1] += f"\t Number of Records in {sfCSV_name[2:]}: {total_sf}"
         audit_info.append(f"Number of Duplicate Records in the Rep List: {total_dups}({percent_dups}%)")
         audit_info.append(f"Number of New Records in the Rep List: {total_news}({percent_news}%)")
-        audit_info.append(f"Time: {floor(time_hours)} hours and {round((time_hours%floor(time_hours))*60)} minutes")
+        audit_info.append(f"Time: {time_hours} hours")
         audit_info.append("")
         audit_info.append("Thank you for using Duplify!")
 

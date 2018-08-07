@@ -169,7 +169,7 @@ def find_rep_dups(rep, keys, numthreads):
         rep.closest1_contactID = closest[0][0].ContactID
     rep.type = sort(rep.average)
 
-    if rep.type=='Duplicate' and rep.CRD != '' and  closest[0][0].CRD != '' and  rep.CRD != closest[0][0].CRD :
+    if rep.type=='Duplicate' and rep.CRD != '' and  closest[0][0].CRD != '' and  int(rep.CRD) != int(closest[0][0].CRD.replace(".0","")) :
         rep.type = 'Manual Check'
     string_key = '-'.join(currKey)
     rep.keySortedBy = string_key

@@ -13,6 +13,7 @@ def strip(string):
     if string == '':
         return 'NULL'
     newstring = string.replace(" ","")
+    newstring = newstring.replace(".0","")
     return  newstring
 
 class simple(models.Model):
