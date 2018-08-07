@@ -49,7 +49,10 @@ class RepContactTable(tables.Table):
             href2 = str(record.closest2.id)
         if record.closest3:
             href3 = str(record.closest3.id)
-        return mark_safe('<button type="button" class="btn btn-secondary" data-container="body" data-toggle="popover" data-placement="top" data-content="" data-id="'+href+'" data-id1="'+href1+'" data-id2="' +href2+'" data-id3="' +href3+'">SORT</button>')
+        return mark_safe('<button type="button" class="btn btn-secondary" data-container="body" '
+                         'data-toggle="popover" '
+                         'data-placement="top" data-content="" data-id="'+href+'" data-id1="'+href1+'" data-id2="'
+                         +href2+'" data-id3="' +href3+'">SORT</button>')
     class Meta:
         model = repContact
         template_name = 'django_tables2/bootstrap.html'

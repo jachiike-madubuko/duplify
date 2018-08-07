@@ -37,9 +37,37 @@
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.bundle.min.js"></script><script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
 <script>
+
+    function table_popover() {
+            $('[data-toggle="popover"]').popover({
+            html:true,
+            placement:'bottom',
+            container: 'body',
+            trigger: 'focus',
+            content:function(){
+
+                var id = 'id-'+ $.now();
+                var a = $(this).data('id');
+                var x = $(this).data('id1');
+                var y = $(this).data('id2');
+                var z = $(this).data('id3');
+                $.getJSON("{% url 'closest' %}",{id:a, close1:x, close2:y, close3:z, }, function (result){
+                    var content = result['table1'] + result['table2']+ result['table3'];
+                    content = content + '<button class="btn btn-success" data-onclick="sort()">SORT</button>';
+                    $('#'+id).html(content);
+                });
+                return '<div id="'+id+'"> Loading... </div>';
+            }
+        });
+            $('.btn').on('shown.bs.popover', function () {
+          $('.popover').css('max-width', "100%");
+        });
+
+    }
     function dup_table(){
         $.getJSON("{% url 'tables' %}",{type: 'Duplicate'}, function (result){
             $("#pills-dup").html( result['table']);
+            table_popover();
 
         }).fail(function () {
             alert('why');
@@ -48,6 +76,7 @@
     function new_table(){
         $.getJSON("{% url 'tables' %}",{type: 'New Record'}, function (result){
             $("#pills-new").html( result['table']);
+            table_popover();
 
 
         }).fail(function () {
@@ -57,6 +86,7 @@
     function man_table(){
         $.getJSON("{% url 'tables' %}",{type: 'Manual Check'}, function (result){
             $("#pills-man").html( result['table']);
+            table_popover();
 
         }).fail(function () {
             alert('why');
@@ -66,12 +96,8 @@
     $(function () {
 
         dup_table();
-        {#new_table();#}
-        {#man_table();#}
-
-        $(".popover").css({"max-width": "auto"});
-        $(".popover-body").css({"max-width": "auto"});
-        {#$('[data-toggle="tooltip"]').tooltip();#}
+        new_table();
+        man_table();
 
         $('[data-toggle="popover"]').popover({
             html:true,
@@ -85,7 +111,7 @@
                 var y = $(this).data('id2');
                 var z = $(this).data('id3');
                 $.getJSON("{% url 'closest' %}",{id:a, close1:x, close2:y, close3:z, }, function (result){
-                    var content = result['table'];
+                    var content = result['table1'] + result['table2']+ result['table3'];
                     content = content + '<button class="btn btn-success">SORT</button>';
                     $('#'+id).html(content);
                 });
@@ -135,7 +161,7 @@
         });
     }
 
-    function content() {
+    function sort() {
         alert('money');
     }
 
@@ -442,8 +468,8 @@
 <div class="container-fluid">
     <ul class="nav nav-pills nav-fill text-white" id="pills-tab" role="tablist">
         <li class="nav-item badge-pill">
-            <h6  class="mx-1 mt-3"><a class="button btn-success badge-pill float-right"
-                                      href="export/Duplicate"><span class="fa fa-download"></span></a></h6>
+            <h6  class="mx-1 mt-3"><a class="m-1 button btn-success badge-pill float-right"
+                                      href="export/Duplicate"><span class="fa fa-download fa-1x"></span></a></h6>
             <a class="nav-link active  bg-dark nav-pill badge-pill" id="pills-dup-tab" data-toggle="pill"
                href="#pills-dup"
                role="tab"
@@ -452,14 +478,15 @@
             </a>
         </li>
         <li class="nav-item badge-pill">
-            <h6 class="mx-1 mt-3"><a class="button btn-success badge-pill float-right" href="export/NewRecord"><span class="fa fa-download"></span></a></h6>
+            <h6 class="mx-1 mt-3"><a class="m-1 button btn-success badge-pill float-right"
+                                     href="export/NewRecord"><span class="fa fa-download"></span></a></h6>
             <a class="nav-link bg-dark badge-pill" id="pills-new-tab" data-toggle="pill" href="#pills-new" role="tab"
                aria-controls="pills-new" aria-selected="false">
                 New Records
             </a>
         </li>
         <li class="nav-item badge-pill">
-            <h6 class="mx-1 mt-3"><a class="button btn-success badge-pill float-right"
+            <h6 class="mx-1 mt-3"><a class="m-1 button btn-success badge-pill float-right"
                                      href="export/ManualCheck"><span class="fa fa-download"></span></a></h6>
             <a class="nav-link bg-dark badge-pill" id="pills-man-tab" data-toggle="pill" href="#pills-man"
                role="tab"
@@ -474,7 +501,7 @@
 {#            {% render_table duplicate_table 'django_tables2/bootstrap-responsive.html' %}#}
         </div>
         <div class="tab-pane " id="pills-new" role="tabpanel" aria-labelledby="pills-new-tab">
-            {% render_table new_record_table 'django_tables2/bootstrap-responsive.html' %}
+{#            {% render_table new_record_table 'django_tables2/bootstrap-responsive.html' %}#}
         </div>
         <div class="tab-pane " id="pills-man" role="tabpanel" aria-labelledby="pills-man-tab">
 {#            {% render_table manual_check_table 'django_tables2/bootstrap-responsive.html' %}#}

@@ -70,10 +70,13 @@ def closest(request):
         close_id1 = request.GET.get('close1')
         close_id2 = request.GET.get('close2')
         close_id3 = request.GET.get('close3')
-        table = SFContactTable( sfcontact.objects.filter(pk__in=[close_id1, close_id2, close_id3]))
-        rep_table = RepContactTable(repContact.objects.filter(pk=id))
-        return JsonResponse({ 'table': table.as_html(request),
-                             'rep-table': rep_table.as_html(request)}, safe=False)
+        if close_id1 != '':
+            table1 = SFContactTable( sfcontact.objects.filter(pk=close_id1))
+        if close_id2 != '':
+            table2 = SFContactTable( sfcontact.objects.filter(pk=close_id2))
+        if close_id3 != '':
+            table3 = SFContactTable( sfcontact.objects.filter(pk=close_id3))
+        return JsonResponse({ 'table1': table1.as_html(request), 'table2': table2.as_html(request), 'table3': table3.as_html(request)}, safe=False)
         # return  JsonResponse({'rep-table': 'tits'})
 
 def turn_table(request):
