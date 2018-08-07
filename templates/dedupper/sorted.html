@@ -43,7 +43,6 @@
             html:true,
             placement:'bottom',
             container: 'body',
-            trigger: 'focus',
             content:function(){
 
                 var id = 'id-'+ $.now();
@@ -52,8 +51,43 @@
                 var y = $(this).data('id2');
                 var z = $(this).data('id3');
                 $.getJSON("{% url 'closest' %}",{id:a, close1:x, close2:y, close3:z, }, function (result){
-                    var content = result['table1'] + result['table2']+ result['table3'];
-                    content = content + '<button class="btn btn-success" data-onclick="sort()">SORT</button>';
+                    var t1 = $("<div></div>").addClass("form-check").append($("<input></input>").addClass
+                    ("form-check-input mt-5").attr({
+                        type: "radio",
+                        value: x,
+                        id: x,
+                        name: 'rad'
+                    })).append(result['table1']);
+                    var t2 = $("<div></div>").addClass("form-check").append($("<input></input>").addClass
+                    ("form-check-input  mt-5").attr({
+                        type: "radio",
+                        value: y,
+                        id: y,
+                        name: 'rad'
+                    })).append(result['table2']);
+                    var t3 = $("<div></div>").addClass("form-check").append($("<input></input>").addClass
+                    ("form-check-input  mt-5").attr({
+                        type: "radio",
+                        value: z,
+                        id: z,
+                        name: 'rad'
+                    })).append(result['table3']);
+                    var content =$("<fieldset></fieldset>").addClass("form-group").append(t1, t2, t3);
+                    var sort =  '<div class="col"> <button class="btn btn-success" ' +
+                        'data-rep="'+a+'" ' +
+                        'onclick="sort(this)' +
+                        '">SORT</button> </div>';
+
+                    var type = $("<div></div>").addClass("btn-group col").attr({role: "group"}).append($
+                    ("<button>Duplicate</button>").addClass("btn btn-outline-primary active")).append($
+                    ("<button>New Record</button>").addClass("btn btn-outline-primary"));
+                    var buttons = $("<div></div>").addClass("row").append(sort).append(type);
+                    content.append(buttons);
+                    //add toggle switch at the top for dup or new, if toggle dup,
+                    // then show radio button group for each choice
+                    //sort will ajax call sending the rep id and the chosen rep or the rep id and new
+                    //the rep with be updated with a type (and a new closest1)
+                    //then the two affected lists will update
                     $('#'+id).html(content);
                 });
                 return '<div id="'+id+'"> Loading... </div>';
@@ -161,8 +195,9 @@
         });
     }
 
-    function sort() {
-        alert('money');
+    function sort(evt) {
+        alert($(evt).attr('class'));
+        alert($(evt).data('rep'));
     }
 
     function resort() {

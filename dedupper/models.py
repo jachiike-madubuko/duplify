@@ -196,6 +196,12 @@ class repContact(models.Model):
     dupFlag = models.BooleanField(blank=True, default=False)
     keySortedBy = models.CharField(max_length=256, blank=True)
 
+    '''
+    add JSON field
+    write a parser for all fields not mapped into db
+    use parser for django import export to recreate columns
+    '''
+
     def __str__(self):
         return '{} {}'.format(self.firstName, self.lastName,)
 
