@@ -337,6 +337,29 @@ def resort(request):
         set_sorting_algorithm(int(request.GET.get('upper_thres')), int(request.GET.get('lower_thres')))
     return JsonResponse({'msg': 'success!'}, safe=False)
 
+
+def contact_sort(request):
+    if request.method == 'GET':
+        data = request.GET.getlist("data[]")
+        rep = repContact.objects.get(pk=data[1])
+        if data[0] == 'Duplicate':
+            print(f"old order: {rep.closest1}, {rep.closest2}, {rep.closest3}")
+            rep.type = 'Duplicate'
+            if int(data[2]) == rep.closest3.id:
+                print('moving 3rd closest to 1st')
+                rep.closest1, rep.closest2, rep.closest3 =  rep.closest3, rep.closest1, rep.closest2
+                rep.closest1_contactID, rep.closest2_contactID, rep.closest3_contactID =  rep.closest3_contactID, rep.closest1_contactID, rep.closest2_contactID
+            elif int(data[2]) == rep.closest2.id:
+                print('moving 2nd closest to 1st')
+                rep.closest1, rep.closest2 = rep.closest2, rep.closest1
+                rep.closest1_contactID, rep.closest2_contactID =rep.closest2_contactID,  rep.closest1_contactID
+            print(f"new order: {rep.closest1}, {rep.closest2}, {rep.closest3}")
+        elif data[0] == 'New Record':
+            rep.type = 'New Record'
+            rep.closest1_contactID = ''
+        rep.save()
+    return JsonResponse({'msg': 'success!'}, safe=False)
+
 def run(request):
     global keys
     if request.method == 'GET':

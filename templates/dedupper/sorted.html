@@ -39,7 +39,8 @@
 <script>
 
     function table_popover() {
-            $('[data-toggle="popover"]').popover({
+
+        $('[data-toggle="popover"]').popover({
             html:true,
             placement:'bottom',
             container: 'body',
@@ -51,37 +52,70 @@
                 var y = $(this).data('id2');
                 var z = $(this).data('id3');
                 $.getJSON("{% url 'closest' %}",{id:a, close1:x, close2:y, close3:z, }, function (result){
-                    var t1 = $("<div></div>").addClass("form-check").append($("<input></input>").addClass
-                    ("form-check-input mt-5").attr({
-                        type: "radio",
-                        value: x,
-                        id: x,
-                        name: 'rad'
-                    })).append(result['table1']);
-                    var t2 = $("<div></div>").addClass("form-check").append($("<input></input>").addClass
-                    ("form-check-input  mt-5").attr({
-                        type: "radio",
-                        value: y,
-                        id: y,
-                        name: 'rad'
-                    })).append(result['table2']);
-                    var t3 = $("<div></div>").addClass("form-check").append($("<input></input>").addClass
-                    ("form-check-input  mt-5").attr({
-                        type: "radio",
-                        value: z,
-                        id: z,
-                        name: 'rad'
-                    })).append(result['table3']);
-                    var content =$("<fieldset></fieldset>").addClass("form-group").append(t1, t2, t3);
-                    var sort =  '<div class="col"> <button class="btn btn-success" ' +
+                    var content =$("<fieldset></fieldset>").addClass("form-group");
+                    if (result['table1'] != '') {
+                        var t1 = $("<div></div>").addClass("form-check").append($("<input></input>").addClass
+                        ("form-check-input mt-5").attr({
+                            type: "radio",
+                            value: x,
+                            id: x,
+                            name: 'rad'
+                        })).append(result['table1']);
+                        content.append(t1);
+                    }
+                    if (result['table2'] != '') {
+                        var t2 = $("<div></div>").addClass("form-check").append($("<input></input>").addClass
+                        ("form-check-input  mt-5").attr({
+                            type: "radio",
+                            value: y,
+                            id: y,
+                            name: 'rad'
+                        })).append(result['table2']);
+                        content.append(t2);
+
+                    }
+                    if (result['table2'] != '') {
+
+                        var t3 = $("<div></div>").addClass("form-check").append($("<input></input>").addClass
+                        ("form-check-input  mt-5").attr({
+                            type: "radio",
+                            value: z,
+                            id: z,
+                            name: 'rad'
+                        })).append(result['table3']);
+                        content.append(t3);
+                    }
+                    var sort =  '<div class="col-1"> <button class="btn btn-success" ' +
                         'data-rep="'+a+'" ' +
                         'onclick="sort(this)' +
                         '">SORT</button> </div>';
 
-                    var type = $("<div></div>").addClass("btn-group col").attr({role: "group"}).append($
-                    ("<button>Duplicate</button>").addClass("btn btn-outline-primary active")).append($
-                    ("<button>New Record</button>").addClass("btn btn-outline-primary"));
-                    var buttons = $("<div></div>").addClass("row").append(sort).append(type);
+                    var type = $("<div data-toggle='buttons'></div>")
+                        .addClass("btn-group btn-group-toggle col-3")
+                        .append($("<label></label>")
+                            .addClass("btn btn-outline-primary dup active")
+                            .append($("<input>Dup</input>")
+                                .addClass("dup")
+                                .attr({
+                                    type: "radio",
+                                    name: "types",
+                                    id: "dup",
+                                    value: "dup",
+                                    autocomplete: "off"
+                                })))
+                        .append($("<label></label>")
+                            .addClass("btn btn-outline-primary new")
+                            .append($("<input>New</input>")
+                                .addClass("new")
+                                .attr({
+                                    type: "radio",
+                                    name: "types",
+                                    id: "new",
+                                    value: "new",
+                                    autocomplete: "off"
+                                })));
+                    var buttons = $("<div></div>").addClass("row").append(type).append($('<div class="col-7"></div>')).
+                    append(sort);
                     content.append(buttons);
                     //add toggle switch at the top for dup or new, if toggle dup,
                     // then show radio button group for each choice
@@ -89,12 +123,23 @@
                     //the rep with be updated with a type (and a new closest1)
                     //then the two affected lists will update
                     $('#'+id).html(content);
+                    $('input[type=radio][name=types]').change( function () {
+                        if(this.id == "new"){
+                            $('input[type=radio][name=rad]').hide();
+                        }
+                        else{
+                            $('input[type=radio][name=rad]').show();
+                        }
+                    });
                 });
                 return '<div id="'+id+'"> Loading... </div>';
             }
         });
-            $('.btn').on('shown.bs.popover', function () {
-          $('.popover').css('max-width', "100%");
+        $('.btn').on('shown.bs.popover', function () {
+            $('.popover').css('max-width', "100%");
+        });
+        $('input[type=radio][name=type]').change( function () {
+            alert('dup');
         });
 
     }
@@ -133,28 +178,9 @@
         new_table();
         man_table();
 
-        $('[data-toggle="popover"]').popover({
-            html:true,
-            placement:'bottom',
-            container: 'body',
-            content:function(){
-
-                var id = 'id-'+ $.now();
-                var a = $(this).data('id');
-                var x = $(this).data('id1');
-                var y = $(this).data('id2');
-                var z = $(this).data('id3');
-                $.getJSON("{% url 'closest' %}",{id:a, close1:x, close2:y, close3:z, }, function (result){
-                    var content = result['table1'] + result['table2']+ result['table3'];
-                    content = content + '<button class="btn btn-success">SORT</button>';
-                    $('#'+id).html(content);
-                });
-                return '<div id="'+id+'"> Loading... </div>';
-            }
-        });
 
         $('.btn').on('shown.bs.popover', function () {
-          $('.popover').css('max-width', "100%");
+            $('.popover').css('max-width', "100%");
         });
 
 
@@ -196,8 +222,30 @@
     }
 
     function sort(evt) {
-        alert($(evt).attr('class'));
-        alert($(evt).data('rep'));
+        var sort_type = $(evt).parents(".row").find('label.active > input ').attr('value');
+        var sf_dup = $(evt).parents(".form-group").find(".form-check-input:checked").attr("value");
+        var rep_id = $(evt).data('rep');
+        if ( sort_type == "new"){
+            $('.popover').popover('hide');
+            $.getJSON("{% url 'contact_sort' %}",{data:['New Record',rep_id] }, function(result){
+                new_table();
+                man_table();
+            });
+
+        }
+        else{
+            if( sf_dup === undefined ){
+                alert("Select the duplicate Saleforce record before sorting");
+            }
+            else{
+                $('.popover').popover('hide');
+                $.getJSON("{% url 'contact_sort' %}",{data:['Duplicate',rep_id, sf_dup] }, function(result){
+                    dup_table();
+                    man_table();
+                });
+
+            }
+        }
     }
 
     function resort() {
@@ -533,13 +581,13 @@
     <div class="row"> </div>
     <div class="card bg-transparent tab-content rounded" id="pills-tabContent" style="overflow-y: auto; height: 85vh">
         <div class="tab-pane show active" id="pills-dup" role="tabpanel" aria-labelledby="pills-dup-tab">
-{#            {% render_table duplicate_table 'django_tables2/bootstrap-responsive.html' %}#}
+            {#            {% render_table duplicate_table 'django_tables2/bootstrap-responsive.html' %}#}
         </div>
         <div class="tab-pane " id="pills-new" role="tabpanel" aria-labelledby="pills-new-tab">
-{#            {% render_table new_record_table 'django_tables2/bootstrap-responsive.html' %}#}
+            {#            {% render_table new_record_table 'django_tables2/bootstrap-responsive.html' %}#}
         </div>
         <div class="tab-pane " id="pills-man" role="tabpanel" aria-labelledby="pills-man-tab">
-{#            {% render_table manual_check_table 'django_tables2/bootstrap-responsive.html' %}#}
+            {#            {% render_table manual_check_table 'django_tables2/bootstrap-responsive.html' %}#}
         </div>
     </div>
 </div>
