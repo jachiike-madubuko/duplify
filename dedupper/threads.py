@@ -12,7 +12,7 @@ BUFF_SIZE = 10000
 q = queue.Queue(BUFF_SIZE)
 command = list()
 producer= consumers = None
-numThreads = 10
+numThreads = 12
 stopper = True
 dead_threads = 0
 last_thread_killed=0

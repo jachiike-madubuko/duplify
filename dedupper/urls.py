@@ -28,12 +28,15 @@ urlpatterns = [
     path('run/', views.run, name='run'),
     path('map/', views.map, name='map'),
     path('progress/', views.progress, name='progress'),
+    path('closest/', views.closest, name='closest'),
+    path('tables/', views.turn_table, name='tables'),
     path('import_csv/', views.import_csv, name='import_csv'),
     path('flush_db/', views.flush_db, name='flush_db'),
     path('duplify/', views.duplify, name='duplify'), #figure out url reverse
     path('resort/', views.resort, name='resort'), #figure out url reverse
+    path('contact_sort/', views.contact_sort, name='contact_sort'), #figure out url reverse
     path('sorted/', views.display, name='reps'),
-    path('sorted/<CRD>', views.merge, name='merge'),
+    path('sorted/<id>', views.merge, name='merge'),
     path('sorted/export/<type>', views.download, name='export'),
     path('sorted/report/<type>', views.download_times, name='report'),
 ]

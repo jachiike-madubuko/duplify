@@ -27,9 +27,6 @@
 
 
 <script>
-    //TODO add in welcoming: "Welcome to Duplify"<->fade in with polygonizr
-    //TODO fade out then fade in chain of Start by uploading your rep list here and your salesforce report here-fade out
-
     var rep_mapping = {};
     var sf_mapping = {};
 
@@ -323,8 +320,9 @@
         ];
         $('.rep-select').select2({
             theme: "bootstrap",
-            placeholder: 'Map a column to this field',
-            data: rep_data,
+            placeholder: {
+                id: '0'
+            },
             templateSelection: function (data, container) {
                 $(data.element).attr('data-name', data.value);
                 return data.text;
@@ -333,19 +331,15 @@
         });
         $('.sf-select').select2({
             theme: "bootstrap",
-            placeholder: 'Map a column to this field',
-            data: sf_data,
+            placeholder: {
+                id: '0'
+            },
             templateSelection: function (data, container) {
                 $(data.element).attr('data-name', data.value);
                 return data.text;
             }
         });
-
-
-
     });
-
-
     function f() {
         if (confirm('WARNING: You are about to erase all records in the database.')) {
             window.location.replace("{% url 'flush_db' %}");
@@ -353,7 +347,6 @@
             // Do nothing!
         }
     }
-
     function map_headers() {
 
         $('.rep-select').each( function() {
@@ -376,7 +369,6 @@
             window.location.replace("{% url 'key-gen' %}");
         });
     }
-
 </script>
 <nav class="navbar navbar-dark bg-dark navbar-expand-lg justify-content-between sticky-top">
     <h1> <a class="navbar-brand" href="#">Duplify</a></h1>
@@ -396,22 +388,70 @@
             </li>
         </ul>
     </div>
-    <button class="btn btn-success badge-pill" type="button" onclick="map_headers()">
+    <button class="btn btn-success badge-pill" type="button" onclick="map_headers()" data-toggle="modal" data-target="#progress" data-backdrop="static" data-keyboard="false">
         <b >Map Headers</b>
     </button>
 </nav>
+<div class="modal fade" id="progress" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header row">
+                The records are being mapped and uploaded to the database!
+            </div>
+            <div class="modal-body">
+                <div role="tabpanel">
+                    <ul class="my-2 nav nav-pills nav-fill text-white" id="pills-tab" role="tablist">
+
+                        <li role="presentation" class="active nav-item badge-pill"><a   href="#uploadTab" aria-controls="uploadTab" role="tab"
+                                                                                        data-toggle="tab"><button
+                                class="nav-link btn btn-block  bg-primary nav-pill badge-pill" onclick="togglegameoff()">
+                            Progress</button></a>
+
+                        </li>
+                        <li  id="br"role="presentation" class=" nav-item badge-pill"><a   href="#browseTab" aria-controls="browseTab" role="tab"
+                                                                                          data-toggle="tab"><button
+                                class="nav-link btn  bg-primary btn-block nav-pill badge-pill" onclick="togglegameon()">
+                            Analytics</button></a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="tab-content mt-2">
+                    <div role="tabpanel" class="tab-pane active" id="uploadTab">
+                        <img class="mt-3" style="-webkit-user-select: none; width: 750px; height: 500px;" src="https://cdn.dribbble.com/users/702004/screenshots/2834791/material-loader.gif">
+                    </div>
+                    <div role="tabpanel" class="tab-pane container" id="browseTab">
+                        <div class="col-10 mx-auto"> <object class=""
+                                                             classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="640"
+                                                             height="900"
+                                                             align="middle" id="qwop"><param name="movie" value="http://m.toogame.com/q/swfs/QWOP
+                                .swf"><param name="quality" value="high"><param name="AllowScriptAccess" value="always"><object type="application/x-shockwave-flash" data="http://m.toogame.com/q/swfs/QWOP.swf" width="640" height="400"><param name="movie" value="http://m.toogame.com/q/swfs/QWOP.swf"><param name="quality" value="high"><param name="AllowScriptAccess" value="always"><a href="http://www.adobe.com/go/getflash"><img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash Player"></a></object></object> </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="container my-3">
+                <a id="next" class="invisible btn btn-success badge-pill btn-block" href="{% url 'reps' %}">Next</a>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="container-fluid row" style="overflow: auto; max-height: 90vh">
     <div class="col rep mt-1">
         <div class="col">
             <h2 class="alert-dark text-center badge-pill"> Rep Field Mapping </h2>
 
             <div class="row container-fluid">
-                {% for key in rep_key %}
+                {% for key, list in rep_dropdown.items %}
                     <div class="input-group mb-3 col-12">
                         <div class="input-group-prepend px-auto">
                             <p class="input-group-text bg-dark text-white" id="basic-addon3 " style="height: 34px; width: 200px">{{ key }}</p>
                         </div>
-                        <select autofocus class=" rep-{{ key }} rep-select mousetrap py-5 col-8" name="states[]"></select>
+                        <select autofocus class=" rep-{{ key }} rep-select mousetrap py-5 col-8" name="states[]">
+                            <option data-name="placeholder"></option>
+                            {% for header in list %}
+                                <option value="{{ header }}" data-name="{{ header }}">{{ header }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
 
                 {% endfor %}
@@ -423,12 +463,17 @@
         <div class="col">
             <h2 class="alert-dark text-center badge-pill"> SF Field Mapping </h2>
             <div class="row container-fluid">
-                {% for key in sf_key %}
+                {% for key, list in sf_dropdown.items %}
                     <div class="input-group mb-3 col-12 shadow-lg">
                         <div class="input-group-prepend px-auto">
                             <p class="input-group-text bg-dark text-white" id="basic-addon3 " style="height: 34px; width: 200px">{{ key }}</p>
                         </div>
-                        <select autofocus class=" sf-{{ key }} sf-select mousetrap py-5 col-8" name="states[]"></select>
+                        <select autofocus class=" sf-{{ key }} sf-select mousetrap py-5 col-8" name="states[]">
+                            <option data-name="placeholder"></option>
+                            {% for header in list %}
+                                <option value="{{ header }}" data-name="{{ header }}">{{ header }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                 {% endfor %}
             </div>

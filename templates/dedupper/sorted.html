@@ -30,16 +30,165 @@
             z-index: 1090;
         }
 
+
     </style>
 </head>
 <body class="bg-dark text-white" style="overflow: hidden">
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-<script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.bundle.min.js"></script><script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
 <script>
 
+    function table_popover() {
+
+        $('[data-toggle="popover"]').popover({
+            html:true,
+            placement:'bottom',
+            container: 'body',
+            content:function(){
+
+                var id = 'id-'+ $.now();
+                var a = $(this).data('id');
+                var x = $(this).data('id1');
+                var y = $(this).data('id2');
+                var z = $(this).data('id3');
+                $.getJSON("{% url 'closest' %}",{id:a, close1:x, close2:y, close3:z, }, function (result){
+                    var content =$("<fieldset></fieldset>").addClass("form-group");
+                    if (result['table1'] != '') {
+                        var t1 = $("<div></div>").addClass("form-check").append($("<input></input>").addClass
+                        ("form-check-input mt-5").attr({
+                            type: "radio",
+                            value: x,
+                            id: x,
+                            name: 'rad'
+                        })).append(result['table1']);
+                        content.append(t1);
+                    }
+                    if (result['table2'] != '') {
+                        var t2 = $("<div></div>").addClass("form-check").append($("<input></input>").addClass
+                        ("form-check-input  mt-5").attr({
+                            type: "radio",
+                            value: y,
+                            id: y,
+                            name: 'rad'
+                        })).append(result['table2']);
+                        content.append(t2);
+
+                    }
+                    if (result['table2'] != '') {
+
+                        var t3 = $("<div></div>").addClass("form-check").append($("<input></input>").addClass
+                        ("form-check-input  mt-5").attr({
+                            type: "radio",
+                            value: z,
+                            id: z,
+                            name: 'rad'
+                        })).append(result['table3']);
+                        content.append(t3);
+                    }
+                    var sort =  '<div class="col-1"> <button class="btn btn-success" ' +
+                        'data-rep="'+a+'" ' +
+                        'onclick="sort(this)' +
+                        '">SORT</button> </div>';
+
+                    var type = $("<div data-toggle='buttons'></div>")
+                        .addClass("btn-group btn-group-toggle col-3")
+                        .append($("<label></label>")
+                            .addClass("btn btn-outline-primary dup active")
+                            .append($("<input>Dup</input>")
+                                .addClass("dup")
+                                .attr({
+                                    type: "radio",
+                                    name: "types",
+                                    id: "dup",
+                                    value: "dup",
+                                    autocomplete: "off"
+                                })))
+                        .append($("<label></label>")
+                            .addClass("btn btn-outline-primary new")
+                            .append($("<input>New</input>")
+                                .addClass("new")
+                                .attr({
+                                    type: "radio",
+                                    name: "types",
+                                    id: "new",
+                                    value: "new",
+                                    autocomplete: "off"
+                                })));
+                    var buttons = $("<div></div>").addClass("row").append(type).append($('<div class="col-7"></div>')).
+                    append(sort);
+                    content.append(buttons);
+                    //add toggle switch at the top for dup or new, if toggle dup,
+                    // then show radio button group for each choice
+                    //sort will ajax call sending the rep id and the chosen rep or the rep id and new
+                    //the rep with be updated with a type (and a new closest1)
+                    //then the two affected lists will update
+                    $('#'+id).html(content);
+                    $('input[type=radio][name=types]').change( function () {
+                        if(this.id == "new"){
+                            $('input[type=radio][name=rad]').hide();
+                        }
+                        else{
+                            $('input[type=radio][name=rad]').show();
+                        }
+                    });
+                });
+                return '<div id="'+id+'"> Loading... </div>';
+            }
+        });
+        $('.btn').on('shown.bs.popover', function () {
+            $('.popover').css('max-width', "100%");
+        });
+        $('input[type=radio][name=type]').change( function () {
+            alert('dup');
+        });
+
+    }
+    function dup_table(){
+        //throw up modal
+        $.getJSON("{% url 'tables' %}",{type: 'Duplicate'}, function (result){
+            $("#pills-dup").html( result['table']);
+            //close modal
+            table_popover();
+
+        }).fail(function () {
+            alert('why');
+        });
+    }
+    function new_table(){
+        $.getJSON("{% url 'tables' %}",{type: 'New Record'}, function (result){
+            $("#pills-new").html( result['table']);
+            table_popover();
+
+
+        }).fail(function () {
+            alert('why');
+        });
+    }
+    function man_table(){
+        $.getJSON("{% url 'tables' %}",{type: 'Manual Check'}, function (result){
+            $("#pills-man").html( result['table']);
+            table_popover();
+
+        }).fail(function () {
+            alert('why');
+        });
+    }
+
     $(function () {
+
+        dup_table();
+        new_table();
+        man_table();
+
+
+        $('.btn').on('shown.bs.popover', function () {
+            $('.popover').css('max-width', "100%");
+        });
+
+
+
+
+
         document.getElementById("new-undi").defaultValue- "70";
         document.getElementById("undi-dup").defaultValue- "98";
 
@@ -61,7 +210,45 @@
             $(".bg-warning").width(thres+'%');
             $(".bg-success").width(100-u_d+'%');
         });
+
+
     });
+
+
+    function merge(ids) {
+        alert('merge');
+        $.getJSON("{% url 'closest' %}",{x:ids}, function (result){
+            $("#table").html(result['table']);
+            $("#rep-table").html(result['rep-table']);
+        });
+    }
+
+    function sort(evt) {
+        var sort_type = $(evt).parents(".row").find('label.active > input ').attr('value');
+        var sf_dup = $(evt).parents(".form-group").find(".form-check-input:checked").attr("value");
+        var rep_id = $(evt).data('rep');
+        if ( sort_type == "new"){
+            $('.popover').popover('hide');
+            $.getJSON("{% url 'contact_sort' %}",{data:['New Record',rep_id] }, function(result){
+                new_table();
+                man_table();
+            });
+
+        }
+        else{
+            if( sf_dup === undefined ){
+                alert("Select the duplicate Saleforce record before sorting");
+            }
+            else{
+                $('.popover').popover('hide');
+                $.getJSON("{% url 'contact_sort' %}",{data:['Duplicate',rep_id, sf_dup] }, function(result){
+                    dup_table();
+                    man_table();
+                });
+
+            }
+        }
+    }
 
     function resort() {
         let n_u = Number($("#new-undi").val());
@@ -278,6 +465,19 @@
         </ul>
     </div>
 </nav>
+<div class="modal fade table-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div id="rep-table" class="row" style="overflow-x: auto;">
+
+            </div>
+            <div id="table" class="row text-dark" style="overflow-x: auto;">
+
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal fade text-dark" id="exampleModalCenter" tabindex="-1" role="dialog"
      aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -289,6 +489,7 @@
                 </button>
             </div>
             <div class="modal-body">
+                <a  href="report/A" class=" my-3 btn btn-block badge-pill btn-large btn-success" >Audit Report </a>
                 <a  href="report/D" class=" my-3 btn btn-block badge-pill btn-large btn-success" >Duplify Report </a>
                 <a href="report/DD" class="my-3 btn btn-block badge-pill btn-large btn-success" >Dedup Report</a>
                 <a href="report/U" class="my-3 btn btn-block badge-pill btn-large btn-success" >Upload Report</a>
@@ -352,8 +553,8 @@
 <div class="container-fluid">
     <ul class="nav nav-pills nav-fill text-white" id="pills-tab" role="tablist">
         <li class="nav-item badge-pill">
-            <h6  class="mx-1 mt-3"><a class="button btn-success badge-pill float-right"
-                                      href="export/Duplicate">Export</a></h6>
+            <h6  class="mx-1 mt-3"><a class="m-1 button btn-success badge-pill float-right"
+                                      href="export/Duplicate"><span class="fa fa-download fa-1x"></span></a></h6>
             <a class="nav-link active  bg-dark nav-pill badge-pill" id="pills-dup-tab" data-toggle="pill"
                href="#pills-dup"
                role="tab"
@@ -362,23 +563,16 @@
             </a>
         </li>
         <li class="nav-item badge-pill">
-            <h6  class="mx-1 mt-3"><a class="button btn-success badge-pill float-right"
-                                      href="export/Undecided">Export</a></h6>
-            <a class="nav-link bg-dark badge-pill" id="pills-undie-tab" data-toggle="pill" href="#pills-undie" role="tab"
-               aria-controls="pills-undie" aria-selected="false">
-                Undecided Records
-            </a>
-        </li>
-        <li class="nav-item badge-pill">
-            <h6 class="mx-1 mt-3"><a class="button btn-success badge-pill float-right" href="export/NewRecord">Export</a></h6>
+            <h6 class="mx-1 mt-3"><a class="m-1 button btn-success badge-pill float-right"
+                                     href="export/NewRecord"><span class="fa fa-download"></span></a></h6>
             <a class="nav-link bg-dark badge-pill" id="pills-new-tab" data-toggle="pill" href="#pills-new" role="tab"
                aria-controls="pills-new" aria-selected="false">
                 New Records
             </a>
         </li>
         <li class="nav-item badge-pill">
-            <h6 class="mx-1 mt-3"><a class="button btn-success badge-pill float-right"
-                                     href="export/ManualCheck">Export</a></h6>
+            <h6 class="mx-1 mt-3"><a class="m-1 button btn-success badge-pill float-right"
+                                     href="export/ManualCheck"><span class="fa fa-download"></span></a></h6>
             <a class="nav-link bg-dark badge-pill" id="pills-man-tab" data-toggle="pill" href="#pills-man"
                role="tab"
                aria-controls="pills-man" aria-selected="false">
@@ -387,18 +581,15 @@
         </li>
     </ul>
     <div class="row"> </div>
-    <div class="card bg-dark tab-content rounded" id="pills-tabContent" style="overflow-y: auto; height: 85vh">
+    <div class="card bg-transparent tab-content rounded" id="pills-tabContent" style="overflow-y: auto; height: 85vh">
         <div class="tab-pane show active" id="pills-dup" role="tabpanel" aria-labelledby="pills-dup-tab">
-                        {% render_table duplicate_table 'django_tables2/bootstrap-responsive.html' %}
-        </div>
-        <div class="tab-pane " id="pills-undie" role="tabpanel" aria-labelledby="pills-undie-tab">
-                        {% render_table undecided_table 'django_tables2/bootstrap-responsive.html' %}
+            {#            {% render_table duplicate_table 'django_tables2/bootstrap-responsive.html' %}#}
         </div>
         <div class="tab-pane " id="pills-new" role="tabpanel" aria-labelledby="pills-new-tab">
-                        {% render_table new_record_table 'django_tables2/bootstrap-responsive.html' %}
+            {#            {% render_table new_record_table 'django_tables2/bootstrap-responsive.html' %}#}
         </div>
         <div class="tab-pane " id="pills-man" role="tabpanel" aria-labelledby="pills-man-tab">
-                        {% render_table manual_check_table 'django_tables2/bootstrap-responsive.html' %}
+            {#            {% render_table manual_check_table 'django_tables2/bootstrap-responsive.html' %}#}
         </div>
     </div>
 </div>

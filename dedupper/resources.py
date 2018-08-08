@@ -20,7 +20,7 @@ class RepContactResource(resources.ModelResource):
 
     class Meta:
         model = repContact
-        fields = ('id','CRD', 'firstName', 'lastName', 'suffix', 'canSellDate', 'levelGroup', 'mailingStreet', 'mailingCity', 'mailingStateProvince', 'mailingZipPostalCode', 'territory', 'Phone', 'homePhone', 'mobilePhone', 'otherPhone', 'workEmail', 'personalEmail', 'otherEmail', 'keySortedBy')
+        fields = ('id', 'CRD', 'firstName', 'lastName', 'mailingStreet', 'mailingCity', 'mailingStateProvince', 'mailingZipPostalCode', 'Phone', 'homePhone', 'mobilePhone', 'otherPhone', 'workEmail', 'personalEmail', 'otherEmail', 'keySortedBy', 'average')
         # exclude = ('closest1','closest2','closest3','average','type','dupFlag')
 
     def dehydrate_sales_force_link(self, repcontact):
