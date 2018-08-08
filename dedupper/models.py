@@ -144,7 +144,7 @@ class contact(models.Model):
         return key
 
 '''
-mdl.repContact.objects.update(type='Undecided', keySortedBy='',closest1='', closest2='', closest3='', closest1_contactID='', closest2_contactID='', closest3_contactID='', average=None)
+repContact.objects.update(type='Undecided', keySortedBy='',closest1='', closest2='', closest3='', closest1_contactID='', closest2_contactID='', closest3_contactID='', average=None)
 '''
 class repContact(models.Model):
     CRD = models.CharField(max_length=256, db_column="CRD")

@@ -70,6 +70,7 @@ def convert_csv(file):
 
 def find_rep_dups(rep, keys, numthreads):
     global cnt
+    multi_key = False
     dup_start=perf_counter()
     rep_key = rep.key(keys[:-1])
     if 'NULL' in rep_key:
@@ -114,26 +115,28 @@ def find_rep_dups(rep, keys, numthreads):
         kwargs = { f'{key}__icontains' : f'{rep.key([key])}' }
         # queryset of Sfcontacts that have a matching field with the rep
         search_party = search_party.union(sfcontact.objects.filter(**kwargs))
-    '''
-    for n, i in enumerate(key):
-    if 'Phone' in i:
-        multi_key = True
-        sf_keys = []
-        for j in ['mobilePhone', 'homePhone', 'otherPhone', 'Phone']:
-            vary_key = key_parts.copy()
-            vary_key[n] = j
-            addon = [i.key(vary_key[:-1]) for i in sf_list if "NULL" not in i.key(vary_key[:-1])]
-            sf_keys.extend(addon)
-    elif 'Email' in i:
-        multi_key = True
-        sf_keys = []
-        for j in ['workEmail', 'personalEmail', 'otherEmail']:
-            vary_key = key_parts.copy()
-            vary_key[n] = j
-            addon = [i.key(vary_key[:-1]) for i in sf_list if "NULL" not in i.key(vary_key[:-1])]
-            sf_keys.extend(addon)
-    '''
-    sf_map = {i.key(keys[:-1]): i for i in search_party if "NULL" not in i.key(keys[:-1])}  # only returns
+    sf_map = {}
+    for n, i in enumerate(keys):
+        if 'Phone' in i:
+            multi_key = True
+            for j in ['mobilePhone', 'homePhone', 'otherPhone', 'Phone']:
+                vary_key = keys.copy()
+                vary_key[n] = j
+                addon = {i.key(vary_key[:-1]) : i for i in search_party if "NULL" not in i.key(vary_key[:-1])}
+                sf_map = {**sf_map, **addon}
+                print(sf_map)
+        elif 'Email' in i:
+            multi_key = True
+            for j in ['workEmail', 'personalEmail', 'otherEmail']:
+                vary_key = keys.copy()
+                vary_key[n] = j
+                addon = {i.key(vary_key[:-1]): i for i in search_party if "NULL" not in i.key(vary_key[:-1])}
+                sf_map = {**sf_map, **addon}
+                print(sf_map)
+    if not multi_key:
+        sf_map = {i.key(keys[:-1]): i for i in search_party if "NULL" not in i.key(keys[:-1])}  # only returns
+
+    # sf_map = {i.key(keys[:-1]): i for i in search_party if "NULL" not in i.key(keys[:-1])}  # only returns
     sf_keys = sf_map.keys()
 
     closest = fuzzyset_alg(rep_key, sf_keys)
