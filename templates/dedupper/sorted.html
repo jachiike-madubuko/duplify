@@ -144,8 +144,10 @@
 
     }
     function dup_table(){
+        //throw up modal
         $.getJSON("{% url 'tables' %}",{type: 'Duplicate'}, function (result){
             $("#pills-dup").html( result['table']);
+            //close modal
             table_popover();
 
         }).fail(function () {
