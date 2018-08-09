@@ -7,6 +7,7 @@ Run python manage.py migrate dedupper to apply those changes to the database.
 from __future__ import unicode_literals
 
 from django.db import models
+from heroku_connect.db import models as hc_models
 
 def strip(string):
     #check if string is blank, then add NULL
@@ -46,8 +47,8 @@ class simple(models.Model):
         for part in key_parts:
             key += key_builder[part]
         return key
-'''
-from heroku_connect.db import models as hc_models
+
+
 
 class Contact(hc_models.HerokuConnectModel):
     sf_object_name= 'Contact'
@@ -73,42 +74,12 @@ class Contact(hc_models.HerokuConnectModel):
     email = hc_models.Email(sf_field_name='Email')
     otherEmail = hc_models.Email(sf_field_name='Other_Email__c')
     personalEmail = hc_models.Email(sf_field_name='Personal_Email__c')
-
-    territoryName = hc_models.Text( sf_field_name='Territory_Name__c', max_length=80)
-    territoryType = hc_models.Text( sf_field_name='Territory_Type__c', max_length=80)
+    department = hc_models.Text(sf_field_name='Department', max_length=80)
+    title = hc_models.Text(sf_field_name='Title', max_length=80)
 
     def __str__(self):
         return self.name
-'''
-class contact(models.Model):
-    CRD = models.CharField( max_length=256, unique=True,  db_column="CRD")
-    firstName = models.CharField(max_length=256, blank=True)
-    lastName = models.CharField(max_length=256, blank=True)
-    suffix = models.CharField(max_length=256, blank=True)
-    canSellDate = models.CharField(max_length=256, blank=True)
-    levelGroup = models.CharField(max_length=256, blank=True)
-    mailingStreet = models.CharField(max_length=256, blank=True)
-    mailingCity = models.CharField(max_length=256, blank=True)
-    mailingStateProvince = models.CharField(max_length=256, blank=True)
-    mailingZipPostalCode = models.CharField(max_length=256, blank=True)
-    territory = models.CharField(max_length=256, blank=True)
-    workPhone = models.CharField(max_length=256, blank=True)
-    homePhone = models.CharField(max_length=256, blank=True)
-    mobilePhone = models.CharField(max_length=256, blank=True)
-    workEmail = models.CharField(max_length=256, blank=True)
-    personalEmail = models.CharField(max_length=256, blank=True)
-    otherEmail = models.CharField(max_length=256, blank=True)
-    area = models.CharField(max_length=256, blank=True)
-    region = models.CharField(max_length=256, blank=True)
-    regionalLeader = models.CharField(max_length=256, blank=True)
-    levelLeader = models.CharField(max_length=256, blank=True)
-    fieldTrainerLeader = models.CharField(max_length=256, blank=True)
-    performanceLeader = models.CharField(max_length=256, blank=True)
-    boaName = models.CharField(max_length=256, blank=True)
 
-
-    def __str__(self):
-        return '{} {}'.format(self.firstName, self.lastName,)
     def key(self, key_parts):
         key = ''
 

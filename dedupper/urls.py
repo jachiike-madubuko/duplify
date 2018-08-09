@@ -14,8 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
+from django.views import generic
 from django.conf.urls import url, include
 from django.contrib import admin
+from . import models
 from . import views
 from django.conf import settings
 
@@ -25,6 +27,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     url(r'^keys', views.upload, name='keys'),
     path('key-gen/', views.key_gen, name='key-gen'),
+    path('heroku/', generic.ListView.as_view(model=models.Contact), name='heroku'),
     path('run/', views.run, name='run'),
     path('map/', views.map, name='map'),
     path('progress/', views.progress, name='progress'),

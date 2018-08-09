@@ -1,6 +1,6 @@
 import django_tables2 as tables
 from django_tables2 import Column
-from dedupper.models import simple, contact, repContact, sfcontact
+from dedupper.models import simple, repContact, sfcontact
 from django_tables2.utils import AttributeDict
 from django.utils.safestring import mark_safe
 
@@ -17,16 +17,16 @@ class SimpleTable(tables.Table):
         template_name = 'django_tables2/bootstrap.html'
         attrs = {'class' : 'table table-hover table-striped table-dark'}
 
-class ContactTable(tables.Table):
-    merge = tables.LinkColumn('merge_records', args=[tables.A('pk')], attrs={'class': 'btn btn-outline-primary', 'href':"#" }, text="Merge")
-    def render_merge(self, record):
-        href = record.id
-        return mark_safe('<a id="yo" class="btn btn-outline-primary" onclick="merge()" href="'+str(href)+'" Merge>Merge</a>')
-
-    class Meta:
-        model = contact
-        template_name = 'django_tables2/bootstrap.html'
-        attrs = {'class' : 'table table-hover table-striped table-dark'}
+# class ContactTable(tables.Table):
+#     merge = tables.LinkColumn('merge_records', args=[tables.A('pk')], attrs={'class': 'btn btn-outline-primary', 'href':"#" }, text="Merge")
+#     def render_merge(self, record):
+#         href = record.id
+#         return mark_safe('<a id="yo" class="btn btn-outline-primary" onclick="merge()" href="'+str(href)+'" Merge>Merge</a>')
+#
+#     class Meta:
+#         model = Contact
+#         template_name = 'django_tables2/bootstrap.html'
+#         attrs = {'class' : 'table table-hover table-striped table-dark'}
 
 class RepContactTable(tables.Table):
     sort = tables.LinkColumn('merge_records', args=[tables.A('pk')], attrs={'class': 'btn btn-outline-primary '
