@@ -96,7 +96,7 @@ def turn_table(request):
         return JsonResponse({ 'table': table.as_html(request) }, safe=False)
 
 def download(request,type):
-    fields = ('SF link', 'id','CRD', 'First', 'Last', 'Street', 'City',
+    fields = ('id','CRD', 'First', 'Last', 'Street', 'City',
               'State', 'Zip', 'Phone', 'Home Phone', 'Mobile Phone',
               'Other Phone', 'Work Email', 'Personal Email', 'Other Email', 'Match Score', 'Key' )
 
@@ -115,11 +115,24 @@ def download(request,type):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; '+filename
 
-    writer = csv.writer(response)
-    writer.writerow(fields)
 
     users = repContact.objects.filter(type = type)
     dataset = rep_resource.export(users)
+    db_df = pd.read_json(dataset.json)
+    #parse the misc field  back into their respective fields
+    misc_df = db_df['misc'].astype(str).str.split('-!-', expand=True)
+    db_df=db_df.drop('misc', axis=1)
+    db_df=db_df.drop('id', axis=1)
+    frames=[db_df[['average', 'keySortedBy', 'closest1_contactID']], misc_df]
+    export = pd.concat(frames, axis=1)
+    export.replace('nan','', inplace=True)
+    dataset.csv = export.to_csv()
+    f = list(db_df[['average', 'keySortedBy', 'closest1_contactID']])
+    fields = ['id'] + f + request.session['misc']
+    fields[fields.index('closest1_contactID')] = 'ContactID'
+
+    writer = csv.writer(response)
+    writer.writerow(fields)
     for line in dataset:
         writer.writerow(line)
 
@@ -216,7 +229,7 @@ def import_csv(request):
             pd_sf_csv = pickle.load(file)
             print('pickle load sf')
 
-        load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
+        request.session['misc'] = load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
         load_csv2db(pd_sf_csv, sf_header_map, sfcontact_resource, file_type='SF')
 
 
@@ -336,7 +349,6 @@ def resort(request):
         print('resorting')
         set_sorting_algorithm(int(request.GET.get('upper_thres')), int(request.GET.get('lower_thres')))
     return JsonResponse({'msg': 'success!'}, safe=False)
-
 
 def contact_sort(request):
     if request.method == 'GET':

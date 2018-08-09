@@ -124,7 +124,6 @@ def find_rep_dups(rep, keys, numthreads):
                 vary_key[n] = j
                 addon = {i.key(vary_key[:-1]) : i for i in search_party if "NULL" not in i.key(vary_key[:-1])}
                 sf_map = {**sf_map, **addon}
-                print(sf_map)
         elif 'Email' in i:
             multi_key = True
             for j in ['workEmail', 'personalEmail', 'otherEmail']:
@@ -132,7 +131,6 @@ def find_rep_dups(rep, keys, numthreads):
                 vary_key[n] = j
                 addon = {i.key(vary_key[:-1]): i for i in search_party if "NULL" not in i.key(vary_key[:-1])}
                 sf_map = {**sf_map, **addon}
-                print(sf_map)
     if not multi_key:
         sf_map = {i.key(keys[:-1]): i for i in search_party if "NULL" not in i.key(keys[:-1])}  # only returns
 
@@ -172,7 +170,7 @@ def find_rep_dups(rep, keys, numthreads):
         rep.closest1_contactID = closest[0][0].ContactID
     rep.type = sort(rep.average)
 
-    if rep.type=='Duplicate' and rep.CRD != '' and  closest[0][0].CRD != '' and  int(rep.CRD) != int(closest[0][0].CRD.replace(".0","")) :
+    if rep.type=='Duplicate' and rep.CRD != '' and  closest[0][0].CRD != '' and  int(rep.CRD.replace(".0","")) != int(closest[0][0].CRD.replace(".0","")) :
         rep.type = 'Manual Check'
     string_key = '-'.join(currKey)
     rep.keySortedBy = string_key
@@ -269,8 +267,14 @@ def load_csv2db(csv, header_map, resource, file_type='rep'):
     dataset = Dataset()
     pd_csv = csv
     # print(list(pd_csv))
-    print(json.dumps(header_map, indent=4))
+    csv_set = set(list(pd_csv))
+    rep_set = set(header_map.keys())
+    misc = list(csv_set - rep_set)
+    csv_header = list(pd_csv)
+    print(f'misc fields: {misc}')
     try:
+        if file_type=='rep':
+            pd_csv['misc'] = misc_col(csv, csv_header)
         pd_csv.rename(columns=header_map, inplace=True)
         pd_csv['id'] = np.nan
         dataset.csv = pd_csv.to_csv()
@@ -284,6 +288,11 @@ def load_csv2db(csv, header_map, resource, file_type='rep'):
         uploadTime.objects.create(num_records = len(repContact.objects.all()), seconds=round(time, 2))
     else:
         uploadTime.objects.create(num_records = len(sfcontact.objects.all()),seconds=round(time, 2))
+    return csv_header
+
+def misc_col(df, cols):
+    from functools import reduce
+    return reduce(lambda x, y: x.astype(str).str.cat(y.astype(str), sep='-!-'), [df[col] for col in cols])
 
 def make_keys(headers):
     keys = []
@@ -294,7 +303,7 @@ def make_keys(headers):
     phoneTypes = ['Phone', 'homePhone', 'mobilePhone', 'otherPhone']
     emailTypes = ['workEmail', 'personalEmail', 'otherEmail']
     excluded = ['id', 'average', 'type', 'match_ID', 'closest1', 'closest2', 'closest3',
-                'closest1_contactID', 'closest2_contactID', 'closest3_contactID', 'dupFlag', 'keySortedBy' ]
+                'closest1_contactID', 'closest2_contactID', 'closest3_contactID', 'dupFlag', 'keySortedBy', 'misc']
 
     for i in headers:
         if i not in excluded:

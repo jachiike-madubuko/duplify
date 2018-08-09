@@ -196,7 +196,7 @@ class repContact(models.Model):
 
     dupFlag = models.BooleanField(blank=True, default=False)
     keySortedBy = models.CharField(max_length=256, blank=True)
-
+    misc = models.CharField(max_length=500, blank=True)
     '''
     add JSON field
     write a parser for all fields not mapped into db

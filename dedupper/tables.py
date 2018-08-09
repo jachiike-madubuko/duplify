@@ -59,7 +59,7 @@ class RepContactTable(tables.Table):
         attrs = {'class' : 'table table-hover table-striped table-dark table-sm' }
         fields = {'sort','average','CRD', 'name', 'email', 'phone', 'address', 'keySortedBy'}
 
-        sequence = ('sort','average','keySortedBy','CRD', 'name', 'email', 'phone', 'address')
+        sequence = ('sort','CRD', 'name', 'email', 'phone', 'address','average','keySortedBy')
         exclude = ('cansellDate', 'levelGroup', 'regionalLeader', 'boaName', 'fieldTrainerLeader',
                    'id', 'canSellDate', 'performanceLeader', 'levelLeader', 'otherEmail', 'workEmail',
                    'personalEmail', 'otherPhone', 'Phone', 'dupFlag', 'type', 'closest1', 'closest1_contactID', 'closest2', 'closest2_contactID', 'closest3', 'closest3_contactID',)
