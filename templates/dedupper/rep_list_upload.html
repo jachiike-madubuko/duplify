@@ -224,6 +224,13 @@
 
             } });
     }
+    function f() {
+        if (confirm('WARNING: You are about to erase all records in the database.')) {
+            window.location.replace("{% url 'flush_db' %}");
+        } else {
+            // Do nothing!
+        }
+    }
 
 </script>
 <nav class="navbar navbar-light navbar-expand-lg justify-content-between" style="background: transparent">
@@ -240,7 +247,7 @@
                 <a class="nav-link" href="/admin">Admin</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Pricing</a>
+                <a class="nav-link" href="javascript:f()">Reset</a>
             </li>
         </ul>
     </div>
