@@ -53,7 +53,7 @@ class simple(models.Model):
 class Contact(hc_models.HerokuConnectModel):
     sf_object_name= 'Contact'
 
-    CRD = hc_models.Text( sf_field_name='CRD__c', max_length=80)
+    crd__c = hc_models.Text( sf_field_name='CRD__c', max_length=80)
 
     name = hc_models.Text( sf_field_name='Name', max_length=80)
     firstName = hc_models.Text( sf_field_name='FirstName', max_length=80)
