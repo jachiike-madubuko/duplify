@@ -1,1 +1,1 @@
-/anaconda3/lib/python3.6/os.py
+C:/anaconda3/lib/python3.6/os.py

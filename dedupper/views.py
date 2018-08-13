@@ -32,6 +32,8 @@ https://www.youtube.com/watch?v=P8_wDttTeuk
 '''
 keys= []
 req=None
+name_sort=address_sort=email_sort=crd_sort=phone_sort=average_sort=key_sort=True
+
 
 def getreq():
     return req
@@ -55,14 +57,13 @@ def display(request):
     # duplicate = RepContactResource().export(repContact.objects.filter(type='Duplicate'))
     # manual_check = RepContactResource().export(repContact.objects.filter(type='Manual Check'))
 
-    return render(request, 'dedupper/sorted.html', { 'new_record_table': duplicate_table})
+    return render(request, 'dedupper/data-table.html', { 'new_record_table': duplicate_table})
     #               , {
     #     'undecided_table': undecided_table,
     #     'duplicate_table': duplicate_table,
     #     'new_record_table': new_record_table,
     #     'manual_check_table': manual_check_table,
     # })
-
 
 def closest(request):
     if request.method == 'GET':
@@ -88,8 +89,58 @@ def closest(request):
 def turn_table(request):
     if request.method == 'GET':
         type =  request.GET.get('type')
-        print(type)
-        table = RepContactTable(repContact.objects.filter(type=type))
+        sort =  request.GET.get('sorting')
+        if sort =='name':
+            if globals()['name_sort']:
+                globals()['name_sort'] = False
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('lastName', 'firstName'))
+            else:
+                globals()['name_sort'] = True
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('-lastName', '-firstName'))
+        elif sort =='email':
+            if globals()['email_sort']:
+                globals()['email_sort'] = False
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('workEmail'))
+            else:
+                globals()['name_sort'] = True
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('-workEmail'))
+        elif sort =='phone':
+            if globals()['name_sort']:
+                globals()['name_sort'] = False
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('Phone'))
+            else:
+                globals()['name_sort'] = True
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('-Phone'))
+        elif sort =='address':
+            if globals()['name_sort']:
+                globals()['name_sort'] = False
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('mailingStateProvince', 'mailingCity'))
+            else:
+                globals()['name_sort'] = True
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('-mailingStateProvince', '-mailingCity'))
+        elif sort =='average':
+            if globals()['name_sort']:
+                globals()['name_sort'] = False
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('average'))
+            else:
+                globals()['name_sort'] = True
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('-average'))
+        elif sort =='keySortedBy':
+            if globals()['name_sort']:
+                globals()['name_sort'] = False
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('keySortedBy'))
+            else:
+                globals()['name_sort'] = True
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('-keySortedBy'))
+        elif sort =='CRD':
+            if globals()['crd_sort']:
+                globals()['crd_sort'] = False
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('CRD'))
+            else:
+                globals()['crd_sort'] = True
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('-CRD'))
+        else:
+            table = RepContactTable(repContact.objects.filter(type=type))
         config = RequestConfig(request, paginate={'per_page': 500})
         config.configure(table)
         print('sending table')
@@ -269,7 +320,6 @@ def login(request):
         msg = 'failure'
 
     return JsonResponse({'msg': msg}, safe=False)
-
 
 def map(request):
     exclude = ('id', 'average', 'type', 'closest1_contactID', 'closest1', 'closest2_contactID', 'closest2', 'closest3_contactID', 'closest3', 'dupFlag', 'keySortedBy', 'closest_rep')

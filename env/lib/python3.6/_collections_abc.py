@@ -1,1 +1,1 @@
-/anaconda3/lib/python3.6/_collections_abc.py
+C:/anaconda3/lib/python3.6/_collections_abc.py

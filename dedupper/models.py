@@ -10,7 +10,6 @@ from django.db import models
 from heroku_connect.db import models as hc_models
 
 def strip(string):
-    #check if string is blank, then add NULL
     if string == '':
         return 'NULL'
     newstring = string.replace(" ","")
@@ -53,7 +52,7 @@ class simple(models.Model):
 class Contact(hc_models.HerokuConnectModel):
     sf_object_name= 'Contact'
 
-    crd__c = hc_models.Text( sf_field_name='CRD__c', max_length=80)
+    CRD = hc_models.Text( sf_field_name='CRD__c', max_length=80)
 
     name = hc_models.Text( sf_field_name='Name', max_length=80)
     firstName = hc_models.Text( sf_field_name='FirstName', max_length=80)

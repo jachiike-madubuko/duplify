@@ -1,0 +1,627 @@
+{% load static %}
+{% load render_table from django_tables2 %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>Duplify | Rep List</title>
+    <style>
+        .btn-default{
+            background-color: #222529;
+        }
+        small{
+            color: white;
+        }
+        .pager li{
+            display: inline;
+        }
+
+        .nav-item{
+            z-index: 1000;
+        }
+        a:hover{
+            text-decoration: none;
+        }
+        table{
+            z-index: 1090;
+        }
+
+        #loading-indicator {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+         z-index: 1100;
+            box-shadow: 0px 0px 1000vw 1000vh rgba(0,0,0,0.6);
+        }
+
+    </style>
+</head>
+<body class="bg-dark text-white" style="overflow: hidden">
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.bundle.min.js"></script>
+<script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
+<script>
+    var man = false;
+    var dup = false;
+    var news = false;
+
+    function table_popover() {
+
+        $('[data-toggle="popover"]').popover({
+            html:true,
+            placement:'bottom',
+            container: 'body',
+            content: function(){
+
+                var id = 'id-'+ $.now();
+                var a = $(this).data('id');
+                var x = $(this).data('id1');
+                var y = $(this).data('id2');
+                var z = $(this).data('id3');
+                $.getJSON("{% url 'closest' %}",{id:a, close1:x, close2:y, close3:z, }, function (result){
+                    var content =$("<fieldset></fieldset>").addClass("form-group");
+                    if (result['table1'] != '') {
+                        var t1 = $("<div></div>").addClass("form-check").append($("<input></input>").addClass
+                        ("form-check-input mt-5").attr({
+                            type: "radio",
+                            value: x,
+                            id: x,
+                            name: 'rad'
+                        })).append(result['table1']);
+                        content.append(t1);
+                    }
+                    if (result['table2'] != '') {
+                        var t2 = $("<div></div>").addClass("form-check").append($("<input></input>").addClass
+                        ("form-check-input  mt-5").attr({
+                            type: "radio",
+                            value: y,
+                            id: y,
+                            name: 'rad'
+                        })).append(result['table2']);
+                        content.append(t2);
+
+                    }
+                    if (result['table2'] != '') {
+
+                        var t3 = $("<div></div>").addClass("form-check").append($("<input></input>").addClass
+                        ("form-check-input  mt-5").attr({
+                            type: "radio",
+                            value: z,
+                            id: z,
+                            name: 'rad'
+                        })).append(result['table3']);
+                        content.append(t3);
+                    }
+                    var sort =  '<div class="col-1"> <button class="btn btn-success" ' +
+                        'data-rep="'+a+'" ' +
+                        'onclick="sort(this)' +
+                        '">SORT</button> </div>';
+
+                    var type = $("<div data-toggle='buttons'></div>")
+                        .addClass("btn-group btn-group-toggle col-3")
+                        .append($("<label></label>")
+                            .addClass("btn btn-outline-primary dup active")
+                            .append($("<input>Dup</input>")
+                                .addClass("dup")
+                                .attr({
+                                    type: "radio",
+                                    name: "types",
+                                    id: "dup",
+                                    value: "dup",
+                                    autocomplete: "off"
+                                })))
+                        .append($("<label></label>")
+                            .addClass("btn btn-outline-primary new")
+                            .append($("<input>New</input>")
+                                .addClass("new")
+                                .attr({
+                                    type: "radio",
+                                    name: "types",
+                                    id: "new",
+                                    value: "new",
+                                    autocomplete: "off"
+                                })));
+                    var buttons = $("<div></div>").addClass("row").append(type).append($('<div class="col-7"></div>')).
+                    append(sort);
+                    content.append(buttons);
+                    //add toggle switch at the top for dup or new, if toggle dup,
+                    // then show radio button group for each choice
+                    //sort will ajax call sending the rep id and the chosen rep or the rep id and new
+                    //the rep with be updated with a type (and a new closest1)
+                    //then the two affected lists will update
+                    $('#'+id).html(content);
+                    $('input[type=radio][name=types]').change( function () {
+                        if(this.id == "new"){
+                            $('input[type=radio][name=rad]').hide();
+                        }
+                        else{
+                            $('input[type=radio][name=rad]').show();
+                        }
+                    });
+                });
+                return '<div id="'+id+'"> Loading... </div>';
+            }
+        });
+        $('.btn').on('shown.bs.popover', function () {
+            $('.popover').css('max-width', "100%");
+        });
+        $('input[type=radio][name=type]').change( function () {
+            alert('dup');
+        });
+        $('th > a').on('click', function (e) {
+           e.preventDefault();
+           var parsed = $(this).attr('href').split('&');
+          if (parsed[0].includes('Duplicate')){
+              dup_table(parsed[2].replace('sort=',''));
+          }
+          else if (parsed[0].includes('New')){
+              new_table(parsed[2].replace('sort=',''));
+          }
+          if (parsed[0].includes('Manual')){
+              man_table(parsed[2].replace('sort=',''));
+          }
+
+
+        });
+
+
+    }
+    function dup_table(sort){
+        //throw up modal
+        $.getJSON("{% url 'tables' %}",{type: 'Duplicate', sorting: sort}, function (result){
+            $("#pills-dup").html( result['table']);
+            //close modal
+            table_popover();
+
+        }).fail(function () {
+            alert('why');
+        });
+    }
+    function new_table(sort){
+        $.getJSON("{% url 'tables' %}",{type: 'New Record', sorting: sort}, function (result){
+            $("#pills-new").html( result['table']);
+            table_popover();
+
+        }).fail(function () {
+            alert('why');
+        });
+    }
+    function man_table(sort){
+        $.getJSON("{% url 'tables' %}",{type: 'Manual Check', sorting: sort}, function (result){
+            $("#pills-man").html( result['table']);
+            table_popover();
+
+        }).fail(function () {
+            alert('why');
+        });
+    }
+
+    $(function () {
+
+        dup_table('');
+        new_table('');
+        man_table('');
+
+        $('.btn').on('shown.bs.popover', function () {
+            $('.popover').css('max-width', "100%");
+        });
+
+
+
+        $(document).ajaxSend(function(event, request, settings) {
+          $('#loading-indicator').show();
+        });
+
+        $(document).ajaxComplete(function(event, request, settings) {
+          $('#loading-indicator').hide();
+
+        });
+
+        document.getElementById("new-undi").defaultValue- "70";
+        document.getElementById("undi-dup").defaultValue- "98";
+
+        $("#new-undi").change(function(){
+            $(".bg-primary").width($("#new-undi").val()+'%');
+            let n_u = Number($("#new-undi").val());
+            let u_d = Number($("#undi-dup").val());
+            let mid =  (u_d-n_u);
+            let end = 100 - (n_u + mid);
+            $(".bg-warning").width(mid+'%');
+            $(".bg-primary").width(n_u+'%');
+            $(".bg-success").width(end+'%');
+        });
+
+        $("#undi-dup").change(function(){
+            let n_u = Number($("#new-undi").val());
+            let u_d = Number($("#undi-dup").val());
+            let thres = u_d-n_u;
+            $(".bg-warning").width(thres+'%');
+            $(".bg-success").width(100-u_d+'%');
+        });
+
+
+    });
+
+
+    function merge(ids) {
+        alert('merge');
+        $.getJSON("{% url 'closest' %}",{x:ids}, function (result){
+            $("#table").html(result['table']);
+            $("#rep-table").html(result['rep-table']);
+        });
+    }
+
+    function sort(evt) {
+        var sort_type = $(evt).parents(".row").find('label.active > input ').attr('value');
+        var sf_dup = $(evt).parents(".form-group").find(".form-check-input:checked").attr("value");
+        var rep_id = $(evt).data('rep');
+        if ( sort_type == "new"){
+            $('.popover').popover('hide');
+            $.getJSON("{% url 'contact_sort' %}",{data:['New Record',rep_id] }, function(result){
+                new_table();
+                man_table();
+            });
+
+        }
+        else{
+            if( sf_dup === undefined ){
+                alert("Select the duplicate Saleforce record before sorting");
+            }
+            else{
+                $('.popover').popover('hide');
+                $.getJSON("{% url 'contact_sort' %}",{data:['Duplicate',rep_id, sf_dup] }, function(result){
+                    dup_table();
+                    man_table();
+                });
+
+            }
+        }
+    }
+
+    function resort() {
+        let n_u = Number($("#new-undi").val());
+        let u_d = Number($("#undi-dup").val());
+        $(".modal-body, .modal-footer").hide();
+        $(".modal-title").text("Reps are being sorted!");
+
+        $.getJSON("{% url 'resort' %}", {lower_thres: n_u,  upper_thres: u_d}, function (result) {
+            location.reload(true);
+
+        }).fail(function () {alert('wtf bro');
+
+        });
+
+
+
+    }
+    function bg() {
+        $("body").polygonizr({
+
+            restNodeMovements: 0,// How long to pause in between new node-movements.
+
+            duration: 4, // When the cluster updates, this sets speed of nodes.
+
+            nodeMovementDistance: 400, // Define the maximum distance to move nodes.
+
+            numberOfNodes: 36,// The number of node nodes to print out.
+
+            nodeDotSize: 2.5,// Define the maximum size of each node dot.
+
+            nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
+
+            nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
+
+            randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
+
+            // Define a formula for how to initialize each node dot's position.
+            specifyPolygonMeshNetworkFormation: function (i) {
+                var forEachNode = {// Half a circle and randomized
+                    x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
+                    y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
+                };
+                return forEachNode;
+            },
+
+            nodeRelations: 15,// Number of relations between nodes.
+
+            animationFps: 300, // The FPS for the whole canvas.
+
+            nodeDotColor: "0, 0 0 ",// Sets the color of the nodes in the network (RGB).
+
+            nodeLineColor: "0, 0, 0 ",// Sets the color of the lines in the network (RGB).
+
+            nodeFillColor: "0, 0, 0 ",// Sets the color of  triangles in the network (RGB).
+
+            nodeFillAlpha: 2,// Sets the alpha level for the colors (1-0).
+
+            nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
+
+            nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
+
+            nodeFillSpace: true,// Defines if the triangles in the network should be shown.
+
+            nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
+
+            // Define the canvas size and css position.
+            canvasWidth: $(this).width(),
+            canvasHeight: $(this).height(),
+            canvasPosition: "absolute"
+
+        });
+        $("body").polygonizr({
+
+            restNodeMovements: 0,// How long to pause in between new node-movements.
+
+            duration: 8, // When the cluster updates, this sets speed of nodes.
+
+            nodeMovementDistance: 400, // Define the maximum distance to move nodes.
+
+            numberOfNodes: 36,// The number of node nodes to print out.
+
+            nodeDotSize: 1,// Define the maximum size of each node dot.
+
+            nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
+
+            nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
+
+            randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
+
+            // Define a formula for how to initialize each node dot's position.
+            specifyPolygonMeshNetworkFormation: function (i) {
+                var forEachNode = {// Half a circle and randomized
+                    x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
+                    y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
+                };
+                return forEachNode;
+            },
+
+            nodeRelations: 15,// Number of relations between nodes.
+
+            animationFps: 300, // The FPS for the whole canvas.
+
+            nodeDotColor: "255, 255, 255 ",// Sets the color of the nodes in the network (RGB).
+
+            nodeLineColor: "255, 255, 255",// Sets the color of the lines in the network (RGB).
+
+            nodeFillColor: "255, 255, 255 ",// Sets the color of  triangles in the network (RGB).
+
+            nodeFillAlpha: 3,// Sets the alpha level for the colors (1-0).
+
+            nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
+
+            nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
+
+            nodeFillSpace: true,// Defines if the triangles in the network should be shown.
+
+            nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
+
+            // Define the canvas size and css position.
+            canvasWidth: $(this).width(),
+            canvasHeight: $(this).height(),
+            canvasPosition: "absolute"
+
+        });
+    }
+    bg();
+
+    var colors = new Array(
+        [255,255,255],
+        [127.5,127.5,127.5],
+        [0,0,0],
+        [255,255,255],
+        [127.5,127.5,127.5],
+        [0,0,0]);
+
+    var step = 0;
+    var colorIndices = [0,1,2,3];
+
+    //transition speed
+    var gradientSpeed = 0.001;
+
+    function updateGradient()
+    {
+
+        if ( $===undefined ) return;
+
+        var c0_0 = colors[colorIndices[0]];
+        var c0_1 = colors[colorIndices[1]];
+        var c1_0 = colors[colorIndices[2]];
+        var c1_1 = colors[colorIndices[3]];
+
+        var istep = 1 - step;
+        var r1 = Math.round(istep * c0_0[0] + step * c0_1[0]);
+        var g1 = Math.round(istep * c0_0[1] + step * c0_1[1]);
+        var b1 = Math.round(istep * c0_0[2] + step * c0_1[2]);
+        var color1 = "rgb("+r1+","+g1+","+b1+")";
+
+        var r2 = Math.round(istep * c1_0[0] + step * c1_1[0]);
+        var g2 = Math.round(istep * c1_0[1] + step * c1_1[1]);
+        var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
+        var color2 = "rgb("+r2+","+g2+","+b2+")";
+
+        $('body').css({
+            background: "-webkit-gradient(linear, left top, right top, from("+color1+"), to("+color2+"))"}).css({
+            background: "-moz-linear-gradient(left, "+color1+" 0%, "+color2+" 100%)"});
+
+        step += gradientSpeed;
+        if ( step >= 1 )
+        {
+            step %= 1;
+            colorIndices[0] = colorIndices[1];
+            colorIndices[2] = colorIndices[3];
+
+            //pick two new target color indices
+            //do not pick the same as the current one
+            colorIndices[1] = ( colorIndices[1] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
+            colorIndices[3] = ( colorIndices[3] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
+
+        }
+    }
+
+    setInterval(updateGradient,10);
+
+    function f() {
+        if (confirm('WARNING: You are about to erase all records in the database.')) {
+            window.location.replace("{% url 'flush_db' %}");
+        } else {
+            // Do nothing!
+        }
+    }
+</script>
+<nav class="navbar navbar-dark bg-transparent navbar-expand-lg justify-content-between rounded-bottom">
+    <a class="navbar-brand" href="/">Duplify</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="#" data-toggle="modal" data-target="#update-sort" aria-haspopup="true"
+                   aria-expanded="false">Update Sorting <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item ">
+                <a class="nav-link" href="#" data-toggle="modal" data-target="#exampleModalCenter" aria-haspopup="true" aria-expanded="false">
+                    Duplify Reports
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="javascript:f()">Reset</a>
+            </li>
+
+        </ul>
+    </div>
+</nav>
+<div class="modal fade table-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div id="rep-table" class="row" style="overflow-x: auto;">
+
+            </div>
+            <div id="table" class="row text-dark" style="overflow-x: auto;">
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade text-dark" id="exampleModalCenter" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-center" id="exampleModalLongTitle">Reports</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <a  href="report/A" class=" my-3 btn btn-block badge-pill btn-large btn-success" >Audit Report </a>
+                <a  href="report/D" class=" my-3 btn btn-block badge-pill btn-large btn-success" >Duplify Report </a>
+                <a href="report/DD" class="my-3 btn btn-block badge-pill btn-large btn-success" >Dedup Report</a>
+                <a href="report/U" class="my-3 btn btn-block badge-pill btn-large btn-success" >Upload Report</a>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade text-dark" id="update-sort" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title text-center" id="exampleModalLongTitle">Sorting</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h4>Adjust the Duplify Sorter</h4>
+                <p>This will sort all reps based on the new thresholds.</p>
+                <div class="col-12">
+                    <div class="progress">
+                        <div class="progress-bar bg-primary" style="width: 70%">
+                            <span class="sr-only">35% Complete (success)</span>
+                        </div>
+                        <div class="progress-bar bg-warning" style="width: 28%">
+                            <span class="sr-only">20% Complete (warning)</span>
+                        </div>
+                        <div class="progress-bar bg-success" style="width: 2%">
+                            <span class="sr-only">15% Complete (primary)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-group my-3 col-6">
+                        <div class="input-group-prepend col-">
+                            <span class="input-group-text col-12" id="basic-addon1">New-Undecided</span>
+                        </div>
+                        <input type="number" class="form-control col-3" value=70 id="new-undi">
+                    </div>
+                    <div class="input-group my-3 col-6">
+                        <div class="input-group-prepend col-">
+                            <span class="input-group-text col-12" id="basic-addon1">Undecided-Dup</span>
+                        </div>
+                        <input type="number" class="form-control col-3" value=98 id="undi-dup">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="resort()">Save changes</button>
+
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="container-fluid">
+    <ul class="nav nav-pills nav-fill text-white" id="pills-tab" role="tablist">
+        <li class="nav-item badge-pill">
+            <h6  class="mx-1 mt-3"><a class="m-1 button btn-success badge-pill float-right"
+                                      href="export/Duplicate"><span class="fa fa-download fa-1x"></span></a></h6>
+            <a class="nav-link active  bg-dark nav-pill badge-pill" id="pills-dup-tab" data-toggle="pill"
+               href="#pills-dup"
+               role="tab"
+               aria-controls="pills-dup" aria-selected="true">
+                Duplicate Records
+            </a>
+        </li>
+        <li class="nav-item badge-pill">
+            <h6 class="mx-1 mt-3"><a class="m-1 button btn-success badge-pill float-right"
+                                     href="export/NewRecord"><span class="fa fa-download"></span></a></h6>
+            <a class="nav-link bg-dark badge-pill" id="pills-new-tab" data-toggle="pill" href="#pills-new" role="tab"
+               aria-controls="pills-new" aria-selected="false">
+                New Records
+            </a>
+        </li>
+        <li class="nav-item badge-pill">
+            <h6 class="mx-1 mt-3"><a class="m-1 button btn-success badge-pill float-right"
+                                     href="export/ManualCheck"><span class="fa fa-download"></span></a></h6>
+            <a class="nav-link bg-dark badge-pill" id="pills-man-tab" data-toggle="pill" href="#pills-man"
+               role="tab"
+               aria-controls="pills-man" aria-selected="false">
+                Manual Check
+            </a>
+        </li>
+    </ul>
+    <div class="row"> <img src="{% static 'img/loader.gif' %}" id="loading-indicator" class="rounded-circle border-0 bg-white"  />
+</div>
+    <div class="card bg-transparent tab-content rounded" id="pills-tabContent" style="overflow-y: auto; height: 85vh">
+        <div class="tab-pane show active" id="pills-dup" role="tabpanel" aria-labelledby="pills-dup-tab">
+            {#            {% render_table duplicate_table 'django_tables2/bootstrap-responsive.html' %}#}
+        </div>
+        <div class="tab-pane " id="pills-new" role="tabpanel" aria-labelledby="pills-new-tab">
+            {#            {% render_table new_record_table 'django_tables2/bootstrap-responsive.html' %}#}
+        </div>
+        <div class="tab-pane " id="pills-man" role="tabpanel" aria-labelledby="pills-man-tab">
+            {#            {% render_table manual_check_table 'django_tables2/bootstrap-responsive.html' %}#}
+        </div>
+    </div>
+</div>
+</body>
+</html>
