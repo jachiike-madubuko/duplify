@@ -12,9 +12,10 @@
     <thead>
     <tr>
         <th>CRD</th>
-        <th>name</th>
+        <th>Name</th>
         <th>Phone</th>
-        <th>email</th>
+        <th>Email</th>
+        <th>Address</th>
     </tr>
     </thead>
     <tbody>
@@ -24,6 +25,7 @@
             <td>{{ object.name }}</td>
             <td>{{ object.Phone }}</td>
             <td>{{ object.email }}</td>
+            <td>{{ object.mailingStreet }} {{ object.mailingCity }}, {{ object.mailingState }}, {{ object.mailingPostalCode }}</td>
         </tr>
     {% endfor %}
     </tbody>
