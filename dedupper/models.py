@@ -73,8 +73,6 @@ class Contact(hc_models.HerokuConnectModel):
     email = hc_models.Email(sf_field_name='Email')
     otherEmail = hc_models.Email(sf_field_name='Other_Email__c')
     personalEmail = hc_models.Email(sf_field_name='Personal_Email__c')
-    department = hc_models.Text(sf_field_name='Department', max_length=80)
-    title = hc_models.Text(sf_field_name='Title', max_length=80)
 
     def __str__(self):
         return self.name
