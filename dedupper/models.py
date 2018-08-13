@@ -10,7 +10,6 @@ from django.db import models
 from heroku_connect.db import models as hc_models
 
 def strip(string):
-    #check if string is blank, then add NULL
     if string == '':
         return 'NULL'
     newstring = string.replace(" ","")
