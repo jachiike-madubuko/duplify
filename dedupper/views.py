@@ -156,6 +156,7 @@ def download(request,type):
     elif(type == "NewRecord"):
         filename = 'filename="New Records.csv"'
         type = 'New Record'
+        no_id = '.'
     elif(type == "ManualCheck"):
         filename = 'filename="Manual Checks.csv"'
         type = 'Manual Check'
@@ -184,6 +185,9 @@ def download(request,type):
     frames=[db_df[['average', 'keySortedBy', 'closest1_contactID']], misc_df]
     export = pd.concat(frames, axis=1)
     export.columns = fields
+    if no_id:
+        del export['ContactID']
+        fields.remove('ContactID')
     export.replace('nan', '', inplace=True)
     dataset.csv = export.to_csv(index=False)
 
@@ -329,7 +333,7 @@ def login(request):
     return JsonResponse({'msg': msg}, safe=False)
 
 def map(request):
-    exclude = ('id', 'average', 'type', 'closest1_contactID', 'closest1', 'closest2_contactID', 'closest2', 'closest3_contactID', 'closest3', 'dupFlag', 'keySortedBy', 'closest_rep')
+    exclude = ('id', 'misc', 'average', 'type', 'closest1_contactID', 'closest1', 'closest2_contactID', 'closest2', 'closest3_contactID', 'closest3', 'dupFlag', 'keySortedBy', 'closest_rep')
     rep_key = [i.name for i in repContact._meta.local_fields if i.name not in exclude]
     sf_key = [i.name for i in sfcontact._meta.local_fields if i.name not in exclude]
     [i.sort(key=lambda x: x.lower()) for i in [rep_key,sf_key ]]
