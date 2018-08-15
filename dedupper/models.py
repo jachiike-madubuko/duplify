@@ -12,8 +12,7 @@ from heroku_connect.db import models as hc_models
 def strip(string):
     if string == '':
         return 'NULL'
-    newstring = string.replace(" ","")
-    newstring = newstring.replace(".0","")
+    newstring = string.replace(" ","").lower()
     return  newstring
 
 class simple(models.Model):

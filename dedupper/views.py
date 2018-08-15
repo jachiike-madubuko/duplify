@@ -173,14 +173,21 @@ def download(request,type):
     #parse the misc field  back into their respective fields
     misc_df = db_df['misc'].astype(str).str.split('-!-', expand=True)
     db_df=db_df.drop('misc', axis=1)
-    db_df=db_df.drop('id', axis=1)
+
+    f = list(db_df[['average', 'keySortedBy', 'closest1_contactID']])
+    with open(settings.REP_CSV, 'rb') as file:
+        pd_rep_csv = pickle.load(file)
+        print('pickle load reps')
+    fields =  f + list(pd_rep_csv)
+    fields[fields.index('closest1_contactID')] = 'ContactID'
+
     frames=[db_df[['average', 'keySortedBy', 'closest1_contactID']], misc_df]
     export = pd.concat(frames, axis=1)
-    export.replace('nan','', inplace=True)
-    dataset.csv = export.to_csv()
-    f = list(db_df[['average', 'keySortedBy', 'closest1_contactID']])
-    fields = ['id'] + f + request.session['misc']
-    fields[fields.index('closest1_contactID')] = 'ContactID'
+    export.columns = fields
+    export.replace('nan', '', inplace=True)
+    dataset.csv = export.to_csv(index=False)
+
+
 
     writer = csv.writer(response)
     writer.writerow(fields)
@@ -407,11 +414,11 @@ def contact_sort(request):
         if data[0] == 'Duplicate':
             print(f"old order: {rep.closest1}, {rep.closest2}, {rep.closest3}")
             rep.type = 'Duplicate'
-            if int(data[2]) == rep.closest3.id:
+            if rep.closest3 and int(data[2]) == rep.closest3.id:
                 print('moving 3rd closest to 1st')
                 rep.closest1, rep.closest2, rep.closest3 =  rep.closest3, rep.closest1, rep.closest2
                 rep.closest1_contactID, rep.closest2_contactID, rep.closest3_contactID =  rep.closest3_contactID, rep.closest1_contactID, rep.closest2_contactID
-            elif int(data[2]) == rep.closest2.id:
+            elif rep.closest2 and int(data[2]) == rep.closest2.id:
                 print('moving 2nd closest to 1st')
                 rep.closest1, rep.closest2 = rep.closest2, rep.closest1
                 rep.closest1_contactID, rep.closest2_contactID =rep.closest2_contactID,  rep.closest1_contactID

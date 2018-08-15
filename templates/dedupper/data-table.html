@@ -216,7 +216,7 @@
           $('#loading-indicator').show();
         });
 
-        $(document).ajaxComplete(function(event, request, settings) {
+        $(document).ajaxStop(function(event, request, settings) {
           $('#loading-indicator').hide();
 
         });
