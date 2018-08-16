@@ -64,7 +64,7 @@ def convert_csv(file):
     # print('iso8859_15')
     # pd_csv = pd.read_csv(file, encoding = "iso8859_15", delimiter=',')
     print('cp1252')
-    pd_csv = pd.read_csv(file, encoding = "cp1252", delimiter=',')  #western european
+    pd_csv = pd.read_csv(file, encoding = "cp1252", delimiter=',', dtype=str)  #western european
 
     return list(pd_csv), pd_csv
 

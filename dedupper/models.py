@@ -10,11 +10,9 @@ from django.db import models
 from heroku_connect.db import models as hc_models
 
 def strip(string):
-    #check if string is blank, then add NULL
     if string == '':
         return 'NULL'
-    newstring = string.replace(" ","")
-    newstring = newstring.replace(".0","")
+    newstring = string.replace(" ","").lower()
     return  newstring
 
 class simple(models.Model):
@@ -50,6 +48,68 @@ class simple(models.Model):
 
 
 
+class Contact(hc_models.HerokuConnectModel):
+    sf_object_name= 'Contact'
+
+    CRD = hc_models.Text( sf_field_name='CRD__c', max_length=80)
+
+    name = hc_models.Text( sf_field_name='Name', max_length=80)
+    firstName = hc_models.Text( sf_field_name='FirstName', max_length=80)
+    middleName = hc_models.Text( sf_field_name='MiddleName', max_length=80)
+    lastName = hc_models.Text( sf_field_name='LastName', max_length=80)
+    suffix = hc_models.Text( sf_field_name='Suffix', max_length=80)
+
+    mailingStreet = hc_models.Text( sf_field_name='MailingStreet', max_length=80)
+    mailingCity = hc_models.Text( sf_field_name='MailingCity', max_length=80)
+    mailingState = hc_models.Text( sf_field_name='MailingState', max_length=80)
+    mailingPostalCode = hc_models.Text( sf_field_name='MailingPostalCode', max_length=80)
+
+    Phone = hc_models.Phone( sf_field_name='Phone', max_length=80)
+    mobilePhone = hc_models.Phone( sf_field_name='MobilePhone', max_length=80)
+    homePhone = hc_models.Phone( sf_field_name='HomePhone', max_length=80)
+    otherPhone = hc_models.Phone( sf_field_name='OtherPhone', max_length=80)
+
+    email = hc_models.Email(sf_field_name='Email')
+    otherEmail = hc_models.Email(sf_field_name='Other_Email__c')
+    personalEmail = hc_models.Email(sf_field_name='Personal_Email__c')
+
+    def __str__(self):
+        return self.name
+
+    def key(self, key_parts):
+        key = ''
+
+        key_builder = {
+            'CRD': strip(self.CRD),
+            'firstName': strip(self.firstName),
+            'lastName': strip(self.lastName),
+            'suffix': strip(self.suffix),
+            'canSellDate': strip(self.canSellDate),
+            'levelGroup': strip(self.levelGroup),
+            'mailingStreet': strip(self.mailingStreet),
+            'mailingCity': strip(self.mailingCity),
+            'mailingStateProvince': strip(self.mailingStateProvince),
+            'mailingZipPostalCode': strip(self.mailingZipPostalCode),
+            'territory': strip(self.territory),
+            'ID': strip(self.ID),
+            'workPhone': strip(self.workPhone),
+            'homePhone': strip(self.homePhone),
+            'mobilePhone': strip(self.mobilePhone),
+            'workEmail': strip(self.workEmail),
+            'personalEmail': strip(self.personalEmail),
+            'otherEmail': strip(self.otherEmail),
+            'area': strip(self.area),
+            'region': strip(self.region),
+            'regionalLeader': strip(self.regionalLeader),
+            'levelLeader': strip(self.levelLeader),
+            'fieldTrainerLeader': strip(self.fieldTrainerLeader),
+            'performanceLeader': strip(self.performanceLeader),
+            'boaName': strip(self.boaName),
+        }
+
+        for part in key_parts:
+            key += key_builder[part]
+        return key
 
 '''
 repContact.objects.update(type='Undecided', keySortedBy='',closest1='', closest2='', closest3='', closest1_contactID='', closest2_contactID='', closest3_contactID='', average=None)
@@ -57,15 +117,13 @@ repContact.objects.update(type='Undecided', keySortedBy='',closest1='', closest2
 class repContact(models.Model):
     CRD = models.CharField(max_length=256, db_column="CRD")
     firstName = models.CharField(max_length=256, blank=True)
+    middleName = models.CharField(max_length=256, blank=True)
     lastName = models.CharField(max_length=256, blank=True)
     suffix = models.CharField(max_length=256, blank=True)
-    canSellDate = models.CharField(max_length=256, blank=True)
-    levelGroup = models.CharField(max_length=256, blank=True)
     mailingStreet = models.CharField(max_length=256, blank=True)
     mailingCity = models.CharField(max_length=256, blank=True)
     mailingStateProvince = models.CharField(max_length=256, blank=True)
     mailingZipPostalCode = models.CharField(max_length=256, blank=True)
-    territory = models.CharField(max_length=256, blank=True)
     Phone = models.CharField(max_length=256, blank=True)
     homePhone = models.CharField(max_length=256, blank=True)
     mobilePhone = models.CharField(max_length=256, blank=True)
@@ -73,13 +131,6 @@ class repContact(models.Model):
     workEmail = models.CharField(max_length=256, blank=True)
     personalEmail = models.CharField(max_length=256, blank=True)
     otherEmail = models.CharField(max_length=256, blank=True)
-    area = models.CharField(max_length=256, blank=True)
-    region = models.CharField(max_length=256, blank=True)
-    regionalLeader = models.CharField(max_length=256, blank=True)
-    levelLeader = models.CharField(max_length=256, blank=True)
-    fieldTrainerLeader = models.CharField(max_length=256, blank=True)
-    performanceLeader = models.CharField(max_length=256, blank=True)
-    boaName = models.CharField(max_length=256, blank=True)
     average = models.IntegerField(null=True, blank=True)
     TYPES_OF_RECORD = (('Undecided', 'Undecided'),
                        ('Duplicate', 'Duplicate'),
@@ -183,15 +234,13 @@ class sfcontact(models.Model):
     CRD = models.CharField(max_length=256, db_column="CRD")
     ContactID = models.CharField(max_length=256, blank=True)
     firstName = models.CharField(max_length=256, blank=True)
+    middleName = models.CharField(max_length=256, blank=True)
     lastName = models.CharField(max_length=256, blank=True)
     suffix = models.CharField(max_length=256, blank=True)
-    canSellDate = models.CharField(max_length=256, blank=True)
-    levelGroup = models.CharField(max_length=256, blank=True)
     mailingStreet = models.CharField(max_length=256, blank=True)
     mailingCity = models.CharField(max_length=256, blank=True)
     mailingStateProvince = models.CharField(max_length=256, blank=True)
     mailingZipPostalCode = models.CharField(max_length=256, blank=True)
-    territory = models.CharField(max_length=256, blank=True)
     Phone = models.CharField(max_length=256, blank=True)
     homePhone = models.CharField(max_length=256, blank=True)
     mobilePhone = models.CharField(max_length=256, blank=True)
@@ -199,13 +248,6 @@ class sfcontact(models.Model):
     workEmail = models.CharField(max_length=256, blank=True)
     personalEmail = models.CharField(max_length=256, blank=True)
     otherEmail = models.CharField(max_length=256, blank=True)
-    area = models.CharField(max_length=256, blank=True)
-    region = models.CharField(max_length=256, blank=True)
-    regionalLeader = models.CharField(max_length=256, blank=True)
-    levelLeader = models.CharField(max_length=256, blank=True)
-    fieldTrainerLeader = models.CharField(max_length=256, blank=True)
-    performanceLeader = models.CharField(max_length=256, blank=True)
-    boaName = models.CharField(max_length=256, blank=True)
     closest_rep = models.ForeignKey('repContact', on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_related",
         related_query_name="%(class)s", null=True,
                                  blank=True)

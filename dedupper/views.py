@@ -32,6 +32,8 @@ https://www.youtube.com/watch?v=P8_wDttTeuk
 '''
 keys= []
 req=None
+name_sort=address_sort=email_sort=crd_sort=phone_sort=average_sort=key_sort=True
+
 
 def getreq():
     return req
@@ -55,14 +57,13 @@ def display(request):
     # duplicate = RepContactResource().export(repContact.objects.filter(type='Duplicate'))
     # manual_check = RepContactResource().export(repContact.objects.filter(type='Manual Check'))
 
-    return render(request, 'dedupper/sorted.html', { 'new_record_table': duplicate_table})
+    return render(request, 'dedupper/data-table.html', { 'new_record_table': duplicate_table})
     #               , {
     #     'undecided_table': undecided_table,
     #     'duplicate_table': duplicate_table,
     #     'new_record_table': new_record_table,
     #     'manual_check_table': manual_check_table,
     # })
-
 
 def closest(request):
     if request.method == 'GET':
@@ -88,8 +89,58 @@ def closest(request):
 def turn_table(request):
     if request.method == 'GET':
         type =  request.GET.get('type')
-        print(type)
-        table = RepContactTable(repContact.objects.filter(type=type))
+        sort =  request.GET.get('sorting')
+        if sort =='name':
+            if globals()['name_sort']:
+                globals()['name_sort'] = False
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('lastName', 'firstName'))
+            else:
+                globals()['name_sort'] = True
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('-lastName', '-firstName'))
+        elif sort =='email':
+            if globals()['email_sort']:
+                globals()['email_sort'] = False
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('workEmail'))
+            else:
+                globals()['name_sort'] = True
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('-workEmail'))
+        elif sort =='phone':
+            if globals()['name_sort']:
+                globals()['name_sort'] = False
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('Phone'))
+            else:
+                globals()['name_sort'] = True
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('-Phone'))
+        elif sort =='address':
+            if globals()['name_sort']:
+                globals()['name_sort'] = False
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('mailingStateProvince', 'mailingCity'))
+            else:
+                globals()['name_sort'] = True
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('-mailingStateProvince', '-mailingCity'))
+        elif sort =='average':
+            if globals()['name_sort']:
+                globals()['name_sort'] = False
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('average'))
+            else:
+                globals()['name_sort'] = True
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('-average'))
+        elif sort =='keySortedBy':
+            if globals()['name_sort']:
+                globals()['name_sort'] = False
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('keySortedBy'))
+            else:
+                globals()['name_sort'] = True
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('-keySortedBy'))
+        elif sort =='CRD':
+            if globals()['crd_sort']:
+                globals()['crd_sort'] = False
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('CRD'))
+            else:
+                globals()['crd_sort'] = True
+                table = RepContactTable(repContact.objects.filter(type=type).order_by('-CRD'))
+        else:
+            table = RepContactTable(repContact.objects.filter(type=type))
         config = RequestConfig(request, paginate={'per_page': 500})
         config.configure(table)
         print('sending table')
@@ -105,6 +156,7 @@ def download(request,type):
     elif(type == "NewRecord"):
         filename = 'filename="New Records.csv"'
         type = 'New Record'
+        no_id = '.'
     elif(type == "ManualCheck"):
         filename = 'filename="Manual Checks.csv"'
         type = 'Manual Check'
@@ -122,14 +174,24 @@ def download(request,type):
     #parse the misc field  back into their respective fields
     misc_df = db_df['misc'].astype(str).str.split('-!-', expand=True)
     db_df=db_df.drop('misc', axis=1)
-    db_df=db_df.drop('id', axis=1)
+
+    f = list(db_df[['average', 'keySortedBy', 'closest1_contactID']])
+    with open(settings.REP_CSV, 'rb') as file:
+        pd_rep_csv = pickle.load(file)
+        print('pickle load reps')
+    fields =  f + list(pd_rep_csv)
+    fields[fields.index('closest1_contactID')] = 'ContactID'
+
     frames=[db_df[['average', 'keySortedBy', 'closest1_contactID']], misc_df]
     export = pd.concat(frames, axis=1)
-    export.replace('nan','', inplace=True)
-    dataset.csv = export.to_csv()
-    f = list(db_df[['average', 'keySortedBy', 'closest1_contactID']])
-    fields = ['id'] + f + request.session['misc']
-    fields[fields.index('closest1_contactID')] = 'ContactID'
+    export.columns = fields
+    if no_id:
+        del export['ContactID']
+        fields.remove('ContactID')
+    export.replace('nan', '', inplace=True)
+    dataset.csv = export.to_csv(index=False)
+
+
 
     writer = csv.writer(response)
     writer.writerow(fields)
@@ -270,9 +332,8 @@ def login(request):
 
     return JsonResponse({'msg': msg}, safe=False)
 
-
 def map(request):
-    exclude = ('id', 'average', 'type', 'closest1_contactID', 'closest1', 'closest2_contactID', 'closest2', 'closest3_contactID', 'closest3', 'dupFlag', 'keySortedBy', 'closest_rep')
+    exclude = ('id', 'misc', 'average', 'type', 'closest1_contactID', 'closest1', 'closest2_contactID', 'closest2', 'closest3_contactID', 'closest3', 'dupFlag', 'keySortedBy', 'closest_rep')
     rep_key = [i.name for i in repContact._meta.local_fields if i.name not in exclude]
     sf_key = [i.name for i in sfcontact._meta.local_fields if i.name not in exclude]
     [i.sort(key=lambda x: x.lower()) for i in [rep_key,sf_key ]]
@@ -357,11 +418,11 @@ def contact_sort(request):
         if data[0] == 'Duplicate':
             print(f"old order: {rep.closest1}, {rep.closest2}, {rep.closest3}")
             rep.type = 'Duplicate'
-            if int(data[2]) == rep.closest3.id:
+            if rep.closest3 and int(data[2]) == rep.closest3.id:
                 print('moving 3rd closest to 1st')
                 rep.closest1, rep.closest2, rep.closest3 =  rep.closest3, rep.closest1, rep.closest2
                 rep.closest1_contactID, rep.closest2_contactID, rep.closest3_contactID =  rep.closest3_contactID, rep.closest1_contactID, rep.closest2_contactID
-            elif int(data[2]) == rep.closest2.id:
+            elif rep.closest2 and int(data[2]) == rep.closest2.id:
                 print('moving 2nd closest to 1st')
                 rep.closest1, rep.closest2 = rep.closest2, rep.closest1
                 rep.closest1_contactID, rep.closest2_contactID =rep.closest2_contactID,  rep.closest1_contactID
