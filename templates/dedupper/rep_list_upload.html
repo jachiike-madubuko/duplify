@@ -207,9 +207,8 @@
         $(document).on('click', '.btn-success', function(e) {
 
 
-            if( $(".rep").text().substr(-3) != 'csv' ||  $(".sf").text().substr(-3) != 'csv') {
-                if( $(".rep").text() == 'Choose file' ||   $(".sf").text() == 'Choose file' || $(".rep").text() ==
-                    '' ||   $(".sf").text() == '' ) {
+            if( $(".rep").text().substr(-3) != 'csv' ) {
+                if( $(".rep").text() == 'Choose file' || $(".rep").text() == '') {
                     e.preventDefault(); //prevent the default action
                     $(".files").removeClass("invisible");//.delay(5).addClass("invisible");
                     $.wait( function(){ $(".files").addClass("invisible") }, 3);
@@ -277,13 +276,6 @@
                             <label class=" custom-file-label rep" for="repFile">Choose file</label>
                         </div>
 
-                        <h6 class="card-text  mt-5 text-center">Upload SF Report Here</h6>
-                        <div class="custom-file ">
-
-                            <input type="file" class="custom-file-input" id="sfFile" name="sfFile"
-                                   onchange="filename(this, '.sf')">
-                            <label class=" custom-file-label sf" for="sfFile">Choose file</label>
-                        </div>
                         <hr class="my-3">
 
                         <div class="row">

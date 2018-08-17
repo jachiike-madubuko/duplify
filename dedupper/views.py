@@ -150,6 +150,7 @@ def download(request,type):
     fields = ('id','CRD', 'First', 'Last', 'Street', 'City',
               'State', 'Zip', 'Phone', 'Home Phone', 'Mobile Phone',
               'Other Phone', 'Work Email', 'Personal Email', 'Other Email', 'Match Score', 'Key' )
+    no_id = None
 
     if(type == "Duplicate"):
         filename = 'filename="Duplicates.csv"'
@@ -277,10 +278,10 @@ def import_csv(request):
     repcontact_resource = RepContactResource()
     sfcontact_resource = SFContactResource()
     if request.method == 'GET':
-        sf_header_map = request.GET.get('sf_map')
+        channel = request.GET.get('channel')
         rep_header_map = request.GET.get('rep_map')
 
-        sf_header_map = json.loads(sf_header_map)
+        # sf_header_map = json.loads(sf_header_map)
         rep_header_map = json.loads(rep_header_map)
 
         with open(settings.REP_CSV, 'rb') as file:
@@ -290,9 +291,32 @@ def import_csv(request):
         with open(settings.SF_CSV, 'rb') as file:
             pd_sf_csv = pickle.load(file)
             print('pickle load sf')
-
+        sf = Salesforce(password='7924Trill!', username='jmadubuko@wealthvest.com', organizationId='00D36000001DkQo')
+        query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where Territory_Type__c='Geography' and Territory__r.Name like "
+        starts_with = f"'{channel}%'"
+        territory = sf.bulk.Contact.query(query + starts_with)
+        print(len(territory))
+        territory = pd.DataFrame(territory).drop('attributes', axis=1).replace([None], [''], regex=True)
+        sf_header_map = {'CRD__c': 'CRD',
+                       'Email': 'workEmail',
+                       'FirstName': 'firstName',
+                       'HomePhone': 'homePhone',
+                       'Id': 'ContactID',
+                       'LastName': 'lastName',
+                       'MailingCity': 'mailingCity',
+                       'MailingPostalCode': 'mailingZipPostalCode',
+                       'MailingState': 'mailingStateProvince',
+                       'MailingStreet': 'mailingStreet',
+                       'MobilePhone': 'mobilePhone',
+                       'OtherPhone': 'otherPhone',
+                       'Phone': 'Phone',
+                       'Personal_Email__c': 'personalEmail',
+                       'Other_Email__c': 'otherEmail',
+                       'Suffix': 'suffix',
+                       }
+        load_csv2db(territory, sf_header_map, sfcontact_resource, file_type='SF')
         request.session['misc'] = load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
-        load_csv2db(pd_sf_csv, sf_header_map, sfcontact_resource, file_type='SF')
+
 
 
     return JsonResponse({'msg': 'success!'}, safe=False)
@@ -450,23 +474,15 @@ def upload(request):
     print('uploading file')
     form = UploadFileForm(request.POST, request.FILES)
     repCSV = request.FILES['repFile']
-    sfCSV = request.FILES['sfFile']
     request.session['repCSV_name'] = str(repCSV)
-    request.session['sfCSV_name'] = str(sfCSV)
     rep_headers, pd_rep_csv = convert_csv(repCSV)
     request.session['repCSV_headers'] = rep_headers
     export_headers = rep_headers
 
-    sf_headers, pd_sf_csv= convert_csv(sfCSV)
-    request.session['sfCSV_headers'] = sf_headers
     # keys = make_keys(headers)
     with open(settings.REP_CSV, 'wb') as file:
         pickle.dump(pd_rep_csv, file)
         print('pickle dump reps')
-
-    with open(settings.SF_CSV, 'wb') as file:
-        pickle.dump(pd_sf_csv, file)
-        print('pickle dump sf')
 
     return redirect('/map/')
 
