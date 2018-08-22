@@ -348,7 +348,7 @@
         }
     }
     function map_headers() {
-
+        var channel  = $('input:checked').val();
         $('.rep-select').each( function() {
             var x = $(this).find(':selected').data('name');
             var par = $(this).parent().children('div').children('p').text();
@@ -364,7 +364,7 @@
                 sf_mapping[x] = par;
             }
         });
-        $.getJSON("{% url 'import_csv' %}", {sf_map: JSON.stringify(sf_mapping), rep_map: JSON.stringify
+        $.getJSON("{% url 'import_csv' %}", {channel: channel, rep_map: JSON.stringify
             (rep_mapping) }, function (result) {
             window.location.replace("{% url 'key-gen' %}");
         });
@@ -462,7 +462,36 @@
     <div class="col sf mb-3">
         <div class="col">
             <h2 class="alert-dark text-center badge-pill"> SF Field Mapping </h2>
-            <div class="row container-fluid">
+            <div class="row">
+                <div id="channelPicker" class=" row bg-dark text-primary card mb-2">
+                    <div class="card-body">
+                        <h2 class="card-title">Pick a Channel</h2>
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                            <label class="btn btn-outline-primary">
+                                <input type="radio" name="options" id="option2" value="RC" autocomplete="off"> RC
+                            </label>
+                            <label class="btn btn-outline-primary">
+                                <input type="radio" name="options" id="option3" value="RD" autocomplete="off"> RD
+                            </label>
+                            <label class="btn btn-outline-primary">
+                                <input type="radio" name="options" id="option3" value="RM" autocomplete="off"> RM
+                            </label>
+                            <label class="btn btn-outline-primary">
+                                <input type="radio" name="options" id="option3" value="IMC" autocomplete="off"> IMC
+                            </label>
+                            <label class="btn btn-outline-primary">
+                                <input type="radio" name="options" id="option3" value="EMC" autocomplete="off"> EMC
+                            </label>
+                            <label class="btn btn-outline-primary">
+                                <input type="radio" name="options" id="option3" value="FD" autocomplete="off"> FD
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row container-fluid" hidden>
                 {% for key, list in sf_dropdown.items %}
                     <div class="input-group mb-3 col-12 shadow-lg">
                         <div class="input-group-prepend px-auto">
