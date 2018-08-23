@@ -8,6 +8,8 @@ from tablib import Dataset
 from collections import defaultdict
 from scraper import finra_check_job
 import csv
+import logging
+
 # Create your views here.
 
 def index(request):
@@ -18,6 +20,9 @@ def index(request):
 def scrape(request):
     #apex callout sends json data with group, indi, and channel attrs if not filled then = 0
     sf = Salesforce(password='7924Trill!', username='jmadubuko@wealthvest.com', organizationId='00D36000001DkQo')
+
+    print(request.GET)
+    logging.debug(request.GET)
 
     export = finra_check_job(request.GET)
 
