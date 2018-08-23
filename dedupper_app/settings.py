@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'dedupper.apps.DedupperConfig',
+    'scraper.apps.ScraperConfig',
     'django.contrib.postgres',
     'django_tables2',
     'django_filters',
