@@ -69,5 +69,6 @@ Django = "==2.0.5"
 et_xmlfile = "==1.0.1"
 PyYAML = "==3.12"
 simple-salesforce = "*"
+selenium = "*"
 
 [dev-packages]
