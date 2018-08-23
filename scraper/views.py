@@ -5,6 +5,8 @@ from django.shortcuts import render, redirect
 from django.shortcuts import render
 import pandas  as pd
 from tablib import Dataset
+from collections import defaultdict
+from scraper import finra_check_job
 import csv
 # Create your views here.
 
@@ -14,12 +16,17 @@ def index(request):
 
 
 def scrape(request):
+    #apex callout sends json data with group, indi, and channel attrs if not filled then = 0
+    sf = Salesforce(password='7924Trill!', username='jmadubuko@wealthvest.com', organizationId='00D36000001DkQo')
+
+    export = finra_check_job(request.GET)
+
+
     print('run scraper')
     print('get results from scraper')
     filename = 'filename="Scraper.csv"'
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; ' + filename
-    export = pd.DataFrame({i: [j for j in range(10)] for i in range(10)})
     dataset = Dataset()
     dataset.csv = export.to_csv(index=False)
 
