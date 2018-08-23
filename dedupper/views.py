@@ -31,41 +31,13 @@ http://www.marinamele.com/2013/12/how-to-set-django-app-on-heroku-part-i.html
 https://www.youtube.com/watch?v=P8_wDttTeuk
 '''
 keys= []
-req=None
 name_sort=address_sort=email_sort=crd_sort=phone_sort=average_sort=key_sort=True
 
-
-def getreq():
-    return req
-
 def display(request):
-    # global req
-    # req=request
-    config = RequestConfig(request, paginate={'per_page': 500})
-    # undecided_table = RepContactTable(repContact.objects.filter(type__exact='Undecided'), prefix='U-')  # prefix specified
-    duplicate_table = RepContactTable(repContact.objects.filter(type__exact='Duplicate'), prefix='D-')  # prefix specified
-    # new_record_table = RepContactTable(repContact.objects.filter(type__exact='New Record'), prefix='N-')  # prefix
-    # manual_check_table = RepContactTable(repContact.objects.filter(type__exact='Manual Check'), prefix='M-')  # prefix
-    # # specified
-    # config.configure(undecided_table)
-    config.configure(duplicate_table)
-    # config.configure(new_record_table)
-    # config.configure(manual_check_table)
-    #
-    # undecided = RepContactResource().export(repContact.objects.filter(type='Undecided'))
-    # newRecord = RepContactResource().export(repContact.objects.filter(type='New Record'))
-    # duplicate = RepContactResource().export(repContact.objects.filter(type='Duplicate'))
-    # manual_check = RepContactResource().export(repContact.objects.filter(type='Manual Check'))
-
-    return render(request, 'dedupper/data-table.html', { 'new_record_table': duplicate_table})
-    #               , {
-    #     'undecided_table': undecided_table,
-    #     'duplicate_table': duplicate_table,
-    #     'new_record_table': new_record_table,
-    #     'manual_check_table': manual_check_table,
-    # })
+    return render(request, 'dedupper/data-table.html')
 
 def closest(request):
+    #function gets the SFContactTable for each of the closest matches
     if request.method == 'GET':
         id = request.GET.get('id')
         close_id1 = request.GET.get('close1')
@@ -73,6 +45,7 @@ def closest(request):
         close_id3 = request.GET.get('close3')
         html_table1=html_table2=html_table3=''
 
+        #check if id exists, if so: render html table of the contact
         if close_id1 != '':
             table1 = SFContactTable( sfcontact.objects.filter(pk=close_id1))
             html_table1 = table1.as_html(request)
@@ -87,10 +60,13 @@ def closest(request):
         # return  JsonResponse({'rep-table': 'tits'})
 
 def turn_table(request):
+    #function that returns a table of contact types sorted by a user input field
     if request.method == 'GET':
         type =  request.GET.get('type')
         sort =  request.GET.get('sorting')
+        #switch statement on sort field
         if sort =='name':
+            #booleans for each sorting field to toggle between ascending and descending
             if globals()['name_sort']:
                 globals()['name_sort'] = False
                 table = RepContactTable(repContact.objects.filter(type=type).order_by('lastName', 'firstName'))
@@ -141,17 +117,20 @@ def turn_table(request):
                 table = RepContactTable(repContact.objects.filter(type=type).order_by('-CRD'))
         else:
             table = RepContactTable(repContact.objects.filter(type=type))
-        config = RequestConfig(request, paginate={'per_page': 500})
+        config = RequestConfig(request, paginate={'per_page': 250})
         config.configure(table)
         print('sending table')
         return JsonResponse({ 'table': table.as_html(request) }, safe=False)
 
 def download(request,type):
+
+    #csv headers
     fields = ('id','CRD', 'First', 'Last', 'Street', 'City',
               'State', 'Zip', 'Phone', 'Home Phone', 'Mobile Phone',
               'Other Phone', 'Work Email', 'Personal Email', 'Other Email', 'Match Score', 'Key' )
     no_id = None
 
+    #name the csv
     if(type == "Duplicate"):
         filename = 'filename="Duplicates.csv"'
     elif(type == "NewRecord"):
@@ -164,11 +143,8 @@ def download(request,type):
     else:
         filename = 'filename="Undecided Records.csv"'
 
+
     rep_resource = RepContactResource()
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; '+filename
-
-
     users = repContact.objects.filter(type = type)
     dataset = rep_resource.export(users)
     db_df = pd.read_json(dataset.json)
@@ -194,6 +170,11 @@ def download(request,type):
 
 
 
+    #create response
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; '+filename
+
+    #create csv writer for the response and write the
     writer = csv.writer(response)
     writer.writerow(fields)
     for line in dataset:
@@ -284,35 +265,31 @@ def import_csv(request):
         # sf_header_map = json.loads(sf_header_map)
         rep_header_map = json.loads(rep_header_map)
 
-        with open(settings.REP_CSV, 'rb') as file:
-            pd_rep_csv =pickle.load(file)
-            print('pickle load reps')
+        pd_rep_csv = pd.read_pickle(settings.REP_CSV)
 
-        with open(settings.SF_CSV, 'rb') as file:
-            pd_sf_csv = pickle.load(file)
-            print('pickle load sf')
         sf = Salesforce(password='7924Trill!', username='jmadubuko@wealthvest.com', organizationId='00D36000001DkQo')
         query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where Territory_Type__c='Geography' and Territory__r.Name like "
         starts_with = f"'{channel}%'"
         territory = sf.bulk.Contact.query(query + starts_with)
         print(len(territory))
         territory = pd.DataFrame(territory).drop('attributes', axis=1).replace([None], [''], regex=True)
-        sf_header_map = {'CRD__c': 'CRD',
-                       'Email': 'workEmail',
-                       'FirstName': 'firstName',
-                       'HomePhone': 'homePhone',
-                       'Id': 'ContactID',
-                       'LastName': 'lastName',
-                       'MailingCity': 'mailingCity',
-                       'MailingPostalCode': 'mailingZipPostalCode',
-                       'MailingState': 'mailingStateProvince',
-                       'MailingStreet': 'mailingStreet',
-                       'MobilePhone': 'mobilePhone',
-                       'OtherPhone': 'otherPhone',
-                       'Phone': 'Phone',
-                       'Personal_Email__c': 'personalEmail',
-                       'Other_Email__c': 'otherEmail',
-                       'Suffix': 'suffix',
+        sf_header_map = {
+           'CRD__c': 'CRD',
+           'Email': 'workEmail',
+           'FirstName': 'firstName',
+           'HomePhone': 'homePhone',
+           'Id': 'ContactID',
+           'LastName': 'lastName',
+           'MailingCity': 'mailingCity',
+           'MailingPostalCode': 'mailingZipPostalCode',
+           'MailingState': 'mailingStateProvince',
+           'MailingStreet': 'mailingStreet',
+           'MobilePhone': 'mobilePhone',
+           'OtherPhone': 'otherPhone',
+           'Phone': 'Phone',
+           'Personal_Email__c': 'personalEmail',
+           'Other_Email__c': 'otherEmail',
+           'Suffix': 'suffix',
                        }
         load_csv2db(territory, sf_header_map, sfcontact_resource, file_type='SF')
         request.session['misc'] = load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
@@ -359,19 +336,12 @@ def login(request):
 def map(request):
     exclude = ('id', 'misc', 'average', 'type', 'closest1_contactID', 'closest1', 'closest2_contactID', 'closest2', 'closest3_contactID', 'closest3', 'dupFlag', 'keySortedBy', 'closest_rep')
     rep_key = [i.name for i in repContact._meta.local_fields if i.name not in exclude]
-    sf_key = [i.name for i in sfcontact._meta.local_fields if i.name not in exclude]
-    [i.sort(key=lambda x: x.lower()) for i in [rep_key,sf_key ]]
+    [i.sort(key=lambda x: x.lower()) for i in [rep_key ]]
 
     rep_headers= request.session['repCSV_headers']
-    sf_headers= request.session['sfCSV_headers']
-
     rep_dropdown = {i: sorted(rep_headers, key= lambda x: SeqMat(None, x, i).ratio(), reverse=True) for i in rep_key}
-    sf_dropdown = {i: sorted(sf_headers, key= lambda x: SeqMat(None, x, i).ratio(), reverse=True) for i in sf_key}
-    # print(json.dumps(rep_dropdown, indent=4))
-    # print(json.dumps(sf_dropdown, indent=4))
 
     return render(request, 'dedupper/field_mapping.html', {'rep_dropdown': rep_dropdown,
-                                                           'sf_dropdown': sf_dropdown
                                                            }
                   )
 
