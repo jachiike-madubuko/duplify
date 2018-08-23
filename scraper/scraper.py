@@ -269,6 +269,8 @@ def finra_results(title, contacts):
 
 
 def finra_check_job(filter_args):
+    sf = Salesforce(password='7924Trill!', username='jmadubuko@wealthvest.com', organizationId='00D36000001DkQo')
+
     select_contacts = 'select Id, CRD__c, Name, Middle_Name__c, MailingStreet, MailingCity, MailingState, MailingPostalCode, Finra_BrokerCheck__c, Broker_Dealer__r.Firm_CRD__c , Broker_Dealer__r.Name from Contact'
     results = defaultdict(list)
     if filter_args['All']:
@@ -302,7 +304,6 @@ def finra_check_job(filter_args):
         # save_scrape('Individual FinraCheck', results)
 
     else: return 'could not perform finra check'
-
 # #test finra_check_job::All
 # job = defaultdict(int)
 # job['All'] = True
@@ -310,9 +311,6 @@ def finra_check_job(filter_args):
 
 def finra_channel(channel):
     job = defaultdict(int)
-    finra_check_job(job)
-
-def finra_group(group):
     finra_check_job(job)
 
 def finra_contact(contactID):
