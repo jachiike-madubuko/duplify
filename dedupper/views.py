@@ -128,20 +128,25 @@ def download(request,type):
     fields = ('id','CRD', 'First', 'Last', 'Street', 'City',
               'State', 'Zip', 'Phone', 'Home Phone', 'Mobile Phone',
               'Other Phone', 'Work Email', 'Personal Email', 'Other Email', 'Match Score', 'Key' )
+
+    #flag to remove contactIDs from new records
     no_id = None
 
+    #name of uploaded rep list
+    if 'repCSV_name' in request.session:
+        repCSV_name = request.session['repCSV_name']
     #name the csv
     if(type == "Duplicate"):
-        filename = 'filename="Duplicates.csv"'
+        filename = f'filename="{repCSV_name} Duplicates.csv"'
     elif(type == "NewRecord"):
-        filename = 'filename="New Records.csv"'
+        filename = f'filename= "{repCSV_name} New Records.csv"'
         type = 'New Record'
         no_id = '.'
     elif(type == "ManualCheck"):
-        filename = 'filename="Manual Checks.csv"'
+        filename = f'filename="{repCSV_name} Manual Checks.csv"'
         type = 'Manual Check'
     else:
-        filename = 'filename="Undecided Records.csv"'
+        filename = f'filename="{repCSV_name} Undecided Records.csv"'
 
 
     rep_resource = RepContactResource()

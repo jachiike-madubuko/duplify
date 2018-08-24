@@ -17,13 +17,7 @@ from random import randint
 from functools import reduce
 from collections import defaultdict
 import datetime
-
-
-
-def scraper_handler(scrape_type, job):
-    return finra_check_job(job)
-
-
+browser = None
 #query contacts
 # query = f"select Id, CRD__c, Name, Middle_Name__c, MailingStreet, MailingCity, MailingState, MailingPostalCode, Finra_BrokerCheck__c, Broker_Dealer__r.Firm_CRD__c , Broker_Dealer__r.Name from Contact where Broker_Dealer__r.Firm_CRD__c != null  limit 100"
 
@@ -62,7 +56,6 @@ def screen_scraper(crd_list):
 
     #loop through crds and scrape
     for crd in crd_list:
-        browser = webdriver.Chrome()
         browser.get(f'https://brokercheck.finra.org/individual/summary/{crd}')
         sleep(1)
         if 'BrokerCheck' in browser.title[:12]: #main BrokerCheck page
@@ -267,6 +260,7 @@ def finra_results(title, contacts):
 
 
 def finra_check_job(filter_args):
+    globals()['browser'] =  webdriver.Chrome()
     sf = Salesforce(password='7924Trill!', username='jmadubuko@wealthvest.com', organizationId='00D36000001DkQo')
 
     select_contacts = 'select Id, CRD__c, Name, Middle_Name__c, MailingStreet, MailingCity, MailingState, MailingPostalCode, Finra_BrokerCheck__c, Broker_Dealer__r.Firm_CRD__c , Broker_Dealer__r.Name from Contact'
