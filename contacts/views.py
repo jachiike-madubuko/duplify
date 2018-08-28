@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from contacts.contacts_clean_up  import contacts_clean_up
+from contacts.contacts_clean_up  import contacts_clean_up, get_resampled_field_count
 from collections import defaultdict
 from django.http import HttpResponse, JsonResponse
 import pandas as pd
@@ -36,3 +36,20 @@ def table(request):
 
 
 
+def plotly(request):
+    '''
+    For contact info, let the data tell the story,
+	for each table of contacts, deploy a plotly interface with the contacts resampled by month for created by, last activity, and last modified
+    :param request:
+    :param api_name: str
+    :param record_type: str
+
+    :return plotly: data for plotly.js => resampled(count) by month for created by, last activity, and last modified
+    '''
+    api_name = request.GET.get('api_key')
+    record_type = request.GET.get('type_key')
+    table = pd.read_pickle(f'contacts/panda_pickles/{api_name}-{record_type}.pkl')
+    data = get_resampled_field_count(table)
+
+
+    return JsonResponse({'table':'plot.to_html()'}, safe=False)

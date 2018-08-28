@@ -27,6 +27,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('contacts/', views.contacts, name='contacts'),
     path('table/', views.table, name='table'),
+    path('plotly/', views.plotly, name='plotly'),
 #     url(r'^keys', views.upload, name='keys'),
 #     path('key-gen/', views.key_gen, name='key-gen'),
 #     path('heroku/', generic.ListView.as_view(model=models.Contact), name='heroku'),
