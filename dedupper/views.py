@@ -134,25 +134,26 @@ def download(request,type):
 
     #name of uploaded rep list
     if 'repCSV_name' in request.session:
-        repCSV_name = request.session['repCSV_name']
+        repCSV_name = request.session['repCSV_name'].replace('.csv','')
     #name the csv
     if(type == "Duplicate"):
-        filename = f'filename="{repCSV_name} Duplicates.csv"'
+        filename = f'filename="{repCSV_name} (Duplicates).csv"'
     elif(type == "NewRecord"):
-        filename = f'filename= "{repCSV_name} New Records.csv"'
+        filename = f'filename= "{repCSV_name} (New Records).csv"'
         type = 'New Record'
         no_id = '.'
     elif(type == "ManualCheck"):
-        filename = f'filename="{repCSV_name} Manual Checks.csv"'
+        filename = f'filename="{repCSV_name} (Manual Checks).csv"'
         type = 'Manual Check'
     else:
-        filename = f'filename="{repCSV_name} Undecided Records.csv"'
+        filename = f'filename="{repCSV_name} (Undecided Records).csv"'
 
 
     rep_resource = RepContactResource()
     users = repContact.objects.filter(type = type)
     dataset = rep_resource.export(users)
     db_df = pd.read_json(dataset.json)
+
     #parse the misc field  back into their respective fields
     misc_df = db_df['misc'].astype(str).str.split('-!-', expand=True)
     db_df=db_df.drop('misc', axis=1)
@@ -172,8 +173,6 @@ def download(request,type):
         fields.remove('ContactID')
     export.replace('nan', '', inplace=True)
     dataset.csv = export.to_csv(index=False)
-
-
 
     #create response
     response = HttpResponse(content_type='text/csv')
@@ -214,22 +213,22 @@ def download_times(request,type):
         percent_news = round((total_news/total_reps)*100,1)
         time_hours = round(((duplifyTime.objects.get(pk=1).seconds/60)/60),2)
         audit_info = []
-        audit_info.append(f"Duplify Audit of {repCSV_name} duped against {sfCSV_name}")
-        audit_info.append("")
-        audit_info.append(f"Number of Records in Rep List: {total_reps}")
-        audit_info[-1] += f"\t Number of Records in {sfCSV_name[2:]}: {total_sf}"
-        audit_info.append(f"Number of Duplicate Records in the Rep List: {total_dups}({percent_dups}%)")
-        audit_info.append(f"Number of New Records in the Rep List: {total_news}({percent_news}%)")
-        audit_info.append(f"Time: {time_hours} hours")
-        audit_info.append("")
-        audit_info.append("Thank you for using Duplify!")
+        audit_info.append([f"Duplify Audit of {repCSV_name} duped against {sfCSV_name}"])
+        audit_info.append([""])
+        audit_info.append([f"Number of Records in Rep List: {total_reps} \t Number of Records in {sfCSV_name[2:]}: " +
+                          f"{total_sf}"])
+
+        audit_info.append([f"Number of Duplicate Records in the Rep List: {total_dups}({percent_dups}%)"])
+        audit_info.append([f"Number of New Records in the Rep List: {total_news}({percent_news}%)"])
+        audit_info.append([f"Time: {time_hours} hours"])
+        audit_info.append([""])
+        audit_info.append(["Thank you for using Duplify!"])
 
         filename = 'filename="Audit.txt"'
         response = HttpResponse(content_type='text/text')
         response['Content-Disposition'] = 'attachment; ' + filename
         writer = csv.writer(response, delimiter='\n')
-        for info in audit_info:
-            writer.writerow(info)
+        writer.writerows(audit_info)
         return response
     else:
         filename = 'filename="Upload Times.csv"'
@@ -333,6 +332,8 @@ def login(request):
     try:
         sf = Salesforce(username=u, password=p, organizationId='00D36000001DkQo')
         msg= 'success'
+        #store u & p in session, create function called login_check that makes sure a username is in the session
+        # else, redirect to /
     except:
         msg = 'failure'
 

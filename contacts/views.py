@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from contacts.contacts_clean_up  import contacts_clean_up, get_resampled_field_count
+from contacts.contacts_clean_up  import contacts_clean_up, get_resampled_field_count, contact_type_using_field
 from collections import defaultdict
 from django.http import HttpResponse, JsonResponse
 import pandas as pd
@@ -30,8 +30,8 @@ def contacts(request):
 def table(request):
     api_name = request.GET.get('api_key')
     record_type = request.GET.get('type_key')
-    table = pd.read_pickle(f'contacts/panda_pickles/{api_name}-{record_type}.pkl')
-
+    print(api_name, record_type)
+    table = contact_type_using_field(record_type, api_name)
     return JsonResponse({'table':table.to_html()}, safe=False)
 
 

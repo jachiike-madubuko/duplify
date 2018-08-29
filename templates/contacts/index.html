@@ -5,9 +5,9 @@
     <title>Duplify | Upload</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <style>
-        /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#b8e1fc+0,a9d2f3+10,90bae4+25,90bcea+37,90bff0+50,6ba8e5+51,a2daf5+83,bdf3fd+100;Blue+Gloss+%231 */
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/css/dataTables.dataTables.min
+.css" />
+
 </head>
 <body class="bg-" style="transition: 2s; overflow: hidden">
 <nav class="navbar navbar-light navbar-expand-lg justify-content-between" style="background: transparent">
@@ -28,35 +28,30 @@
             </li>
         </ul>
     </div>
+    <div>
+        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modelId" onclick="plotly()">
+            Plot
+        </button>
+    </div>
 </nav>
 <div class="container-fluid" style="padding-top: 1px;  height: 100%; width: 95%;">
-    <div class="card text-center shadow" style="max-height: 91vh">
-        <div class="card-header row">
-            <ul class="nav nav-tabs card-header-tabs api col-6">
+    <div class="row text-center shadow" style="max-height: 91vh">
+        <div class="col-3 bg-danger" style="overflow: scroll">
+            <ul class="nav nav-tabs api col-6">
             </ul>
-            <p class="card-text col">With supporting text below as a natural lead-in to additional content.</p>
         </div>
-        <div class="card-body">
-            <div class="row text-center">
-            </div>
-            <div class="card text-center text-white bg-dark shadow" style="max-height: 71vh">
-                <div class="card-header row">
-                    <ul class="nav nav-tabs card-header-tabs record col-6" >
-                    </ul>
-                    <p class="card-text col">With supporting text below as a natural lead-in to additional
-                        content.</p>
-                    <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modelId"
-                            onclick="plotly()">
-                        Plot
-                    </button>
-                </div>
-                <div class="card-body">
-                    <div class="row text-center" />
-                    <div class="row table shadow" style="overflow-y: scroll; max-height: 63vh;" />
-                </div>
+        <div class="col-3 bg-success" style="overflow: scroll">
+            <ul class="nav nav-tabs card-header-tabs record col-6" >
+            </ul>
+        </div>
+        <div class="col-6 bg-primary">
+            <div class="row text-title text-center"></div>
+            <div class="row">
+                <div class="table" style="overflow: scroll; max-height: inherit;"></div>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <!-- Modal -->
@@ -99,57 +94,60 @@
         integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/js/dataTables.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/dataTables.material.min.js"></script>
+
 <script>
     var plot = $("#plot");
     function plotly(){
         $.getJSON("{% url 'plotly' %}", {api_key: api_key, type_key: type_key}, function (result) {// plot the data
-           var trace1 = {
-  x: [1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012],
-  y: [219, 146, 112, 127, 124, 180, 236, 207, 236, 263, 350, 430, 474, 526, 488, 537, 500, 439],
-  name: 'Rest of world',
-  marker: {color: 'rgb(55, 83, 109)'},
-  type: 'bar'
-};
+            var trace1 = {
+                x: [1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012],
+                y: [219, 146, 112, 127, 124, 180, 236, 207, 236, 263, 350, 430, 474, 526, 488, 537, 500, 439],
+                name: 'Rest of world',
+                marker: {color: 'rgb(55, 83, 109)'},
+                type: 'bar'
+            };
 
-var trace2 = {
-  x: [1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012],
-  y: [16, 13, 10, 11, 28, 37, 43, 55, 56, 88, 105, 156, 270, 299, 340, 403, 549, 499],
-  name: 'China',
-  marker: {color: 'rgb(26, 118, 255)'},
-  type: 'bar'
-};
+            var trace2 = {
+                x: [1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012],
+                y: [16, 13, 10, 11, 28, 37, 43, 55, 56, 88, 105, 156, 270, 299, 340, 403, 549, 499],
+                name: 'China',
+                marker: {color: 'rgb(26, 118, 255)'},
+                type: 'bar'
+            };
 
-var data = [trace1, trace2];
+            var data = [trace1, trace2];
 
-var layout = {
-  title: 'US Export of Plastic Scrap',
-  xaxis: {tickfont: {
-      size: 14,
-      color: 'rgb(107, 107, 107)'
-    }},
-  yaxis: {
-    title: 'USD (millions)',
-    titlefont: {
-      size: 16,
-      color: 'rgb(107, 107, 107)'
-    },
-    tickfont: {
-      size: 14,
-      color: 'rgb(107, 107, 107)'
-    }
-  },
-  legend: {
-    x: 0,
-    y: 1.0,
-    bgcolor: 'rgba(255, 255, 255, 0)',
-    bordercolor: 'rgba(255, 255, 255, 0)'
-  },
-  barmode: 'group',
-  bargap: 0.15,
-  bargroupgap: 0.1
-};
+            var layout = {
+                title: 'US Export of Plastic Scrap',
+                xaxis: {tickfont: {
+                        size: 14,
+                        color: 'rgb(107, 107, 107)'
+                    }},
+                yaxis: {
+                    title: 'USD (millions)',
+                    titlefont: {
+                        size: 16,
+                        color: 'rgb(107, 107, 107)'
+                    },
+                    tickfont: {
+                        size: 14,
+                        color: 'rgb(107, 107, 107)'
+                    }
+                },
+                legend: {
+                    x: 0,
+                    y: 1.0,
+                    bgcolor: 'rgba(255, 255, 255, 0)',
+                    bordercolor: 'rgba(255, 255, 255, 0)'
+                },
+                barmode: 'group',
+                bargap: 0.15,
+                bargroupgap: 0.1
+            };
 
-Plotly.newPlot('plot', data, layout);
+            Plotly.newPlot('plot', data, layout);
         });
     }
     verify();
@@ -275,13 +273,12 @@ Plotly.newPlot('plot', data, layout);
     bg();
 
 
-
     var api_key, type_key='';
 
 
 
     function verify(){
-        $.getJSON("{% url 'contacts' %}", {threshold: 6, num_records: 8}, function(result){
+        $.getJSON("{% url 'contacts' %}", {threshold: 1, num_records: 12}, function(result){
             api_name( result['api_names']);
             record_types(result['record_types']);
 
@@ -291,7 +288,7 @@ Plotly.newPlot('plot', data, layout);
     function api_name(api) {
         $(api).each(function () {
             $(".api").append('' +
-                '<li class="nav-item"> <button class="btn btn-outline-primary mx-1 nav-pill api-key" ' +
+                '<li class="nav-item"> <button class="btn btn-primary m-1 nav-pill api-key" ' +
                 'onclick="set_api_key' +
                 '(\''+this+
                 '\')">'+this+'</button> </li>');
@@ -300,7 +297,7 @@ Plotly.newPlot('plot', data, layout);
     function record_types(type) {
         $(type).each(function () {
             $(".record").append('' +
-                '<li class="nav-item"> <a class="btn btn-outline-primary nav-pill mx-1 record-key" ' +
+                '<li class="nav-item"> <a class="btn btn-primary nav-pill m-1 record-key" ' +
                 'href="javascript:set_key_type(\''+this+
                 '\')">'+this+'</a> </li>');
         });
@@ -316,11 +313,10 @@ Plotly.newPlot('plot', data, layout);
 
     function get_table() {
         $.getJSON("{% url 'table' %}", {api_key: api_key, type_key: type_key}, function(result) {
-            $('.api-title').html(api_key);
-            $('.record-title').html(type_key);
-            $('.table').html(result['table']).toggleClass('bg-primary');
-            //use data table
-            $('table').toggleClass('table-sm table-striped');
+            $('.text-title').html(api_key +' - ' + type_key);
+            $('.table').html(result['table']);
+            $('.dataframe').DataTable();
+            $('table').toggleClass('compact hover');
 
         });
     }
