@@ -208,7 +208,10 @@ def finish(numThreads):
     if currKey == keylist[-1]:
         #sort the remaining keys
         for i in list(repContact.objects.filter(type='Undecided')):
-            i.type = last_key_sorting_range[i.average]
+            if i.average != None:
+                i.type = last_key_sorting_range[i.average]
+            else:
+                i.type = 'New Record'
             i.save()
         end = perf_counter()
         time = end - start

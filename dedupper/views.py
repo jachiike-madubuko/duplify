@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.views.generic import TemplateView, ListView
 import django_tables2
 from dedupper.models import dedupTime, duplifyTime, uploadTime,  sfcontact, repContact, progress
-from  dedupper.filters import SimpleFilter
 from dedupper.tables import StatsTable, SFContactTable, RepContactTable
 from tablib import Dataset
 from django.http import HttpResponse, JsonResponse
@@ -20,16 +19,10 @@ from django.conf import settings
 from difflib import SequenceMatcher as SeqMat
 from math import floor
 from simple_salesforce import Salesforce
-'''
-#TODO change the HTTP request 
-timeout for the running algorithm or 
-have a middle man page that loads and send an request for 
-TODO set up postgresql
-#TODO https://medium.com/@johngrant/django-and-heroku-postgres-databases-6c22ffd71081 
-https://medium.com/agatha-codes/9-straightforward-steps-for-deploying-your-django-app-with-heroku-82b952652fb4
-http://www.marinamele.com/2013/12/how-to-set-django-app-on-heroku-part-i.html
-https://www.youtube.com/watch?v=P8_wDttTeuk
-'''
+import tablib
+
+tablib.formats.json.json = json
+
 keys= []
 name_sort=address_sort=email_sort=crd_sort=phone_sort=average_sort=key_sort=True
 

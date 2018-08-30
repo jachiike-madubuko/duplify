@@ -388,6 +388,27 @@
             </li>
         </ul>
     </div>
+                            <div class="btn-group btn-group-toggle mx-2" data-toggle="buttons">
+                            <label class="btn btn-outline-primary">
+                                <input type="radio" name="options" id="option2" value="RC" autocomplete="off"> RC
+                            </label>
+                            <label class="btn btn-outline-primary">
+                                <input type="radio" name="options" id="option3" value="RD" autocomplete="off"> RD
+                            </label>
+                            <label class="btn btn-outline-primary">
+                                <input type="radio" name="options" id="option3" value="RM" autocomplete="off"> RM
+                            </label>
+                            <label class="btn btn-outline-primary">
+                                <input type="radio" name="options" id="option3" value="IMC" autocomplete="off"> IMC
+                            </label>
+                            <label class="btn btn-outline-primary">
+                                <input type="radio" name="options" id="option3" value="EMC" autocomplete="off"> EMC
+                            </label>
+                            <label class="btn btn-outline-primary">
+                                <input type="radio" name="options" id="option3" value="FD" autocomplete="off"> FD
+                            </label>
+                        </div>
+
     <button class="btn btn-success badge-pill" type="button" onclick="map_headers()" data-toggle="modal" data-target="#progress" data-backdrop="static" data-keyboard="false">
         <b >Map Headers</b>
     </button>
@@ -442,7 +463,7 @@
 
             <div class="row container-fluid">
                 {% for key, list in rep_dropdown.items %}
-                    <div class="input-group mb-3 col-12">
+                    <div class="input-group mb-3 col-6">
                         <div class="input-group-prepend px-auto">
                             <p class="input-group-text bg-dark text-white" id="basic-addon3 " style="height: 34px; width: 200px">{{ key }}</p>
                         </div>
@@ -459,55 +480,6 @@
         </div>
     </div>
 
-    <div class="col sf mb-3">
-        <div class="col">
-            <h2 class="alert-dark text-center badge-pill"> SF Field Mapping </h2>
-            <div class="row">
-                <div id="channelPicker" class=" row bg-dark text-primary card mb-2">
-                    <div class="card-body">
-                        <h2 class="card-title">Pick a Channel</h2>
-                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                            <label class="btn btn-outline-primary">
-                                <input type="radio" name="options" id="option2" value="RC" autocomplete="off"> RC
-                            </label>
-                            <label class="btn btn-outline-primary">
-                                <input type="radio" name="options" id="option3" value="RD" autocomplete="off"> RD
-                            </label>
-                            <label class="btn btn-outline-primary">
-                                <input type="radio" name="options" id="option3" value="RM" autocomplete="off"> RM
-                            </label>
-                            <label class="btn btn-outline-primary">
-                                <input type="radio" name="options" id="option3" value="IMC" autocomplete="off"> IMC
-                            </label>
-                            <label class="btn btn-outline-primary">
-                                <input type="radio" name="options" id="option3" value="EMC" autocomplete="off"> EMC
-                            </label>
-                            <label class="btn btn-outline-primary">
-                                <input type="radio" name="options" id="option3" value="FD" autocomplete="off"> FD
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="row container-fluid" hidden>
-                {% for key, list in sf_dropdown.items %}
-                    <div class="input-group mb-3 col-12 shadow-lg">
-                        <div class="input-group-prepend px-auto">
-                            <p class="input-group-text bg-dark text-white" id="basic-addon3 " style="height: 34px; width: 200px">{{ key }}</p>
-                        </div>
-                        <select autofocus class=" sf-{{ key }} sf-select mousetrap py-5 col-8" name="states[]">
-                            <option data-name="placeholder"></option>
-                            {% for header in list %}
-                                <option value="{{ header }}" data-name="{{ header }}">{{ header }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
 </div>
 </body>
 </html>
