@@ -3,6 +3,7 @@ from django.views.generic import TemplateView, ListView
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 import pandas  as pd
 from tablib import Dataset
 from collections import defaultdict
@@ -16,7 +17,7 @@ def index(request):
     print('scrape')
     return render(request, 'scraper/index.html')
 
-
+@csrf_exempt
 def scrape(request):
     #apex callout sends json data with group, indi, and channel attrs if not filled then = 0
 
