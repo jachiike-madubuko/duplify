@@ -1,9 +1,8 @@
 <head>
-
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-    <style>
+<style>
         /*
  * Specific styles of signin component
  */
@@ -148,7 +147,6 @@ body, html {
     </style>
 </head>
 
-<!------ Include the above in your HEAD tag ---------->
 
 <!--
     you can substitue the span of reauth email for a input with the email and
@@ -170,8 +168,8 @@ body, html {
                 </div>
                 <button class="btn btn-lg btn-primary btn-block btn-signin" type="submit">Sign in</button>
             </form><!-- /form -->
-            <a href="#" class="forgot-password">
-                Forgot the password?
+            <a href="{% url 'fbc' %}" class="forgot-password">
+                FBC
             </a>
         </div><!-- /card-container -->
     </div><!-- /container -->

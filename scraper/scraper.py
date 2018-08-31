@@ -7,7 +7,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-
+import spacy
 import pandas as pd
 from time import sleep
 from simple_salesforce import Salesforce
@@ -25,6 +25,7 @@ browser = None
 # len(contacts)
 
 
+nlp = spacy.load('en_core_web_sm')
 
 
 
@@ -318,9 +319,11 @@ def finra_report_job(CRDs):
 
 
 
-
-
-#build visualforce page to do call outs to code for each mode
-#start in jdev, create contacts with valid CRDs and Broker Dealers
-#create bottle server in spyder to service the code
-
+def fuzz_comp(sf, finra):
+    sf = nlp(u"{}".format(str(sf).lower()))
+    finra = nlp(u"{}".format(str(finra).lower()))
+    similarity = sf.similarity(finra)
+    print(sf.text, finra.text, similarity)
+    if similarity > 0.75:
+        return True
+    return False

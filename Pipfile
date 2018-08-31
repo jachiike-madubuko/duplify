@@ -71,5 +71,8 @@ PyYAML = "==3.12"
 simple-salesforce = "*"
 selenium = "==3.14"
 tables = "*"
+scrapy = "*"
+scrapyd = "*"
+python-scrapyd-api = "*"
 
 [dev-packages]
