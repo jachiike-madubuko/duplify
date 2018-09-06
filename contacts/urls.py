@@ -24,7 +24,7 @@ from django.conf import settings
 admin.autodiscover()
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', views.index, name='contact_index'),
     path('contacts/', views.contacts, name='contacts'),
     path('table/', views.table, name='table'),
     path('plotly/', views.plotly, name='plotly'),

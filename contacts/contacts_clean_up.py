@@ -7,7 +7,6 @@ usage_map=usage_df=sf_contact_by_type=None
 
 sf_contact_df = pd.read_hdf('contacts/panda_pickles/contact.h5')
 
-
 def contacts_clean_up(threshold, num_records=12):
     record_types = ['WS','BD','P','WV',]
     api_names = ['marketo', 'afmo', 'old shit', 'dumb shit']

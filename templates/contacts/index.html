@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Duplify | Upload</title>
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <!-- Bootstrap core CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <title>Object Analysis | Contacts</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" />
     <!-- Material Design Bootstrap -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/css/mdb.min.css" rel="stylesheet">    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/css/dataTables.dataTables.min
@@ -15,13 +15,23 @@
         .col-4 {
             min-width: 250px;
         }
+                #loading-indicator {
+          position: absolute;
+          left: 50%;
+          top: 50;
+         z-index: 1100;
+            box-shadow: 0px 0px 1000vw 1000vh rgba(0,0,0,0.6);
+        }
+
     </style>
 </head>
 <body class="grey lighten-4" style="transition: 2s; overflow: auto">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+
 <!--Main Navigation-->
 <header>
     <!--Navbar-->
-    <nav class="navbar navbar-expand-lg navbar-dark blue double-nav">
+    <nav class="navbar navbar-expand-lg navbar-dark blue darken-1 double-nav z-depth-5 sticky-top">
         <!-- Breadcrumb-->
         <!--Grid row-->
         <div class="col-4 ">
@@ -30,8 +40,8 @@
             <p class="lead">
                 <span class="badge blue p-2">API NAME</span>
             </p>
-            <select class="mdb-select colorful-select dropdown-info api">
-                <option value="" disabled selected>Choose api name</option>
+            <select class="api select2-dd">
+                <option value="" >Choose api name</option>
 
             </select>
         </div>
@@ -42,8 +52,8 @@
             <p class="lead">
                 <span class="badge blue p-2">Record Type</span>
             </p>
-            <select class="mdb-select colorful-select dropdown-info record">
-                <option value="" disabled selected>Choose a record type</option>
+            <select class="record select2-dd">
+                <option value="" >Choose a record type</option>
 
             </select>
 
@@ -51,36 +61,38 @@
         <!--Grid row-->
 
         <!-- Links -->
-        <ul class="nav navbar-nav nav-flex-icons ml-auto">
-            <li class="nav-item">
-                <a class="nav-link">
-                    <i class="fa fa-envelope"></i>
-                    <span class="clearfix d-none d-sm-inline-block">Contact</span>
-                </a>
+        <ul class="nav navbar-nav  row">
+            <li class="nav-item col-3">
+                <p class="lead">
+                <span class="badge blue ">Threshold</span>
+            </p>
+            <input id="threshold"  type="number" style="width: 50px" min="0" max="100">
             </li>
-            <li class="nav-item">
-                <a class="nav-link">
-                    <i class="fa fa-gear"></i>
-                    <span class="clearfix d-none d-sm-inline-block">Settings</span>
-                </a>
+            <li class="nav-item col-3 mx-2">
+              <p class="lead">
+                <span class="badge blue"># Record Types</span>
+            </p>
+            <select class="num-types select2-dd" style="width: 75px">
+                <option value=0 >0</option>
+                <option value=1 >1</option>
+                <option value=2 >2</option>
+                <option value=3 >3</option>
+                <option value=4 >4</option>
+                <option value=5 >5</option>
+                <option value=6 >6</option>
+                <option value=7 >7</option>
+                <option value=8 >8</option>
+                <option value=9 >9</option>
+                <option value=10 >10</option>
+                <option value=11 >11</option>
+                <option value=12 selected>12</option>
+
+            </select>
             </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fa fa-user"></i>
-                    <span class="clearfix d-none d-sm-inline-block">Criteria</span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-           <div class="md-form m-t-3">
-                        <input type="number" id="form1" class="form-control">
-                        <label for="form1" class="">Threshold</label>
-                    </div>
-
-
-                    <div class="md-form">
-                        <input type="number" id="form2" class="form-control">
-                        <label for="form1" class=""># of Types</label>
-                    </div>
-                    <a class="dropdown-item btn btn-blue" href="#">Submit</a>
+            <li class="nav-item col-3">
+                <button class="btn btn-blue  ml-5" onclick="verify()" id="navbarDropdownMenuLink">
+                    Send
+                </button>
                 </div>
             </li>
         </ul>
@@ -92,7 +104,8 @@
 <!--Main layout-->
 <main>
     <div class="container-fluid">
-        <!--Section: Modals-->
+   <img src="{% static 'img/loader.gif' %}" id="loading-indicator" class="rounded-circle border-0
+     bg-white" style="display: none"  />
         <section>
 
 
@@ -144,12 +157,15 @@
 
     });
 </script>
-<!-- JQuery -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<!-- Bootstrap tooltips -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.13.0/umd/popper.min.js"></script>
-<!-- Bootstrap core JavaScript -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
+        integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+
+<script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
+<script src="http://yui.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
+
 <!-- MDB core JavaScript -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/js/mdb.min.js"></script><script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
@@ -231,10 +247,11 @@
 
 
     function verify(){
-        $.getJSON("{% url 'contacts' %}", {threshold: 1, num_records: 12}, function(result){
+        $.getJSON("{% url 'contacts' %}", {threshold: $('#threshold').val(), num_records: $('.num-types').val()},
+            function(result){
             api_name( result['api_names']);
             record_types(result['record_types']);
-
+            $('.api').select2({});
         });
     }
 
@@ -281,13 +298,34 @@
     }
 
       $(document).ready(function() {
+
+                         $('.api').select2();
+                         $('.record').select2();
+                         $('.num-types').select2({
+
+                         });
+
           $('.api').change( function () {
               set_api_key($(this).val());
           })
           $('.record').change(function () {
               set_key_type($(this).val());
-          })
+          });
+
+
+
       });
+    {#$(function () {#}
+    {#             $(document).ajaxSend(function(event, request, settings) {#}
+    {#                 $('#loading-indicator').show();#}
+    {#    });#}
+    {##}
+    {#    $(document).ajaxStop(function(event, request, settings) {#}
+    {#      $('#loading-indicator').hide();#}
+    {##}
+    {#    });#}
+    {##}
+    {#});#}
 </script>
 </body>
 </html>

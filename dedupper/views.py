@@ -467,5 +467,5 @@ def upload(request):
 
 
     print(rep_dropdown)
-    return JsonResponse( {'rep_dropdown': rep_dropdown,}, safe=False)
+    return JsonResponse( rep_dropdown, safe=False)
 

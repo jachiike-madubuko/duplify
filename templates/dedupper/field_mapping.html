@@ -237,7 +237,7 @@
         $.wait = function( callback, seconds){
             return window.setTimeout( callback, seconds * 1000 );
         }
-        $(document).on('click', '.btn-success', function(e) {
+        $(document).on('click', '#fileSubmit', function(e) {
 
 
             if( $(".rep").text().substr(-3) != 'csv' ||  $(".sf").text().substr(-3) != 'csv') {
@@ -336,41 +336,50 @@
                 success: function (data) {
                                         $("#modelId").modal('show');
 
-                    Object.keys(data.rep_dropdown).forEach(function (key, index) {
+                    for (var key in data) {
                         var class_id = "rep" + key;
-                        var input_group = $("div").addClass("input-group mb-3 col-12");
-                        alert($(input_group).html());
-                        var prepend = $("div").addClass("input-group-prepend");
-                                                alert($(prepend).html());
-
-                        var text = $("p").addClass("input-group-text bg-dark text-white").css({
-                            "height": "35px",
+                        var input_group = $("<div></div>");
+                        input_group.addClass("input-group mb-3 col-12");
+                        var prepend = $("<div></div>");
+                        prepend.addClass("input-group-prepend");
+                        var text = $("<p></p>");
+                        text.addClass("input-group-text bg-dark text-white").css({
+                            "height": "34px",
                             "width": "200px"
                         }).text(key);
-                                                alert($(text).html());
 
-                        var selectList = $("select").addClass(class_id).addClass("rep-select py-5 col-12");
-                        selectList.append($("option").data("name", "placeholder"));
-                        $(data.rep_dropdown[key]).forEach(function (k) {
-                            selectList.append($("option").data("name", k).val(k).text(k));
-                        });
-                        prepend.append(text);
-                        input_group.append(prepend).append(selectList);
+                        input_group.append(prepend.append(text));
+                        var selectList = $("<select style='width=100%'></select>");
+                        selectList.addClass(class_id).addClass("rep-select py-5 col-12");
+                        selectList.append($("<option></option>").data("name", "placeholder"));
+                         for (var k in data[key]) {
+                            var opt = $("<option></option>");
+                            opt.data("name", data[key][k]).val(data[key][k]).text(data[key][k]);
+                            selectList.append(opt);
+                        }
+                        input_group.append(selectList);
+
                         $(".mapping").append(input_group);
-                    });
-                }
 
-                          {#<div class="input-group mb-3 col-12">#}
-                          {#              <div class="input-group-prepend ">#}
-                          {#                  <p class="input-group-text bg-dark text-white" id="basic-addon3 " style="height: 34px; width: 200px">{{ key }}</p>#}
-                          {#              </div>#}
-                          {#              <select autofocus class=" rep-{{ key }} rep-select py-5 col-12" name="states[]">#}
-                          {#                  {% for header in list %}#}
-                          {#                      <option value="{{ header }}" data-name="{{ header }}">{{ header }}</option>#}
-                          {#                  {% endfor %}#}
-                          {#              </select>#}
-                          {#          </div>#}
+
+
+                    }
+                            $('.rep-select').select2({
+            theme: "bootstrap",
+            placeholder: {
+                id: '0'
+            },
+            templateSelection: function (data, container) {
+                $(data.element).attr('data-name', data.value);
+                return data.text;
+
+            }
+        });
+                    $(".select2-container").width('500');
+
+                }
                     });
+
             });
         });
     function f() {
@@ -381,6 +390,8 @@
         }
     }
     function map_headers() {
+        $("#modelId").modal('toggle');
+        $("#progress").modal('toggle');
         var channel  = $('input:checked').val();
         $('.rep-select').each( function() {
             var x = $(this).find(':selected').data('name');
@@ -487,12 +498,10 @@
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <div class=" row" style="overflow: auto; max-height: 90vh">
+                    <div class="x row">
 
-                        <div class="col-12 rep mt-1">
-                            <div class="row mapping">
+                            <div class=" mapping">
 
-                            </div>
                         </div>
 
                     </div>
@@ -522,10 +531,6 @@
 
                 <button class="btn btn-success badge-pill invisible" id="map-headers" type="button"
                         onclick="map_headers()"
-                        data-toggle="modal"
-                        data-target="#progress"
-                        data-backdrop="static"
-                        data-keyboard="false">
                     <b >Map Headers</b>
                 </button>
 

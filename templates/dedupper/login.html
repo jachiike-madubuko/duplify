@@ -50,7 +50,15 @@
 
 		input[type="text"]:focus:not([readonly])+label {
 			color:#fff;
-		}</style>
+		}
+ #loading-indicator {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+         z-index: 1100;
+            box-shadow: 0px 0px 1000vw 1000vh rgba(0,0,0,0.6);
+        }
+</style>
 </head>
 
 <!------ Include the above in your HEAD tag ---------->
@@ -60,6 +68,30 @@
     include the remember me checkbox
     -->
 <body>
+<!-- Button trigger modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="modelTitleId">Choose an app</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+               <h2> <a href="{% url 'map' %}" style="">Duplify</a></h2>
+                <h2><a href="{% url 'contact_index' %}" style="">Contact Analysis</a></h2>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="view">
 
     <div class="container">
@@ -112,7 +144,12 @@
 <script>
 function send_her(){
     $.getJSON("{% url 'login' %}", {username: $("#form1").val(), password: $("#form2").val()}, function(results){
-        alert(results['msg']);
+        if ('success'.localeCompare( results['msg']) == 0){
+            $("#modelId").modal('show');
+        }else{
+            alert('Incorrect Username/Password. Please try again');
+        }
+
     });
 }
 </script>
