@@ -72,28 +72,8 @@ def find_rep_dups(rep, keys, numthreads):
         logging.debug("bad rep key")
         return 0
     search_party =  sfcontact.objects.none()        #contains the contacts that have similar fields to the rep
-    '''
-    for n,i in enumerate(key_parts):
-        if 'Phone' in i:
-            multi_key = True
-            sf_keys = []
-            for j in ['mobilePhone', 'homePhone', 'otherPhone', 'Phone']:
-                vary_key = key_parts.copy()
-                vary_key[n] = j
-                addon = [i.key(vary_key[:-1]) for i in sf_list if "NULL" not in i.key(vary_key[:-1]) ]
-                sf_keys.extend(addon)
-        elif 'Email' in i:
-            multi_key = True
-            sf_keys = []
-            for j in ['workEmail', 'personalEmail', 'otherEmail']:
-                vary_key = key_parts.copy()
-                vary_key[n] = j
-                addon = [i.key(vary_key[:-1]) for i in sf_list if "NULL" not in i.key(vary_key[:-1]) ]
-                sf_keys.extend(addon)
-    if not multi_key:
-        sf_keys = [i.key(key_parts[:-1]) for i in sf_list if "NULL" not in i.key(key_parts[:-1]) ] #only returns    
-    '''
 
+    #refactor using Q() object
     for key in keys[:-1]:
         if 'Phone' in key:              #for phones, check the variation of phones in the sales force contact
             for type_of_phone in ['mobilePhone', 'homePhone', 'otherPhone', 'Phone']:

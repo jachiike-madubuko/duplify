@@ -30,6 +30,8 @@ urlpatterns = [
     path('heroku/', generic.ListView.as_view(model=models.Contact), name='heroku'),
     path('run/', views.run, name='run'),
     path('map/', views.map, name='map'),
+    path('login/', views.login, name='login'),
+    path('upload_page/', views.upload_page, name='upload_page'),
     path('progress/', views.progress, name='progress'),
     path('closest/', views.closest, name='closest'),
     path('tables/', views.turn_table, name='tables'),

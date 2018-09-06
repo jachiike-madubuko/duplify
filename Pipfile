@@ -74,5 +74,6 @@ tables = "*"
 scrapy = "*"
 scrapyd = "*"
 python-scrapyd-api = "*"
+spacy = "*"
 
 [dev-packages]

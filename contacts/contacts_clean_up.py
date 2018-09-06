@@ -38,6 +38,7 @@ usage_map = {i: fieldsByThreshold(sf_contact_by_type[i], 101) for i in
 
 usage_df = pd.DataFrame(usage_map)
 
+#only send to pickle if does not exist
 usage_df.to_pickle('contacts/panda_pickles/usage.pkl')
 
 def threshold_per_type(max_threshold,  min_num_types):
@@ -71,3 +72,4 @@ def date_range_of_contacts(df):
     earliest = df.resample('M').count()[:1].index.date[0].isoformat()
     latest = df.resample('M').count()[-1:].index.date[0].isoformat()
     return f'from {earliest} to {latest}'
+

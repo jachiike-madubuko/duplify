@@ -17,7 +17,7 @@ import json
 import pickle
 from django.conf import settings
 from difflib import SequenceMatcher as SeqMat
-from math import floor
+import pandas as pd
 from simple_salesforce import Salesforce
 import tablib
 
@@ -267,6 +267,7 @@ def import_csv(request):
         sf = Salesforce(password='7924Trill!', username='jmadubuko@wealthvest.com', organizationId='00D36000001DkQo')
         query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where Territory_Type__c='Geography' and Territory__r.Name like "
         starts_with = f"'{channel}%'"
+        request.session['sfCSV_name'] = f'the {channel} channel'
         territory = sf.bulk.Contact.query(query + starts_with)
         print(len(territory))
         territory = pd.DataFrame(territory).drop('attributes', axis=1).replace([None], [''], regex=True)
@@ -306,6 +307,18 @@ def index(request):
     https://developer.salesforce.com/blogs/developer-relations/2014/01/python-and-the-force-com-rest-api-simple-simple-salesforce-example.html
     https://github.com/simple-salesforce/simple-salesforce
     '''
+    return render(request, 'dedupper/login.html')
+def upload_page(request):
+    '''
+    :param request:
+    :return:
+    Saleforce login:
+
+    from simple_salesforce import Salesforce
+    sf = Salesforce(password='password', username='myemail@example.com', organizationId='D36000001DkQo')
+    https://developer.salesforce.com/blogs/developer-relations/2014/01/python-and-the-force-com-rest-api-simple-simple-salesforce-example.html
+    https://github.com/simple-salesforce/simple-salesforce
+    '''
     return render(request, 'dedupper/rep_list_upload.html')
 
 def key_gen(request):
@@ -333,15 +346,7 @@ def login(request):
     return JsonResponse({'msg': msg}, safe=False)
 
 def map(request):
-    exclude = ('id', 'misc', 'average', 'type', 'closest1_contactID', 'closest1', 'closest2_contactID', 'closest2', 'closest3_contactID', 'closest3', 'dupFlag', 'keySortedBy', 'closest_rep')
-    rep_key = [i.name for i in repContact._meta.local_fields if i.name not in exclude]
-    [i.sort(key=lambda x: x.lower()) for i in [rep_key ]]
-
-    rep_headers= request.session['repCSV_headers']
-    rep_dropdown = {i: sorted(rep_headers, key= lambda x: SeqMat(None, x, i).ratio(), reverse=True) for i in rep_key}
-
-    return render(request, 'dedupper/field_mapping.html', {'rep_dropdown': rep_dropdown,
-                                                           }
+    return render(request, 'dedupper/field_mapping.html',
                   )
 
 def merge(request, id):
@@ -453,5 +458,14 @@ def upload(request):
         pickle.dump(pd_rep_csv, file)
         print('pickle dump reps')
 
-    return redirect('/map/')
+    exclude = ('id', 'misc', 'average', 'type', 'closest1_contactID', 'closest1', 'closest2_contactID', 'closest2', 'closest3_contactID', 'closest3', 'dupFlag', 'keySortedBy', 'closest_rep')
+    rep_key = [i.name for i in repContact._meta.local_fields if i.name not in exclude]
+    [i.sort(key=lambda x: x.lower()) for i in [rep_key ]]
+
+    rep_headers= request.session['repCSV_headers']
+    rep_dropdown = {i: sorted(rep_headers, key= lambda x: SeqMat(None, x, i).ratio(), reverse=True) for i in rep_key}
+
+
+    print(rep_dropdown)
+    return JsonResponse( {'rep_dropdown': rep_dropdown,}, safe=False)
 

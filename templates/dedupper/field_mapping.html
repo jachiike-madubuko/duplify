@@ -36,8 +36,32 @@
 
         $(label).text(name);
     }
+    function verify(){
+        $.wait = function( callback, seconds){
+            return window.setTimeout( callback, seconds * 1000 );
+        }
+        $(document).on('click', '.btn-success', function(e) {
 
-    function bg() {
+
+            if( $(".rep").text().substr(-3) != 'csv' ) {
+                if( $(".rep").text() == 'Choose file' || $(".rep").text() == '') {
+                    e.preventDefault(); //prevent the default action
+                    $(".files").removeClass("invisible");//.delay(5).addClass("invisible");
+                    $.wait( function(){ $(".files").addClass("invisible") }, 3);
+
+                }else {
+                    // e.preventDefault(); //prevent the default action
+                    $(".format").removeClass("invisible");//.delay(5).addClass("invisible");
+                    $.wait(function () {
+                        $(".format").addClass("invisible")
+                    }, 3);
+                }
+
+            } });
+    }
+
+    function bg()
+    {
 
         $("body").polygonizr({
 
@@ -235,57 +259,7 @@
     }
 
     $(document).ready(function() {
-        YUI().use('dd-delegate', 'dd-drop-plugin', 'dd-constrain' ,function(Y) {
-            var rep_del = new Y.DD.Delegate({
-                container: '#rep-cont',
-                nodes: '.rep-field'
-            });
 
-            rep_del.dd.plug(Y.Plugin.DDConstrained, {
-                constrain2node: '.rep'
-            });
-
-            rep_del.on('drag:end', function(e) {
-                rep_del.get('currentNode').setStyles({
-                    top: 0,
-                    left: 0
-                });
-            });
-
-            var sf_del = new Y.DD.Delegate({
-                container: '#sf-cont',
-                nodes: '.sf-field'
-            });
-
-
-            sf_del.dd.plug(Y.Plugin.DDConstrained, {
-                constrain2node: '.sf'
-            });
-
-            sf_del.on('drag:end', function(e) {
-                sf_del.get('currentNode').setStyles({
-                    top: 0,
-                    left: 0
-                });
-            });
-            {% for key in rep_key %}
-
-                Y.one('.rep-{{ key }}').plug(Y.Plugin.Drop).drop.on('drop:hit', function(e) {
-                    Y.one('.rep-{{ key }}').plug(Y.Plugin.Drop).set('innerHTML', ' mapped to: <strong>' + e.drag.get('node').get('innerHTML') + '</strong>');
-                    rep_mapping[e.drag.get('node').get('innerHTML') ] = $('.rep-{{ key }}').attr('id');
-
-                });
-            {% endfor %}
-
-            {% for key in sf_key %}
-
-                Y.one('.sf-{{ key }}').plug(Y.Plugin.Drop).drop.on('drop:hit', function(e) {
-                    Y.one('.sf-{{ key }}').plug(Y.Plugin.Drop).set('innerHTML', ' mapped to: <strong>' + e.drag.get('node').get('innerHTML') + '</strong>');
-                    sf_mapping[e.drag.get('node').get('innerHTML') ] = $('.sf-{{ key }}').attr('id');
-
-                });
-            {% endfor %}
-        });
 
         var rep_data = [
             {
@@ -301,7 +275,6 @@
                 },
             {% endfor %}
         ];
-
         var sf_data = [
             {
                 id: 0,
@@ -339,7 +312,67 @@
                 return data.text;
             }
         });
-    });
+        $('.select2-container--bootstrap').width(500);
+        $('.btn-outline-primary').click(function () {
+            $('#map-headers').removeClass('invisible');
+        });
+
+        $('#fileSubmit').click(function (evt) {
+            evt.preventDefault();
+
+            var form = $('#upload')[0];
+            var data = new FormData(form);
+
+            $('#fileSubmit').prop("disabled", true);
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'keys'  %}",
+                data: data,
+                enctype: 'multipart/form-data',
+                processData: false,
+                contentType: false,
+                cache: false,
+                success: function (data) {
+                                        $("#modelId").modal('show');
+
+                    Object.keys(data.rep_dropdown).forEach(function (key, index) {
+                        var class_id = "rep" + key;
+                        var input_group = $("div").addClass("input-group mb-3 col-12");
+                        alert($(input_group).html());
+                        var prepend = $("div").addClass("input-group-prepend");
+                                                alert($(prepend).html());
+
+                        var text = $("p").addClass("input-group-text bg-dark text-white").css({
+                            "height": "35px",
+                            "width": "200px"
+                        }).text(key);
+                                                alert($(text).html());
+
+                        var selectList = $("select").addClass(class_id).addClass("rep-select py-5 col-12");
+                        selectList.append($("option").data("name", "placeholder"));
+                        $(data.rep_dropdown[key]).forEach(function (k) {
+                            selectList.append($("option").data("name", k).val(k).text(k));
+                        });
+                        prepend.append(text);
+                        input_group.append(prepend).append(selectList);
+                        $(".mapping").append(input_group);
+                    });
+                }
+
+                          {#<div class="input-group mb-3 col-12">#}
+                          {#              <div class="input-group-prepend ">#}
+                          {#                  <p class="input-group-text bg-dark text-white" id="basic-addon3 " style="height: 34px; width: 200px">{{ key }}</p>#}
+                          {#              </div>#}
+                          {#              <select autofocus class=" rep-{{ key }} rep-select py-5 col-12" name="states[]">#}
+                          {#                  {% for header in list %}#}
+                          {#                      <option value="{{ header }}" data-name="{{ header }}">{{ header }}</option>#}
+                          {#                  {% endfor %}#}
+                          {#              </select>#}
+                          {#          </div>#}
+                    });
+            });
+        });
     function f() {
         if (confirm('WARNING: You are about to erase all records in the database.')) {
             window.location.replace("{% url 'flush_db' %}");
@@ -388,30 +421,8 @@
             </li>
         </ul>
     </div>
-                            <div class="btn-group btn-group-toggle mx-2" data-toggle="buttons">
-                            <label class="btn btn-outline-primary">
-                                <input type="radio" name="options" id="option2" value="RC" autocomplete="off"> RC
-                            </label>
-                            <label class="btn btn-outline-primary">
-                                <input type="radio" name="options" id="option3" value="RD" autocomplete="off"> RD
-                            </label>
-                            <label class="btn btn-outline-primary">
-                                <input type="radio" name="options" id="option3" value="RM" autocomplete="off"> RM
-                            </label>
-                            <label class="btn btn-outline-primary">
-                                <input type="radio" name="options" id="option3" value="IMC" autocomplete="off"> IMC
-                            </label>
-                            <label class="btn btn-outline-primary">
-                                <input type="radio" name="options" id="option3" value="EMC" autocomplete="off"> EMC
-                            </label>
-                            <label class="btn btn-outline-primary">
-                                <input type="radio" name="options" id="option3" value="FD" autocomplete="off"> FD
-                            </label>
-                        </div>
 
-    <button class="btn btn-success badge-pill" type="button" onclick="map_headers()" data-toggle="modal" data-target="#progress" data-backdrop="static" data-keyboard="false">
-        <b >Map Headers</b>
-    </button>
+
 </nav>
 <div class="modal fade" id="progress" tabindex="-1" role="dialog"  aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -456,28 +467,107 @@
         </div>
     </div>
 </div>
-<div class="container-fluid row" style="overflow: auto; max-height: 90vh">
-    <div class="col rep mt-1">
-        <div class="col">
-            <h2 class="alert-dark text-center badge-pill"> Rep Field Mapping </h2>
+<div class="alert format alert-warning alert-dismissible invisible text-center" role="alert">
+    <b>Files must be csv format</b>
+</div>
+<div class="alert files alert-warning alert-dismissible invisible text-center" role="alert">
+    <b>Upload a rep list and a SF report before continuing</b>
+</div>
 
-            <div class="row container-fluid">
-                {% for key, list in rep_dropdown.items %}
-                    <div class="input-group mb-3 col-6">
-                        <div class="input-group-prepend px-auto">
-                            <p class="input-group-text bg-dark text-white" id="basic-addon3 " style="height: 34px; width: 200px">{{ key }}</p>
+
+<!-- Modal -->
+<div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="modelTitleId">Rep Field Mapping</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class=" row" style="overflow: auto; max-height: 90vh">
+
+                        <div class="col-12 rep mt-1">
+                            <div class="row mapping">
+
+                            </div>
                         </div>
-                        <select autofocus class=" rep-{{ key }} rep-select mousetrap py-5 col-8" name="states[]">
-                            <option data-name="placeholder"></option>
-                            {% for header in list %}
-                                <option value="{{ header }}" data-name="{{ header }}">{{ header }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
 
-                {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="btn-group btn-group-toggle mx-2" data-toggle="buttons">
+                    <label class="btn btn-outline-primary">
+                        <input type="radio" name="options" id="option2" value="RC" autocomplete="off"> RC
+                    </label>
+                    <label class="btn btn-outline-primary">
+                        <input type="radio" name="options" id="option3" value="RD" autocomplete="off"> RD
+                    </label>
+                    <label class="btn btn-outline-primary">
+                        <input type="radio" name="options" id="option3" value="RM" autocomplete="off"> RM
+                    </label>
+                    <label class="btn btn-outline-primary">
+                        <input type="radio" name="options" id="option3" value="IMC" autocomplete="off"> IMC
+                    </label>
+                    <label class="btn btn-outline-primary">
+                        <input type="radio" name="options" id="option3" value="EMC" autocomplete="off"> EMC
+                    </label>
+                    <label class="btn btn-outline-primary">
+                        <input type="radio" name="options" id="option3" value="FD" autocomplete="off"> FD
+                    </label>
+                </div>
+
+                <button class="btn btn-success badge-pill invisible" id="map-headers" type="button"
+                        onclick="map_headers()"
+                        data-toggle="modal"
+                        data-target="#progress"
+                        data-backdrop="static"
+                        data-keyboard="false">
+                    <b >Map Headers</b>
+                </button>
+
             </div>
         </div>
+    </div>
+</div>
+
+<div class="container-fluid" style="overflow: auto; max-height: 90vh">
+    <div class="row">
+        <div class="col-1"></div>
+        <div class="card col-10  my-5 bg-transparent text-primary ">
+            <div class="card-header  text-center"> <h3> File Upload </h3></div>
+            <div class="card-body ">
+                {% block content %}
+                    <form method="post" enctype="multipart/form-data" id="upload">
+                        {% csrf_token %}
+
+                        <h6 class="card-text  text-center">Upload Rep List Here</h6>
+                        <div class="custom-file ">
+
+                            <input type="file" class=" badge-pill custom-file-input" id="repFile" name="repFile"
+                                   onchange="filename(this, '.rep')">
+                            <label class=" custom-file-label rep" for="repFile">Choose file</label>
+                        </div>
+
+                        <hr class="my-3">
+
+                        <div class="row">
+                            <div  class="col-4"></div>
+                            <div  class="col-4">
+                                <button type="Submit" onclick="verify()" class="btn btn-success btn-large btn-block
+                                        badge-pill
+                                        float-right" id="fileSubmit"><h5 class="my-2">Upload</h5></button>
+                            </div>
+                            <div  class="col-4"></div>
+                        </div>
+                    </form>
+                {% endblock %}
+            </div>
+        </div>
+        <div class="col-1"></div>
     </div>
 
 </div>

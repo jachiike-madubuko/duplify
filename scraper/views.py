@@ -8,7 +8,7 @@ import pandas  as pd
 from tablib import Dataset
 from collections import defaultdict
 from scraper.scraper import finra_check_job, fuzz_comp
-import csv
+import csv, time
 import logging
 from uuid import uuid4
 import requests
@@ -76,6 +76,7 @@ def scrape(request):
 #                             settings=settings,
 #                             start_urls = [])
 
+#return time and # finra checks performed
 def fbc(request):
     select_contacts = 'select Id, CRD__c, Name, Middle_Name__c, MailingStreet, MailingCity, MailingState, MailingPostalCode, Finra_BrokerCheck__c, Broker_Dealer__r.Firm_CRD__c , Broker_Dealer__r.Name from Contact'
 
@@ -149,6 +150,8 @@ def fbc(request):
 
     if contact_IDs:
         results = {}
+        t1 = time.time()
+
         for i in [5155663, 3006258, 5155663, 5155663]:
             response = requests.get('https://fbc-wv.herokuapp.com/fbc/', params={'crd': i})
             finra_contact = response.json()
@@ -170,8 +173,8 @@ def fbc(request):
                 if s and f:
                     fields_bools.append(fuzz_comp(s, f))
 
-            results[i] =  reduce(lambda a, b: a & b, fields_bools)
-        return JsonResponse(results , safe=False)
+            results[i] = reduce(lambda a, b: a & b, fields_bools)
+        return JsonResponse(results, safe=False)
 
 
 
