@@ -1,4 +1,10 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
+    <title>Duplify</title>
+
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <!-- Bootstrap core CSS -->
@@ -8,151 +14,195 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/css/dataTables.dataTables.min
 .css" />
 
-<style>html,
+    <style>
+        html,
         body,
-        .view {
+        header,
+        .carousel {
             height: 100%;
         }
 
-        .view {
-            background: url("https://mdbootstrap.com/images/regular/nature/img%20(14).jpg")no-repeat center center fixed;
-            -webkit-background-size: cover;
-            -moz-background-size: cover;
-            -o-background-size: cover;
-            background-size: cover;
+        @media (min-width: 800px) and (max-width: 850px) {
+            .navbar:not(.top-nav-collapse) {
+                background: #1C2331!important;
+            }
         }
-
-         .card {
-             margin: 3rem 0;
-             background-color: rgba(0, 0, 0, 0.15);
-             padding: 30px;
-         }
-         .card-link {
-             font-size: 19px;
-         }
-
-         .card-link.active {
-             padding-bottom: 3px;
-             border-bottom: 2px solid #0d47a1;
-         }
-         h5 {
-             margin-top: 1rem;
-         }
-         input[type="text"]:focus:not([readonly]) {
-			border-color:#0d47a1;
-			box-shadow:0 1px 0 0 #0d47a1;
-			color:#fff;
-		}
-
-		input[type="text"]:not([readonly])+label {
-			color:#fff;
-		}
-
-		input[type="text"]:focus:not([readonly])+label {
-			color:#fff;
-		}
- #loading-indicator {
-          position: absolute;
-          left: 50%;
-          top: 50%;
-         z-index: 1100;
-            box-shadow: 0px 0px 1000vw 1000vh rgba(0,0,0,0.6);
-        }
-</style>
+    </style>
 </head>
 
-<!------ Include the above in your HEAD tag ---------->
-
-<!--
-    you can substitue the span of reauth email for a input with the email and
-    include the remember me checkbox
-    -->
 <body>
-<!-- Button trigger modal -->
-
-
 <!-- Modal -->
-<div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+<div  class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="modelTitleId">Choose an app</h4>
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">Sign in</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-               <h2> <a href="{% url 'map' %}" style="">Duplify</a></h2>
-                <h2><a href="{% url 'contact_index' %}" style="">Contact Analysis</a></h2>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save</button>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="view">
-
-    <div class="container">
-        <div class="row">
-            <div class="col-md-5 m-x-auto pull-xs-none">
-
-                <!--Panel-->
-                <div class="card card-block z-depth-5 white-text">
-                    <a href="#" class="card-link white-text active">Login In</a>
-
-                    <div class="md-form m-t-3">
-                        <input type="text" id="form1" class="form-control">
-                        <label for="form1" class="">Username</label>
-                    </div>
-
-
-                    <div class="md-form">
-                        <input type="text" id="form2" class="form-control">
-                        <label for="form1" class="">Password</label>
-                    </div>
-
-                    <div class="text-xs-center">
-                        <button id="login" onclick="send_her();" class="btn btn-blue">LOGIN</button>
-                        <h5><a href="#" class="white-text">Forgot password?</a></h5>
-                    </div>
+            <div class="modal-body mx-3">
+                <div class="md-form mb-5">
+                    <i class="fa fa-envelope prefix grey-text"></i>
+                    <input type="email" id="form1" class="form-control validate">
+                    <label data-error="wrong" data-success="right" for="defaultForm-email">Your email</label>
                 </div>
-                <!--/.Panel-->
 
+                <div class="md-form mb-4">
+                    <i class="fa fa-lock prefix grey-text"></i>
+                    <input type="password" id="form2" class="form-control validate">
+                    <label data-error="wrong" data-success="right" for="defaultForm-pass">Your password</label>
+                </div>
+
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button class="btn btn-primary" onclick="send_her() ">Login</button>
             </div>
         </div>
     </div>
 </div>
 
-    <!-- Outro -->
-	<section id="outro">
-		<div class="container">
-			<div class="row text-xs-center p-t-1 p-b-4">
-				<div class="col-md-12">
-					<br>
-					<h3>Built with Material Design for Bootstrap</h3>
-					<br>
-					<p>Powerful and free Material Design UI KIT</p>
-					<p><strong>400+</strong> material UI elements, <strong>600+</strong> material icons, <strong>74</strong> CSS animations, SASS files, templates, tutorials and many more. </p>
-					<a target="_blank" href="https://mdbootstrap.com/material-design-for-bootstrap/" class="btn btn-primary btn-lg"><i class="fa fa-download left"></i> Free download</a>
-				</div>
-			</div>
-		</div>
-	</section>
-	<!-- /.Outro -->
-<script>
-function send_her(){
-    $.getJSON("{% url 'login' %}", {username: $("#form1").val(), password: $("#form2").val()}, function(results){
-        if ('success'.localeCompare( results['msg']) == 0){
-            $("#modelId").modal('show');
-        }else{
-            alert('Incorrect Username/Password. Please try again');
-        }
 
-    });
-}
-</script>
+
+<!-- Navbar -->
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark scrolling-navbar">
+    <div class="container">
+        <!-- Brand -->
+        <a class="navbar-brand" href="https://mdbootstrap.com/material-design-for-bootstrap/" target="_blank">
+            <strong>Duplify</strong>
+        </a>
+
+        <!-- Collapse -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Links -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+            <!-- Left -->
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home
+                        <span class="sr-only">(current)</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://mdbootstrap.com/material-design-for-bootstrap/"
+                       target="_blank">About Duplify</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://mdbootstrap.com/getting-started/" target="_blank">About
+                        WealthVest</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"data-toggle="modal" data-target="#modalLoginForm">Login</a>
+                </li>
+            </ul>
+
+            <!-- Right -->
+            <ul class="navbar-nav nav-flex-icons">
+                <li class="nav-item">
+                    <a href="https://www.facebook.com/mdbootstrap" class="nav-link" target="_blank">
+                        <i class="fa fa-facebook"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="https://twitter.com/MDBootstrap" class="nav-link" target="_blank">
+                        <i class="fa fa-twitter"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="https://github.com/jachiike-madubuko/duplify" class="nav-link border border-light rounded"
+                       target="_blank">
+                        <i class="fa fa-github mr-2"></i>Duplify GitHub
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+
+    </div>
+</nav>
+<!-- Navbar -->
+
+<!--Carousel Wrapper-->
+<div id="carousel-example-1z" class="carousel slide carousel-fade" data-ride="carousel">
+
+    <!--Indicators-->
+    <ol class="carousel-indicators">
+        <li data-target="#carousel-example-1z" data-slide-to="0" class="active"></li>
+        <li data-target="#carousel-example-1z" data-slide-to="1"></li>
+        <li data-target="#carousel-example-1z" data-slide-to="2"></li>
+    </ol>
+    <!--/.Indicators-->
+
+    <!--Slides-->
+    <div class="carousel-inner" role="listbox">
+
+        <!--First slide-->
+        <div class="carousel-item active">
+            <div class="view">
+
+                <!--Video source-->
+                <div class="embed-responsive embed-responsive-16by9">
+                    <iframe class="embed-responsive-item"
+                            src="https://www.youtube.com/embed/lR895WBaimI?rel=0&amp;mute=1&amp;controls=0&amp;showinfo=0&amp;autoplay=1&amp;loop=1" frameborder="0" allow="autoplay;encrypted-media; loop"></iframe>
+                </div>
+
+
+                <!-- Mask & flexbox options-->
+                <div class="mask rgba-grey-light d-flex justify-content-center align-items-center">
+
+                    <!-- Content -->
+                    <div class="text-center white-text mx-5 wow fadeIn">
+                        <h1 class="mb-4">
+                            <strong>Duplify</strong>
+                        </h1>
+
+                        <p>
+                            <strong>Finding Duplicate just became a hike in Montana</strong>
+                        </p>
+
+                        <p class="mb-4 d-none d-md-block">
+                            <strong>The most comprehensive duplicate searching algortithm. Loved by over 500 000 users.</strong>
+                        </p>
+
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalLoginForm">
+                            Try Duplify Today
+                            <i class="fa fa-code-fork ml-2"></i>
+                        </button>
+                    </div>
+                    <!-- Content -->
+
+                </div>
+                <!-- Mask & flexbox options-->
+
+            </div>
+        </div>
+        <!--/First slide-->
+
+    </div>
+    <!--/.Slides-->
+
+</div>
+<!--/.Carousel Wrapper-->
+
+<!--Main layout-->
+<main>
+    <div class="container text-center grey-text">
+
+        <hr class="my-5">
+            Just Do It
+    </div>
+</main>
+<!--Main layout-->
+
+<!--Footer-->
+<!--/.Footer-->
+<!-- Initializations -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <!-- Bootstrap tooltips -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.13.0/umd/popper.min.js"></script>
@@ -163,5 +213,22 @@ function send_her(){
 <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/js/dataTables.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.19/js/dataTables.material.min.js"></script>
+<script type="text/javascript">
+    // Animations initialization
+    new WOW().init();
+
+    function send_her(){
+        $.getJSON("{% url 'login' %}", {username: $("#form1").val(), password: $("#form2").val()}, function(results){
+            if ('success'.localeCompare( results['msg']) == 0){
+                $("#modelId").modal('show');
+            }else{
+                alert('Incorrect Username/Password. Please try again');
+            }
+
+        });
+    }
+</script>
+
 
 </body>
+</html>

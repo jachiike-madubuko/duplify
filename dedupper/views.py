@@ -264,13 +264,13 @@ def import_csv(request):
 
         pd_rep_csv = pd.read_pickle(settings.REP_CSV)
 
-        sf = Salesforce(password='7924Trill!', username='jmadubuko@wealthvest.com', organizationId='00D36000001DkQo')
+        # sf = Salesforce(password='7924Trill!', username='jmadubuko@wealthvest.com', organizationId='00D36000001DkQo')
         query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where Territory_Type__c='Geography' and Territory__r.Name like "
         starts_with = f"'{channel}%'"
         request.session['sfCSV_name'] = f'the {channel} channel'
-        territory = sf.bulk.Contact.query(query + starts_with)
-        print(len(territory))
-        territory = pd.DataFrame(territory).drop('attributes', axis=1).replace([None], [''], regex=True)
+        # territory = sf.bulk.Contact.query(query + starts_with)
+        # print(len(territory))
+        # territory = pd.DataFrame(territory).drop('attributes', axis=1).replace([None], [''], regex=True)
         sf_header_map = {
            'CRD__c': 'CRD',
            'Email': 'workEmail',
@@ -289,9 +289,8 @@ def import_csv(request):
            'Other_Email__c': 'otherEmail',
            'Suffix': 'suffix',
                        }
-        load_csv2db(territory, sf_header_map, sfcontact_resource, file_type='SF')
+        # load_csv2db(territory, sf_header_map, sfcontact_resource, file_type='SF')
         request.session['misc'] = load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
-
 
 
     return JsonResponse({'msg': 'success!'}, safe=False)

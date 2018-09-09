@@ -25,7 +25,8 @@ admin.autodiscover()
 
 urlpatterns = [
     path('', views.index, name='contact_index'),
-    path('contacts/', views.contacts, name='contacts'),
+    path('/contacts/', views.contacts, name='contacts'),
+    path('/leads/', views.leads, name='leads'),
     path('table/', views.table, name='table'),
     path('plotly/', views.plotly, name='plotly'),
 #     url(r'^keys', views.upload, name='keys'),

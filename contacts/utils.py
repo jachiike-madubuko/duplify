@@ -3,9 +3,13 @@ import pandas as pd
 from random import randint
 import numpy as np
 import datetime
-usage_map=usage_df=sf_contact_by_type=None
+sf_obj_df=usage_map=usage_df=obj_by_type=None
 
-sf_contact_df = pd.read_hdf('contacts/panda_pickles/contact.h5')
+def load_contacts():
+    global sf_obj_df
+    sf_obj_df = pd.read_csv('contacts/panda_pickles/contact.csv')
+    sf_obj_df['LASTMODIFIEDDATE'] =pd.to_datetime(sf_obj_df['LASTMODIFIEDDATE'])
+    sf_obj_df.index = sf_obj_df['LASTMODIFIEDDATE']
 
 def contacts_clean_up(threshold, num_records=12):
     record_types = ['WS','BD','P','WV',]
@@ -28,17 +32,25 @@ def fieldsByThreshold(df,up_percent, low_percent=0):
     total_usage_per_col = df.count()/len(df);
     return total_usage_per_col[ total_usage_per_col.between(low_percent/100,up_percent/100)]
 
-sf_contact_by_type = {i: sf_contact_df[sf_contact_df['RECORD_TYPE_NAME__C'] == i] for i in
-                          sf_contact_df.RECORD_TYPE_NAME__C.unique()}
+def get_usage_map():
+    global obj_by_type, usage_map, usage_df
 
-    # fields usage per record type
-usage_map = {i: fieldsByThreshold(sf_contact_by_type[i], 101) for i in
-                           sf_contact_df.RECORD_TYPE_NAME__C.unique()}
+    try:
+        usage_df = pd.read_picke('contacts/panda_pickles/usage.pkl')
+    except:
+        obj_by_type = {i: sf_obj_df[sf_obj_df['RECORD_TYPE_NAME__C'] == i] for i in
+                       sf_obj_df.RECORD_TYPE_NAME__C.unique()}
 
-usage_df = pd.DataFrame(usage_map)
+            # fields usage per record type
+        usage_map = {i: fieldsByThreshold(obj_by_type[i], 101) for i in
+                     sf_obj_df.RECORD_TYPE_NAME__C.unique()}
 
-#only send to pickle if does not exist
-usage_df.to_pickle('contacts/panda_pickles/usage.pkl')
+        usage_df = pd.DataFrame(usage_map)
+
+        #only send to pickle if does not exist
+        usage_df.to_pickle('contacts/panda_pickles/usage.pkl')
+
+    return usage_df
 
 def threshold_per_type(max_threshold,  min_num_types):
     # example -> threshold_per_type(1,12)  all fields that have under 1% usage for 12 or more record types
@@ -51,9 +63,9 @@ def threshold_per_type(max_threshold,  min_num_types):
 
 def contact_type_using_field(record_type, field_name):
     if record_type == 'All':
-        contacts = sf_contact_df
+        contacts = sf_obj_df
     else:
-        contacts = sf_contact_by_type[record_type]
+        contacts = obj_by_type[record_type]
 
     return contacts[contacts[field_name].notnull()]
 

@@ -7,6 +7,7 @@
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/css/mdb.min.css" rel="stylesheet">    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
     <style>
         /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#b8e1fc+0,a9d2f3+10,90bae4+25,90bcea+37,90bff0+50,6ba8e5+51,a2daf5+83,bdf3fd+100;Blue+Gloss+%231 */
@@ -14,12 +15,13 @@
 
     </style>
 </head>
-<body class="bg-dark" style="transition: 2s; overflow: hidden">
+<body class="blue-grey lighten-5" style="transition: 2s; overflow: hidden">
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
         integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/js/mdb.min.js"></script>
 
 <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
@@ -170,7 +172,7 @@
 
         });
     }
-    bg();
+    {#bg();#}
 
     var colors = new Array(
         [127.5,127.5,127.5],
@@ -231,7 +233,7 @@
         }
     }
 
-    setInterval(updateGradient,20);
+    {#setInterval(updateGradient,20);#}
 
     function verify(){
         $.wait = function( callback, seconds){
@@ -313,7 +315,7 @@
             }
         });
         $('.select2-container--bootstrap').width(500);
-        $('.btn-outline-primary').click(function () {
+        $('.btn-primary').click(function () {
             $('#map-headers').removeClass('invisible');
         });
 
@@ -334,7 +336,7 @@
                 contentType: false,
                 cache: false,
                 success: function (data) {
-                                        $("#modelId").modal('show');
+                    $("#modelId").modal('show');
 
                     for (var key in data) {
                         var class_id = "rep" + key;
@@ -352,7 +354,7 @@
                         var selectList = $("<select style='width=100%'></select>");
                         selectList.addClass(class_id).addClass("rep-select py-5 col-12");
                         selectList.append($("<option></option>").data("name", "placeholder"));
-                         for (var k in data[key]) {
+                        for (var k in data[key]) {
                             var opt = $("<option></option>");
                             opt.data("name", data[key][k]).val(data[key][k]).text(data[key][k]);
                             selectList.append(opt);
@@ -364,24 +366,24 @@
 
 
                     }
-                            $('.rep-select').select2({
-            theme: "bootstrap",
-            placeholder: {
-                id: '0'
-            },
-            templateSelection: function (data, container) {
-                $(data.element).attr('data-name', data.value);
-                return data.text;
+                    $('.rep-select').select2({
+                        theme: "bootstrap",
+                        placeholder: {
+                            id: '0'
+                        },
+                        templateSelection: function (data, container) {
+                            $(data.element).attr('data-name', data.value);
+                            return data.text;
 
-            }
-        });
+                        }
+                    });
                     $(".select2-container").width('500');
 
                 }
-                    });
-
             });
+
         });
+    });
     function f() {
         if (confirm('WARNING: You are about to erase all records in the database.')) {
             window.location.replace("{% url 'flush_db' %}");
@@ -447,13 +449,13 @@
 
                         <li role="presentation" class="active nav-item badge-pill"><a   href="#uploadTab" aria-controls="uploadTab" role="tab"
                                                                                         data-toggle="tab"><button
-                                class="nav-link btn btn-block  bg-primary nav-pill badge-pill" onclick="togglegameoff()">
+                                class="nav-link btn waves-effect btn-block  bg-primary nav-pill badge-pill" onclick="togglegameoff()">
                             Progress</button></a>
 
                         </li>
                         <li  id="br"role="presentation" class=" nav-item badge-pill"><a   href="#browseTab" aria-controls="browseTab" role="tab"
                                                                                           data-toggle="tab"><button
-                                class="nav-link btn  bg-primary btn-block nav-pill badge-pill" onclick="togglegameon()">
+                                class="nav-link btn waves-effect  bg-primary btn-block nav-pill badge-pill" onclick="togglegameon()">
                             Analytics</button></a>
                         </li>
                     </ul>
@@ -473,7 +475,7 @@
             </div>
             <hr>
             <div class="container my-3">
-                <a id="next" class="invisible btn btn-success badge-pill btn-block" href="{% url 'reps' %}">Next</a>
+                <a id="next" class="invisible btn waves-effect btn-success badge-pill btn-block" href="{% url 'reps' %}">Next</a>
             </div>
         </div>
     </div>
@@ -500,7 +502,7 @@
                 <div class="container-fluid">
                     <div class="x row">
 
-                            <div class=" mapping">
+                        <div class=" mapping">
 
                         </div>
 
@@ -509,29 +511,31 @@
             </div>
             <div class="modal-footer">
                 <div class="btn-group btn-group-toggle mx-2" data-toggle="buttons">
-                    <label class="btn btn-outline-primary">
+                    <label class="btn waves-effect btn-primary mr-1">
                         <input type="radio" name="options" id="option2" value="RC" autocomplete="off"> RC
                     </label>
-                    <label class="btn btn-outline-primary">
+                    <label class="btn waves-effect btn-primary mr-1">
                         <input type="radio" name="options" id="option3" value="RD" autocomplete="off"> RD
                     </label>
-                    <label class="btn btn-outline-primary">
+                    <label class="btn waves-effect btn-primary mr-1">
                         <input type="radio" name="options" id="option3" value="RM" autocomplete="off"> RM
                     </label>
-                    <label class="btn btn-outline-primary">
+                    <label class="btn waves-effect btn-primary mr-1">
                         <input type="radio" name="options" id="option3" value="IMC" autocomplete="off"> IMC
                     </label>
-                    <label class="btn btn-outline-primary">
+                    <label class="btn waves-effect btn-primary mr-1">
                         <input type="radio" name="options" id="option3" value="EMC" autocomplete="off"> EMC
                     </label>
-                    <label class="btn btn-outline-primary">
+                    <label class="btn waves-effect btn-primary mr-1">
                         <input type="radio" name="options" id="option3" value="FD" autocomplete="off"> FD
                     </label>
                 </div>
 
-                <button class="btn btn-success badge-pill invisible" id="map-headers" type="button"
-                        onclick="map_headers()"
-                    <b >Map Headers</b>
+                <button class="btn waves-effect btn-success btn-sm rounded-circle p-1 ml-5 invisible z-depth-5"
+                        id="map-headers"
+                        type="button"
+                        onclick="map_headers()">
+                 <span class="fa fa-arrow-circle-right fa-3x "></span>
                 </button>
 
             </div>
@@ -539,17 +543,21 @@
     </div>
 </div>
 
-<div class="container-fluid" style="overflow: auto; max-height: 90vh">
+<div class="container-fluid">
     <div class="row">
         <div class="col-1"></div>
-        <div class="card col-10  my-5 bg-transparent text-primary ">
-            <div class="card-header  text-center"> <h3> File Upload </h3></div>
-            <div class="card-body ">
+        <!-- Card -->
+        <div class="card col-6 m-auto">
+
+            <!-- Card content -->
+            <div class="card-body text-center">
+
+                <!-- Title -->
+                <h2 class="card-title ">Upload Rep List Here</h2>
+                <!-- Text -->
                 {% block content %}
                     <form method="post" enctype="multipart/form-data" id="upload">
                         {% csrf_token %}
-
-                        <h6 class="card-text  text-center">Upload Rep List Here</h6>
                         <div class="custom-file ">
 
                             <input type="file" class=" badge-pill custom-file-input" id="repFile" name="repFile"
@@ -557,21 +565,28 @@
                             <label class=" custom-file-label rep" for="repFile">Choose file</label>
                         </div>
 
-                        <hr class="my-3">
-
                         <div class="row">
                             <div  class="col-4"></div>
                             <div  class="col-4">
-                                <button type="Submit" onclick="verify()" class="btn btn-success btn-large btn-block
-                                        badge-pill
-                                        float-right" id="fileSubmit"><h5 class="my-2">Upload</h5></button>
+                                <button type="Submit" onclick="verify()" class="btn waves-effect btn-primary  rounded-circle download ml-5 z-depth-5 p-3 shadow"  style="z-index: 5000;
+position:
+fixed;
+bottom:
+50px;
+                    right: 30px;"
+                                        id="fileSubmit">        <span class="fa fa-upload fa-2x "></span>
+                                </button>
                             </div>
                             <div  class="col-4"></div>
                         </div>
                     </form>
                 {% endblock %}
+
             </div>
+
         </div>
+        <!-- Card -->
+
         <div class="col-1"></div>
     </div>
 

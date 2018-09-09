@@ -10,8 +10,6 @@ codecov==2.0.15
 
 colorama==0.3.9
 
-coverage==4.5.1
-
 diff-match-patch==20121119
 
 dj-database-url==0.5.0
@@ -100,9 +98,9 @@ six==1.11.0
 
 sqlparse==0.2.4
 
-tablib==0.12.1
+spacy==2.0.12
 
-table==3.4.4
+tablib==0.12.1
 
 tqdm==4.23.4
 

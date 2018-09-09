@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from contacts.contacts_clean_up  import contacts_clean_up, get_resampled_field_count, contact_type_using_field
+from contacts.utils  import contacts_clean_up, get_resampled_field_count, contact_type_using_field
 from collections import defaultdict
 from django.http import HttpResponse, JsonResponse
 import pandas as pd
@@ -13,6 +13,22 @@ def index(request):
     return render(request, 'contacts/index.html')
 
 def contacts(request):
+
+    data = defaultdict(int)
+    if request.method == 'GET':
+
+        threshold = request.GET.get('threshold')
+        if 'num_records' in request.GET:
+            num_record_types = request.GET.get('num_records')
+            data['api_names'], data['record_types'] = contacts_clean_up(threshold, num_record_types)
+        else:
+            data['api_names'], data['record_types'] = contacts_clean_up(threshold)
+        print(data)
+
+        return JsonResponse(data, safe=False)
+
+
+def leads(request):
 
     data = defaultdict(int)
     if request.method == 'GET':

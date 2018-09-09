@@ -1,15 +1,26 @@
+
 {% load static %}
 {% load render_table from django_tables2 %}
 <!doctype html>
 <html lang="en">
 <head>
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/css/mdb.min.css" rel="stylesheet">    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
 
     <title>Duplify | Rep List</title>
     <style>
+        input[type='radio'] {
+            visibility:hidden;
+        }
+        .p{
+            text-decorations:none;
+            color:inherit;"
+        }
         .btn-default{
             background-color: #222529;
         }
@@ -31,16 +42,25 @@
         }
 
         #loading-indicator {
-          position: absolute;
-          left: 50%;
-          top: 50%;
-         z-index: 1100;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            z-index: 1100;
             box-shadow: 0px 0px 1000vw 1000vh rgba(0,0,0,0.6);
         }
 
     </style>
 </head>
-<body class="bg-dark text-white" style="overflow: auto; max-height: min-content;"  >
+<body class="blue-grey lighten-5" style="overflow: auto; max-height: min-content;"  >
+<button class="btn btn-primary  rounded-circle download ml-5 z-depth-5 p-3 shadow"  style="z-index: 5000;
+position:
+fixed;
+bottom:
+50px;
+                    right: 30px;"
+        id="navbarDropdownMenuLink">
+    <span class="fa fa-2x fa-download "></span>
+</button>
 
 <nav class="navbar text-primary bg-transparent navbar-expand-lg justify-content-between rounded-bottom">
     <a class="navbar-brand" href="/">Duplify</a>
@@ -150,11 +170,11 @@
 
 </div>
 <div class="container-fluid">
-    <ul class="nav nav-pills nav-fill text-white" id="pills-tab" role="tablist">
+    <ul class="nav nav-pills nav-fill text-white  my-1 blue lighten-3 pt-2 rounded" id="pills-tab" role="tablist">
         <li class="nav-item badge-pill">
-            <h6  class="mx-1 mt-3"><a class="m-1 button btn-success badge-pill float-right"
-                                      href="export/Duplicate"><span class="fa fa-download fa-1x"></span></a></h6>
-            <a class="nav-link active  bg-dark nav-pill badge-pill" id="pills-dup-tab" data-toggle="pill"
+
+            <a class="nav-link active p badge-pill " id="pills-dup-tab" data-download="export/Duplicate"
+               data-toggle="pill"
                href="#pills-dup"
                role="tab"
                aria-controls="pills-dup" aria-selected="true">
@@ -162,17 +182,18 @@
             </a>
         </li>
         <li class="nav-item badge-pill">
-            <h6 class="mx-1 mt-3"><a class="m-1 button btn-success badge-pill float-right"
-                                     href="export/NewRecord"><span class="fa fa-download"></span></a></h6>
-            <a class="nav-link bg-dark badge-pill" id="pills-new-tab" data-toggle="pill" href="#pills-new" role="tab"
+
+            <a class="nav-link  badge-pill p " id="pills-new-tab" data-download="export/NewRecord"
+               data-toggle="pill"
+               href="#pills-new" role="tab"
                aria-controls="pills-new" aria-selected="false">
                 New Records
             </a>
         </li>
         <li class="nav-item badge-pill">
-            <h6 class="mx-1 mt-3"><a class="m-1 button btn-success badge-pill float-right"
-                                     href="export/ManualCheck"><span class="fa fa-download"></span></a></h6>
-            <a class="nav-link bg-dark badge-pill" id="pills-man-tab" data-toggle="pill" href="#pills-man"
+
+            <a class="nav-link  badge-pill p" id="pills-man-tab" data-download="export/ManualCheck" data-toggle="pill"
+               href="#pills-man"
                role="tab"
                aria-controls="pills-man" aria-selected="false">
                 Manual Check
@@ -180,8 +201,8 @@
         </li>
     </ul>
     <div class="row"> <img src="{% static 'img/loader.gif' %}" id="loading-indicator" class="rounded-circle border-0 bg-white"  />
-</div>
-    <div class="card bg-transparent tab-content rounded" id="pills-tabContent" style="overflow-y: auto; height: 85vh">
+    </div>
+    <div class="card  tab-content rounded" id="pills-tabContent" style="overflow-y: auto; height: 85vh">
         <div class="tab-pane show active" id="pills-dup" role="tabpanel" aria-labelledby="pills-dup-tab">
             {#            {% render_table duplicate_table 'django_tables2/bootstrap-responsive.html' %}#}
         </div>
@@ -196,6 +217,7 @@
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.bundle.min.js"></script>
 <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/js/mdb.min.js"></script>
 <script>
     var man = false;
     var dup = false;
@@ -248,15 +270,16 @@
                         })).append(result['table3']);
                         content.append(t3);
                     }
-                    var sort =  '<div class="col-1"> <button class="btn btn-success" ' +
+                    var sort =  '<div class="col-1"> <button class="btn btn-success rounded-circle p-1 float-right" ' +
                         'data-rep="'+a+'" ' +
                         'onclick="sort(this)' +
-                        '">SORT</button> </div>';
+                        '"><span class="fa fa-check fa-2x"></span></button> </div>';
 
                     var type = $("<div data-toggle='buttons'></div>")
-                        .addClass("btn-group btn-group-toggle col-3")
+                        .addClass("btn-groupcol-3")
                         .append($("<label></label>")
-                            .addClass("btn btn-outline-primary dup active")
+                            .addClass("btn btn-primary btn-sm dup active waves-effect")
+                            .append('<span class="fa fa-2x fa-users "></span>')
                             .append($("<input>Dup</input>")
                                 .addClass("dup")
                                 .attr({
@@ -267,7 +290,8 @@
                                     autocomplete: "off"
                                 })))
                         .append($("<label></label>")
-                            .addClass("btn btn-outline-primary new")
+                            .addClass("btn btn-primary btn-sm new waves-effect")
+                            .append('<span class="fa fa-2x fa-user "></span>')
                             .append($("<input>New</input>")
                                 .addClass("new")
                                 .attr({
@@ -277,8 +301,7 @@
                                     value: "new",
                                     autocomplete: "off"
                                 })));
-                    var buttons = $("<div></div>").addClass("row").append(type).append($('<div class="col-7"></div>')).
-                    append(sort);
+                    var buttons = $("<div></div>").addClass("row").append($('<div class="col-6"></div>').append(type)).append(sort);
                     content.append(buttons);
                     //add toggle switch at the top for dup or new, if toggle dup,
                     // then show radio button group for each choice
@@ -300,22 +323,24 @@
         });
         $('.btn').on('shown.bs.popover', function () {
             $('.popover').css('max-width', "100%");
+            $('.popover').css('min-width', "38%");
+            $('.popover').addClass('z-depth-3 border-0');
         });
         $('input[type=radio][name=type]').change( function () {
             alert('dup');
         });
         $('th > a').on('click', function (e) {
-           e.preventDefault();
-           var parsed = $(this).attr('href').split('&');
-          if (parsed[0].includes('Duplicate')){
-              dup_table(parsed[2].replace('sort=',''));
-          }
-          else if (parsed[0].includes('New')){
-              new_table(parsed[2].replace('sort=',''));
-          }
-          if (parsed[0].includes('Manual')){
-              man_table(parsed[2].replace('sort=',''));
-          }
+            e.preventDefault();
+            var parsed = $(this).attr('href').split('&');
+            if (parsed[0].includes('Duplicate')){
+                dup_table(parsed[2].replace('sort=',''));
+            }
+            else if (parsed[0].includes('New')){
+                new_table(parsed[2].replace('sort=',''));
+            }
+            if (parsed[0].includes('Manual')){
+                man_table(parsed[2].replace('sort=',''));
+            }
 
 
         });
@@ -353,10 +378,29 @@
     }
 
     $(function () {
-
+        var link = 'export/Duplicate';
         dup_table('');
         new_table('');
         man_table('');
+
+        $('button').addClass('waves-effect');
+        $('a').addClass('waves-effect');
+
+        $('.nav-link').click(function (e) {
+            link = $(this).data('download');
+            $('.nav-link').removeClass('z-depth-2');
+            $(this).addClass('z-depth-2');
+
+        });
+
+        $("#pills-dup-tab").click();
+
+        $('.download').click(function () {
+
+            var anchor = $('<a></a>').attr('href', link);
+            window.location = anchor.attr('href');
+
+        });
 
         $('.btn').on('shown.bs.popover', function () {
             $('.popover').css('max-width', "100%");
@@ -365,11 +409,11 @@
 
 
         $(document).ajaxSend(function(event, request, settings) {
-          $('#loading-indicator').show();
+            $('#loading-indicator').show();
         });
 
         $(document).ajaxStop(function(event, request, settings) {
-          $('#loading-indicator').hide();
+            $('#loading-indicator').hide();
 
         });
 
@@ -558,7 +602,7 @@
 
         });
     }
-    bg();
+    {#bg();#}
 
     var colors = new Array(
         [255,255,255],
@@ -614,8 +658,7 @@
         }
     }
 
-    setInterval(updateGradient,10);
-
+    {#setInterval(updateGradient,10);#}
     function f() {
         if (confirm('WARNING: You are about to erase all records in the database.')) {
             window.location.replace("{% url 'flush_db' %}");
