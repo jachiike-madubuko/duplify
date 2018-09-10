@@ -219,7 +219,7 @@
 
     function send_her(){
         $.getJSON("{% url 'login' %}", {username: $("#form1").val(), password: $("#form2").val()}, function(results){
-            if ('success'.localeCompare( results['msg']) == 0){
+            if ('success'.localeCompare( results['msg']) != 0){
                 $("#modelId").modal('show');
             }else{
                 alert('Incorrect Username/Password. Please try again');
