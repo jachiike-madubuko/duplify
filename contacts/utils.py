@@ -83,4 +83,7 @@ def date_range_of_contacts(df):
     earliest = df.resample('M').count()[:1].index.date[0].isoformat()
     latest = df.resample('M').count()[-1:].index.date[0].isoformat()
     return f'from {earliest} to {latest}'
+def get_monthly_field_count(df,field):
+    plot = df.resample('M').count()[field]
+    return plot
 
