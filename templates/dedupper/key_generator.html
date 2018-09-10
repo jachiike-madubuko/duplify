@@ -13,7 +13,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/css/mdb.min.css" rel="stylesheet">    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
+
     <style>
+        body {
+            background-image: url("{% static 'img/stream.png' %}");
+            background-position: right top;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: 100% 100%;
+        }
+
         @import url(https://fonts.googleapis.com/css?family=Roboto:300,500);
 
         .popover{
@@ -57,9 +66,11 @@
             height: 26px;
             border-radius: 100px;
             background: #fff;
-            box-shadow: 0px 3px 3px rgba(0,0,0,0.05);
+            box-shadow: 0px 3px 3px rgba(0,0,0,0.5);
             content: '';
-            transition: all 0.3s ease;
+            border: 1px solid rgba(125,125,125,0.15);
+
+            transition: all 0.5s ease;
         }
         .lbl:active:after {
             transform: scale(1.15, 0.85);
@@ -96,12 +107,12 @@
         ul:empty::after{
             content: attr(data-empty-message);
         }
-        a {
+        h2 , h4, .nav-link{
             text-shadow:
-                    -0.125px -0.125px 0 #fff,
-                    0.125px -0.125px 0 #fff,
-                    -0.125px 0.125px 0 #fff,
-                    0.125px 0.125px 0 #fff;
+                    1.25px 1.25px 0 #000,
+                    1.25px 1.25px 0 #000,
+                    1.25px 1.25px 0 #000,
+                    1.25px 1.25px 0 #000;
         }
     </style>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -306,8 +317,8 @@
     {#setInterval(updateGradient,10);#}
 
     $.ajaxSetup({data: {
-            csrfmiddlewaretoken: '{{ csrf_token }}'
-        }});
+        csrfmiddlewaretoken: '{{ csrf_token }}'
+    }});
 
     function update_kbar(now) {
         var p_bar= $(".key-bar");
@@ -385,14 +396,14 @@
         sList = sList.slice(9, sList.length-1);
         //convert sList to have _ instead of spaces (idsList) and make check box id=idsList then select #idsList for genKeys
         var idsList = sList.replace(/ /g, "-");
-        var key = '<li class="madeKey text-black rounded z-depth-2 mt-4 "> <div class="row ' +
+        var key = '<li class="madeKey text-black rounded z-depth-4 border border-black mt-4 white"> <div class="row ' +
             'pt-2" ' +
             'style="height: ' +
             '40px"><div ' +
             'class="col-1"><a ' +
             'onclick="del' +
             '(this)"><span ' +
-            'class="rounded-circle p-1 fa fa-trash fa-1x white"></span></a></div><div class="col-8" ' +
+            'class="rounded-circle p-1 fa fa-trash fa-1x white red-text"></span></a></div><div class="col-8" ' +
             'style="height:25px"><p' +
             ' ' +
             'class="key text-black">'+sList+'</p></div> <span style="height: 20px" class="duplicate badge ' +
@@ -456,21 +467,21 @@
         }
     }
 </script>
-<nav class="navbar navbar-dark bg-info navbar-expand-lg justify-content-between">
-    <h1> <a class="navbar-brand" href="#">Duplify</a></h1>
+<nav class="navbar navbar-expand-lg navbar-white scrolling-navbar">
+    <h2> <strong><a class="navbar-brand  text-white     " href="#" >Duplify</a></strong></h2>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
             <li class="nav-item active">
-                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-link  text-white " href="#">Home <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="javascript:f()">Reset</a>
+                <a class="nav-link  text-white " href="javascript:f()">Reset</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Pricing</a>
+                <a class="nav-link  text-white " href="#">Pricing</a>
             </li>
         </ul>
     </div>
@@ -553,11 +564,11 @@
         </div>
     </div>
 </div>
-<div class="container-fluid row my-5" style=" text-align: center;">
+<div class="container-fluid row my-3" style=" text-align: center;">
     <div id="keyBuilder" class="col-10 mx-auto">
-        <div class="card">
+        <div class="card rgba-white-light">
             <div class="card-body" style="max-height: 85vh">
-                <h2 class="card-title">Key Builder </h2>
+                <h2 class="card-title text-white">Key Builder </h2>
                 <div class="row">
                     <div class="col-12">
                         <div class="input-group ml-4 ">
@@ -575,9 +586,11 @@
                                 </button>
                             </div>
                         </div>
-                        <h4 class="card-title my-3">Key List </h4>
+                        <h4 class="card-title my-3 text-white">Key List </h4>
 
-                        <ul id="keylist" class="text-black z-depth-1" style="overflow-y:auto; max-height:70vh;
+                        <ul id="keylist" class="text-black rounded "
+                            style="overflow-y:auto;
+                        max-height:70vh;
                         min-height:
                         60vh;
                 width:
@@ -600,7 +613,7 @@ fixed;
 bottom:
 50px;
                     right: 30px;">
-                            <span class="fa fa-2x fa-download "></span>
+                            <span class="fa fa-2x fa-download"></span>
                         </button>
                     </div>
                     <div class="col-4"></div>
