@@ -27,7 +27,6 @@ def contacts(request):
 
         return JsonResponse(data, safe=False)
 
-
 def leads(request):
 
     data = defaultdict(int)
@@ -49,8 +48,6 @@ def table(request):
     print(api_name, record_type)
     table = contact_type_using_field(record_type, api_name)
     return JsonResponse({'table':table.to_html()}, safe=False)
-
-
 
 def plotly(request):
     '''

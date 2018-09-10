@@ -27,14 +27,8 @@ browser = None
 
 nlp = spacy.load('en_core_web_sm')
 
-
-
 # ids = [i['Id'] for i in contacts]   #list of contactIDs
 # crds = [i['CRD__c'] for i in contacts]   #list of CRDs
-
-
-
-
 
 #screen_scraper for non_crd contacts
 def screen_scraper(crd_list):
