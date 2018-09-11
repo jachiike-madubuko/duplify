@@ -69,5 +69,11 @@ Django = "==2.0.5"
 et_xmlfile = "==1.0.1"
 PyYAML = "==3.12"
 simple-salesforce = "*"
+selenium = "==3.14"
+tables = "*"
+scrapyd = "*"
+python-scrapyd-api = "*"
+spacy = "==2.0.12"
+Scrapy = "*"
 
 [dev-packages]

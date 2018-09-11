@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import simple, contact, sfcontact, repContact, dedupTime, duplifyTime, uploadTime
+from .models import simple, sfcontact, repContact, dedupTime, duplifyTime, uploadTime
 
 # Register your models here.
 admin.site.register(sfcontact)

@@ -1,0 +1,345 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Object Analysis | Contacts</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" />
+    <!-- Material Design Bootstrap -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/css/mdb.min.css" rel="stylesheet">    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/css/dataTables.dataTables.min
+.css" />
+    <style>
+        .col-4 {
+            min-width: 250px;
+        }
+        #loading-indicator {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            z-index: 1100;
+            box-shadow: 0px 0px 1000vw 1000vh rgba(0,0,0,0.6);
+        }
+        x{
+            overflow-y: auto;
+        }
+
+    </style>
+</head>
+<body class="grey lighten-4" style="transition: 2s; overflow: auto">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+
+<!--Main Navigation-->
+<header>
+    <!--Navbar-->
+    <nav class="navbar navbar-expand-lg navbar-dark blue darken-1 double-nav z-depth-5 fixed-top">
+        <!-- Breadcrumb-->
+        <!--Grid row-->
+        <div class="col-4 ">
+
+            <!--Date select-->
+            <p class="lead">
+                <span class="badge blue p-2">API NAME</span>
+            </p>
+            <select class="api select2-dd">
+                <option value="" >Choose api name</option>
+
+            </select>
+        </div>
+        <!--Grid row-->
+        <!--Grid row-->
+        <div class="col-4 ">
+            <!--Date select-->
+            <p class="lead">
+                <span class="badge blue p-2">Record Type</span>
+            </p>
+            <select class="record select2-dd">
+                <option value="" >Choose a record type</option>
+
+            </select>
+
+        </div>
+        <!--Grid row-->
+
+        <!-- Links -->
+        <ul class="nav navbar-nav  row">
+            <li class="nav-item col-3">
+                <p class="lead">
+                    <span class="badge blue ">Threshold</span>
+                </p>
+                <input id="threshold"  type="number" style="width: 50px" min="0" max="100">
+            </li>
+            <li class="nav-item col-3 mx-2">
+                <p class="lead">
+                    <span class="badge blue"># Record Types</span>
+                </p>
+                <select class="num-types select2-dd" style="width: 75px">
+                    <option value=0 >0</option>
+                    <option value=1 >1</option>
+                    <option value=2 >2</option>
+                    <option value=3 >3</option>
+                    <option value=4 >4</option>
+                    <option value=5 >5</option>
+                    <option value=6 >6</option>
+                    <option value=7 >7</option>
+                    <option value=8 >8</option>
+                    <option value=9 >9</option>
+                    <option value=10 >10</option>
+                    <option value=11 >11</option>
+                    <option value=12 selected>12</option>
+
+                </select>
+            </li>
+            <li class="nav-item col-3">
+                </div>
+            </li>
+        </ul>
+    </nav>
+    <!--/.Navbar-->
+</header>
+<!--Main Navigation-->
+
+<!--Main layout-->
+<main>
+    <button class="btn btn-blue  ml-5 z-depth-5"  style="z-index: 5000; position: fixed; bottom: 20px;
+                    right: 20px;"
+            onclick="verify()"
+            id="navbarDropdownMenuLink">
+        Send
+    </button>
+
+    <div class="container-fluid">
+        <img src="{% static 'img/loader.gif' %}" id="loading-indicator" class="rounded-circle border-0
+     bg-white" style="display: none"  />
+        <section>
+
+
+
+        </section>
+        <!--Section: Modals-->
+
+        <!--Section: Main panel-->
+        <section class="mb-5">
+            <!--Grid column-->
+            <div class="col-md-12">
+
+                <!--Panel Header-->
+                <div class="view py-3 gradient-card">
+                    <h3 class="mb-0"> <p id="api-selected"></p></h3>
+                </div>
+                <!--/Panel Header-->
+                <div class="">
+                    <!--Grid row-->
+                    <div class="row">
+                        <!--Grid column-->
+                        <div class="table mr-2 card shadow x table-responsive" style="overflow: scroll; "></div>
+                        <!--Grid column-->
+                    </div>
+                    <!--Grid row-->
+                </div>
+
+                <!--Panel content-->
+                <!--Panel content-->
+            </div>
+            <!--Grid column-->
+        </section>
+        <!--Section: Main panel-->
+    </div>
+</main>
+<!--Main layout-->
+
+<!--Footer-->
+<footer>
+
+</footer>
+<!--Footer-->
+
+<script>
+    $('#exampleModal').on('show.bs.modal', event => {
+        var button = $(event.relatedTarget);
+        var modal = $(this);
+        // Use above variables to manipulate the DOM
+
+    });
+</script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
+        integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+
+<script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
+<script src="http://yui.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
+
+<!-- MDB core JavaScript -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/js/mdb.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/js/dataTables.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/dataTables.material.min.js"></script>
+<!-- Initializations -->
+<script>
+    // SideNav Initialization
+    $(".button-collapse").sideNav();
+</script>
+<script>
+
+    var plot = $("#plot");
+    function plotly(){
+        $.getJSON("{% url 'plotly' %}", {api_key: api_key, type_key: type_key}, function (result) {// plot the data
+            var trace1 = {
+                x: [1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012],
+                y: [219, 146, 112, 127, 124, 180, 236, 207, 236, 263, 350, 430, 474, 526, 488, 537, 500, 439],
+                name: 'Rest of world',
+                marker: {color: 'rgb(55, 83, 109)'},
+                type: 'bar'
+            };
+
+            var trace2 = {
+                x: [1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012],
+                y: [16, 13, 10, 11, 28, 37, 43, 55, 56, 88, 105, 156, 270, 299, 340, 403, 549, 499],
+                name: 'China',
+                marker: {color: 'rgb(26, 118, 255)'},
+                type: 'bar'
+            };
+
+            var data = [trace1, trace2];
+
+            var layout = {
+                title: 'US Export of Plastic Scrap',
+                xaxis: {tickfont: {
+                        size: 14,
+                        color: 'rgb(107, 107, 107)'
+                    }},
+                yaxis: {
+                    title: 'USD (millions)',
+                    titlefont: {
+                        size: 16,
+                        color: 'rgb(107, 107, 107)'
+                    },
+                    tickfont: {
+                        size: 14,
+                        color: 'rgb(107, 107, 107)'
+                    }
+                },
+                legend: {
+                    x: 0,
+                    y: 1.0,
+                    bgcolor: 'rgba(255, 255, 255, 0)',
+                    bordercolor: 'rgba(255, 255, 255, 0)'
+                },
+                barmode: 'group',
+                bargap: 0.15,
+                bargroupgap: 0.1
+            };
+
+            Plotly.newPlot('plot', data, layout);
+        });
+    }
+    verify();
+
+
+    //TODO use mdbootstrap and datatables
+    //TODO fade out then fade in chain of Start by uploading your rep list here and your salesforce report here-fade out
+    function filename(file, label) {
+        var name = $(file).val().replace("C:\\fakepath\\","");
+
+        $(label).text(name);
+    }
+
+
+    var api_key, type_key='';
+
+
+
+    function verify(){
+        $.getJSON("{% url 'contacts' %}", {threshold: $('#threshold').val(), num_records: $('.num-types').val()},
+            function(result){
+                api_name( result['api_names']);
+                record_types(result['record_types']);
+                $('.api').select2({});
+            });
+    }
+
+    function api_name(api) {
+        $(api).each(function () {
+            $(".api").append('<option class="api-key" value="'+this+'">'+this+'</option>');
+        });
+    }
+    function record_types(type) {
+        $(type).each(function () {
+            $(".record").append('<option class="record-key" value="'+this+'">'+this+'</option>');
+        });
+    }
+    function f() {
+        if (confirm('WARNING: You are about to erase all records in the database.')) {
+            window.location.replace("{% url 'flush_db' %}");
+        } else {
+            // Do nothing!
+        }
+    }
+
+
+    function get_table() {
+        $.getJSON("{% url 'table' %}", {api_key: api_key, type_key: type_key}, function(result) {
+            $('#api-selected').html(type_key+'s with a '+api_key + ' field');
+            $('.table').html(result['table']);
+            $('table').DataTable({
+                paging: true,
+                scrollY: 400,
+                scrollX: 400,
+                searching: true,
+                autoWidthL: true,
+                info: true
+            });
+
+        $('table').addClass('compact hover m-5 shadow x');
+
+    });
+    }
+    function set_api_key(api) {
+        api_key = api;
+        get_table();
+
+    }
+    function set_key_type(types) {
+        type_key=types;
+        get_table();
+
+    }
+
+    $(document).ready(function() {
+
+        $('.api').select2();
+        $('.record').select2();
+        $('.num-types').select2({
+
+        });
+
+        $('.api').change( function () {
+            set_api_key($(this).val());
+        })
+        $('.record').change(function () {
+            set_key_type($(this).val());
+        });
+
+
+
+    });
+    {#$(function () {#}
+    {#             $(document).ajaxSend(function(event, request, settings) {#}
+    {#                 $('#loading-indicator').show();#}
+    {#    });#}
+    {##}
+    {#    $(document).ajaxStop(function(event, request, settings) {#}
+    {#      $('#loading-indicator').hide();#}
+    {##}
+    {#    });#}
+    {##}
+    {#});#}
+</script>
+</body>
+</html>

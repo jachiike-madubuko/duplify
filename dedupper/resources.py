@@ -16,16 +16,11 @@ class UploadTimeResource(resources.ModelResource):
         model = uploadTime
 
 class RepContactResource(resources.ModelResource):
-    sales_force_link = Field()
 
     class Meta:
         model = repContact
-        fields = ('id', 'CRD', 'firstName', 'lastName', 'mailingStreet', 'mailingCity', 'mailingStateProvince', 'mailingZipPostalCode', 'Phone', 'homePhone', 'mobilePhone', 'otherPhone', 'workEmail', 'personalEmail', 'otherEmail', 'keySortedBy', 'average')
+        fields = ('id', 'CRD', 'firstName', 'lastName', 'mailingStreet', 'mailingCity', 'mailingStateProvince', 'mailingZipPostalCode', 'Phone', 'homePhone', 'mobilePhone', 'otherPhone', 'workEmail', 'personalEmail', 'otherEmail', 'keySortedBy', 'average', 'closest1_contactID', 'misc')
         # exclude = ('closest1','closest2','closest3','average','type','dupFlag')
-
-    def dehydrate_sales_force_link(self, repcontact):
-        return 'https://na30.salesforce.com/{} '.format(repcontact.closest1_contactID)
-
 
 class SFContactResource(resources.ModelResource):
     class Meta:

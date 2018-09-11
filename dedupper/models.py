@@ -7,13 +7,12 @@ Run python manage.py migrate dedupper to apply those changes to the database.
 from __future__ import unicode_literals
 
 from django.db import models
+from heroku_connect.db import models as hc_models
 
 def strip(string):
-    #check if string is blank, then add NULL
     if string == '':
         return 'NULL'
-    newstring = string.replace(" ","")
-    newstring = newstring.replace(".0","")
+    newstring = string.replace(" ","").lower()
     return  newstring
 
 class simple(models.Model):
@@ -46,8 +45,8 @@ class simple(models.Model):
         for part in key_parts:
             key += key_builder[part]
         return key
-'''
-from heroku_connect.db import models as hc_models
+
+
 
 class Contact(hc_models.HerokuConnectModel):
     sf_object_name= 'Contact'
@@ -73,41 +72,10 @@ class Contact(hc_models.HerokuConnectModel):
     email = hc_models.Email(sf_field_name='Email')
     otherEmail = hc_models.Email(sf_field_name='Other_Email__c')
     personalEmail = hc_models.Email(sf_field_name='Personal_Email__c')
-    department = hc_models.Text(sf_field_name='Department', max_length=80)
-    title = hc_models.Text(sf_field_name='Title', max_length=80)
 
     def __str__(self):
         return self.name
-'''
-class contact(models.Model):
-    CRD = models.CharField( max_length=256, unique=True,  db_column="CRD")
-    firstName = models.CharField(max_length=256, blank=True)
-    lastName = models.CharField(max_length=256, blank=True)
-    suffix = models.CharField(max_length=256, blank=True)
-    canSellDate = models.CharField(max_length=256, blank=True)
-    levelGroup = models.CharField(max_length=256, blank=True)
-    mailingStreet = models.CharField(max_length=256, blank=True)
-    mailingCity = models.CharField(max_length=256, blank=True)
-    mailingStateProvince = models.CharField(max_length=256, blank=True)
-    mailingZipPostalCode = models.CharField(max_length=256, blank=True)
-    territory = models.CharField(max_length=256, blank=True)
-    workPhone = models.CharField(max_length=256, blank=True)
-    homePhone = models.CharField(max_length=256, blank=True)
-    mobilePhone = models.CharField(max_length=256, blank=True)
-    workEmail = models.CharField(max_length=256, blank=True)
-    personalEmail = models.CharField(max_length=256, blank=True)
-    otherEmail = models.CharField(max_length=256, blank=True)
-    area = models.CharField(max_length=256, blank=True)
-    region = models.CharField(max_length=256, blank=True)
-    regionalLeader = models.CharField(max_length=256, blank=True)
-    levelLeader = models.CharField(max_length=256, blank=True)
-    fieldTrainerLeader = models.CharField(max_length=256, blank=True)
-    performanceLeader = models.CharField(max_length=256, blank=True)
-    boaName = models.CharField(max_length=256, blank=True)
 
-
-    def __str__(self):
-        return '{} {}'.format(self.firstName, self.lastName,)
     def key(self, key_parts):
         key = ''
 
@@ -144,20 +112,18 @@ class contact(models.Model):
         return key
 
 '''
-mdl.repContact.objects.update(type='Undecided', keySortedBy='',closest1='', closest2='', closest3='', closest1_contactID='', closest2_contactID='', closest3_contactID='', average=None)
+repContact.objects.update(type='Undecided', keySortedBy='',closest1='', closest2='', closest3='', closest1_contactID='', closest2_contactID='', closest3_contactID='', average=None)
 '''
 class repContact(models.Model):
     CRD = models.CharField(max_length=256, db_column="CRD")
     firstName = models.CharField(max_length=256, blank=True)
+    middleName = models.CharField(max_length=256, blank=True)
     lastName = models.CharField(max_length=256, blank=True)
     suffix = models.CharField(max_length=256, blank=True)
-    canSellDate = models.CharField(max_length=256, blank=True)
-    levelGroup = models.CharField(max_length=256, blank=True)
     mailingStreet = models.CharField(max_length=256, blank=True)
     mailingCity = models.CharField(max_length=256, blank=True)
     mailingStateProvince = models.CharField(max_length=256, blank=True)
     mailingZipPostalCode = models.CharField(max_length=256, blank=True)
-    territory = models.CharField(max_length=256, blank=True)
     Phone = models.CharField(max_length=256, blank=True)
     homePhone = models.CharField(max_length=256, blank=True)
     mobilePhone = models.CharField(max_length=256, blank=True)
@@ -165,13 +131,6 @@ class repContact(models.Model):
     workEmail = models.CharField(max_length=256, blank=True)
     personalEmail = models.CharField(max_length=256, blank=True)
     otherEmail = models.CharField(max_length=256, blank=True)
-    area = models.CharField(max_length=256, blank=True)
-    region = models.CharField(max_length=256, blank=True)
-    regionalLeader = models.CharField(max_length=256, blank=True)
-    levelLeader = models.CharField(max_length=256, blank=True)
-    fieldTrainerLeader = models.CharField(max_length=256, blank=True)
-    performanceLeader = models.CharField(max_length=256, blank=True)
-    boaName = models.CharField(max_length=256, blank=True)
     average = models.IntegerField(null=True, blank=True)
     TYPES_OF_RECORD = (('Undecided', 'Undecided'),
                        ('Duplicate', 'Duplicate'),
@@ -196,7 +155,7 @@ class repContact(models.Model):
 
     dupFlag = models.BooleanField(blank=True, default=False)
     keySortedBy = models.CharField(max_length=256, blank=True)
-
+    misc = models.CharField(max_length=500, blank=True)
     '''
     add JSON field
     write a parser for all fields not mapped into db
@@ -244,13 +203,10 @@ class repContact(models.Model):
             'firstName': strip(self.firstName),
             'lastName': strip(self.lastName),
             'suffix': strip(self.suffix),
-            'canSellDate': strip(self.canSellDate),
-            'levelGroup': strip(self.levelGroup),
             'mailingStreet': strip(self.mailingStreet),
             'mailingCity': strip(self.mailingCity),
             'mailingStateProvince': strip(self.mailingStateProvince),
             'mailingZipPostalCode': strip(self.mailingZipPostalCode),
-            'territory': strip(self.territory),
             'Phone': strip(self.Phone),
             'homePhone': strip(self.homePhone),
             'mobilePhone': strip(self.mobilePhone),
@@ -258,13 +214,6 @@ class repContact(models.Model):
             'workEmail': strip(self.workEmail),
             'personalEmail': strip(self.personalEmail),
             'otherEmail': strip(self.otherEmail),
-            'area': strip(self.area),
-            'region': strip(self.region),
-            'regionalLeader': strip(self.regionalLeader),
-            'levelLeader': strip(self.levelLeader),
-            'fieldTrainerLeader': strip(self.fieldTrainerLeader),
-            'performanceLeader': strip(self.performanceLeader),
-            'boaName': strip(self.boaName),
         }
 
         for part in key_parts:
@@ -275,15 +224,13 @@ class sfcontact(models.Model):
     CRD = models.CharField(max_length=256, db_column="CRD")
     ContactID = models.CharField(max_length=256, blank=True)
     firstName = models.CharField(max_length=256, blank=True)
+    middleName = models.CharField(max_length=256, blank=True)
     lastName = models.CharField(max_length=256, blank=True)
     suffix = models.CharField(max_length=256, blank=True)
-    canSellDate = models.CharField(max_length=256, blank=True)
-    levelGroup = models.CharField(max_length=256, blank=True)
     mailingStreet = models.CharField(max_length=256, blank=True)
     mailingCity = models.CharField(max_length=256, blank=True)
     mailingStateProvince = models.CharField(max_length=256, blank=True)
     mailingZipPostalCode = models.CharField(max_length=256, blank=True)
-    territory = models.CharField(max_length=256, blank=True)
     Phone = models.CharField(max_length=256, blank=True)
     homePhone = models.CharField(max_length=256, blank=True)
     mobilePhone = models.CharField(max_length=256, blank=True)
@@ -291,13 +238,6 @@ class sfcontact(models.Model):
     workEmail = models.CharField(max_length=256, blank=True)
     personalEmail = models.CharField(max_length=256, blank=True)
     otherEmail = models.CharField(max_length=256, blank=True)
-    area = models.CharField(max_length=256, blank=True)
-    region = models.CharField(max_length=256, blank=True)
-    regionalLeader = models.CharField(max_length=256, blank=True)
-    levelLeader = models.CharField(max_length=256, blank=True)
-    fieldTrainerLeader = models.CharField(max_length=256, blank=True)
-    performanceLeader = models.CharField(max_length=256, blank=True)
-    boaName = models.CharField(max_length=256, blank=True)
     closest_rep = models.ForeignKey('repContact', on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_related",
         related_query_name="%(class)s", null=True,
                                  blank=True)
@@ -344,13 +284,10 @@ class sfcontact(models.Model):
             'firstName': strip(self.firstName),
             'lastName': strip(self.lastName),
             'suffix': strip(self.suffix),
-            'canSellDate': strip(self.canSellDate),
-            'levelGroup': strip(self.levelGroup),
             'mailingStreet': strip(self.mailingStreet),
             'mailingCity': strip(self.mailingCity),
             'mailingStateProvince': strip(self.mailingStateProvince),
             'mailingZipPostalCode': strip(self.mailingZipPostalCode),
-            'territory': strip(self.territory),
             'Phone': strip(self.Phone),
             'homePhone': strip(self.homePhone),
             'mobilePhone': strip(self.mobilePhone),
@@ -358,13 +295,6 @@ class sfcontact(models.Model):
             'workEmail': strip(self.workEmail),
             'personalEmail': strip(self.personalEmail),
             'otherEmail': strip(self.otherEmail),
-            'area': strip(self.area),
-            'region': strip(self.region),
-            'regionalLeader': strip(self.regionalLeader),
-            'levelLeader': strip(self.levelLeader),
-            'fieldTrainerLeader': strip(self.fieldTrainerLeader),
-            'performanceLeader': strip(self.performanceLeader),
-            'boaName': strip(self.boaName),
         }
 
         for part in key_parts:

@@ -7,27 +7,38 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Duplify | Setup</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
-          integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/css/mdb.min.css" rel="stylesheet">    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+
     <style>
+        body {
+            background-image: url("{% static 'img/stream.png' %}");
+            background-position: right top;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: 100% 100%;
+        }
+
         @import url(https://fonts.googleapis.com/css?family=Roboto:300,500);
 
         .popover{
             max-width: 100%; /* Max Width of the popover (depending on the container!) */
         }
 
+        #keylist{
+
+        }
+
         #keylist li {
             list-style-type: none;
             padding: 3px;
             margin: 6px;
-            width: 90%;
+            width: 92%;
             font-size: 85%;
-            -moz-box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.25);
-            -webkit-box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.25);
-            box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.25);
             cursor: move;
         }
 
@@ -55,9 +66,11 @@
             height: 26px;
             border-radius: 100px;
             background: #fff;
-            box-shadow: 0px 3px 3px rgba(0,0,0,0.05);
+            box-shadow: 0px 3px 3px rgba(0,0,0,0.5);
             content: '';
-            transition: all 0.3s ease;
+            border: 1px solid rgba(125,125,125,0.15);
+
+            transition: all 0.5s ease;
         }
         .lbl:active:after {
             transform: scale(1.15, 0.85);
@@ -94,17 +107,17 @@
         ul:empty::after{
             content: attr(data-empty-message);
         }
-        a {
+        h2 , h4, .nav-link{
             text-shadow:
-                    -0.125px -0.125px 0 #fff,
-                    0.125px -0.125px 0 #fff,
-                    -0.125px 0.125px 0 #fff,
-                    0.125px 0.125px 0 #fff;
+                    1.25px 1.25px 0 #000,
+                    1.25px 1.25px 0 #000,
+                    1.25px 1.25px 0 #000,
+                    1.25px 1.25px 0 #000;
         }
     </style>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
-<body class="bg-secondary"style="overflow: hidden;">
+<body class="blue-grey lighten-5"style="overflow: hidden;">
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
 <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
@@ -113,8 +126,11 @@
         integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
 <script src="http://yui.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.6.2/mousetrap.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/js/mdb.min.js"></script>
+
 <script>
     $(document).ready(function() {
+
         var data = [
             {% for key, rep_uniqueness, rep_utility, sf_uniqueness, sf_utility, score in keys %}
                 {
@@ -171,6 +187,8 @@
                 opacity: '.1'
             });
         });
+        $('.select2-selection__rendered').click();
+
     });
     var old_repPercent = 0,
         old_keyPercent = 0,
@@ -243,7 +261,7 @@
 
         });
     }
-    bg();
+    {#bg();#}
     var colors = new Array(
         [127.5,127.5,127.5],
         [255,255,255],
@@ -296,11 +314,11 @@
 
         }
     }
-    setInterval(updateGradient,10);
+    {#setInterval(updateGradient,10);#}
 
     $.ajaxSetup({data: {
-            csrfmiddlewaretoken: '{{ csrf_token }}'
-        }});
+        csrfmiddlewaretoken: '{{ csrf_token }}'
+    }});
 
     function update_kbar(now) {
         var p_bar= $(".key-bar");
@@ -378,18 +396,40 @@
         sList = sList.slice(9, sList.length-1);
         //convert sList to have _ instead of spaces (idsList) and make check box id=idsList then select #idsList for genKeys
         var idsList = sList.replace(/ /g, "-");
-        var key = '<li class="madeKey bg-secondary rounded"> <div class="row pt-2" style="height: 50px"><div ' +
+        var key = '<li class="madeKey text-black rounded z-depth-4 border border-black mt-4 white"> <div class="row ' +
+            'pt-2" ' +
+            'style="height: ' +
+            '40px"><div ' +
             'class="col-1"><a ' +
             'onclick="del' +
             '(this)"><span ' +
-            'class="btn fa fa-close fa-1x"></span></a></div><div class="col-8" style="height:25px"><p ' +
-            'class="key text-white">'+sList+'</p></div> <span style="height: 20px" class="duplicate badge ' +
+            'class="rounded-circle p-1 fa fa-trash fa-1x white red-text"></span></a></div><div class="col-8" ' +
+            'style="height:25px"><p' +
+            ' ' +
+            'class="key text-black">'+sList+'</p></div> <span style="height: 20px" class="duplicate badge ' +
             'badge-success badge-pill ">Dups</span><input type="checkbox" id="'+idsList+'" class="cbx hidden"/><label' +
             ' ' +
             'for="'+idsList+'" class="lbl"></label><span style="height: 20px" class="manual badge badge-pill ' +
             'badge-primary"> Manual ' +
             '</span></div></li>';
         $("#keylist").append(key);
+        $(".lbl::after").addClass('blue-grey z-depth-1 waves-effect')
+        $(".btn").addClass('z-depth-1 waves-effect')
+
+        YUI().use('node-event-simulate', function(Y) {
+            var node = Y.one(".madeKey");
+            node.simulate("mouseover", { relatedTarget: document.body });
+            node.simulate("mousedown");
+            node.simulate("mousemove", { clientX: 200, clientY: 200 });
+            node.simulate("mouseup");
+
+
+
+        });
+
+
+
+
         $('.js-example-basic-multiple').focus();
     }
 
@@ -427,21 +467,21 @@
         }
     }
 </script>
-<nav class="navbar navbar-dark bg-info navbar-expand-lg justify-content-between">
-    <h1> <a class="navbar-brand" href="#">Duplify</a></h1>
+<nav class="navbar navbar-expand-lg navbar-white scrolling-navbar">
+    <h2> <strong><a class="navbar-brand  text-white     " href="#" >Duplify</a></strong></h2>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
             <li class="nav-item active">
-                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-link  text-white " href="#">Home <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="javascript:f()">Reset</a>
+                <a class="nav-link  text-white " href="javascript:f()">Reset</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Pricing</a>
+                <a class="nav-link  text-white " href="#">Pricing</a>
             </li>
         </ul>
     </div>
@@ -472,18 +512,37 @@
                 <div class="tab-content mt-2">
                     <div role="tabpanel" class="tab-pane active" id="uploadTab">
                         Keys Completed
-                        <div id="key-progress" class="progress">
+                        <div id="key-progress" class="progress black-text">
                             <div  class="progress-bar key-bar progress-bar-striped progress-bar-animated
                             badge-pill" role="progressbar"
                                   aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
-                                <b id="keyPercent">0</b><b>%</b>
+                                <div class="row text-black">
+                                    <div class="col mx-auto">
+                                        <b id="keyPercent"class="black-text" >
+                                            0
+                                        </b>
+                                        <b class="black-text">
+                                            %
+                                        </b>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         Reps Sorted
                         <div id="rep-progress"  class="progress">
                             <div class="progress-bar rep-bar progress-bar-striped progress-bar-animated badge-pill" role="progressbar"
                                  aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
-                                <b id="repPercent">0</b><b>%</b>
+                                <div class="row text-black">
+                                    <div class="col mx-auto">
+
+                                        <b id="repPercent"class="black-text">
+                                            0
+                                        </b>
+                                        <b class="black-text">
+                                            %
+                                        </b>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="row"><h4 class="col my-2 mx-auto">Rep Distribution</h4></div>
@@ -505,60 +564,56 @@
         </div>
     </div>
 </div>
-<div class="container-fluid row my-5" style=" text-align: center;">
-    <div class="col-1"></div>
-    <div id="keyBuilder" class="col-10">
-        <div id="channelPicker" class="bg-transparent text-primary card mb-2">
-            <div class="card-body">
-                <h2 class="card-title">Pick a Channel</h2>
-                <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    <label class="btn btn-outline-primary">
-                        <input type="radio" name="options" id="option2" autocomplete="off"> RC
-                    </label>
-                    <label class="btn btn-outline-primary">
-                        <input type="radio" name="options" id="option3" autocomplete="off"> RD
-                    </label>
-                    <label class="btn btn-outline-primary">
-                        <input type="radio" name="options" id="option3" autocomplete="off"> RM
-                    </label>
-                    <label class="btn btn-outline-primary">
-                        <input type="radio" name="options" id="option3" autocomplete="off"> IMC
-                    </label>
-                    <label class="btn btn-outline-primary">
-                        <input type="radio" name="options" id="option3" autocomplete="off"> EMC
-                    </label>
-                    <label class="btn btn-outline-primary">
-                        <input type="radio" name="options" id="option3" autocomplete="off"> FD
-                    </label>
-                </div>
-            </div>
-        </div>
-        <div class="card bg-dark text-white">
+<div class="container-fluid row my-3" style=" text-align: center;">
+    <div id="keyBuilder" class="col-10 mx-auto">
+        <div class="card rgba-white-light">
             <div class="card-body" style="max-height: 85vh">
-                <h2 class="card-title">Key Builder </h2>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <button disabled class="btn-secondary rounded-left col-12" style="height:
+                <h2 class="card-title text-white">Key Builder </h2>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="input-group ml-4 ">
+                            <div class="input-group-prepend">
+                                <button disabled class="blue-grey lighten-5 rounded-left col-12" style="height:
                             34px" type="button"> <span class="fa fa-search fa-1x"></span></button>
-                    </div>
-                    <select autofocus class="js-example-basic-multiple col-12 mousetrap" name="states[]"
-                            multiple="multiple">
-                    </select>
-                    <div class="input-group-apppend">
-                        <button id="create" onclick="create()" class=" btn-primary rounded-right" style="height:
-                            34px" type="button">Create</button>
+                            </div>
+                            <select autofocus class="js-example-basic-multiple col-10 mousetrap" name="states[]"
+                                    multiple="multiple">
+                            </select>
+                            <div class="input-group-apppend">
+                                <button id="create" onclick="create()" class=" btn-primary waves-effect rounded-right"
+                                        style="height:
+                            34px" type="button">        <span class="fa fa-2x fa-plus "></span>
+                                </button>
+                            </div>
+                        </div>
+                        <h4 class="card-title my-3 text-white">Key List </h4>
+
+                        <ul id="keylist" class="text-black rounded "
+                            style="overflow-y:auto;
+                        max-height:70vh;
+                        min-height:
+                        60vh;
+                width:
+                100%;">
+
+                        </ul>
                     </div>
                 </div>
-                <ul id="keylist" style="overflow-y:auto; max-height:30vh; min-height: 5vh; width: 100%;">
-
-                </ul>
                 <hr class="my-2">
                 <div class="row">
                     <div class="col-4"></div>
                     <div class="col-4">
-                        <button id="keygen" class="btn btn-primary btn-block badge-pill my-2" onclick="generateKeys()"
-                                data-toggle="modal" data-target="#progress" data-backdrop="static" data-keyboard="false">
-                            <b>Duplify!</b>
+
+                        <button id="keygen" class="btn btn-primary rounded-circle  ml-5 z-depth-5 p-3 shadow"
+                                onclick="generateKeys()"
+                                data-toggle="modal" data-target="#progress" data-backdrop="static"
+                                data-keyboard="false" style="z-index: 5000;
+position:
+fixed;
+bottom:
+50px;
+                    right: 30px;">
+                            <span class="fa fa-2x fa-download"></span>
                         </button>
                     </div>
                     <div class="col-4"></div>
@@ -566,7 +621,6 @@
             </div>
         </div>
     </div>
-    <div class="col-1"></div>
 
 </div>
 </body>

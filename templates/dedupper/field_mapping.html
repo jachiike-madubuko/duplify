@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,19 +9,39 @@
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/css/mdb.min.css" rel="stylesheet">    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
     <style>
         /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#b8e1fc+0,a9d2f3+10,90bae4+25,90bcea+37,90bff0+50,6ba8e5+51,a2daf5+83,bdf3fd+100;Blue+Gloss+%231 */
+        body {
+    background-image: url("{% static 'img/lake.png' %}");
+                background-position: right top;
+                background-repeat: no-repeat;
+
+    background-attachment: fixed;
+    background-size: 100% 100%;
+
+
+}
+
+        h1 {
+            text-shadow:
+                    1.25px 1.25px 0 #000,
+                    1.25px 1.25px 0 #000,
+                    1.25px 1.25px 0 #000,
+                    1.25px 1.25px 0 #000;
+        }
 
 
     </style>
 </head>
-<body class="bg-dark" style="transition: 2s; overflow: hidden">
+<body class="blue-grey lighten-5" style="transition: 2s; overflow: hidden">
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
         integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/js/mdb.min.js"></script>
 
 <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
@@ -36,8 +58,32 @@
 
         $(label).text(name);
     }
+    function verify(){
+        $.wait = function( callback, seconds){
+            return window.setTimeout( callback, seconds * 1000 );
+        }
+        $(document).on('click', '.btn-success', function(e) {
 
-    function bg() {
+
+            if( $(".rep").text().substr(-3) != 'csv' ) {
+                if( $(".rep").text() == 'Choose file' || $(".rep").text() == '') {
+                    e.preventDefault(); //prevent the default action
+                    $(".files").removeClass("invisible");//.delay(5).addClass("invisible");
+                    $.wait( function(){ $(".files").addClass("invisible") }, 3);
+
+                }else {
+                    // e.preventDefault(); //prevent the default action
+                    $(".format").removeClass("invisible");//.delay(5).addClass("invisible");
+                    $.wait(function () {
+                        $(".format").addClass("invisible")
+                    }, 3);
+                }
+
+            } });
+    }
+
+    function bg()
+    {
 
         $("body").polygonizr({
 
@@ -146,7 +192,7 @@
 
         });
     }
-    bg();
+    {#bg();#}
 
     var colors = new Array(
         [127.5,127.5,127.5],
@@ -207,13 +253,13 @@
         }
     }
 
-    setInterval(updateGradient,20);
+    {#setInterval(updateGradient,20);#}
 
     function verify(){
         $.wait = function( callback, seconds){
             return window.setTimeout( callback, seconds * 1000 );
         }
-        $(document).on('click', '.btn-success', function(e) {
+        $(document).on('click', '#fileSubmit', function(e) {
 
 
             if( $(".rep").text().substr(-3) != 'csv' ||  $(".sf").text().substr(-3) != 'csv') {
@@ -235,57 +281,7 @@
     }
 
     $(document).ready(function() {
-        YUI().use('dd-delegate', 'dd-drop-plugin', 'dd-constrain' ,function(Y) {
-            var rep_del = new Y.DD.Delegate({
-                container: '#rep-cont',
-                nodes: '.rep-field'
-            });
 
-            rep_del.dd.plug(Y.Plugin.DDConstrained, {
-                constrain2node: '.rep'
-            });
-
-            rep_del.on('drag:end', function(e) {
-                rep_del.get('currentNode').setStyles({
-                    top: 0,
-                    left: 0
-                });
-            });
-
-            var sf_del = new Y.DD.Delegate({
-                container: '#sf-cont',
-                nodes: '.sf-field'
-            });
-
-
-            sf_del.dd.plug(Y.Plugin.DDConstrained, {
-                constrain2node: '.sf'
-            });
-
-            sf_del.on('drag:end', function(e) {
-                sf_del.get('currentNode').setStyles({
-                    top: 0,
-                    left: 0
-                });
-            });
-            {% for key in rep_key %}
-
-                Y.one('.rep-{{ key }}').plug(Y.Plugin.Drop).drop.on('drop:hit', function(e) {
-                    Y.one('.rep-{{ key }}').plug(Y.Plugin.Drop).set('innerHTML', ' mapped to: <strong>' + e.drag.get('node').get('innerHTML') + '</strong>');
-                    rep_mapping[e.drag.get('node').get('innerHTML') ] = $('.rep-{{ key }}').attr('id');
-
-                });
-            {% endfor %}
-
-            {% for key in sf_key %}
-
-                Y.one('.sf-{{ key }}').plug(Y.Plugin.Drop).drop.on('drop:hit', function(e) {
-                    Y.one('.sf-{{ key }}').plug(Y.Plugin.Drop).set('innerHTML', ' mapped to: <strong>' + e.drag.get('node').get('innerHTML') + '</strong>');
-                    sf_mapping[e.drag.get('node').get('innerHTML') ] = $('.sf-{{ key }}').attr('id');
-
-                });
-            {% endfor %}
-        });
 
         var rep_data = [
             {
@@ -301,7 +297,6 @@
                 },
             {% endfor %}
         ];
-
         var sf_data = [
             {
                 id: 0,
@@ -339,6 +334,75 @@
                 return data.text;
             }
         });
+        $('.select2-container--bootstrap').width(500);
+        $('.btn-primary').click(function () {
+            $('#map-headers').removeClass('invisible');
+        });
+
+        $('#fileSubmit').click(function (evt) {
+            evt.preventDefault();
+
+            var form = $('#upload')[0];
+            var data = new FormData(form);
+
+            $('#fileSubmit').prop("disabled", true);
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'keys'  %}",
+                data: data,
+                enctype: 'multipart/form-data',
+                processData: false,
+                contentType: false,
+                cache: false,
+                success: function (data) {
+                    $("#modelId").modal('show');
+
+                    for (var key in data) {
+                        var class_id = "rep" + key;
+                        var input_group = $("<div></div>");
+                        input_group.addClass("input-group mb-3 col-12");
+                        var prepend = $("<div></div>");
+                        prepend.addClass("input-group-prepend");
+                        var text = $("<p></p>");
+                        text.addClass("input-group-text bg-dark text-white").css({
+                            "height": "34px",
+                            "width": "200px"
+                        }).text(key);
+
+                        input_group.append(prepend.append(text));
+                        var selectList = $("<select style='width=100%'></select>");
+                        selectList.addClass(class_id).addClass("rep-select py-5 col-12");
+                        selectList.append($("<option></option>").data("name", "placeholder"));
+                        for (var k in data[key]) {
+                            var opt = $("<option></option>");
+                            opt.data("name", data[key][k]).val(data[key][k]).text(data[key][k]);
+                            selectList.append(opt);
+                        }
+                        input_group.append(selectList);
+
+                        $(".mapping").append(input_group);
+
+
+
+                    }
+                    $('.rep-select').select2({
+                        theme: "bootstrap",
+                        placeholder: {
+                            id: '0'
+                        },
+                        templateSelection: function (data, container) {
+                            $(data.element).attr('data-name', data.value);
+                            return data.text;
+
+                        }
+                    });
+                    $(".select2-container").width('500');
+
+                }
+            });
+
+        });
     });
     function f() {
         if (confirm('WARNING: You are about to erase all records in the database.')) {
@@ -348,7 +412,9 @@
         }
     }
     function map_headers() {
-
+        $("#modelId").modal('toggle');
+        $("#progress").modal('toggle');
+        var channel  = $('input:checked').val();
         $('.rep-select').each( function() {
             var x = $(this).find(':selected').data('name');
             var par = $(this).parent().children('div').children('p').text();
@@ -364,33 +430,32 @@
                 sf_mapping[x] = par;
             }
         });
-        $.getJSON("{% url 'import_csv' %}", {sf_map: JSON.stringify(sf_mapping), rep_map: JSON.stringify
+        $.getJSON("{% url 'import_csv' %}", {channel: channel, rep_map: JSON.stringify
             (rep_mapping) }, function (result) {
             window.location.replace("{% url 'key-gen' %}");
         });
     }
 </script>
-<nav class="navbar navbar-dark bg-dark navbar-expand-lg justify-content-between sticky-top">
-    <h1> <a class="navbar-brand" href="#">Duplify</a></h1>
+<nav class="navbar navbar-expand-lg navbar-primary scrolling-navbar">
+    <h1> <a class="navbar-brand text-white" href="#">Duplify</a></h1>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
             <li class="nav-item active">
-                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-link text-white" href="#">Home <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="javascript:f()">Reset</a>
+                <a class="nav-link text-white" href="javascript:f()">Reset</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Pricing</a>
+                <a class="nav-link text-white" href="#">Pricing</a>
             </li>
         </ul>
     </div>
-    <button class="btn btn-success badge-pill" type="button" onclick="map_headers()" data-toggle="modal" data-target="#progress" data-backdrop="static" data-keyboard="false">
-        <b >Map Headers</b>
-    </button>
+
+
 </nav>
 <div class="modal fade" id="progress" tabindex="-1" role="dialog"  aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -404,13 +469,13 @@
 
                         <li role="presentation" class="active nav-item badge-pill"><a   href="#uploadTab" aria-controls="uploadTab" role="tab"
                                                                                         data-toggle="tab"><button
-                                class="nav-link btn btn-block  bg-primary nav-pill badge-pill" onclick="togglegameoff()">
+                                class="nav-link btn waves-effect btn-block  bg-primary nav-pill badge-pill" onclick="togglegameoff()">
                             Progress</button></a>
 
                         </li>
                         <li  id="br"role="presentation" class=" nav-item badge-pill"><a   href="#browseTab" aria-controls="browseTab" role="tab"
                                                                                           data-toggle="tab"><button
-                                class="nav-link btn  bg-primary btn-block nav-pill badge-pill" onclick="togglegameon()">
+                                class="nav-link btn waves-effect  bg-primary btn-block nav-pill badge-pill" onclick="togglegameon()">
                             Analytics</button></a>
                         </li>
                     </ul>
@@ -430,55 +495,122 @@
             </div>
             <hr>
             <div class="container my-3">
-                <a id="next" class="invisible btn btn-success badge-pill btn-block" href="{% url 'reps' %}">Next</a>
+                <a id="next" class="invisible btn waves-effect btn-success badge-pill btn-block" href="{% url 'reps' %}">Next</a>
             </div>
         </div>
     </div>
 </div>
-<div class="container-fluid row" style="overflow: auto; max-height: 90vh">
-    <div class="col rep mt-1">
-        <div class="col">
-            <h2 class="alert-dark text-center badge-pill"> Rep Field Mapping </h2>
+<div class="alert format alert-warning alert-dismissible invisible text-center" role="alert">
+    <b>Files must be csv format</b>
+</div>
+<div class="alert files alert-warning alert-dismissible invisible text-center" role="alert">
+    <b>Upload a rep list and a SF report before continuing</b>
+</div>
 
-            <div class="row container-fluid">
-                {% for key, list in rep_dropdown.items %}
-                    <div class="input-group mb-3 col-12">
-                        <div class="input-group-prepend px-auto">
-                            <p class="input-group-text bg-dark text-white" id="basic-addon3 " style="height: 34px; width: 200px">{{ key }}</p>
+
+<!-- Modal -->
+<div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="modelTitleId">Rep Field Mapping</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="x row">
+
+                        <div class=" mapping">
+
                         </div>
-                        <select autofocus class=" rep-{{ key }} rep-select mousetrap py-5 col-8" name="states[]">
-                            <option data-name="placeholder"></option>
-                            {% for header in list %}
-                                <option value="{{ header }}" data-name="{{ header }}">{{ header }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
 
-                {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                Channel:
+                <div class="btn-group btn-group-toggle mx-2" data-toggle="buttons">
+                    <label class="btn waves-effect btn-primary mr-1">
+                        <input type="radio" name="options" id="option2" value="RC" autocomplete="off"> RC
+                    </label>
+                    <label class="btn waves-effect btn-primary mr-1">
+                        <input type="radio" name="options" id="option3" value="RD" autocomplete="off"> RD
+                    </label>
+                    <label class="btn waves-effect btn-primary mr-1">
+                        <input type="radio" name="options" id="option3" value="RM" autocomplete="off"> RM
+                    </label>
+                    <label class="btn waves-effect btn-primary mr-1">
+                        <input type="radio" name="options" id="option3" value="IMC" autocomplete="off"> IMC
+                    </label>
+                    <label class="btn waves-effect btn-primary mr-1">
+                        <input type="radio" name="options" id="option3" value="EMC" autocomplete="off"> EMC
+                    </label>
+                    <label class="btn waves-effect btn-primary mr-1">
+                        <input type="radio" name="options" id="option3" value="FD" autocomplete="off"> FD
+                    </label>
+                </div>
+
+                <button class="btn waves-effect btn-success btn-sm rounded-circle p-1 ml-5 invisible z-depth-5"
+                        id="map-headers"
+                        type="button"
+                        onclick="map_headers()">
+                 <span class="fa fa-arrow-circle-right fa-3x "></span>
+                </button>
+
             </div>
         </div>
     </div>
+</div>
 
-    <div class="col sf mb-3">
-        <div class="col">
-            <h2 class="alert-dark text-center badge-pill"> SF Field Mapping </h2>
-            <div class="row container-fluid">
-                {% for key, list in sf_dropdown.items %}
-                    <div class="input-group mb-3 col-12 shadow-lg">
-                        <div class="input-group-prepend px-auto">
-                            <p class="input-group-text bg-dark text-white" id="basic-addon3 " style="height: 34px; width: 200px">{{ key }}</p>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-1"></div>
+        <!-- Card -->
+        <div class="rounded col-6 m-auto bg-transparent z-depth-5">
+
+            <!-- Card content -->
+            <div class="card-body text-center">
+
+                <!-- Title -->
+                <h1 class="card-title text-white">Upload Rep List Here</h1>
+                <!-- Text -->
+                {% block content %}
+                    <form method="post" enctype="multipart/form-data" id="upload">
+                        {% csrf_token %}
+                        <div class="custom-file ">
+
+                            <input type="file" class=" badge-pill custom-file-input" id="repFile" name="repFile"
+                                   onchange="filename(this, '.rep')">
+                            <label class=" custom-file-label rep rgba-white-light text-white" for="repFile">Choose file</label>
                         </div>
-                        <select autofocus class=" sf-{{ key }} sf-select mousetrap py-5 col-8" name="states[]">
-                            <option data-name="placeholder"></option>
-                            {% for header in list %}
-                                <option value="{{ header }}" data-name="{{ header }}">{{ header }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                {% endfor %}
+
+                        <div class="row">
+                            <div  class="col-4"></div>
+                            <div  class="col-4">
+                                <button type="Submit" onclick="verify()" class="btn waves-effect btn-primary  rounded-circle download ml-5 z-depth-5 p-3 shadow"  style="z-index: 5000;
+position:
+fixed;
+bottom:
+50px;
+                    right: 30px;"
+                                        id="fileSubmit"> <span class="fa fa-upload fa-2x "></span>
+                                </button>
+                            </div>
+                            <div  class="col-4"></div>
+                        </div>
+                    </form>
+                {% endblock %}
+
             </div>
+
         </div>
+        <!-- Card -->
+
+        <div class="col-1"></div>
     </div>
+
 </div>
 </body>
 </html>

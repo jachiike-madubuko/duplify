@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'dedupper.apps.DedupperConfig',
+    'contacts.apps.ContactsConfig',
+    'scraper.apps.ScraperConfig',
     'django.contrib.postgres',
     'django_tables2',
     'django_filters',
@@ -48,6 +50,7 @@ INSTALLED_APPS = [
     # http://whitenoise.evans.io/en/stable/django.html#using-whitenoise-in-development
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
+    'heroku_connect',
 ]
 
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"

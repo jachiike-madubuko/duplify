@@ -1,0 +1,24 @@
+Metadata-Version: 2.0
+Name: range-key-dict
+Version: 1.1.0
+Summary: A dict with range as key
+Home-page: https://github.com/albertmenglongli/range-key-dict
+Author: menglong.li
+Author-email: albert.menglongli@gmail.com
+License: Apache2.0
+Keywords: range dict
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Build Tools
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+
+A dict which support a range as key, and return the value if key provided falls into the corresponding range
+
+
