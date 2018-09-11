@@ -1,22 +1,21 @@
-from django.shortcuts import render
-import django_tables2
-from dedupper.tables import StatsTable, SFContactTable, RepContactTable
-from tablib import Dataset
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, redirect
-from dedupper.forms import UploadFileForm
-from django_tables2.views import RequestConfig
-from django.core.management import call_command
-from dedupper.resources import RepContactResource, SFContactResource
-from  dedupper.utils import *
 import csv
 import json
 import pickle
-from django.conf import settings
 from difflib import SequenceMatcher as SeqMat
+
 import pandas as pd
-from simple_salesforce import Salesforce
 import tablib
+from django.conf import settings
+from django.core.management import call_command
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render, redirect
+from django_tables2.views import RequestConfig
+from simple_salesforce import Salesforce
+
+from dedupper.forms import UploadFileForm
+from dedupper.resources import RepContactResource, SFContactResource
+from dedupper.tables import StatsTable, SFContactTable, RepContactTable
+from dedupper.utils import *
 
 tablib.formats.json.json = json
 
@@ -293,16 +292,6 @@ def import_csv(request):
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def index(request):
-    '''
-    :param request:
-    :return:
-    Saleforce login:
-
-    from simple_salesforce import Salesforce
-    sf = Salesforce(password='password', username='myemail@example.com', organizationId='D36000001DkQo')
-    https://developer.salesforce.com/blogs/developer-relations/2014/01/python-and-the-force-com-rest-api-simple-simple-salesforce-example.html
-    https://github.com/simple-salesforce/simple-salesforce
-    '''
     return render(request, 'dedupper/login.html')
 def upload_page(request):
     '''

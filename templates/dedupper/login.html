@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Duplify</title>
+    <title>Duplify | Home</title>
 
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -240,7 +240,7 @@
 
     function send_her(){
         $.getJSON("{% url 'login' %}", {username: $("#form1").val(), password: $("#form2").val()}, function(results){
-            if ('success'.localeCompare( results['msg']) != 0){
+            if ('success'.localeCompare( results['msg']) == 0){
                 $("#modalLoginForm").modal('hide');
                 $("#modelId").modal('show');
             }else{
