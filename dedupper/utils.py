@@ -25,9 +25,6 @@ from tablib import Dataset
 import dedupper.threads
 from dedupper.models import repContact, sfcontact, dedupTime, duplifyTime, uploadTime
 
-#find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
-
-
 standard_sorting_range = RangeKeyDict({
     (97, 101): 'Duplicate',
     (95, 97): 'Manual Check',
