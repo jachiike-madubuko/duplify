@@ -264,7 +264,6 @@ def import_csv(request):
 
         territory = q.enqueue(get_channel, channel)
         request.session['sfCSV_name'] = f'the {channel} channel'
-        territory = sf.bulk.Contact.query(query + starts_with)
         print(len(territory))
         territory = pd.DataFrame(territory).drop('attributes', axis=1).replace([None], [''], regex=True)
         sf_header_map = {
