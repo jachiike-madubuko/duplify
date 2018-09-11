@@ -20,7 +20,7 @@ from django.urls import path
 urlpatterns = [
     path('dedupper/', include('dedupper.urls')),
     path('scraper/', include('scraper.urls')),
-    path('analysis/', include('contacts.urls')),
+    path('contacts/', include('contacts.urls')),
     path('', include('dedupper.urls')),
     path(r'jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),  # Django JET dashboard URLS
     path(r'jet/', include('jet.urls', 'jet')),  # Django JET URLS
