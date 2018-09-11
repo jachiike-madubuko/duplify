@@ -262,9 +262,7 @@ def import_csv(request):
 
         pd_rep_csv = pd.read_pickle(settings.REP_CSV)
 
-        sf = Salesforce(password='7924Trill!', username='jmadubuko@wealthvest.com',security_token='Hkx5iAL3Al1p7ZlToomn8samW')
-        query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where Territory_Type__c='Geography' and Territory__r.Name like "
-        starts_with = f"'{channel}%'"
+        territory = q.enqueue(get_channel, channel)
         request.session['sfCSV_name'] = f'the {channel} channel'
         territory = sf.bulk.Contact.query(query + starts_with)
         print(len(territory))
