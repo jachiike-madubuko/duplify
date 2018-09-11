@@ -77,5 +77,6 @@ spacy = "==2.0.12"
 Scrapy = "*"
 rq = "*"
 redis = "*"
+gevent = "*"
 
 [dev-packages]

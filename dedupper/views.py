@@ -10,15 +10,17 @@ from django.core.management import call_command
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django_tables2.views import RequestConfig
+from rq import Queue
 from simple_salesforce import Salesforce
 
 from dedupper.forms import UploadFileForm
 from dedupper.resources import RepContactResource, SFContactResource
 from dedupper.tables import StatsTable, SFContactTable, RepContactTable
 from dedupper.utils import *
+from worker import conn
 
 tablib.formats.json.json = json
-
+q = Queue(connection=conn)
 keys= []
 name_sort=address_sort=email_sort=crd_sort=phone_sort=average_sort=key_sort=True
 

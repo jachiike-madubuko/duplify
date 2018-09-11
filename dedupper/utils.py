@@ -5,25 +5,26 @@ Created on Sat May 19 17:53:34 2018
 
 @author: jachi
 """
-import dedupper.threads
-import os
-from dedupper.models import progress, repContact, sfcontact, dedupTime, duplifyTime, uploadTime
-import string
-from time import perf_counter
-from random import *
-from range_key_dict import RangeKeyDict
-from fuzzywuzzy import fuzz
-from fuzzywuzzy import process #could be used to generate suggestions for unknown records
-import numpy as np
-from tablib import Dataset
 import logging
-import time                         #use datetime
+import os
+import string
+from gc import collect
+from operator import itemgetter
+from random import *
+from time import perf_counter
+
+import numpy as np
+import pandas as pd
 from django.db.models import Avg
 from fuzzyset import FuzzySet
-from operator import itemgetter
-import json
-import pandas as pd
-from gc import collect
+from fuzzywuzzy import fuzz
+from range_key_dict import RangeKeyDict
+from simple_salesforce import Salesforce
+from tablib import Dataset
+
+import dedupper.threads
+from dedupper.models import repContact, sfcontact, dedupTime, duplifyTime, uploadTime
+
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
 
 
@@ -392,3 +393,11 @@ def sort(avg):
 #returns data for the progress screeen
 def get_progress():
     return doneKeys, totalKeys, currKey, cnt
+
+
+def get_channel(channel):
+    sf = Salesforce(password='7924Trill!', username='jmadubuko@wealthvest.com',
+                    security_token='Hkx5iAL3Al1p7ZlToomn8samW')
+    query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where Territory_Type__c='Geography' and Territory__r.Name like "
+    starts_with = f"'{channel}%'"
+    territory = sf.bulk.Contact.query(query + starts_with)
