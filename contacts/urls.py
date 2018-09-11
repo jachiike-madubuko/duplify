@@ -15,15 +15,13 @@ Including another URLconf
 """
 from django.urls import path
 from django.views import generic
-from django.conf.urls import url, include
 from django.contrib import admin
-from contacts import models
 from contacts import views
-from django.conf import settings
 
 admin.autodiscover()
 
 urlpatterns = [
+    path('', views.index, name='contact_index'),
     path('', views.index, name='contact_index'),
     path('/contacts/', views.contacts, name='contacts'),
     path('/leads/', views.leads, name='leads'),
