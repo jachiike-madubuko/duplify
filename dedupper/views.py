@@ -1,16 +1,13 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView, ListView
 import django_tables2
-from dedupper.models import dedupTime, duplifyTime, uploadTime,  sfcontact, repContact, progress
 from dedupper.tables import StatsTable, SFContactTable, RepContactTable
 from tablib import Dataset
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from dedupper.forms import UploadFileForm
-from django_filters.views import FilterView
-from django_tables2.views import SingleTableMixin, RequestConfig
+from django_tables2.views import RequestConfig
 from django.core.management import call_command
-from dedupper.resources import RepContactResource, SFContactResource, DedupTimeResource, DuplifyTimeResource, UploadTimeResource
+from dedupper.resources import RepContactResource, SFContactResource
 from  dedupper.utils import *
 import csv
 import json
@@ -250,7 +247,7 @@ def duplify(request):
 
 def flush_db(request):
     call_command('flush', interactive=False)
-    return redirect('/')
+    return redirect('/map')
 
 def import_csv(request):
     repcontact_resource = RepContactResource()
