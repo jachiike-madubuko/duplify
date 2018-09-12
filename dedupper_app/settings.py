@@ -103,17 +103,11 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-'''
 HEROKU_CONNECT_DATABASE_URL = os.environ['HEROKU_CONNECT_DATABASE_URL']
 HEROKU_CONNECT_SCHEMA = os.environ['HEROKU_CONNECT_SCHEMA']
 DATABASES = {
     'default': dj_database_url.config(default=HEROKU_CONNECT_DATABASE_URL),
 }
-
-DATABASES['default'] = dj_database_url.config(
-    engine='heroku_connect.db.backends.postgresql'
-)
-'''
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 
