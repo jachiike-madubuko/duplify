@@ -13,7 +13,7 @@ from django_tables2.views import RequestConfig
 from simple_salesforce import Salesforce
 
 from dedupper.forms import UploadFileForm
-from dedupper.resources import RepContactResource, SFContactResource
+from dedupper.resources import RepContactResource
 from dedupper.tables import StatsTable, SFContactTable, RepContactTable
 from dedupper.utils import *
 
@@ -249,46 +249,21 @@ def flush_db(request):
     return redirect('/map')
 
 def import_csv(request):
-    repcontact_resource = RepContactResource()
-    sfcontact_resource = SFContactResource()
-    if request.method == 'GET':
-        channel = request.GET.get('channel')
-        rep_header_map = request.GET.get('rep_map')
+    channel = request.GET.get('channel')  # sf channel to pull from db
+    rep_header_map = request.GET.get('rep_map')  # the JSON of csv headers mapped to db fields
+    rep_header_map = json.loads(rep_header_map)  # JSON -> dict()
 
-        # sf_header_map = json.loads(sf_header_map)
-        rep_header_map = json.loads(rep_header_map)
+    request.session['sfCSV_name'] = f'the {channel} channel'  # for printing
 
-        pd_rep_csv = pd.read_pickle(settings.REP_CSV)
+    db_data = {  # packing data
+        'channel': channel,
+        'map': rep_header_map
+    }
+    # the csv headers are stored to be used for exporting
+    # get_channel queries the channel and loads the rep list and sf contacts
+    request.session['misc'] = list(rep_header_map.keys())
 
-        sf = Salesforce(password='7924Trill!', username='jmadubuko@wealthvest.com',security_token='Hkx5iAL3Al1p7ZlToomn8samW')
-        query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where Territory_Type__c='Geography' and Territory__r.Name like "
-        starts_with = f"'{channel}%'"
-        request.session['sfCSV_name'] = f'the {channel} channel'
-        territory = sf.bulk.Contact.query(query + starts_with)
-        print(len(territory))
-        territory = pd.DataFrame(territory).drop('attributes', axis=1).replace([None], [''], regex=True)
-        sf_header_map = {
-           'CRD__c': 'CRD',
-           'Email': 'workEmail',
-           'FirstName': 'firstName',
-           'HomePhone': 'homePhone',
-           'Id': 'ContactID',
-           'LastName': 'lastName',
-           'MailingCity': 'mailingCity',
-           'MailingPostalCode': 'mailingZipPostalCode',
-           'MailingState': 'mailingStateProvince',
-           'MailingStreet': 'mailingStreet',
-           'MobilePhone': 'mobilePhone',
-           'OtherPhone': 'otherPhone',
-           'Phone': 'Phone',
-           'Personal_Email__c': 'personalEmail',
-           'Other_Email__c': 'otherEmail',
-           'Suffix': 'suffix',
-                       }
-        load_csv2db(territory, sf_header_map, sfcontact_resource, file_type='SF')
-        request.session['misc'] = load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
-
-
+    get_channel(db_data)
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def index(request):

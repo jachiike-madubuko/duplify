@@ -392,3 +392,51 @@ def sort(avg):
 #returns data for the progress screeen
 def get_progress():
     return doneKeys, totalKeys, currKey, cnt
+
+def get_channel(data):
+    channel = data['channel']
+    rep_header_map = data['map']
+
+    sf = Salesforce(password='7924Trill!', username='jmadubuko@wealthvest.com',security_token='Hkx5iAL3Al1p7ZlToomn8samW')
+    query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where Territory_Type__c='Geography' and Territory__r.Name like "
+    starts_with = f"'{channel}%' limit 250"
+    print ('querying SF')
+    territory = sf.bulk.Contact.query(query + starts_with)
+    print(len(territory))
+    territory = pd.DataFrame(territory).drop('attributes', axis=1).replace([None], [''], regex=True)
+    sf_header_map = {
+           'CRD__c': 'CRD',
+           'Email': 'workEmail',
+           'FirstName': 'firstName',
+           'HomePhone': 'homePhone',
+           'Id': 'ContactID',
+           'LastName': 'lastName',
+           'MailingCity': 'mailingCity',
+           'MailingPostalCode': 'mailingZipPostalCode',
+           'MailingState': 'mailingStateProvince',
+           'MailingStreet': 'mailingStree t',
+           'MobilePhone': 'mobilePhone',
+           'OtherPhone': 'otherPhone',
+           'Phone': 'Phone',
+           'Personal_Email__c': 'personalEmail',
+           'Other_Email__c': 'otherEmail',
+           'Suffix': 'suffix',
+                       }
+    sfcontact_resource = SFContactResource()
+    repcontact_resource = RepContactResource()
+    print('loading sf: STARTED')
+    load_csv2db(territory, sf_header_map, sfcontact_resource, file_type='SF')
+    print('loading sf: DONE')
+
+    pd_rep_csv = pd.read_pickle(settings.REP_CSV)
+    print('loading rep: STARTED')
+    data = load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
+    print('loading rep: DONE')
+    return data
+
+
+
+
+
+def db_done():
+    return done
