@@ -27,7 +27,7 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 SECRET_KEY = "gbo6kx1v+xk+uyxlzkjrmuc25ak0o!4o2ksa+^fy04(3(85p8w"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # Application definition
 
@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'scraper.apps.ScraperConfig',
     'django.contrib.postgres',
     'django_tables2',
-    'django_filters',
+    # 'django_filters',
     'import_export',
 
     # Disable Django's own staticfiles handling in favour of WhiteNoise, for

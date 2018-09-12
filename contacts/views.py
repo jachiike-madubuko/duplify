@@ -8,7 +8,6 @@ from contacts.utils import contacts_clean_up, get_resampled_field_count, contact
     load_leads
 
 
-# Create your views here.
 #TODO load in contacts.csv and convert df into fields by usage
 
 def index(request):

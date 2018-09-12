@@ -10,15 +10,16 @@ from django.core.management import call_command
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django_tables2.views import RequestConfig
+from rq import Queue
 from simple_salesforce import Salesforce
 
 from dedupper.forms import UploadFileForm
-from dedupper.resources import RepContactResource, SFContactResource
 from dedupper.tables import StatsTable, SFContactTable, RepContactTable
 from dedupper.utils import *
+from worker import conn
 
 tablib.formats.json.json = json
-
+q = Queue(connection=conn)
 keys= []
 name_sort=address_sort=email_sort=crd_sort=phone_sort=average_sort=key_sort=True
 
@@ -249,50 +250,27 @@ def flush_db(request):
     return redirect('/map')
 
 def import_csv(request):
-    repcontact_resource = RepContactResource()
-    sfcontact_resource = SFContactResource()
-    if request.method == 'GET':
-        channel = request.GET.get('channel')
-        rep_header_map = request.GET.get('rep_map')
+    if request.method == 'GET':                 #expect getJSON request
+        channel = request.GET.get('channel')    #sf channel to pull from db
+        rep_header_map = request.GET.get('rep_map') #the JSON of csv headers mapped to db fields
+        rep_header_map = json.loads(rep_header_map) #JSON -> dict()
 
-        # sf_header_map = json.loads(sf_header_map)
-        rep_header_map = json.loads(rep_header_map)
+        request.session['sfCSV_name'] = f'the {channel} channel'        #for printing
 
-        pd_rep_csv = pd.read_pickle(settings.REP_CSV)
-
-        sf = Salesforce(password='7924Trill!', username='jmadubuko@wealthvest.com',security_token='Hkx5iAL3Al1p7ZlToomn8samW')
-        query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where Territory_Type__c='Geography' and Territory__r.Name like "
-        starts_with = f"'{channel}%'"
-        request.session['sfCSV_name'] = f'the {channel} channel'
-        territory = sf.bulk.Contact.query(query + starts_with)
-        print(len(territory))
-        territory = pd.DataFrame(territory).drop('attributes', axis=1).replace([None], [''], regex=True)
-        sf_header_map = {
-           'CRD__c': 'CRD',
-           'Email': 'workEmail',
-           'FirstName': 'firstName',
-           'HomePhone': 'homePhone',
-           'Id': 'ContactID',
-           'LastName': 'lastName',
-           'MailingCity': 'mailingCity',
-           'MailingPostalCode': 'mailingZipPostalCode',
-           'MailingState': 'mailingStateProvince',
-           'MailingStreet': 'mailingStreet',
-           'MobilePhone': 'mobilePhone',
-           'OtherPhone': 'otherPhone',
-           'Phone': 'Phone',
-           'Personal_Email__c': 'personalEmail',
-           'Other_Email__c': 'otherEmail',
-           'Suffix': 'suffix',
-                       }
-        load_csv2db(territory, sf_header_map, sfcontact_resource, file_type='SF')
-        request.session['misc'] = load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
-
+        db_data = {                         #packing data
+            'channel': channel,
+            'map' : rep_header_map
+        }
+        #the csv headers are stored to be used for exporting
+        #get_channel queries the channel and loads the rep list and sf contacts
+        request.session['misc'] =list   ( rep_header_map.keys())
+        result = q.enqueue(get_channel, db_data)
 
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def index(request):
     return render(request, 'dedupper/login.html')
+
 def upload_page(request):
     '''
     :param request:
@@ -387,6 +365,18 @@ def progress(request):
                          'numKeys': numKeys, 'doneReps': doneReps, 'currKey':currKey, 'manu': manu,
                          'keyPercent': keyPercent, 'repPercent': repPercent, 'table': stats_table.as_html(request)},
                         safe=False)
+
+def db_progress(request):
+    if request.method == 'GET':
+      if db_done():
+          msg = 'success'
+      else:
+          msg = 'not yet'
+          print(msg)
+
+    return JsonResponse({
+        'msg': msg
+    }, safe=False)
 
 def resort(request):
     if request.method == 'GET':
