@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'scraper.apps.ScraperConfig',
     'django.contrib.postgres',
     'django_tables2',
-    'django_filters',
+    # 'django_filters',
     'import_export',
 
     # Disable Django's own staticfiles handling in favour of WhiteNoise, for
@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     # http://whitenoise.evans.io/en/stable/django.html#using-whitenoise-in-development
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
-    # 'heroku_connect',
+    'heroku_connect',
 ]
 
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
