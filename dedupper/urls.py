@@ -31,7 +31,6 @@ urlpatterns = [
     path('login/', views.login, name='login'),
     path('upload_page/', views.upload_page, name='upload_page'),
     path('progress/', views.progress, name='progress'),
-    path('db_progress/', views.db_progress, name='db_progress'),
     path('closest/', views.closest, name='closest'),
     path('tables/', views.turn_table, name='tables'),
     path('import_csv/', views.import_csv, name='import_csv'),
