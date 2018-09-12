@@ -51,8 +51,8 @@ INSTALLED_APPS = [
     # greater consistency between gunicorn and `./manage.py runserver`. See:
     # http://whitenoise.evans.io/en/stable/django.html#using-whitenoise-in-development
     'whitenoise.runserver_nostatic',
-    # 'django.contrib.staticfiles',
-    'heroku_connect',
+    'django.contrib.staticfiles',
+    # 'heroku_connect',
 ]
 
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
