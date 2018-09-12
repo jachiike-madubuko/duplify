@@ -26,6 +26,8 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "gbo6kx1v+xk+uyxlzkjrmuc25ak0o!4o2ksa+^fy04(3(85p8w"
 
+import django
+django.setup()
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 

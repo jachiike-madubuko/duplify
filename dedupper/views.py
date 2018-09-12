@@ -255,7 +255,6 @@ def import_csv(request):
         rep_header_map = request.GET.get('rep_map') #the JSON of csv headers mapped to db fields
         rep_header_map = json.loads(rep_header_map) #JSON -> dict()
 
-
         request.session['sfCSV_name'] = f'the {channel} channel'        #for printing
 
         db_data = {                         #packing data
