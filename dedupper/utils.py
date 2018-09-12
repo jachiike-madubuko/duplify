@@ -52,7 +52,7 @@ keylist = list()
 currKey=sort_alg=None
 start=end=cnt=doneKeys=totalKeys=0
 
-#TODO finish phone/eemail multi sf field mapping
+#TODO use KNN to determine searchable subset then run fuzzy alg on subset
 
 #TODO add docstrings go to realpython.com/documenting-python-code/
 #TODO update documentation go to dbader.org/blog/write-a-great-readme-for-your-github-project
@@ -418,7 +418,7 @@ def get_channel(data):
            'MailingCity': 'mailingCity',
            'MailingPostalCode': 'mailingZipPostalCode',
            'MailingState': 'mailingStateProvince',
-           'MailingStreet': 'mailingStreet',
+           'MailingStreet': 'mailingStree t',
            'MobilePhone': 'mobilePhone',
            'OtherPhone': 'otherPhone',
            'Phone': 'Phone',

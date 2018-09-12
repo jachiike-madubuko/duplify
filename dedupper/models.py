@@ -48,8 +48,6 @@ class simple(models.Model):
             key += key_builder[part]
         return key
 
-
-
 # class Contact(hc_models.HerokuConnectModel):
 #     sf_object_name= 'Contact'
 #
@@ -158,11 +156,6 @@ class repContact(models.Model):
     dupFlag = models.BooleanField(blank=True, default=False)
     keySortedBy = models.CharField(max_length=256, blank=True)
     misc = models.CharField(max_length=500, blank=True)
-    '''
-    add JSON field
-    write a parser for all fields not mapped into db
-    use parser for django import export to recreate columns
-    '''
 
     def __str__(self):
         return '{} {}'.format(self.firstName, self.lastName,)
@@ -221,6 +214,8 @@ class repContact(models.Model):
         for part in key_parts:
             key += key_builder[part]
         return key
+
+    #create functions that generate semantically exploitable strings for matching
 
 class sfcontact(models.Model):
     CRD = models.CharField(max_length=256, db_column="CRD")
