@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     # http://whitenoise.evans.io/en/stable/django.html#using-whitenoise-in-development
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
-    'heroku_connect',
+    # 'heroku_connect',
 ]
 
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
@@ -103,11 +103,11 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-HEROKU_CONNECT_DATABASE_URL = os.environ['DATABASE_URL']
-HEROKU_CONNECT_SCHEMA = 'salesforce'
-DATABASES = {
-    'default': dj_database_url.config(default=HEROKU_CONNECT_DATABASE_URL),
-}
+# HEROKU_CONNECT_DATABASE_URL = os.environ['DATABASE_URL']
+# HEROKU_CONNECT_SCHEMA = 'salesforce'
+# DATABASES = {
+#     'default': dj_database_url.config(default=HEROKU_CONNECT_DATABASE_URL),
+# }
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 
