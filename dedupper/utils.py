@@ -47,6 +47,7 @@ last_manual_sorting_range = RangeKeyDict({
 })
 
 waiting= True
+done= False
 keylist = list()
 currKey=sort_alg=None
 start=end=cnt=doneKeys=totalKeys=0
@@ -292,6 +293,7 @@ def load_csv2db(csv, header_map, resource, file_type='rep'):
     time = end - start
     if file_type == 'rep':
         uploadTime.objects.create(num_records = len(repContact.objects.all()), seconds=round(time, 2))
+        globals()['done'] = True
     else:
         uploadTime.objects.create(num_records = len(sfcontact.objects.all()),seconds=round(time, 2))
     return csv_header
@@ -432,3 +434,5 @@ def get_channel(data):
 
 
 
+def db_done():
+    return done

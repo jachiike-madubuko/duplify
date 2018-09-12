@@ -13,13 +13,13 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls import url
+from django.contrib import admin
 from django.urls import path
 from django.views import generic
-from django.conf.urls import url, include
-from django.contrib import admin
+
 from . import models
 from . import views
-from django.conf import settings
 
 admin.autodiscover()
 
@@ -33,6 +33,7 @@ urlpatterns = [
     path('login/', views.login, name='login'),
     path('upload_page/', views.upload_page, name='upload_page'),
     path('progress/', views.progress, name='progress'),
+    path('db_progress/', views.db_progress, name='db_progress'),
     path('closest/', views.closest, name='closest'),
     path('tables/', views.turn_table, name='tables'),
     path('import_csv/', views.import_csv, name='import_csv'),

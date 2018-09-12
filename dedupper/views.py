@@ -367,6 +367,17 @@ def progress(request):
                          'keyPercent': keyPercent, 'repPercent': repPercent, 'table': stats_table.as_html(request)},
                         safe=False)
 
+def db_progress(request):
+    if request.method == 'GET':
+      if db_done():
+          msg = 'success'
+      else:
+          msg = 'fail'
+
+    return JsonResponse({
+        'msg': msg
+    }, safe=False)
+
 def resort(request):
     if request.method == 'GET':
         print('resorting')
