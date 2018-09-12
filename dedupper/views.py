@@ -2,7 +2,6 @@ import csv
 import json
 import pickle
 from difflib import SequenceMatcher as SeqMat
-from time import sleep
 
 import pandas as pd
 import tablib
@@ -262,11 +261,10 @@ def import_csv(request):
 
         request.session['sfCSV_name'] = f'the {channel} channel'
         request.session['misc'] = load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
-        sleep(5)
-        try:
-            territory = q.enqueue(get_channel, channel)
-        except:
-            territory = get_channel(channel)
+        get_channel(channel)
+        # sleep(5)
+        # territory = q.enqueue(get_channel, channel)
+
 
     return JsonResponse({'msg': 'success!'}, safe=False)
 
