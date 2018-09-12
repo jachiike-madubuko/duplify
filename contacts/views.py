@@ -4,19 +4,15 @@ import pandas as pd
 from django.http import JsonResponse
 from django.shortcuts import render
 
-from contacts.utils import contacts_clean_up, get_resampled_field_count, contact_type_using_field, load_contacts, \
-    load_leads
+from contacts.utils import contacts_clean_up, get_resampled_field_count, contact_type_using_field
 
 
+# Create your views here.
 #TODO load in contacts.csv and convert df into fields by usage
 
 def index(request):
 
-    if 'l' in request.path:
-        load_leads()
-    else:
-        load_contacts()
-
+    print('contacts')
     return render(request, 'contacts/index.html')
 
 def contacts(request):

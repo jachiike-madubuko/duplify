@@ -15,17 +15,17 @@ from time import perf_counter
 
 import numpy as np
 import pandas as pd
-from django.conf import settings
 from django.db.models import Avg
 from fuzzyset import FuzzySet
 from fuzzywuzzy import fuzz
 from range_key_dict import RangeKeyDict
-from simple_salesforce import Salesforce
 from tablib import Dataset
 
 import dedupper.threads
 from dedupper.models import repContact, sfcontact, dedupTime, duplifyTime, uploadTime
-from dedupper.resources import SFContactResource, RepContactResource
+
+#find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
+
 
 standard_sorting_range = RangeKeyDict({
     (97, 101): 'Duplicate',
@@ -47,12 +47,11 @@ last_manual_sorting_range = RangeKeyDict({
 })
 
 waiting= True
-done= False
 keylist = list()
 currKey=sort_alg=None
 start=end=cnt=doneKeys=totalKeys=0
 
-#TODO use KNN to determine searchable subset then run fuzzy alg on subset
+#TODO finish phone/eemail multi sf field mapping
 
 #TODO add docstrings go to realpython.com/documenting-python-code/
 #TODO update documentation go to dbader.org/blog/write-a-great-readme-for-your-github-project
@@ -293,8 +292,6 @@ def load_csv2db(csv, header_map, resource, file_type='rep'):
     time = end - start
     if file_type == 'rep':
         uploadTime.objects.create(num_records = len(repContact.objects.all()), seconds=round(time, 2))
-        globals()['done'] = True
-        print('db done')
     else:
         uploadTime.objects.create(num_records = len(sfcontact.objects.all()),seconds=round(time, 2))
     return csv_header
@@ -395,51 +392,3 @@ def sort(avg):
 #returns data for the progress screeen
 def get_progress():
     return doneKeys, totalKeys, currKey, cnt
-
-
-def get_channel(data):
-    channel = data['channel']
-    rep_header_map = data['map']
-
-    sf = Salesforce(password='7924Trill!', username='jmadubuko@wealthvest.com',security_token='Hkx5iAL3Al1p7ZlToomn8samW')
-    query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where Territory_Type__c='Geography' and Territory__r.Name like "
-    starts_with = f"'{channel}%' limit 250"
-    print ('querying SF')
-    territory = sf.bulk.Contact.query(query + starts_with)
-    print(len(territory))
-    territory = pd.DataFrame(territory).drop('attributes', axis=1).replace([None], [''], regex=True)
-    sf_header_map = {
-           'CRD__c': 'CRD',
-           'Email': 'workEmail',
-           'FirstName': 'firstName',
-           'HomePhone': 'homePhone',
-           'Id': 'ContactID',
-           'LastName': 'lastName',
-           'MailingCity': 'mailingCity',
-           'MailingPostalCode': 'mailingZipPostalCode',
-           'MailingState': 'mailingStateProvince',
-           'MailingStreet': 'mailingStree t',
-           'MobilePhone': 'mobilePhone',
-           'OtherPhone': 'otherPhone',
-           'Phone': 'Phone',
-           'Personal_Email__c': 'personalEmail',
-           'Other_Email__c': 'otherEmail',
-           'Suffix': 'suffix',
-                       }
-    sfcontact_resource = SFContactResource()
-    repcontact_resource = RepContactResource()
-    print('loading sf: STARTED')
-    load_csv2db(territory, sf_header_map, sfcontact_resource, file_type='SF')
-    print('loading sf: DONE')
-
-    pd_rep_csv = pd.read_pickle(settings.REP_CSV)
-    print('loading rep: STARTED')
-    data = load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
-    print('loading rep: DONE')
-    return data
-
-
-
-
-def db_done():
-    return done
