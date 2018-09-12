@@ -101,7 +101,7 @@
 <nav class="navbar fixed-top navbar-expand-lg navbar-dark scrolling-navbar">
     <div class="container">
         <!-- Brand -->
-        <a class="navbar-brand" href="https://mdbootstrap.com/material-design-for-bootstrap/" target="_blank">
+        <a class="navbar-brand" href="{% url 'index' %}" target="_blank">
             <strong>Duplify</strong>
         </a>
 
@@ -117,7 +117,7 @@
             <!-- Left -->
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="#">Home
+                    <a class="nav-link" href="{% url 'index' %}">Home
                         <span class="sr-only">(current)</span>
                     </a>
                 </li>

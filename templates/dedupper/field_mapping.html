@@ -39,7 +39,7 @@
 
 
 <nav class="navbar navbar-expand-lg navbar-primary scrolling-navbar">
-    <h1> <a class="navbar-brand text-white" href="#">Duplify</a></h1>
+    <h1> <a class="navbar-brand text-white" href="{% url 'index' %}">Duplify</a></h1>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -242,8 +242,8 @@ bottom:
         }
         $(document).on('click', '.btn-success', function(e) {
 
-
-            if( $(".rep").text().substr(-3) != 'csv' ) {
+            alert($(".rep").text().substr(-3).localeCompare('csv'));
+            if( $(".rep").text().substr(-3).localeCompare('csv') != 0 ) {
                 if( $(".rep").text() == 'Choose file' || $(".rep").text() == '') {
                     e.preventDefault(); //prevent the default action
                     $(".files").removeClass("invisible");//.delay(5).addClass("invisible");
