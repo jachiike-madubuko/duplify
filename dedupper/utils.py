@@ -15,6 +15,7 @@ from time import perf_counter
 
 import numpy as np
 import pandas as pd
+from django.conf import settings
 from django.db.models import Avg
 from fuzzyset import FuzzySet
 from fuzzywuzzy import fuzz
@@ -24,7 +25,7 @@ from tablib import Dataset
 
 import dedupper.threads
 from dedupper.models import repContact, sfcontact, dedupTime, duplifyTime, uploadTime
-from dedupper.resources import SFContactResource
+from dedupper.resources import SFContactResource, RepContactResource
 
 standard_sorting_range = RangeKeyDict({
     (97, 101): 'Duplicate',
@@ -393,7 +394,10 @@ def get_progress():
     return doneKeys, totalKeys, currKey, cnt
 
 
-def get_channel(channel):
+def get_channel(data):
+    channel = data['channel']
+    rep_header_map = data['map']
+
     sf = Salesforce(password='7924Trill!', username='jmadubuko@wealthvest.com',security_token='Hkx5iAL3Al1p7ZlToomn8samW')
     query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where Territory_Type__c='Geography' and Territory__r.Name like "
     starts_with = f"'{channel}%'"
@@ -418,7 +422,12 @@ def get_channel(channel):
            'Suffix': 'suffix',
                        }
     sfcontact_resource = SFContactResource()
+    repcontact_resource = RepContactResource()
     load_csv2db(territory, sf_header_map, sfcontact_resource, file_type='SF')
+
+    pd_rep_csv = pd.read_pickle(settings.REP_CSV)
+
+    return load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
 
 
 

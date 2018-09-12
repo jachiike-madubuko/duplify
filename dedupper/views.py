@@ -14,7 +14,6 @@ from rq import Queue
 from simple_salesforce import Salesforce
 
 from dedupper.forms import UploadFileForm
-from dedupper.resources import RepContactResource
 from dedupper.tables import StatsTable, SFContactTable, RepContactTable
 from dedupper.utils import *
 from worker import conn
@@ -251,23 +250,27 @@ def flush_db(request):
     return redirect('/map')
 
 def import_csv(request):
-    repcontact_resource = RepContactResource()
-    if request.method == 'GET':
-        channel = request.GET.get('channel')
-        rep_header_map = request.GET.get('rep_map')
-        rep_header_map = json.loads(rep_header_map)
+    if request.method == 'GET':                 #expect getJSON request
+        channel = request.GET.get('channel')    #sf channel to pull from db
+        rep_header_map = request.GET.get('rep_map') #the JSON of csv headers mapped to db fields
+        rep_header_map = json.loads(rep_header_map) #JSON -> dict()
 
-        pd_rep_csv = pd.read_pickle(settings.REP_CSV)
 
-        request.session['sfCSV_name'] = f'the {channel} channel'
-        request.session['misc'] = load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
+        request.session['sfCSV_name'] = f'the {channel} channel'        #for printing
 
-        territory = q.enqueue(get_channel, channel)
+        db_data = {                         #packing data
+            'channel': channel,
+            'map' : rep_header_map
+        }
+        #the csv headers are stored to be used for exporting
+        #get_channel queries the channel and loads the rep list and sf contacts
+        request.session['misc'] = q.enqueue(get_channel, db_data)
 
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def index(request):
     return render(request, 'dedupper/login.html')
+
 def upload_page(request):
     '''
     :param request:
