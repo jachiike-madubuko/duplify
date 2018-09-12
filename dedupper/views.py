@@ -264,7 +264,7 @@ def import_csv(request):
         }
         #the csv headers are stored to be used for exporting
         #get_channel queries the channel and loads the rep list and sf contacts
-        request.session['misc'] = rep_header_map.keys()
+        request.session['misc'] =list( rep_header_map.keys())
         result = q.enqueue(get_channel, db_data)
 
     return JsonResponse({'msg': 'success!'}, safe=False)
