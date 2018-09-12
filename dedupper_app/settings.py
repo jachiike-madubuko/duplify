@@ -27,7 +27,7 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 SECRET_KEY = "gbo6kx1v+xk+uyxlzkjrmuc25ak0o!4o2ksa+^fy04(3(85p8w"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # Application definition
 
@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     # greater consistency between gunicorn and `./manage.py runserver`. See:
     # http://whitenoise.evans.io/en/stable/django.html#using-whitenoise-in-development
     'whitenoise.runserver_nostatic',
-    'django.contrib.staticfiles',
+    # 'django.contrib.staticfiles',
     'heroku_connect',
 ]
 
@@ -103,11 +103,20 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-# HEROKU_CONNECT_DATABASE_URL = os.environ['DATABASE_URL']
-# HEROKU_CONNECT_SCHEMA = 'salesforce'
-# DATABASES = {
-#     'default': dj_database_url.config(default=HEROKU_CONNECT_DATABASE_URL),
-# }
+# db_from_env = dj_database_url.config(conn_max_age=500)
+# DATABASES['default'].update(db_from_env)
+
+'''
+HEROKU_CONNECT_DATABASE_URL = os.environ['HEROKU_CONNECT_DATABASE_URL']
+HEROKU_CONNECT_SCHEMA = os.environ['HEROKU_CONNECT_SCHEMA']
+DATABASES = {
+    'default': dj_database_url.config(default=HEROKU_CONNECT_DATABASE_URL),
+}
+
+DATABASES['default'] = dj_database_url.config(
+    engine='heroku_connect.db.backends.postgresql'
+)
+'''
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 
@@ -165,5 +174,3 @@ django_heroku.settings(locals())
 
 REP_CSV = os.path.join(BASE_DIR, 'uploads', 'rep_csv.pkl')
 SF_CSV = os.path.join(BASE_DIR, 'uploads', 'sf_csv.pkl')
-
-
