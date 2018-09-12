@@ -24,6 +24,7 @@ from tablib import Dataset
 
 import dedupper.threads
 from dedupper.models import repContact, sfcontact, dedupTime, duplifyTime, uploadTime
+from dedupper.resources import SFContactResource
 
 standard_sorting_range = RangeKeyDict({
     (97, 101): 'Duplicate',
@@ -397,4 +398,28 @@ def get_channel(channel):
     query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where Territory_Type__c='Geography' and Territory__r.Name like "
     starts_with = f"'{channel}%'"
     territory = sf.bulk.Contact.query(query + starts_with)
-    return territory
+    territory = pd.DataFrame(territory).drop('attributes', axis=1).replace([None], [''], regex=True)
+    sf_header_map = {
+           'CRD__c': 'CRD',
+           'Email': 'workEmail',
+           'FirstName': 'firstName',
+           'HomePhone': 'homePhone',
+           'Id': 'ContactID',
+           'LastName': 'lastName',
+           'MailingCity': 'mailingCity',
+           'MailingPostalCode': 'mailingZipPostalCode',
+           'MailingState': 'mailingStateProvince',
+           'MailingStreet': 'mailingStreet',
+           'MobilePhone': 'mobilePhone',
+           'OtherPhone': 'otherPhone',
+           'Phone': 'Phone',
+           'Personal_Email__c': 'personalEmail',
+           'Other_Email__c': 'otherEmail',
+           'Suffix': 'suffix',
+                       }
+    sfcontact_resource = SFContactResource()
+    load_csv2db(territory, sf_header_map, sfcontact_resource, file_type='SF')
+
+
+
+

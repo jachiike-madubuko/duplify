@@ -14,7 +14,7 @@ from rq import Queue
 from simple_salesforce import Salesforce
 
 from dedupper.forms import UploadFileForm
-from dedupper.resources import RepContactResource, SFContactResource
+from dedupper.resources import RepContactResource
 from dedupper.tables import StatsTable, SFContactTable, RepContactTable
 from dedupper.utils import *
 from worker import conn
@@ -252,40 +252,17 @@ def flush_db(request):
 
 def import_csv(request):
     repcontact_resource = RepContactResource()
-    sfcontact_resource = SFContactResource()
     if request.method == 'GET':
         channel = request.GET.get('channel')
         rep_header_map = request.GET.get('rep_map')
-
-        # sf_header_map = json.loads(sf_header_map)
         rep_header_map = json.loads(rep_header_map)
 
         pd_rep_csv = pd.read_pickle(settings.REP_CSV)
 
-        territory = q.enqueue(get_channel, channel)
         request.session['sfCSV_name'] = f'the {channel} channel'
-        territory = pd.DataFrame(territory).drop('attributes', axis=1).replace([None], [''], regex=True)
-        sf_header_map = {
-           'CRD__c': 'CRD',
-           'Email': 'workEmail',
-           'FirstName': 'firstName',
-           'HomePhone': 'homePhone',
-           'Id': 'ContactID',
-           'LastName': 'lastName',
-           'MailingCity': 'mailingCity',
-           'MailingPostalCode': 'mailingZipPostalCode',
-           'MailingState': 'mailingStateProvince',
-           'MailingStreet': 'mailingStreet',
-           'MobilePhone': 'mobilePhone',
-           'OtherPhone': 'otherPhone',
-           'Phone': 'Phone',
-           'Personal_Email__c': 'personalEmail',
-           'Other_Email__c': 'otherEmail',
-           'Suffix': 'suffix',
-                       }
-        load_csv2db(territory, sf_header_map, sfcontact_resource, file_type='SF')
         request.session['misc'] = load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
 
+        territory = q.enqueue(get_channel, channel)
 
     return JsonResponse({'msg': 'success!'}, safe=False)
 
