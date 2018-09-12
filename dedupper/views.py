@@ -372,7 +372,8 @@ def db_progress(request):
       if db_done():
           msg = 'success'
       else:
-          msg = 'fail'
+          msg = 'not yet'
+          print(msg)
 
     return JsonResponse({
         'msg': msg

@@ -402,7 +402,7 @@ def get_channel(data):
 
     sf = Salesforce(password='7924Trill!', username='jmadubuko@wealthvest.com',security_token='Hkx5iAL3Al1p7ZlToomn8samW')
     query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where Territory_Type__c='Geography' and Territory__r.Name like "
-    starts_with = f"'{channel}%'"
+    starts_with = f"'{channel}%' limit 250"
     territory = sf.bulk.Contact.query(query + starts_with)
     territory = pd.DataFrame(territory).drop('attributes', axis=1).replace([None], [''], regex=True)
     sf_header_map = {
