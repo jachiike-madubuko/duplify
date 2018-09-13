@@ -17,7 +17,6 @@ import numpy as np
 import pandas as pd
 from django.conf import settings
 from django.db.models import Avg
-from django_rq import job
 from fuzzyset import FuzzySet
 from fuzzywuzzy import fuzz
 from range_key_dict import RangeKeyDict
@@ -400,7 +399,6 @@ def sort(avg):
 def get_progress():
     return doneKeys, totalKeys, currKey, cnt
 
-@job('high')
 def get_channel(data):
     global done
     channel = data['channel']
@@ -440,8 +438,8 @@ def get_channel(data):
     pd_rep_csv = pd.read_pickle(settings.REP_CSV)
     print('loading rep: STARTED')
     load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
-    done = True
     print('loading rep: DONE')
+    done = True
 
 
 
