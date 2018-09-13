@@ -1,5 +1,6 @@
 import csv
 import json
+import pickle
 from difflib import SequenceMatcher as SeqMat
 
 import django_rq
