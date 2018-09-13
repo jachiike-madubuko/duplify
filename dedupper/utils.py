@@ -15,6 +15,7 @@ from time import perf_counter
 
 import numpy as np
 import pandas as pd
+from django.conf import settings
 from django.db.models import Avg
 from fuzzyset import FuzzySet
 from fuzzywuzzy import fuzz
@@ -24,6 +25,7 @@ from tablib import Dataset
 
 import dedupper.threads
 from dedupper.models import repContact, sfcontact, dedupTime, duplifyTime, uploadTime
+from dedupper.resources import RepContactResource, SFContactResource
 
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
 
@@ -51,6 +53,7 @@ waiting= True
 keylist = list()
 currKey=sort_alg=None
 start=end=cnt=doneKeys=totalKeys=0
+done= False
 
 #TODO finish phone/eemail multi sf field mapping
 
