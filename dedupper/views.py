@@ -268,7 +268,7 @@ def import_csv(request):
     # get_channel queries the channel and loads the rep list and sf contacts
     request.session['misc'] = list(rep_header_map.keys())
     q = django_rq.get_queue('high', autocommit=True, is_async=True)
-    newest =  q.enqueue(get_channel, db_data, job_id=JOB_ID)
+    newest =  q.enqueue(get_channel, db_data, job_id=JOB_ID, timeout='1h')
     request.session['rq_job'] = JOB_ID
     return JsonResponse({'msg': 'success!'}, safe=False)
 
@@ -291,11 +291,12 @@ def key_gen(request):
     # key= None
     # while not key:
     #     key = get_key_stats()
-
-    reps = pd.read_json(RepContactResource().export().json)
-    SFs = pd.read_json(SFContactResource().export().json)
-    key= list(set(reps.columns).intersection(set(SFs.columns)))
-    key.sort()
+    #
+    # reps = pd.read_json(RepContactResource().export().json)
+    # SFs = pd.read_json(SFContactResource().export().json)
+    # key= list(set(reps.columns).intersection(set(SFs.columns)))
+    # key.sort()
+    key = get_key_stats()
 
     return render(request, 'dedupper/key_generator.html', {'keys': key})
 

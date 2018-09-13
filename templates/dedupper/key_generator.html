@@ -131,28 +131,28 @@
 <script>
     $(document).ready(function() {
 
-        {#var data = [#}
-        {#    {% for key, rep_uniqueness, rep_utility, sf_uniqueness, sf_utility, score in keys %}#}
-        {#        {#}
-        {#            id: {{ forloop.counter0 }},#}
-        {#            text:"{{ key }}",#}
-        {#            value:'{{ key }}',#}
-        {#            rep_uniqueness: {{ rep_uniqueness }},#}
-        {#            rep_utility: {{ rep_utility }},#}
-        {#            sf_uniqueness: {{ sf_uniqueness }},#}
-        {#            sf_utility: {{ sf_utility }}#}
-        {#        },#}
-        {#    {% endfor %}#}
-        {#]#}
         var data = [
-            {% for key in keys %}
+            {% for key, rep_uniqueness, rep_utility, sf_uniqueness, sf_utility, score in keys %}
                 {
                     id: {{ forloop.counter0 }},
                     text:"{{ key }}",
                     value:'{{ key }}',
+                    rep_uniqueness: {{ rep_uniqueness }},
+                    rep_utility: {{ rep_utility }},
+                    sf_uniqueness: {{ sf_uniqueness }},
+                    sf_utility: {{ sf_utility }}
                 },
             {% endfor %}
         ]
+        {#var data = [#}
+        {#    {% for key in keys %}#}
+        {#        {#}
+        {#            id: {{ forloop.counter0 }},#}
+        {#            text:"{{ key }}",#}
+        {#            value:'{{ key }}',#}
+        {#        },#}
+        {#    {% endfor %}#}
+        {#]#}
         function pill_color(percentage) {
             var cc;
             if (percentage >= 75) {
@@ -180,7 +180,7 @@
             theme: "bootstrap",
             placeholderOption: 'first',
             data: data,
-            {#templateResult: colorCode#}
+            templateResult: colorCode
         });
         $('input').addClass('mousetrap');
 
