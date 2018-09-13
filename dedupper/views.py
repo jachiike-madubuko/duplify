@@ -289,11 +289,13 @@ def key_gen(request):
     # key= None
     # while not key:
     #     key = get_key_stats()
-
+    print ('generating keys: STARTED')
     reps = pd.read_json(RepContactResource().export().json)
     SFs = pd.read_json(SFContactResource().export().json)
     key= list(set(reps.columns).intersection(set(SFs.columns)))
     key.sort()
+    print ('generating keys: DONE')
+
     # key = get_key_stats()
 
     return render(request, 'dedupper/key_generator.html', {'keys': key})
