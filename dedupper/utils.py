@@ -455,12 +455,16 @@ def get_channel(data):
     make_keys()
     print('key stats: DONE')
     print('job: DONE')
-    pd.DataFrame({'status': [1]}).to_json(settings.JOB_STATUS)
+    print('writing status to json: DONE')
+    pd.DataFrame({'status': [1]}).to_json('job.json')
 def get_key_stats():
     return key_stats
 
 def db_done():
-    d= pd.read_json(settings.JOB_STATUS)
-    status =list(d['status'] == 1)[0]
-    print (f'status: {status}')
-    return status
+    try:
+        d= pd.read_json('job.json')
+        status =list(d['status'] == 1)[0]
+        print (f'status: {status}')
+        return status
+    except:
+        return
