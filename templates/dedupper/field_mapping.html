@@ -587,6 +587,8 @@ bottom:
             // Do nothing!
         }
     }
+
+
     function map_headers() {
         $("#modelId").modal('toggle');
         $("#progress").modal('toggle');
@@ -608,19 +610,19 @@ bottom:
         });
         $.getJSON("{% url 'import_csv' %}", {channel: channel, rep_map: JSON.stringify
             (rep_mapping) }, function (result) {
-            {#setInterval(update_progress,  5000);#}
+            setInterval(update_progress,  5000);
         });
     }
 
-        {#function update_progress(){#}
-        {#    $.getJSON("{% url 'db_progress' %}", function (result) {#}
-        {##}
-        {#    if ('success'.localeCompare( results['msg']) == 0){#}
-        {##}
-        {#        window.location.replace("{% url 'key-gen' %}");#}
-        {#    }#}
-        {#});#}
-        {#}#}
+        function update_progress(){
+            $.getJSON("{% url 'db_progress' %}", function (result) {
+                alert(results['msg']);
+            if ('success'.localeCompare( results['msg']) == 0){
+
+                window.location.replace("{% url 'key-gen' %}");
+            }
+        });
+        }
 
 </script>
 </body>

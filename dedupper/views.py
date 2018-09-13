@@ -22,7 +22,7 @@ tablib.formats.json.json = json
 
 keys= []
 name_sort=address_sort=email_sort=crd_sort=phone_sort=average_sort=key_sort=True
-
+db_job = None
 q = Queue(connection=conn)
 
 def display(request):
@@ -208,7 +208,7 @@ def download_times(request,type):
         audit_info.append([f"Duplify Audit of {repCSV_name} duped against {sfCSV_name}"])
         audit_info.append([""])
         audit_info.append([f"Number of Records in Rep List: {total_reps} \t Number of Records in {sfCSV_name[2:]}: " +
-                          f"{total_sf}"])
+                           f"{total_sf}"])
 
         audit_info.append([f"Number of Duplicate Records in the Rep List: {total_dups}({percent_dups}%)"])
         audit_info.append([f"Number of New Records in the Rep List: {total_news}({percent_news}%)"])
@@ -252,6 +252,7 @@ def flush_db(request):
     return redirect('/map')
 
 def import_csv(request):
+    global db_job
     channel = request.GET.get('channel')  # sf channel to pull from db
     rep_header_map = request.GET.get('rep_map')  # the JSON of csv headers mapped to db fields
     rep_header_map = json.loads(rep_header_map)  # JSON -> dict()
@@ -266,8 +267,7 @@ def import_csv(request):
     # get_channel queries the channel and loads the rep list and sf contacts
     request.session['misc'] = list(rep_header_map.keys())
 
-    result = q.enqueue(get_channel, db_data)
-    print (result)
+    db_job = q.enqueue(get_channel, db_data)
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def index(request):
@@ -433,3 +433,16 @@ def upload(request):
     print(rep_dropdown)
     return JsonResponse( rep_dropdown, safe=False)
 
+def db_progress(request):
+    if request.method == 'GET':
+        print( db_job['result'])
+        print( db_job.meta)
+        if db_done():
+            msg = 'success'
+        else:
+            msg = 'not yet'
+        print(msg)
+
+    return JsonResponse({
+        'msg': msg
+    }, safe=False)

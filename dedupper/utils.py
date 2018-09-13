@@ -20,6 +20,7 @@ from django.db.models import Avg
 from fuzzyset import FuzzySet
 from fuzzywuzzy import fuzz
 from range_key_dict import RangeKeyDict
+from rq import get_current_job
 from simple_salesforce import Salesforce
 from tablib import Dataset
 
@@ -398,6 +399,7 @@ def get_progress():
     return doneKeys, totalKeys, currKey, cnt
 
 def get_channel(data):
+    global done
     channel = data['channel']
     rep_header_map = data['map']
 
@@ -436,6 +438,7 @@ def get_channel(data):
     print('loading rep: STARTED')
     data = load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
     print('loading rep: DONE')
+    done = True
     return data
 
 
@@ -443,4 +446,5 @@ def get_channel(data):
 
 
 def db_done():
+    job= get_current_job()
     return done
