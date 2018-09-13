@@ -460,5 +460,5 @@ def get_key_stats():
     return key_stats
 
 def db_done():
-    print(f'completed: { globals()['done']}')
+    print(f'completed: { globals()["done"]}')
     return globals()['done']
