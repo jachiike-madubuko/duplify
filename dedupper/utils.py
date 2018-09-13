@@ -410,7 +410,7 @@ def get_progress():
     return doneKeys, totalKeys, currKey, cnt
 
 def get_channel(data):
-    pd.DataFrame({'status':[0]}).to_json(settings.JOB_STATUS)
+    pd.DataFrame({'status':[0]}).to_json('job.json')
 
     global done
     channel = data['channel']
