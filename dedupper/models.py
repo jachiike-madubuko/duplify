@@ -310,7 +310,7 @@ class sfcontact(models.Model):
         if flag:
             return f'{self.full_name()} emails from {self.email()}'
         else:
-            return f'{self.full_name()} calls from {self.phone()}'
+            return f'{self.full_name()} calls from {strip(self.phone())}'
     def locate(self):
         return f'{self.full_name()} {self.locale()}'
 
