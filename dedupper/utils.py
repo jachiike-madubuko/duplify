@@ -437,13 +437,9 @@ def get_channel(data):
 
     pd_rep_csv = pd.read_pickle(settings.REP_CSV)
     print('loading rep: STARTED')
-    data = load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
+    load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
     print('loading rep: DONE')
     done = True
-    return data
-
-
-
 
 
 

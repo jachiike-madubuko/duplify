@@ -436,8 +436,11 @@ def upload(request):
 
 def db_progress(request):
     if request.method == 'GET':
-        print( db_job.get_status())
-        if db_done():
+        try:
+            status = db_job.get_status()
+        except Exception:
+            status = 'unknown'
+        if db_done() or status == 'started':
             msg = 'success'
         else:
             msg = 'not yet'
