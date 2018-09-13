@@ -270,6 +270,8 @@ def import_csv(request):
     q = django_rq.get_queue('high', autocommit=True, is_async=True)
     newest =  q.enqueue(get_channel, db_data, job_id=JOB_ID, timeout='1h')
     request.session['rq_job'] = JOB_ID
+    db_job = q.fetch_job(request.session['rq_job'])
+    assert db_job, newest
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def index(request):
@@ -441,11 +443,9 @@ def db_progress(request):
     msg = 99999
     if request.method == 'GET':
         try:
-            q = django_rq.get_queue('high', autocommit=True, is_async=True)
-            job = q.fetch_job(request.session['rq_job'])
-            print(job)
-            print(job.result)
-            if job.result:
+            print(db_job)
+            print(db_job.result)
+            if db_job.result:
                msg = 2
         except Exception as e:
             print ('no progress')
