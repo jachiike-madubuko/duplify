@@ -10,21 +10,19 @@ from django.core.management import call_command
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django_tables2.views import RequestConfig
-from rq import Queue
 from simple_salesforce import Salesforce
 
 from dedupper.forms import UploadFileForm
 from dedupper.tables import StatsTable, SFContactTable, RepContactTable
 from dedupper.utils import *
-from worker import conn
 
 tablib.formats.json.json = json
-
+sf_prog =rep_prog = 0
 keys= []
 name_sort=address_sort=email_sort=crd_sort=phone_sort=average_sort=key_sort=True
 db_job = None
 JOB_ID = '79243664'
-q = Queue(connection=conn)
+q =django_rq.get_queue('high', autocommit=True, is_async=True)
 
 def display(request):
     return render(request, 'dedupper/data-table.html')
@@ -267,11 +265,8 @@ def import_csv(request):
     # the csv headers are stored to be used for exporting
     # get_channel queries the channel and loads the rep list and sf contacts
     request.session['misc'] = list(rep_header_map.keys())
-    q = django_rq.get_queue('high', autocommit=True, is_async=True)
     newest =  q.enqueue(get_channel, db_data, job_id=JOB_ID, timeout='1h')
     request.session['rq_job'] = JOB_ID
-    db_job = q.fetch_job(request.session['rq_job'])
-    assert db_job, newest
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def index(request):
@@ -440,16 +435,20 @@ def upload(request):
     return JsonResponse( rep_dropdown, safe=False)
 
 def db_progress(request):
-    msg = 99999
+    msg = 10000
     if request.method == 'GET':
-        try:
-            print(db_job)
-            print(db_job.result)
-            if db_job.result:
-               msg = 2
-        except Exception as e:
-            print ('no progress')
-            print(e)
+        if repContact.objects.all().count() >  0 and repContact.objects.all().count() == rep_prog:
+            try:
+                db_job = q.fetch_job(request.session['rq_job'])
+                print(db_job)
+                print(db_job.result)
+                if db_job.result:
+                   msg = 2
+            except Exception as e:
+                print ('no progress')
+                print(e)
+        else:
+            rep_prog = repContact.objects.all().count()
 
     return JsonResponse({
         'msg': msg
