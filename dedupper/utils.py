@@ -410,6 +410,8 @@ def get_progress():
     return doneKeys, totalKeys, currKey, cnt
 
 def get_channel(data):
+    pd.DataFrame({'status':[0]}).to_json(settings.JOB_STATUS)
+
     global done
     channel = data['channel']
     rep_header_map = data['map']
@@ -453,12 +455,12 @@ def get_channel(data):
     make_keys()
     print('key stats: DONE')
     print('job: DONE')
-    globals()['done'] = True
-    print( globals()['done'])
-
+    pd.DataFrame({'status': [1]}).to_json(settings.JOB_STATUS)
 def get_key_stats():
     return key_stats
 
 def db_done():
-    print(f'completed: { globals()["done"]}')
-    return globals()['done']
+    d= pd.read_json(settings.JOB_STATUS)
+    status =list(d['status'] == 1)[0]
+    print (f'status: {status}')
+    return status
