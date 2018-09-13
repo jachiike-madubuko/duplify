@@ -19,6 +19,7 @@ from django.db.models import Avg
 from fuzzyset import FuzzySet
 from fuzzywuzzy import fuzz
 from range_key_dict import RangeKeyDict
+from simple_salesforce import Salesforce
 from tablib import Dataset
 
 import dedupper.threads
