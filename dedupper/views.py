@@ -437,6 +437,7 @@ def db_progress(request):
     if request.method == 'GET':
         print( db_job['result'])
         print( db_job.meta)
+        print( db_job.get_status())
         if db_done():
             msg = 'success'
         else:
