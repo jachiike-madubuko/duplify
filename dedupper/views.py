@@ -297,6 +297,12 @@ def key_gen(request):
             worker.work()
     except:
         key = [('error', 100, 0, 100, 0, 100)]
+
+    key= None
+
+    while not key:
+        key = get_key_stats()
+
     return render(request, 'dedupper/key_generator.html', {'keys': key})
 
 def login(request):

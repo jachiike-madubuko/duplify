@@ -51,9 +51,10 @@ last_manual_sorting_range = RangeKeyDict({
 
 waiting= True
 keylist = list()
-currKey=sort_alg=None
+currKey=sort_alg=key_stats=None
 start=end=cnt=doneKeys=totalKeys=0
 done= False
+
 
 #TODO finish phone/eemail multi sf field mapping
 
@@ -309,6 +310,7 @@ def misc_col(df, cols):
 
 #generates stats for each fields based on uniqueness of values and amount of blanks
 def make_keys():
+    global key_stats
     keys = []
     excluded = ['id', 'average', 'type', 'match_ID', 'closest1', 'closest2', 'closest3',
                 'closest1_contactID', 'closest2_contactID', 'closest3_contactID', 'dupFlag', 'keySortedBy', 'misc']
@@ -339,7 +341,7 @@ def make_keys():
             else: stat = (i,0,0,0,0,0)
             keys.append(stat)
     keys.sort(key=itemgetter(5), reverse=True)
-    return keys
+    key_stats=keys
 
 
 def match_keys(key,key_list):
@@ -449,7 +451,8 @@ def get_channel(data):
     print('loading rep: DONE')
     done = True
 
-
+def get_key_stats():
+    return key_stats
 
 def db_done():
     return done
