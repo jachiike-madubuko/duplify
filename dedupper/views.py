@@ -442,9 +442,10 @@ def db_progress(request):
         except Exception:
             status = 'unknown'
         if db_done():
-            msg = 'success'
+            msg = 2
         else:
-            msg = 'not yet'
+            msg = 99999
+            print(msg)
 
     return JsonResponse({
         'msg': msg
