@@ -308,28 +308,36 @@ def misc_col(df, cols):
     return reduce(lambda x, y: x.astype(str).str.cat(y.astype(str), sep='-!-'), [df[col] for col in cols])
 
 #generates stats for each fields based on uniqueness of values and amount of blanks
-def make_keys(headers):
+def make_keys():
     keys = []
-    rep_total = repContact.objects.all().count()
-    sf_total = sfcontact.objects.all().count()
-    phoneUniqueness = 0
-    emailUniqueness = 0
-    phoneTypes = ['Phone', 'homePhone', 'mobilePhone', 'otherPhone']
-    emailTypes = ['workEmail', 'personalEmail', 'otherEmail']
     excluded = ['id', 'average', 'type', 'match_ID', 'closest1', 'closest2', 'closest3',
                 'closest1_contactID', 'closest2_contactID', 'closest3_contactID', 'dupFlag', 'keySortedBy', 'misc']
 
-    for i in headers:
+    reps = pd.read_json(RepContactResource().export().json)
+    SFs = pd.read_json(SFContactResource().export().json)
+    [df.replace('', np.nan, regex=True) for df in [reps, SFs]]
+
+    sf_count = SFs.count() / float(len(SFs)) * 100
+    rep_count = reps.count() / float(len(reps)) * 100
+
+
+    for i in set(reps.columns).intersection(set(SFs.columns)):
         if i not in excluded:
-            kwargs = {
-                '{}__{}'.format(i, 'exact'):''
-            }
-            rp_uniqueness = repContact.objects.order_by().values_list(i).distinct().count() / rep_total
-            rp_utility = (len(repContact.objects.all()) - len(repContact.objects.filter(**kwargs))) /rep_total
-            sf_uniqueness = sfcontact.objects.order_by().values_list(i).distinct().count() / sf_total
-            sf_utility = (len(sfcontact.objects.all()) - len(sfcontact.objects.filter(**kwargs))) /sf_total
-            score = (rp_uniqueness + rp_utility + sf_uniqueness + sf_utility)/4
-            keys.append((i, int(rp_uniqueness * 100), int(rp_utility * 100), int(sf_uniqueness * 100), int(sf_utility * 100), score))
+            if reps[i].count() != 0:
+                rp_utility = int(rep_count[i])
+                sf_utility = int(sf_count[i])
+                rp_uniqueness = int((len(reps[i].unique()) / float(reps[i].count())) *100)
+                sf_uniqueness = int((len(SFs[i].unique()) / float(SFs[i].count()))*  100)
+
+                score =   np.average([
+                        int((len(reps[i].unique()) / float(reps[i].count())) *100),
+                        int(rep_count[i]),
+                    int((len(SFs[i].unique()) / float(SFs[i].count()))*  100),
+                    int(sf_count[i]),])
+
+                stat = (i, rp_uniqueness, rp_utility, sf_uniqueness, sf_utility, score)
+            else: stat = (i,0,0,0,0,0)
+            keys.append(stat)
     keys.sort(key=itemgetter(5), reverse=True)
     return keys
 

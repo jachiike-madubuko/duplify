@@ -291,8 +291,10 @@ def key_gen(request):
         if  'key_n_stats' in request.session:
             key =  request.session['key_n_stats']
         else:
-            key = make_keys([i.name for i in repContact._meta.local_fields])
-            request.session['key_n_stats'] = key
+            q = django_rq.get_queue('high', autocommit=True, is_async=True)
+            db_job = q.enqueue(make_keys)
+            worker = django_rq.get_worker('high')
+            worker.work()
     except:
         key = [('error', 100, 0, 100, 0, 100)]
     return render(request, 'dedupper/key_generator.html', {'keys': key})
@@ -449,3 +451,7 @@ def db_progress(request):
     return JsonResponse({
         'msg': msg
     }, safe=False)
+
+#update key_gen to lower request time.
+
+
