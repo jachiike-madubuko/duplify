@@ -245,15 +245,15 @@ bottom:
             if( $(".rep").text().substr(-3).localeCompare('csv') != 0 ) {
                 if( $(".rep").text() == 'Choose file' || $(".rep").text() == '') {
                     e.preventDefault(); //prevent the default action
-                    $(".files").removeClass("invisible");//.delay(5).addClass("invisible");
-                    $.wait( function(){ $(".files").addClass("invisible") }, 3);
+                    {#$(".files").removeClass("invisible");//.delay(5).addClass("invisible");#}
+                    {#$.wait( function(){ $(".files").addClass("invisible") }, 3);#}
 
                 }else {
-                    // e.preventDefault(); //prevent the default action
-                    $(".format").removeClass("invisible");//.delay(5).addClass("invisible");
-                    $.wait(function () {
-                        $(".format").addClass("invisible")
-                    }, 3);
+                    {#// e.preventDefault(); //prevent the default action#}
+                    {#$(".format").removeClass("invisible");//.delay(5).addClass("invisible");#}
+                    {#$.wait(function () {#}
+                    {#    $(".format").addClass("invisible")#}
+                    {#}, 3);#}
                 }
 
             } });
@@ -558,7 +558,7 @@ bottom:
         function update_progress(){
             $.getJSON("{% url 'db_progress' %}", function (result) {
             if (result['msg'] < 10){
-                alert('database ready to go');
+                {#alert('database ready to go');#}
                 clearInterval(inter);
 
 
