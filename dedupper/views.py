@@ -436,6 +436,7 @@ def upload(request):
 
 def db_progress(request):
     msg = 10000
+    global rep_prog
     if request.method == 'GET':
         if repContact.objects.all().count() >  0 and repContact.objects.all().count() == rep_prog:
             try:

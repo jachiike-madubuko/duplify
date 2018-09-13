@@ -7,7 +7,6 @@ Created on Sat May 19 17:53:34 2018
 """
 import logging
 import os
-import pickle
 import string
 from gc import collect
 from operator import itemgetter
@@ -411,11 +410,6 @@ def get_progress():
     return doneKeys, totalKeys, currKey, cnt
 
 def get_channel(data):
-    print('writing status to json: STARTED')
-
-    with open(settings.SF_CSV, 'wb') as file:
-        pickle.dump( pd.DataFrame({'status':[0]}), file)
-    print('writing status to json: DONE')
 
     global done
     channel = data['channel']
