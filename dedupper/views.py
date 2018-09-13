@@ -1,6 +1,5 @@
 import csv
 import json
-import pickle
 from difflib import SequenceMatcher as SeqMat
 
 import django_rq
@@ -442,8 +441,7 @@ def db_progress(request):
             msg = 2
         else:
             msg = 99999
-            print(msg)
-            print(msg)
+            print(done,msg)
 
     return JsonResponse({
         'msg': msg
