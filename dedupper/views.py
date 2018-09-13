@@ -269,8 +269,6 @@ def import_csv(request):
     request.session['misc'] = list(rep_header_map.keys())
     q = django_rq.get_queue('high', autocommit=True, is_async=True)
     db_job = q.enqueue(get_channel, db_data)
-    worker = django_rq.get_worker('high')  # Returns a worker for "default" queue
-    worker.work()
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def index(request):
