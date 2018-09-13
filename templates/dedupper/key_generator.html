@@ -131,16 +131,25 @@
 <script>
     $(document).ready(function() {
 
+        {#var data = [#}
+        {#    {% for key, rep_uniqueness, rep_utility, sf_uniqueness, sf_utility, score in keys %}#}
+        {#        {#}
+        {#            id: {{ forloop.counter0 }},#}
+        {#            text:"{{ key }}",#}
+        {#            value:'{{ key }}',#}
+        {#            rep_uniqueness: {{ rep_uniqueness }},#}
+        {#            rep_utility: {{ rep_utility }},#}
+        {#            sf_uniqueness: {{ sf_uniqueness }},#}
+        {#            sf_utility: {{ sf_utility }}#}
+        {#        },#}
+        {#    {% endfor %}#}
+        {#]#}
         var data = [
-            {% for key, rep_uniqueness, rep_utility, sf_uniqueness, sf_utility, score in keys %}
+            {% for key in keys %}
                 {
                     id: {{ forloop.counter0 }},
                     text:"{{ key }}",
                     value:'{{ key }}',
-                    rep_uniqueness: {{ rep_uniqueness }},
-                    rep_utility: {{ rep_utility }},
-                    sf_uniqueness: {{ sf_uniqueness }},
-                    sf_utility: {{ sf_utility }}
                 },
             {% endfor %}
         ]
@@ -171,7 +180,7 @@
             theme: "bootstrap",
             placeholderOption: 'first',
             data: data,
-            templateResult: colorCode
+            {#templateResult: colorCode#}
         });
         $('input').addClass('mousetrap');
 

@@ -287,9 +287,14 @@ def upload_page(request):
     return render(request, 'dedupper/rep_list_upload.html')
 
 def key_gen(request):
-    key= None
-    while not key:
-        key = get_key_stats()
+    # key= None
+    # while not key:
+    #     key = get_key_stats()
+
+    reps = pd.read_json(RepContactResource().export().json)
+    SFs = pd.read_json(SFContactResource().export().json)
+    key= list(set(reps.columns).intersection(set(SFs.columns)))
+    key.sort()
 
     return render(request, 'dedupper/key_generator.html', {'keys': key})
 
@@ -440,7 +445,6 @@ def db_progress(request):
             msg = 'success'
         else:
             msg = 'not yet'
-        print(msg)
 
     return JsonResponse({
         'msg': msg
