@@ -266,7 +266,7 @@ def import_csv(request):
     # the csv headers are stored to be used for exporting
     # get_channel queries the channel and loads the rep list and sf contacts
     request.session['misc'] = list(rep_header_map.keys())
-    newest =  q.enqueue(get_channel, db_data, job_id=JOB_ID, timeout='1h')
+    newest =  q.enqueue(get_channel, db_data, job_id=JOB_ID, timeout='1h', result_ttl='3m')
     request.session['rq_job'] = JOB_ID
     return JsonResponse({'msg': 'success!'}, safe=False)
 
@@ -418,7 +418,7 @@ def upload(request):
     form = UploadFileForm(request.POST, request.FILES)
     repCSV = request.FILES['repFile']
     request.session['repCSV_name'] = str(repCSV)
-    rep_headers, pd_rep_csv = convert_csv(repCSV)
+    rep_headers, pd_rep_csv = convert_csv(repCSV, str(repCSV))
     request.session['repCSV_headers'] = rep_headers
     export_headers = rep_headers
 

@@ -63,9 +63,13 @@ done= False
 #TODO django test cases realpython <--
 
 #simple csv to dataframe
-def convert_csv(file):
-    print('converting CSV: ', str(file))
-    pd_csv = pd.read_csv(file, encoding = "cp1252", delimiter=',', dtype=str)  #western european
+def convert_csv(file, name):
+    if name[-3:] != 'csv':
+        print('converting CSV: ', str(file))
+        pd_csv = pd.read_csv(file, encoding = "cp1252", delimiter=',', dtype=str)  #western european
+    else:
+        print('converting excel sheet:', str(file))
+
     return list(pd_csv), pd_csv
 
 def find_rep_dups(rep, keys, numthreads):
