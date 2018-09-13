@@ -268,7 +268,7 @@ def import_csv(request):
     # get_channel queries the channel and loads the rep list and sf contacts
     request.session['misc'] = list(rep_header_map.keys())
     q = django_rq.get_queue('high', autocommit=True, is_async=True)
-    db_job = q.enqueue(get_channel, db_data)
+    db_job =  q.enqueue(get_channel, db_data)
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def index(request):

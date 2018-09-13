@@ -20,7 +20,6 @@ from django.db.models import Avg
 from fuzzyset import FuzzySet
 from fuzzywuzzy import fuzz
 from range_key_dict import RangeKeyDict
-from rq import get_current_job
 from simple_salesforce import Salesforce
 from tablib import Dataset
 
@@ -274,6 +273,7 @@ def key_generator(partslist):
 
 #uploades contacts to the db
 def load_csv2db(csv, header_map, resource, file_type='rep'):
+    global done
     start = perf_counter()
     dataset = Dataset()
     pd_csv = csv
@@ -296,6 +296,7 @@ def load_csv2db(csv, header_map, resource, file_type='rep'):
     end = perf_counter()    #stop timer
     time = end - start
     if file_type == 'rep':
+        done = True
         uploadTime.objects.create(num_records = len(repContact.objects.all()), seconds=round(time, 2))
     else:
         uploadTime.objects.create(num_records = len(sfcontact.objects.all()),seconds=round(time, 2))
@@ -445,6 +446,6 @@ def get_channel(data):
 
 
 
+
 def db_done():
-    job= get_current_job()
     return done
