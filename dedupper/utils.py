@@ -416,7 +416,7 @@ def get_channel(data):
 
     sf = Salesforce(password='7924Trill!', username='jmadubuko@wealthvest.com',security_token='Hkx5iAL3Al1p7ZlToomn8samW')
     query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where Territory_Type__c='Geography' and Territory__r.Name like "
-    starts_with = f"'{channel}%' limit 250"
+    starts_with = f"'{channel}%' limit 50"
     print ('querying SF')
     territory = sf.bulk.Contact.query(query + starts_with)
     print(len(territory))
@@ -447,18 +447,18 @@ def get_channel(data):
 
     pd_rep_csv = pd.read_pickle(settings.REP_CSV)
     print('loading rep: STARTED')
-    load_csv2db(pd_rep_csv.head(250), rep_header_map, repcontact_resource)
+    load_csv2db(pd_rep_csv.head(50), rep_header_map, repcontact_resource)
     print('loading rep: DONE')
     print('key stats: STARTED')
     make_keys()
     print('key stats: DONE')
     print('job: DONE')
-    done = True
-    print(done)
+    globals()['done'] = True
+    print( globals()['done'])
 
 def get_key_stats():
     return key_stats
 
 def db_done():
-    print(f'completed: {done}')
-    return done
+    print(f'completed: { globals()['done']}')
+    return globals()['done']
