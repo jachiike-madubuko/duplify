@@ -437,14 +437,12 @@ def upload(request):
 
 def db_progress(request):
     if request.method == 'GET':
-        try:
-            status = db_job.get_status()
-        except Exception:
-            status = 'unknown'
-        if db_done():
+        done = db_done()
+        if done:
             msg = 2
         else:
             msg = 99999
+            print(msg)
             print(msg)
 
     return JsonResponse({

@@ -457,14 +457,17 @@ def get_channel(data):
     print('job: DONE')
     print('writing status to json: DONE')
     pd.DataFrame({'status': [1]}).to_json('job.json')
+
 def get_key_stats():
     return key_stats
 
 def db_done():
     try:
-        d= pd.read_json('job.json')
+        d = pd.read_pickle(settings.SF_CSV)
         status =list(d['status'] == 1)[0]
         print (f'status: {status}')
-        return status
+        if status:
+             return status
     except:
+        print (f'status: FAILED json read')
         return
