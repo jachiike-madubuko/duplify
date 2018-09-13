@@ -1,7 +1,6 @@
 import csv
 import json
 from difflib import SequenceMatcher as SeqMat
-from uuid import uuid4
 
 import django_rq
 import pandas as pd
@@ -24,7 +23,7 @@ tablib.formats.json.json = json
 keys= []
 name_sort=address_sort=email_sort=crd_sort=phone_sort=average_sort=key_sort=True
 db_job = None
-JOB_ID = uuid4()
+JOB_ID = '79243664'
 q = Queue(connection=conn)
 
 def display(request):
