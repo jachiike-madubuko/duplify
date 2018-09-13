@@ -215,9 +215,14 @@ class repContact(models.Model):
             key += key_builder[part]
         return key
 
-    def bio(self):
-        return f'{self.full_name()} lives in {self.locale()} and can be reached at {self.phone()} or {self.email()}'
+    def contact_info(self, flag):
+        if flag:
+            return f'{self.full_name()} can be reached at  {self.email()}'
+        else:
+            return f'{self.full_name()} can be reached at {self.phone()}'
 
+    def locate(self):
+        return f'{self.full_name()} {self.locale()}'
     #create functions that generate semantically exploitable strings for matching
 
 class sfcontact(models.Model):
@@ -301,9 +306,14 @@ class sfcontact(models.Model):
             key += key_builder[part]
         return key
 
-    def bio(self):
-        return f'{self.full_name()} lives in {self.locale()} and can be reached at {self.phone()} or {self.email()}'
+    def contact_info(self, flag):
+        if flag:
+            return f'{self.full_name()} can be reached at  {self.email()}'
+        else:
+            return f'{self.full_name()} can be reached at {self.phone()}'
 
+    def locate(self):
+        return f'{self.full_name()} {self.locale()}'
 
 class progress(models.Model):
     label = models.CharField(max_length=256, blank=True)
