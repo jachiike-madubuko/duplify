@@ -450,6 +450,7 @@ def get_channel(data):
     load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
     print('loading rep: DONE')
     done = True
+    make_keys()
 
 def get_key_stats():
     return key_stats

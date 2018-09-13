@@ -287,19 +287,7 @@ def upload_page(request):
     return render(request, 'dedupper/rep_list_upload.html')
 
 def key_gen(request):
-    try:
-        if  'key_n_stats' in request.session:
-            key =  request.session['key_n_stats']
-        else:
-            q = django_rq.get_queue('high', autocommit=True, is_async=True)
-            db_job = q.enqueue(make_keys)
-            worker = django_rq.get_worker('high')
-            worker.work()
-    except:
-        key = [('error', 100, 0, 100, 0, 100)]
-
     key= None
-
     while not key:
         key = get_key_stats()
 
@@ -448,7 +436,7 @@ def db_progress(request):
             status = db_job.get_status()
         except Exception:
             status = 'unknown'
-        if db_done() or status == 'started':
+        if db_done():
             msg = 'success'
         else:
             msg = 'not yet'
