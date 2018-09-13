@@ -333,14 +333,16 @@ def make_keys():
             if reps[i].count() != 0:
                 rp_utility = int(rep_count[i])
                 sf_utility = int(sf_count[i])
-                rp_uniqueness = int((len(reps[i].unique()) / float(reps[i].count())) *100)
-                sf_uniqueness = int((len(SFs[i].unique()) / float(SFs[i].count()))*  100)
+                if reps[i].count() > 0 :
+                    rp_uniqueness = int((len(reps[i].unique()) / float(reps[i].count())) *100)
+                else:
+                    rp_uniqueness = 0
+                if SFs[i].count() > 0:
+                    sf_uniqueness = int((len(SFs[i].unique()) / float(SFs[i].count()))*  100)
+                else:
+                    sf_uniqueness = 0
 
-                score =   np.average([
-                        int((len(reps[i].unique()) / float(reps[i].count())) *100),
-                        int(rep_count[i]),
-                    int((len(SFs[i].unique()) / float(SFs[i].count()))*  100),
-                    int(sf_count[i]),])
+                score =   np.average([ rp_uniqueness, rp_utility, sf_uniqueness, sf_utility])
 
                 stat = (i, rp_uniqueness, rp_utility, sf_uniqueness, sf_utility, score)
             else: stat = (i,0,0,0,0,0)
