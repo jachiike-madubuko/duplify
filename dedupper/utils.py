@@ -411,9 +411,11 @@ def get_progress():
     return doneKeys, totalKeys, currKey, cnt
 
 def get_channel(data):
+    print('writing status to json: STARTED')
+
     with open(settings.SF_CSV, 'wb') as file:
         pickle.dump( pd.DataFrame({'status':[0]}), file)
-        print('dumping job status')
+    print('writing status to json: DONE')
 
     global done
     channel = data['channel']
@@ -458,10 +460,11 @@ def get_channel(data):
     make_keys()
     print('key stats: DONE')
     print('job: DONE')
-    print('writing status to json: DONE')
+    print('writing new status to json: DONE')
     with open(settings.SF_CSV, 'wb') as file:
-        pickle.dump( pd.DataFrame({'status':[0]}), file)
-        print('dumping new job status')
+            pickle.dump( pd.DataFrame({'status':[1]}), file)
+            print('writing new status to json: DONE')
+
 
 def get_key_stats():
     return key_stats
@@ -473,6 +476,6 @@ def db_done():
         print (f'status: {status}')
         if status:
              return status
-    except:
-        print (f'status: FAILED json read')
+    except Exception as e:
+        print(e)
         return
