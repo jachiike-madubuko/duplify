@@ -357,7 +357,9 @@ def progress(request):
         undies = len(repContact.objects.filter(type='Undecided'))
         manu = len(repContact.objects.filter(type='Manual Check'))
         doneKeys, numKeys, currKey, doneReps = get_progress()
-        keyPercent = round(((doneKeys/numKeys)*100) + ((1/numKeys) * (doneReps/reps)*100),2)
+        # keyPercent = round(((doneKeys/numKeys)*100) + ((1/numKeys) * (doneReps/reps)*100),2)
+        keyPercent = 0
+        repPercent = 0
         repPercent = round(100*(reps-undies)/reps,2)
         key_stats = []
         for i in keys:
