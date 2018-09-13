@@ -320,8 +320,8 @@ def make_keys():
                 'closest1_contactID', 'closest2_contactID', 'closest3_contactID', 'dupFlag', 'keySortedBy', 'misc']
 
 
-    reps = pd.read_json(RepContactResource().export(repContact.objects.get(pk=1)).json)
-    SFs = pd.read_json(SFContactResource().export(sfcontact.objects.get(pk=1)).json)
+    reps = pd.read_json(RepContactResource().export(repContact.objects.filter(pk=1)).json)
+    SFs = pd.read_json(SFContactResource().export(sfcontact.objects.filter(pk=1)).json)
     [df.replace('', np.nan, inplace=True) for df in [reps, SFs]]
 
     sf_count = SFs.count() / float(len(SFs)) * 100
