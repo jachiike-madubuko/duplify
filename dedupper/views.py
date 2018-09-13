@@ -351,16 +351,21 @@ def merge(request, id):
 
 def progress(request):
     if request.method == 'GET':
-        reps = len(repContact.objects.all())
+        reps = repContact.objects.all().count()
         dups = len(repContact.objects.filter(type='Duplicate'))
         news = len(repContact.objects.filter(type='New Record'))
         undies = len(repContact.objects.filter(type='Undecided'))
         manu = len(repContact.objects.filter(type='Manual Check'))
         doneKeys, numKeys, currKey, doneReps = get_progress()
         # keyPercent = round(((doneKeys/numKeys)*100) + ((1/numKeys) * (doneReps/reps)*100),2)
-        keyPercent = 0
-        repPercent = 0
-        repPercent = round(100*(reps-undies)/reps,2)
+        if completed():
+            keyPercent = 100
+            repPercent = 100
+        else:
+            keyPercent = 0
+            repPercent = 0
+
+        # repPercent = round(100*(reps-undies)/reps,2)
         key_stats = []
         for i in keys:
             key = '-'.join(i)

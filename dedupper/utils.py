@@ -53,7 +53,7 @@ waiting= True
 keylist = list()
 currKey=sort_alg=key_stats=None
 start=end=cnt=doneKeys=totalKeys=0
-done= False
+done=complete= False
 
 
 #TODO finish phone/eemail multi sf field mapping
@@ -190,7 +190,7 @@ def find_rep_dups(rep, keys, numthreads):
 
 #reset flags and storage time
 def finish(numThreads):
-    global end, waiting
+    global end, waiting, complete
     c = collect()                   #garbage collection
     logging.debug(f'# of garbage collected = {c}')
     #is this the last key
@@ -202,6 +202,7 @@ def finish(numThreads):
             else:
                 i.type = 'New Record'
             i.save()
+        complete = True
         end = perf_counter()
         time = end - start
         duplifyTime.objects.create(num_threads=numThreads,
@@ -466,6 +467,9 @@ def get_channel(data):
 
 def get_key_stats():
     return key_stats
+
+def completed():
+    return complete
 
 def db_done():
     try:
