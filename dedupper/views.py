@@ -3,6 +3,7 @@ import json
 import pickle
 from difflib import SequenceMatcher as SeqMat
 
+import django_rq
 import pandas as pd
 import tablib
 from django.conf import settings
@@ -266,8 +267,10 @@ def import_csv(request):
     # the csv headers are stored to be used for exporting
     # get_channel queries the channel and loads the rep list and sf contacts
     request.session['misc'] = list(rep_header_map.keys())
-
+    q = django_rq.get_queue('default', autocommit=True, is_async=True)
     db_job = q.enqueue(get_channel, db_data)
+    worker = django_rq.get_worker()  # Returns a worker for "default" queue
+    worker.work()
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def index(request):

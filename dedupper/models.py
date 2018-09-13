@@ -308,10 +308,9 @@ class sfcontact(models.Model):
 
     def contact_info(self, flag):
         if flag:
-            return f'{self.full_name()} can be reached at  {self.email()}'
+            return f'{self.full_name()} emails from {self.email()}'
         else:
-            return f'{self.full_name()} can be reached at {self.phone()}'
-
+            return f'{self.full_name()} calls from {self.phone()}'
     def locate(self):
         return f'{self.full_name()} {self.locale()}'
 
