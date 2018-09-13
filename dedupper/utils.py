@@ -460,10 +460,7 @@ def get_channel(data):
     make_keys()
     print('key stats: DONE')
     print('job: DONE')
-    print('writing new status to json: DONE')
-    with open(settings.SF_CSV, 'wb') as file:
-            pickle.dump( pd.DataFrame({'status':[1]}), file)
-            print('writing new status to json: DONE')
+    return True
 
 
 def get_key_stats():
@@ -472,6 +469,7 @@ def get_key_stats():
 def db_done():
     try:
         d = pd.read_pickle(settings.SF_CSV)
+        print (type(d))
         status =list(d['status'] == 1)[0]
         print (f'status: {status}')
         if status:

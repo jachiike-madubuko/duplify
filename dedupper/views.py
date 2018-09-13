@@ -1,6 +1,7 @@
 import csv
 import json
 from difflib import SequenceMatcher as SeqMat
+from uuid import uuid4
 
 import django_rq
 import pandas as pd
@@ -23,6 +24,7 @@ tablib.formats.json.json = json
 keys= []
 name_sort=address_sort=email_sort=crd_sort=phone_sort=average_sort=key_sort=True
 db_job = None
+JOB_ID = uuid4()
 q = Queue(connection=conn)
 
 def display(request):
@@ -267,7 +269,8 @@ def import_csv(request):
     # get_channel queries the channel and loads the rep list and sf contacts
     request.session['misc'] = list(rep_header_map.keys())
     q = django_rq.get_queue('high', autocommit=True, is_async=True)
-    db_job =  q.enqueue(get_channel, db_data)
+    newest =  q.enqueue(get_channel, db_data, job_id=JOB_ID)
+    request.session['rq_job'] = JOB_ID
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def index(request):
@@ -435,13 +438,18 @@ def upload(request):
     return JsonResponse( rep_dropdown, safe=False)
 
 def db_progress(request):
+    msg = 99999
     if request.method == 'GET':
-        done = db_done()
-        if done:
-            msg = 2
-        else:
-            msg = 99999
-            print(done,msg)
+        try:
+            q = django_rq.get_queue('high', autocommit=True, is_async=True)
+            job = q.fetch_job(request.session['rq_job'])
+            print(job)
+            print(job.result)
+            if job.result:
+               msg = 2
+        except Exception as e:
+            print ('no progress')
+            print(e)
 
     return JsonResponse({
         'msg': msg
