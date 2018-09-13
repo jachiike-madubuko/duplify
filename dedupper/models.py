@@ -15,6 +15,9 @@ def strip(string):
     if string == '':
         return 'NULL'
     newstring = string.replace(" ","").lower()
+    newstring = newstring.replace("-","")
+    newstring = newstring.replace("(","")
+    newstring = newstring.replace(")","")
     return  newstring
 
 class simple(models.Model):
@@ -217,9 +220,9 @@ class repContact(models.Model):
 
     def contact_info(self, flag):
         if flag:
-            return f'{self.full_name()} can be reached at  {self.email()}'
+            return f'{self.full_name()} emails from {self.email()}'
         else:
-            return f'{self.full_name()} can be reached at {self.phone()}'
+            return f'{self.full_name()} calls from {strip(self.phone())}'
 
     def locate(self):
         return f'{self.full_name()} {self.locale()}'
