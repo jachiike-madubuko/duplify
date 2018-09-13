@@ -64,7 +64,7 @@ done= False
 
 #simple csv to dataframe
 def convert_csv(file, name):
-    if name[-3:] != 'csv':
+    if  'csv' in name:
         print('converting CSV: ', str(file))
         pd_csv = pd.read_csv(file, encoding = "cp1252", delimiter=',', dtype=str)  #western european
     else:
