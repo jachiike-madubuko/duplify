@@ -325,8 +325,8 @@ def make_keys():
     SFs = pd.read_json(SFContactResource().export(sfcontact.objects.filter(pk=1)).json)
     [df.replace('', np.nan, inplace=True) for df in [reps, SFs]]
 
-    sf_count = SFs.count() / float(len(SFs)) * 100
-    rep_count = reps.count() / float(len(reps)) * 100
+    sf_count =float( SFs.count()) / float(len(SFs)) * 100
+    rep_count = float(reps.count()) / float(len(reps)) * 100
 
 
     for i in set(reps.columns).intersection(set(SFs.columns)):
@@ -335,11 +335,11 @@ def make_keys():
                 rp_utility = int(rep_count[i])
                 sf_utility = int(sf_count[i])
                 if reps[i].count() > 0 :
-                    rp_uniqueness = int((len(reps[i].unique()) / float(reps[i].count())) *100)
+                    rp_uniqueness = int(float(float(len(reps[i].unique()) )/ float(reps[i].count())) *100)
                 else:
                     rp_uniqueness = 0
                 if SFs[i].count() > 0:
-                    sf_uniqueness = int((len(SFs[i].unique()) / float(SFs[i].count()))*  100)
+                    sf_uniqueness = int(float(float(len(SFs[i].unique())) / float(SFs[i].count()))*  100)
                 else:
                     sf_uniqueness = 0
 
