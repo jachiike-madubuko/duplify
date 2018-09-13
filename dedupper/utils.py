@@ -319,9 +319,10 @@ def make_keys():
     excluded = ['id', 'average', 'type', 'match_ID', 'closest1', 'closest2', 'closest3',
                 'closest1_contactID', 'closest2_contactID', 'closest3_contactID', 'dupFlag', 'keySortedBy', 'misc']
 
-    reps = pd.read_json(RepContactResource().export().json)
-    SFs = pd.read_json(SFContactResource().export().json)
-    [df.replace('', np.nan, regex=True) for df in [reps, SFs]]
+
+    reps = pd.read_json(RepContactResource().export(repContact.objects.get(pk=1)).json)
+    SFs = pd.read_json(SFContactResource().export(sfcontact.objects.get(pk=1)).json)
+    [df.replace('', np.nan, inplace=True) for df in [reps, SFs]]
 
     sf_count = SFs.count() / float(len(SFs)) * 100
     rep_count = reps.count() / float(len(reps)) * 100
@@ -345,7 +346,7 @@ def make_keys():
             else: stat = (i,0,0,0,0,0)
             keys.append(stat)
     keys.sort(key=itemgetter(5), reverse=True)
-    key_stats=keys
+    return keys
 
 
 def match_keys(key,key_list):

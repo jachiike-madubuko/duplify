@@ -290,14 +290,17 @@ def key_gen(request):
     # while not key:
     #     key = get_key_stats()
     print ('generating keys: STARTED')
-    rps =set( [i.name for i in repContact._meta.local_fields])
-    sfs = set( [i.name for i in sfcontact._meta.local_fields])
+    # rps =set( [i.name for i in repContact._meta.local_fields])
+    # sfs = set( [i.name for i in sfcontact._meta.local_fields])
+    #
+    # key= list(rps.intersection(sfs))
+    # key.sort()
 
-    key= list(rps.intersection(sfs))
-    key.sort()
+
+    key = make_keys()
+
     print ('generating keys: DONE')
 
-    # key = get_key_stats()
 
     return render(request, 'dedupper/key_generator.html', {'keys': key})
 
