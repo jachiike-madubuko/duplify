@@ -370,7 +370,7 @@ bottom:
         });
     }
     {#bg();#}
-
+    var inter = null;
     var colors = new Array(
         [127.5,127.5,127.5],
         [255,255,255],
@@ -610,14 +610,16 @@ bottom:
         });
         $.getJSON("{% url 'import_csv' %}", {channel: channel, rep_map: JSON.stringify
             (rep_mapping) }, function (result) {
-            setInterval(update_progress,  5000);
+
+            inter = setInterval(update_progress,  5000);
         });
     }
 
         function update_progress(){
             $.getJSON("{% url 'db_progress' %}", function (result) {
-                alert(results['msg']);
-            if ('success'.localeCompare( results['msg']) == 0){
+            if ('success'.localeCompare( result['msg']) == 0){
+                clearInterval(inter);
+
 
                 window.location.replace("{% url 'key-gen' %}");
             }
