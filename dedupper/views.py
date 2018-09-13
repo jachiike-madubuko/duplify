@@ -10,17 +10,20 @@ from django.core.management import call_command
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django_tables2.views import RequestConfig
+from rq import Queue
 from simple_salesforce import Salesforce
 
 from dedupper.forms import UploadFileForm
-from dedupper.resources import RepContactResource
 from dedupper.tables import StatsTable, SFContactTable, RepContactTable
 from dedupper.utils import *
+from worker import conn
 
 tablib.formats.json.json = json
 
 keys= []
 name_sort=address_sort=email_sort=crd_sort=phone_sort=average_sort=key_sort=True
+
+q = Queue(connection=conn)
 
 def display(request):
     return render(request, 'dedupper/data-table.html')
@@ -263,7 +266,8 @@ def import_csv(request):
     # get_channel queries the channel and loads the rep list and sf contacts
     request.session['misc'] = list(rep_header_map.keys())
 
-    get_channel(db_data)
+    result = q.enqueue(get_channel, db_data)
+    print (result)
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def index(request):
