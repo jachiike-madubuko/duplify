@@ -325,8 +325,8 @@ def make_keys():
     SFs = pd.read_json(SFContactResource().export().json)
     [df.replace('', np.nan, inplace=True) for df in [reps, SFs]]
 
-    sf_count = SFs.count() / float(len(SFs)) * 100
-    rep_count = reps.count() / float(len(reps)) * 100
+    sf_count = 100*(SFs.count() / float(len(SFs)) )
+    rep_count = 100*(reps.count() / float(len(reps)) )
 
 
     for i in set(reps.columns).intersection(set(SFs.columns)):
@@ -458,9 +458,9 @@ def get_channel(data):
     print('loading rep: STARTED')
     load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
     print('loading rep: DONE')
-    print('key stats: STARTED')
-    # make_keys()
-    print('key stats: DONE')
+    # print('key stats: STARTED')
+    # # make_keys()
+    # print('key stats: DONE')
     print('job: DONE')
     return True
 
