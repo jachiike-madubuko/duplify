@@ -266,7 +266,7 @@ def import_csv(request):
     # the csv headers are stored to be used for exporting
     # get_channel queries the channel and loads the rep list and sf contacts
     request.session['misc'] = list(rep_header_map.keys())
-    newest =  q.enqueue(get_channel, db_data, job_id=JOB_ID, timeout='1h', result_ttl='3m')
+    newest =  q.enqueue(get_channel, db_data, job_id=JOB_ID, timeout='1h', result_ttl='1h')
     request.session['rq_job'] = JOB_ID
     return JsonResponse({'msg': 'success!'}, safe=False)
 
@@ -429,7 +429,10 @@ def upload(request):
     repCSV = request.FILES['repFile']
     request.session['repCSV_name'] = str(repCSV)
     rep_headers, pd_rep_csv = convert_csv(repCSV, str(repCSV))
+
     request.session['repCSV_headers'] = rep_headers
+    request.session['rep_size'] = len(pd_rep_csv)
+    print(f'rep size: {len(pd_rep_csv)}')
     export_headers = rep_headers
 
     # keys = make_keys(headers)
@@ -452,18 +455,18 @@ def db_progress(request):
     msg = 10000
     global rep_prog
     if request.method == 'GET':
-        if repContact.objects.all().count() >  0 and repContact.objects.all().count() == rep_prog:
+        if repContact.objects.all().count() == request.session['rep_size']:
+            print('loading should be done')
             try:
                 db_job = q.fetch_job(request.session['rq_job'])
-                print(db_job)
-                print(db_job.result)
-                if db_job.result:
-                   msg = 2
+                if db_job:
+                    print(db_job)
+                    if db_job.result:
+                        print(db_job.result)
+                        msg = 2
             except Exception as e:
                 print ('no progress')
                 print(e)
-        else:
-            rep_prog = repContact.objects.all().count()
 
     return JsonResponse({
         'msg': msg
