@@ -455,6 +455,8 @@ def db_progress(request):
     msg = 10000
     global rep_prog
     if request.method == 'GET':
+        print('checking progress')
+        print(f"expected:{repContact.objects.all().count()}, actual:{request.session['rep_size']}")
         if repContact.objects.all().count() == request.session['rep_size']:
             print('loading should be done')
             try:
@@ -467,6 +469,8 @@ def db_progress(request):
             except Exception as e:
                 print ('no progress')
                 print(e)
+        else:
+            print( f"expected:{repContact.objects.all().count()}, actual:{request.session['rep_size']}")
 
     return JsonResponse({
         'msg': msg

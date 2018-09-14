@@ -552,7 +552,7 @@ bottom:
         $.getJSON("{% url 'import_csv' %}", {channel: channel, rep_map: JSON.stringify
             (rep_mapping) }, function (result) {
 
-            inter = setInterval(update_progress,  15000);
+            inter = setInterval(update_progress,  5000);
         });
     }
 
