@@ -1,0 +1,62 @@
+Metadata-Version: 2.0
+Name: altair
+Version: 2.1.0
+Summary: Altair: A declarative statistical visualization library for Python.
+Home-page: http://altair-viz.github.io
+Author: Brian E. Granger / Jake VanderPlas
+Author-email: jakevdp@gmail.com
+License: BSD 3-clause
+Download-URL: http://github.com/altair-viz/altair/
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Provides-Extra: dev
+Requires-Dist: entrypoints
+Requires-Dist: jsonschema
+Requires-Dist: numpy
+Requires-Dist: pandas
+Requires-Dist: six
+Requires-Dist: toolz
+Requires-Dist: typing
+Provides-Extra: dev
+Requires-Dist: docutils; extra == 'dev'
+Requires-Dist: flake8; extra == 'dev'
+Requires-Dist: jinja2; extra == 'dev'
+Requires-Dist: m2r; extra == 'dev'
+Requires-Dist: pytest; extra == 'dev'
+Requires-Dist: sphinx; extra == 'dev'
+Requires-Dist: vega-datasets; extra == 'dev'
+Provides-Extra: dev
+Requires-Dist: ipython (<6); python_version < "3" and extra == 'dev'
+Provides-Extra: dev
+Requires-Dist: ipython; python_version >= "3" and extra == 'dev'
+
+
+Altair: A declarative statistical visualization library for Python.
+
+http://altair-viz.github.io/
+
+This package provides a Python API for building statistical visualizations
+in a declarative manner. This API contains no actual visualization rendering
+code, but instead emits JSON data structures following the `Vega-Lite`_
+specification. For convenience, Altair can optionally use `ipyvega`_ to
+seamlessly display client-side renderings in the Jupyter notebook.
+
+.. image:: https://raw.githubusercontent.com/altair-viz/altair/master/images/cars.png
+
+See the `Altair Documentation`_ for tutorials, detailed installation
+instructions, and examples.
+See the `Altair Github Repository`_ for issues, bug reports, and contributions.
+
+.. _Altair Github Repository: http://github.com/altair-viz/altair/
+.. _Altair Documentation: http://altair-viz.github.io/
+.. _Vega-Lite: https://github.com/vega/vega-lite
+
+

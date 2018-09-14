@@ -1,8 +1,9 @@
 from django.contrib import admin
-from .models import Simple, RepContact, SFContact
+from .models import simple, sfcontact, repContact, dedupTime, duplifyTime, uploadTime
 
 # Register your models here.
-admin.site.register(Simple)
-admin.site.register(RepContact)
-admin.site.register(SFContact)
-
+admin.site.register(sfcontact)
+admin.site.register(repContact)
+admin.site.register(dedupTime)
+admin.site.register(duplifyTime)
+admin.site.register(uploadTime)

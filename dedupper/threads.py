@@ -8,35 +8,45 @@ import queue  #must be in same directory as this file
 logging.basicConfig(level=logging.DEBUG,
                     format='(%(threadName)-9s) %(message)s',)
 
-BUF_SIZE = 10000
-q = queue.Queue(BUF_SIZE)
-command = []
-producer = None
-consumers = None
-numThreads = 10
+BUFF_SIZE = 10000
+q = queue.Queue(BUFF_SIZE)
+command = list()
+producer= consumers = None
+numThreads = 12
+stopper = True
+dead_threads = 0
+last_thread_killed=0
 
-class ProducerThread(threading.Thread):
+class DuplifyThread(threading.Thread):
     def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None):
-        super(ProducerThread,self).__init__()
+        super(DuplifyThread, self).__init__()
         self.target = target
         self.name = name
         self.event = threading.Event()  #enable easy thread stopping
 
-
     def run(self):
-        global command
+        global command, q
         while not self.event.is_set():
             if not q.full():
                 if command:
-                    d=command.pop()
+                    d = command.pop()
                     q.put(d)
-                    # logging.debug('Putting REP ' +d[0].firstName + ' : ' + str(q.qsize())+ ' reps in the queue')
+                else:
+                    q.put(None)
+                if last_thread_killed != 0:
+                    logging.debug('Time is last killed thread is {}'.format(time.time() - last_thread_killed))
+                    time.sleep(5)
+
+            if dead_threads >= numThreads-1:
+                logging.debug('all consumer threads dead. producer stopped')
+                stop(self)
+                q = queue.Queue(BUFF_SIZE)
+                dedupper.utils.finish(numThreads)
         return
 
-class DeviceThread(threading.Thread):
-    curr_command = '*'
+class DedupThread(threading.Thread):
     def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None):
-        super(DeviceThread,self).__init__()
+        super(DedupThread, self).__init__()
         self.target = target
         self.name = name
         self.event = threading.Event()   #enable easy thread stopping
@@ -44,15 +54,23 @@ class DeviceThread(threading.Thread):
 
     def run(self):
         while not self.event.is_set():
-            ''' switch based on name of consumer thread
-            face should look at a static variable
-            'action' updated after q.get '''
+            if last_thread_killed != 0:
+                logging.debug('Time is last killed thread is {}'.format(time.time()-last_thread_killed))
             if not q.empty():
+                time.sleep(1)
                 item = q.get()
-                # logging.debug('dedupping REP ' + item[0].firstName + ' : ' + str(q.qsize()) + ' commands in queue')
-                dedup(item)
+                if item is None:
+                    logging.debug('Queue empty, stopping thread.')
+                    stop(self)
+                else:
+                    dedup(item)
             else:
-                stop_threads()
+                logging.debug('Queue empty, stopping thread.')
+                stop(self)
+            if time.time()-last_thread_killed> 15  and last_thread_killed != 0:
+                logging.debug('AUTO-KILL')
+                stop(self)
+
         return
 
 def updateQ(newQ):
@@ -60,30 +78,28 @@ def updateQ(newQ):
     command.extend(newQ)
     startThreads()
 
-def stop_threads():  #all threads run on a while event is not set
-    global producer, consumers
-    producer.event.set()
-    for i in consumers:
-        i.event.set()
-    dedupper.utils.finish(numThreads)
+def stop(x):
+    global dead_threads, last_thread_killed
+    dead_threads+=1
+    last_thread_killed = time.time()
+    x.event.set()
+    logging.debug('bye: {}/{} threads killed'.format(dead_threads,numThreads))
 
 def dedup(repNkey):
-   # logging.debug('hi')
-    time.sleep(random.random() * 4)
-    dedupper.utils.duplify(repNkey[0],repNkey[1],numThreads)
+    dedupper.utils.find_rep_dups(repNkey[0], repNkey[1], numThreads)
 
-def makeThreads(num):
-    return [DeviceThread(name='dedupper'+str(i)) for i in range(num)]
+def makeThreads():
+    return [DedupThread(name='dedupper' + str(i+1)) for i in range(numThreads)]
 
 def startThreads():
-    global producer, consumers
-    producer = ProducerThread(name='producer')
-    consumers = makeThreads(numThreads)
-
+    global producer, consumers, dead_threads, numThreads,last_thread_killed
+    dead_threads = 0
+    last_thread_killed = 0
+    producer = DuplifyThread(name='producer')
     producer.start()
+    consumers = makeThreads()
+    numThreads = len(consumers)
     time.sleep(5)
-    for i in consumers:
-        i.start()
-   # updateQ([('jim brown', 'firstName-territory-mailingStateProvince'),('tim harding',
-# 'firstName-territory-mailingStateProvince'),('paul green', 'firstName-territory-mailingStateProvince')])
-   # updateQ([('jim brown', 'Phone-lastName'),('tim harding', 'Phone-lastName'),('paul green', 'Phone-lastName')])
+    print("new number of threads {}".format(numThreads))
+    [x.start() for x in consumers]
+

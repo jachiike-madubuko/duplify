@@ -5,106 +5,338 @@ Created on Sat May 19 17:53:34 2018
 
 @author: jachi
 """
-from dedupper.threads import updateQ
-import os
-from dedupper.models import Simple, RepContact, SFContact, DedupTime, DuplifyTime, UploadTime
-import string
-from time import clock
-from datetime import timedelta
-from random import *
-from range_key_dict import RangeKeyDict
-import pandas as pd
-from fuzzywuzzy import fuzz
-from fuzzywuzzy import process #could be used to generate suggestions for unknown records
-import numpy as np
-from tablib import Dataset
 import logging
+import os
+import string
+from gc import collect
+from operator import itemgetter
+from random import *
+from time import perf_counter
 
-from copy import deepcopy
-#find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
+import numpy as np
+import pandas as pd
+from django.conf import settings
+from django.db.models import Avg
+from fuzzyset import FuzzySet
+from fuzzywuzzy import fuzz
+from range_key_dict import RangeKeyDict
+from simple_salesforce import Salesforce
+from tablib import Dataset
 
-rkd = RangeKeyDict({
-    (100, 101): 'Duplicate',
-    (70, 100): 'Undecided',
-    (0, 70): 'New Record'
+import dedupper.threads
+from dedupper.models import repContact, sfcontact, dedupTime, duplifyTime, uploadTime
+from dedupper.resources import SFContactResource, RepContactResource
+
+standard_sorting_range = RangeKeyDict({
+    (97, 101): 'Duplicate',
+    (95, 97): 'Manual Check',
+    (0, 95): 'Undecided'
 })
-waiting= True
-sf_list = list(SFContact.objects.all())
-sf_map = None
-start = 0
-end = 0
+last_key_sorting_range = RangeKeyDict({
+    (97, 101): 'Duplicate',
+    (95, 97): 'Manual Check',
+    (0, 95): 'New Record'
+})
+manual_sorting_range = RangeKeyDict({
+    (95, 101): 'Manual Check',
+    (0, 95): 'Undecided',
+})
+last_manual_sorting_range = RangeKeyDict({
+    (95, 101): 'Manual Check',
+    (0, 95): 'New Record'
+})
 
+waiting= True
+done= False
+keylist = list()
+currKey=sort_alg=None
+start=end=cnt=doneKeys=totalKeys=0
+
+#TODO use KNN to determine searchable subset then run fuzzy alg on subset
+
+#TODO add docstrings go to realpython.com/documenting-python-code/
+#TODO update documentation go to dbader.org/blog/write-a-great-readme-for-your-github-project
+#TODO django test cases realpython <--
+
+#simple csv to dataframe
+def convert_csv(file):
+    print('converting CSV: ', str(file))
+    pd_csv = pd.read_csv(file, encoding = "cp1252", delimiter=',', dtype=str)  #western european
+    return list(pd_csv), pd_csv
+
+def find_rep_dups(rep, keys, numthreads):
+    global cnt                          #track the number of attempted dedups
+    multi_key = False                   #for tracking the one to many key generation of keys containing emails and phones
+    dup_start=perf_counter()            #track the dup time
+    rep_key = rep.key(keys[:-1])        #create rep key without man/dup flag
+    if 'NULL' in rep_key:               #dont use key with missing parts
+        logging.debug("bad rep key")
+        return 0
+    search_party =  sfcontact.objects.none()        #contains the contacts that have similar fields to the rep
+
+    #refactor using Q() object
+    for key in keys[:-1]:
+        if 'Phone' in key:              #for phones, check the variation of phones in the sales force contact
+            for type_of_phone in ['mobilePhone', 'homePhone', 'otherPhone', 'Phone']:
+                # create filter for each phone variation
+                kwargs = {f'{type_of_phone}__icontains': f'{rep.key([key])}'}
+                # queryset of Sfcontacts that have a matching field with the rep
+                search_party = search_party.union(sfcontact.objects.filter(**kwargs))
+        if 'Email' in key:
+            for type_of_email in ['workEmail', 'personalEmail', 'otherEmail']:
+                kwargs = {f'{type_of_email}__icontains': f'{rep.key([key])}'}
+                search_party = search_party.union(sfcontact.objects.filter(**kwargs))
+
+        kwargs = { f'{key}__icontains' : f'{rep.key([key])}' }
+        # queryset of Sfcontacts that have a matching field with the rep
+        search_party = search_party.union(sfcontact.objects.filter(**kwargs))
+
+    #create list of keys mapped to the contact
+    sf_map = {}
+    for n, i in enumerate(keys):
+        if 'Phone' in i:            #create a phone variations of each key
+            multi_key = True
+            for j in ['mobilePhone', 'homePhone', 'otherPhone', 'Phone']:
+                vary_key = keys.copy()
+                vary_key[n] = j
+                addon = {i.key(vary_key[:-1]) : i for i in search_party if "NULL" not in i.key(vary_key[:-1])}
+                sf_map = {**sf_map, **addon} #update sf_map with variation keys
+        elif 'Email' in i:          #create an email variations of each key
+            multi_key = True
+            for j in ['workEmail', 'personalEmail', 'otherEmail']:
+                vary_key = keys.copy()
+                vary_key[n] = j
+                addon = {i.key(vary_key[:-1]): i for i in search_party if "NULL" not in i.key(vary_key[:-1])}
+                sf_map = {**sf_map, **addon}        #update sf_map with variation keys
+    if not multi_key:
+        sf_map = {i.key(keys[:-1]): i for i in search_party if "NULL" not in i.key(keys[:-1])}  # only returns
+
+    #list of keys for fuzzy mapping
+    sf_keys = sf_map.keys()
+
+    #get closest
+    closest = fuzzyset_alg(rep_key, sf_keys)
+    if len(closest) == 0:
+         logging.debug("no close matches")
+         if currKey == keylist[-1]:
+            string_key = '-'.join(currKey)
+            rep.keySortedBy = string_key
+            rep.type = sort(1)
+            rep.save()
+            return
+         else:
+            return
+    for i in closest:
+        #replace key with sf contact record
+        i[0] = sf_map[i[0]]
+    if len(closest) == 3  and closest[0][1] <= closest[-1][1] + 10 :        #see if 3rd closest is within 10% variation
+        rep.average = np.mean([closest[0][1], closest[1][1], closest[2][1]]) #compute average
+        #store contacts
+        rep.closest1 = closest[0][0]
+        rep.closest2 = closest[1][0]
+        rep.closest3 = closest[2][0]
+        rep.closest1_contactID = closest[0][0].ContactID
+        rep.closest2_contactID = closest[1][0].ContactID
+        rep.closest3_contactID = closest[2][0].ContactID
+    elif  len(closest) == 2 and closest[0][1] <= closest[-1][1] + 5: #see if 2nd  closest is within 5% variation
+        rep.average = np.mean([closest[0][1], closest[1][1]])
+        rep.closest1 = closest[0][0]
+        rep.closest2 = closest[1][0]
+        rep.closest1_contactID = closest[0][0].ContactID
+        rep.closest2_contactID = closest[1][0].ContactID
+    else:
+        rep.average = closest[0][1]
+        rep.closest1 = closest[0][0]
+        rep.closest1_contactID = closest[0][0].ContactID
+    rep.type = sort(rep.average)
+
+    if rep.type=='Duplicate' and rep.CRD != '' and  closest[0][0].CRD != '' and  int(rep.CRD.replace(".0","")) != int(closest[0][0].CRD.replace(".0","")) :
+        rep.type = 'Manual Check'
+    string_key = '-'.join(currKey)
+    rep.keySortedBy = string_key
+    rep.save()
+    # logging.debug(f'{rep.firstName} sorted as {rep.type} with {rep.keySortedBy} key ')
+    time = round(perf_counter()-dup_start, 2)
+
+    #store time data
+    dups = len(repContact.objects.filter(type='Duplicate'))
+    news = len(repContact.objects.filter(type='New Record'))
+    undies = len(repContact.objects.filter(type='Undecided'))
+    avg = dedupTime.objects.aggregate(Avg('seconds'))['seconds__avg']
+    if avg == None:
+        avg = 0
+    else:
+        avg = round(avg, 2)
+    dedupTime.objects.create(
+                             seconds=time,
+                             num_threads=numthreads,
+                             avg=avg,
+                             num_dup=dups,
+                             num_new=news,
+                             num_undie=undies,
+                             current_key=currKey)
+    cnt += 1
+
+    #garbage collection
+    del time, avg, dups, news, undies, string_key, sf_map, sf_keys, search_party, dup_start, rep_key
+
+#reset flags and storage time
+def finish(numThreads):
+    global end, waiting
+    c = collect()                   #garbage collection
+    logging.debug(f'# of garbage collected = {c}')
+    #is this the last key
+    if currKey == keylist[-1]:
+        #sort the remaining keys
+        for i in list(repContact.objects.filter(type='Undecided')):
+            if i.average != None:
+                i.type = last_key_sorting_range[i.average]
+            else:
+                i.type = 'New Record'
+            i.save()
+        end = perf_counter()
+        time = end - start
+        duplifyTime.objects.create(num_threads=numThreads,
+                                   seconds=round(time, 2)
+                                   )
+        os.system('say "The repp list has been duplified!"')
+    waiting=False
+
+#fuzzy match the key against the key list and returns the 3 closest from the key list
+def fuzzyset_alg(key, key_list):
+    finder = FuzzySet()
+    finder.add(key)
+    candidates = list()
+    for i in key_list:
+        try:
+            added = [i]
+            #if the match score is below 50% key error raises
+            matched = finder[i]
+            added.extend(*matched)
+            del added[-1]       #remove rep's key from list
+            added[1] *= 100      #convert to percentage
+            '''
+            [0] the sf key
+            [1] match percentage
+            '''
+            candidates.append(added)
+        except:
+            pass
+    #sort by score
+    candidates.sort(key=lambda x: x[1], reverse=True)
+
+    #take top take 10
+    top_candi = candidates[:10]
+    #fuzzy match and sort again
+    finalist = [[i[0], fuzz.ratio(key, i[0])] for i in top_candi]
+    finalist.sort(key=lambda x: x[1], reverse=True)
+    del finder, candidates, top_candi
+    if len(finalist) > 0:
+        return finalist[:3]
+    else:
+        return []
+
+#the start of duplify algorithm
 def key_generator(partslist):
-    global start, waiting
+    global start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg, keylist
+    #start timer
+    start = perf_counter()
+    totalKeys = len(partslist)
+    #store keylist globally
+    keylist = partslist
     for key_parts in partslist:
-        if 'phone' in key_parts:
-            index = partslist.index(key_parts)
-            del partslist[index]
-            for i in ['homePhone', 'mobilePhone', 'Phone', 'otherPhone']:
-                new_key_parts = [i if x == 'phone' else x for x in key_parts]
-                partslist.insert(index, new_key_parts)
-        if 'email' in key_parts:
-            index = partslist.index(key_parts)
-            del partslist[index]
-            for i in ['otherEmail', 'personalEmail', 'workEmail']:
-                new_key_parts = [i if x == 'email' else x for x in key_parts]
-                partslist.insert(index, new_key_parts)
-    start = clock()
-    sf_list = list(SFContact.objects.all())
-    for key_parts in partslist:
+        #determine whether strong matches sort as dups or manuals
+        sort_alg = key_parts[-1]
+        currKey = key_parts
+        cnt=0           #restarts global count
+        print('starting key: {}'.format(key_parts))
+
+        #set flags
         waiting = True
-        rep_list = list(RepContact.objects.filter(type__in=['Undecided', 'New Record']))
-        updateQ([[rep,key_parts] for rep in rep_list])
+        multi_key = False
+
+        #convert key string to list
+        string_key = '-'.join(currKey)
+
+        #get all unsorted reps
+        rep_list = repContact.objects.filter(type='Undecided').exclude(keySortedBy=string_key)
+
+        print('adding {} items to the Q'.format(len(rep_list)))
+        #add reps to the thread Q
+        dedupper.threads.updateQ([[rep, key_parts] for rep in rep_list])
         while waiting:
             pass
+        doneKeys += 1
 
-        ###in threads
-        ###when Q in empty
-        ### call function drop_flag
-        ##def drop_flag(): = False
+#uploades contacts to the db
+def load_csv2db(csv, header_map, resource, file_type='rep'):
+    start = perf_counter()
+    dataset = Dataset()
+    pd_csv = csv
+    csv_header = list(pd_csv)
+
+    try:
+        if file_type=='rep':
+            #concatentate the records data into a misc fields for later restoration
+            pd_csv['misc'] = misc_col(csv, csv_header)
+        #map replist headers to db headers
+        pd_csv.rename(columns=header_map, inplace=True)
+        #add id col for django import export
+        pd_csv['id'] = np.nan
+
+        #import contact records
+        dataset.csv = pd_csv.to_csv()
+        resource.import_data(dataset, dry_run=False)
+    except:
+        print("lost the pandas csv")
+    end = perf_counter()    #stop timer
+    time = end - start
+    if file_type == 'rep':
+        uploadTime.objects.create(num_records = len(repContact.objects.all()), seconds=round(time, 2))
+        globals()['done'] = True
+        print('db done')
+    else:
+        uploadTime.objects.create(num_records = len(sfcontact.objects.all()),seconds=round(time, 2))
+    return csv_header
+
+# concatenates cols of the df
+def misc_col(df, cols):
+    from functools import reduce
+    return reduce(lambda x, y: x.astype(str).str.cat(y.astype(str), sep='-!-'), [df[col] for col in cols])
+
+#generates stats for each fields based on uniqueness of values and amount of blanks
+def make_keys(headers):
+    keys = []
+    rep_total = repContact.objects.all().count()
+    sf_total = sfcontact.objects.all().count()
+    phoneUniqueness = 0
+    emailUniqueness = 0
+    phoneTypes = ['Phone', 'homePhone', 'mobilePhone', 'otherPhone']
+    emailTypes = ['workEmail', 'personalEmail', 'otherEmail']
+    excluded = ['id', 'average', 'type', 'match_ID', 'closest1', 'closest2', 'closest3',
+                'closest1_contactID', 'closest2_contactID', 'closest3_contactID', 'dupFlag', 'keySortedBy', 'misc']
+
+    for i in headers:
+        if i not in excluded:
+            kwargs = {
+                '{}__{}'.format(i, 'exact'):''
+            }
+            rp_uniqueness = repContact.objects.order_by().values_list(i).distinct().count() / rep_total
+            rp_utility = (len(repContact.objects.all()) - len(repContact.objects.filter(**kwargs))) /rep_total
+            sf_uniqueness = sfcontact.objects.order_by().values_list(i).distinct().count() / sf_total
+            sf_utility = (len(sfcontact.objects.all()) - len(sfcontact.objects.filter(**kwargs))) /sf_total
+            score = (rp_uniqueness + rp_utility + sf_uniqueness + sf_utility)/4
+            keys.append((i, int(rp_uniqueness * 100), int(rp_utility * 100), int(sf_uniqueness * 100), int(sf_utility * 100), score))
+    keys.sort(key=itemgetter(5), reverse=True)
+    return keys
 
 
 def match_keys(key,key_list):
     for i in key_list:
-        yield match_percentage(key,i)
-
-def sort(avg):
-    return rkd[avg]
+        yield match_percentage(key, i)
 
 def match_percentage(key1,key2):
     return fuzz.ratio(key1, key2)
-
-def setSortingAlgorithm(min_dup,min_uns):
-    #TODO finish this function and connect it to a slider
-    global rkd
-    rkd = RangeKeyDict({
-    (min_dup, 101): 'Duplicate',
-    (min_uns, min_dup): 'Unsure',
-    (0, min_uns): 'New Record'
-})
-
-def makeKeys(headers):
-    keys = []
-    total = RepContact.objects.all().count()
-    phoneUniqueness = 0
-    emailUniqueness = 0
-    print(headers)
-    headers = headers.replace('\r\n', '')
-    print(headers)
-    headers=headers.split(',')
-    print(headers)
-
-    for i in headers:
-        if 'Phone' in i:
-            phoneUniqueness += RepContact.objects.order_by().values_list(i).distinct().count() / total
-        if 'Email' in i:
-            emailUniqueness += RepContact.objects.order_by().values_list(i).distinct().count() / total
-        else:
-            uniqueness = RepContact.objects.order_by().values_list(i).distinct().count() / total
-            keys.append((i, int(uniqueness * 100)))
-    keys.extend([('phone', int((phoneUniqueness / 4) * 100)), ('email', int((emailUniqueness / 3) * 100))])
-    keys.sort()
-    return keys
 
 def mutate(keys):
     mutant = keys.copy()
@@ -116,81 +348,98 @@ def mutate(keys):
             mutant[j]=mutant[j].replace(mutant[j][int(sample(range(len(mutant[j])-1), 1)[0])], choice(string.printable))
     return mutant
 
-def convertCSV(file, resource):
-    dataset = Dataset()
-    headers = ''
-    cnt, cnt2 = 0, 0
-    print('converting CSV' + str(file))
-    start = clock()
-    fileString = ''
-    #look into going line by line
-    for chunk in file.open():
-        fileString += chunk.decode("utf-8")
-        if cnt == 0:
-            headers=fileString
+#change the sort algorithms and resort all records
+def set_sorting_algorithm(min_dup, min_uns):
+    global standard_sorting_range, manual_sorting_range
+    cnt=0
+    standard_sorting_range = RangeKeyDict({
+    (min_dup, 101): 'Manual Check',
+    (0, min_dup): 'Undecided',
+})
+
+    manual_sorting_range = RangeKeyDict({
+    (min_dup, 101): 'Manual Check',
+    (min_uns, min_dup): 'Undecided',
+    (0, min_uns): 'New Record'
+})
+    for rep in list(repContact.objects.all()):
         cnt+=1
-        if cnt == 2000:
-            print('importing data' + '.'*((cnt2%3)+1))
-            cnt2+=1
-            cnt = 1
-            dataset.csv = fileString
-            resource.import_data(dataset, dry_run=False)
-            fileString = headers
-    dataset.csv = fileString
-    resource.import_data(dataset, dry_run=False)
-    end = clock()
-    time = str(end - start)
-    print('...upload complete \t time = ' + time)
-    return headers
+        if rep.keySortedBy != '':
+            keys = rep.keySortedBy.split('-')
+            if keys == keylist[-1]:
+                rep.type = last_key_sorting_range[rep.average]
+            elif keys[-1] == 'true':
+                rep.type = manual_sorting_range[rep.average]
+            else:
+                rep.type = standard_sorting_range[rep.average]
+            rep.save()
+        else:
+            rep.type = standard_sorting_range[rep.average]
+            rep.save()
+            print('{}-{}'.format(rep.type, rep.average))
 
-def duplify(rep, keys, numthreads):
-    start=clock()
-    rep_key = rep.key(keys)
-    # logging.debug(rep_key)
-    sf_keys = [i.key(keys) for i in sf_list]
-    sf_map = dict(zip(sf_keys, sf_list))
-   # logging.debug(sf_map)
-    
-    key_matches = match_keys(rep_key, sf_keys)
-    match_map = list(zip(key_matches, sf_keys))
-    match_map = sorted(match_map, reverse=True)
-    top1, top2, top3 = [(match_map[i][0], sf_map[match_map[i][1]]) for i in range(3)]
+        if cnt%500 ==0:
+            print('re-sort #{}'.format(cnt))
 
-    if top1[0] <= top3[0] + 15 and top1[1].id != top3[1].id:
-        rep.average = np.mean([top1[0], top2[0], top3[0]])
-        rep.closest1 = top1[1]
-        rep.closest2 = top2[1]
-        rep.closest3 = top3[1]
-    elif top1[0] <= top2[0] + 15 and top1[1].id != top2[1].id:
-        rep.average = np.mean([top1[0], top2[0]])
-        rep.closest1 = top1[1]
-        rep.closest2 = top2[1]
+#determines which sorting algorithm will be used for the key
+def sort(avg):
+    if sort_alg == 'true' and currKey == keylist[-1]:
+        return last_manual_sorting_range[avg]
+    elif sort_alg == 'true':
+        return manual_sorting_range[avg]
+    elif currKey == keylist[-1]:
+        return last_key_sorting_range[avg]
     else:
-        rep.average = top1[0]
-        rep.closest1 = top1[1]
-    # seperate by activity
-    rep.type = sort(rep.average)
+        return standard_sorting_range[avg]
 
-    if rep.type != "New Record":
-        rep.match_ID = top1[1].ContactID
-    else:
-        rep.match_ID = ''
-    # try-catch for the save, error will raise if match_contactID is not unique
-    rep.dupFlag = True
-    rep.save()
-    end = clock()
-    DedupTime.objects.create(num_SF = len(sf_list), seconds=timedelta(seconds=int(end-start)), num_threads=numthreads)
-    #logging.debug('bye')
-
-def finish(numThreads):
-    global end, waiting
-    end = clock()
-    time = end - start
-    DuplifyTime.objects.create(num_threads=numThreads, num_SF=len(sf_list), num_rep = len(RepContact.objects.all()),
-                               seconds = timedelta(seconds=int(time)))
-    #print('...dedupping and sorting complete \t time = ' + time)
-    print('\a')
-    os.system('say "The repp list has been duplified!"')
-    waiting=False
+#returns data for the progress screeen
+def get_progress():
+    return doneKeys, totalKeys, currKey, cnt
 
 
+def get_channel(data):
+    channel = data['channel']
+    rep_header_map = data['map']
+
+    sf = Salesforce(password='7924Trill!', username='jmadubuko@wealthvest.com',security_token='Hkx5iAL3Al1p7ZlToomn8samW')
+    query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where Territory_Type__c='Geography' and Territory__r.Name like "
+    starts_with = f"'{channel}%' limit 250"
+    print ('querying SF')
+    territory = sf.bulk.Contact.query(query + starts_with)
+    print(len(territory))
+    territory = pd.DataFrame(territory).drop('attributes', axis=1).replace([None], [''], regex=True)
+    sf_header_map = {
+           'CRD__c': 'CRD',
+           'Email': 'workEmail',
+           'FirstName': 'firstName',
+           'HomePhone': 'homePhone',
+           'Id': 'ContactID',
+           'LastName': 'lastName',
+           'MailingCity': 'mailingCity',
+           'MailingPostalCode': 'mailingZipPostalCode',
+           'MailingState': 'mailingStateProvince',
+           'MailingStreet': 'mailingStree t',
+           'MobilePhone': 'mobilePhone',
+           'OtherPhone': 'otherPhone',
+           'Phone': 'Phone',
+           'Personal_Email__c': 'personalEmail',
+           'Other_Email__c': 'otherEmail',
+           'Suffix': 'suffix',
+                       }
+    sfcontact_resource = SFContactResource()
+    repcontact_resource = RepContactResource()
+    print('loading sf: STARTED')
+    load_csv2db(territory, sf_header_map, sfcontact_resource, file_type='SF')
+    print('loading sf: DONE')
+
+    pd_rep_csv = pd.read_pickle(settings.REP_CSV)
+    print('loading rep: STARTED')
+    data = load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
+    print('loading rep: DONE')
+    return data
+
+
+
+
+def db_done():
+    return done

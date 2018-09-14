@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Django Heroku Connect Sample</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+</head>
+<body>
+
+<table class="striped">
+    <thead>
+    <tr>
+        <th>CRD</th>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th>Address</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for object in object_list %}
+        <tr>
+            <td>{{ object.CRD }}</td>
+            <td>{{ object.name }}</td>
+            <td>{{ object.Phone }}</td>
+            <td>{{ object.email }}</td>
+            <td>{{ object.mailingStreet }}, {{ object.mailingCity }}, {{ object.mailingState }}, {{ object.mailingPostalCode }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>
