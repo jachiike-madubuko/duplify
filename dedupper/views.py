@@ -456,8 +456,8 @@ def db_progress(request):
     global rep_prog
     if request.method == 'GET':
         print('checking progress')
-        print(f"expected:{repContact.objects.all().count()}, actual:{request.session['rep_size']}")
-        if repContact.objects.all().count() == request.session['rep_size']:
+        print(f"actual:{repContact.objects.all().count()}, expected:{request.session['rep_size']}")
+        if repContact.objects.all().count() >= request.session['rep_size']:
             print('loading should be done')
             try:
                 db_job = q.fetch_job(request.session['rq_job'])
@@ -470,7 +470,7 @@ def db_progress(request):
                 print ('no progress')
                 print(e)
         else:
-            print( f"expected:{repContact.objects.all().count()}, actual:{request.session['rep_size']}")
+            print(f"actual:{repContact.objects.all().count()}, expected:{request.session['rep_size']}")
 
     return JsonResponse({
         'msg': msg
