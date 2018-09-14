@@ -15,6 +15,7 @@ from time import perf_counter
 
 import numpy as np
 import pandas as pd
+from django import db
 from django.conf import settings
 from django.db.models import Avg
 from fuzzyset import FuzzySet
@@ -190,6 +191,7 @@ def find_rep_dups(rep, keys, numthreads):
 
 #reset flags and storage time
 def finish(numThreads):
+    db.connections.close_all()
     global end, waiting, complete
     c = collect()                   #garbage collection
     logging.debug(f'# of garbage collected = {c}')
