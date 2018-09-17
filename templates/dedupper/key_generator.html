@@ -25,7 +25,8 @@
             opacity: 0.0;
         }
     </style></head>
-<body data-gr-c-s-loaded="true"><div class="modal fade" id="modalContactForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<body data-gr-c-s-loaded="true">
+<div class="modal fade" id="modalContactForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header text-center">
@@ -58,6 +59,25 @@
                     <textarea type="text" id="form8" class="md-textarea form-control" rows="4"></textarea>
                     <label data-error="wrong" data-success="right" for="form8">Your message</label>
                 </div>
+
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button class="btn btn-unique waves-effect waves-light">Send <i class="fa fa-paper-plane-o ml-1"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalContactId" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">Write to us</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body mx-3">
 
             </div>
             <div class="modal-footer d-flex justify-content-center">
@@ -629,26 +649,29 @@
             </button>
 
             <!-- popup btn -->
-            <div style="z-index: 4500; position:fixed; bottom:50px; right: 30px;" class=" bnt" id="popup1" >
-                    <span class="badge-pill badge-success"> Contact Us</span>
+            <div style="z-index: 4000; position:fixed; bottom:50px; right: 30px;" class=" bnt" id="popup1" >
+                   <span class="z-depth-2 badge-pill badge-success">Locations</span>
                 <button type="button" class="btn waves-effect btn-primary rounded-circle
-                                             download  z-depth-5 p-3 shadow" >
-                    <span class="fa fa-upload fa-2x "></span>
+                                             download  z-depth-5 shadow p-2"  data-toggle="modal"
+                        data-target="#modalContactInfo">
+                    <span class="fa fa-map-marker fa-2x p-2"></span>
                 </button>
             </div>
 
             <div style="z-index: 4000; position:fixed; bottom:50px; right: 30px;" class="bnt " id="popup2" >
-                    <span class="badge-pill badge-success"> Follow Us</span>
+                   <span class="z-depth-2 badge-pill badge-success"> Follow Us</span>
                 <button type="button" class="btn waves-effect btn-primary rounded-circle
                                              download z-depth-5 p-3 shadow" id="popupbtn2" >
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXso5BXPd3oJh9gvk_RljRee8ALbnIup18mmIfX-_YGqn5J_5BAQ" class="fa fa-upload fa-2x "></img>
+                    <img src="{% static 'index_files/Instagram_icon.png' %}" class=" ">
                 </button>
 
-                <div style="z-index: 3500; position:fixed; bottom:50px; right: 30px;" class="bnt rgba-white-light" id="popup3" >
-                    <span class="badge-pill badge-success"> Message Us</span>
+                <div style="z-index: 4000; position:fixed; bottom:50px; right: 30px;" class="bnt" id="popup3" >
+                   <span class="z-depth-2 badge-pill badge-success" data-toggle="modal"
+                          data-target="#modalContactForm">
+                        Contact</span>
                     <button type="button" class="btn waves-effect btn-primary rounded-circle download  z-depth-5 p-3
-            shadow" id="popupbtn3">
-                        <span class="fa fa-comment fa-2x "></span>
+            shadow" id="popupbtn3"  data-toggle="modal" data-target="#modalContactForm">
+                        <span class="fa fa-envelope-o fa-2x "></span>
                     </button>
                     <!-- popup btn -->
         </main>
@@ -677,6 +700,9 @@
         interval: 4000
     });
 
+    var buttonMenu  = false;
+
+
     $(document).ready(function() {
         // popovers Initialization
 
@@ -684,9 +710,18 @@
 
         $('#fileSubmit').click(function (evt) {
 
-            $('#popup1').animate({bottom: '130px',  opacity: 1}, 500);
-            $('#popup2').animate({bottom: '205px', opacity: 1}, 500);
-            $('#popup3').animate({bottom: '280px', opacity: 1, }, 500);
+            if (!buttonMenu) {
+
+                $('#popup1').animate({bottom: '+=80', opacity: 1}, 500);
+                $('#popup2').animate({bottom: '+=160', opacity: 1}, 500);
+                $('#popup3').animate({bottom: '+=240', opacity: 1}, 500);
+                buttonMenu=true;
+            }else{
+                 $('#popup1').animate({bottom: '-=80', opacity: 0}, 500);
+                $('#popup2').animate({bottom: '-=160', opacity: 0}, 500);
+                $('#popup3').animate({bottom: '-=240', opacity: 0}, 500);
+                buttonMenu = false;
+            }
         });
     });
 
