@@ -378,8 +378,8 @@ def progress(request):
             key_stats.append({'title': title, 'undies': undies, 'dups': dups, 'news': news, 'manu': manu})
         stats_table = StatsTable(key_stats)
 
-    return JsonResponse({'reps': reps, 'dups': dups, 'news': news, 'undies':undies, 'doneKeys': doneKeys,
-                         'numKeys': numKeys, 'doneReps': doneReps, 'currKey':currKey, 'manu': manu,
+    return JsonResponse({'reps': reps, 'dups': 0, 'news': 0, 'undies':0, 'doneKeys': 0,
+                         'numKeys': 0, 'doneReps': 0, 'currKey':0, 'manu': 0,
                          'keyPercent': keyPercent, 'repPercent': repPercent, 'table': stats_table.as_html(request)},
                         safe=False)
 

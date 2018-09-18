@@ -249,6 +249,7 @@ def fuzzyset_alg(key, key_list):
 
 #the start of duplify algorithm
 def key_generator(partslist):
+    db.connections.close_all()
     global start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg, keylist
     #start timer
     start = perf_counter()
