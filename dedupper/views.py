@@ -275,6 +275,7 @@ def import_csv(request):
 
 def index(request):
     return render(request, 'dedupper/login.html')
+
 def upload_page(request):
     '''
     :param request:
