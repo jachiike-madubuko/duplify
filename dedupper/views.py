@@ -436,9 +436,9 @@ def upload(request):
     export_headers = rep_headers
 
     # keys = make_keys(headers)
-    with open(settings.REP_CSV, 'wb') as file:
-        pickle.dump(pd_rep_csv, file)
-        print('pickle dump reps')
+    pd_rep_csv.to_pickle(settings.REP_CSV)
+    print(pd_rep_csv.shape)
+
 
     exclude = ('id', 'misc', 'average', 'type', 'closest1_contactID', 'closest1', 'closest2_contactID', 'closest2', 'closest3_contactID', 'closest3', 'dupFlag', 'keySortedBy', 'closest_rep')
     rep_key = [i.name for i in repContact._meta.local_fields if i.name not in exclude]
@@ -446,9 +446,6 @@ def upload(request):
 
     rep_headers= request.session['repCSV_headers']
     rep_dropdown = {i: sorted(rep_headers, key= lambda x: SeqMat(None, x, i).ratio(), reverse=True) for i in rep_key}
-
-
-    print(rep_dropdown)
     return JsonResponse( rep_dropdown, safe=False)
 
 def db_progress(request):

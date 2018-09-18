@@ -457,6 +457,7 @@ def get_channel(data):
     print('loading sf: DONE')
 
     pd_rep_csv = pd.read_pickle(settings.REP_CSV)
+    print(pd_rep_csv.shape)
     print('loading rep: STARTED')
     load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
     print('loading rep: DONE')
@@ -465,7 +466,6 @@ def get_channel(data):
     # print('key stats: DONE')
     print('job: DONE')
     return True
-
 
 def get_key_stats():
     return key_stats
