@@ -424,6 +424,7 @@ def get_channel(data):
     global done
     channel = data['channel']
     rep_header_map = data['map']
+    pd_rep_csv =data['reps']
 
     sf = Salesforce(password='7924Trill!', username='jmadubuko@wealthvest.com',security_token='Hkx5iAL3Al1p7ZlToomn8samW')
     query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where Territory_Type__c='Geography' and Territory__r.Name like "
@@ -456,7 +457,6 @@ def get_channel(data):
     load_csv2db(territory, sf_header_map, sfcontact_resource, file_type='SF')
     print('loading sf: DONE')
 
-    pd_rep_csv = pd.read_pickle(settings.REP_CSV)
     print(pd_rep_csv.shape)
     print('loading rep: STARTED')
     load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)

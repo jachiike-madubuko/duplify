@@ -21,7 +21,7 @@ tablib.formats.json.json = json
 sf_prog =rep_prog = 0
 keys= []
 name_sort=address_sort=email_sort=crd_sort=phone_sort=average_sort=key_sort=True
-db_job = None
+db_job=rep_df = None
 JOB_ID = '79243664'
 q =django_rq.get_queue('high', autocommit=True, is_async=True)
 
@@ -261,7 +261,9 @@ def import_csv(request):
 
     db_data = {  # packing data
         'channel': channel,
+        'reps': pd.read_pickle(settings.REP_CSV),
         'map': rep_header_map
+
     }
     # the csv headers are stored to be used for exporting
     # get_channel queries the channel and loads the rep list and sf contacts
@@ -422,7 +424,7 @@ def run(request):
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def upload(request):
-    global export_headers, keys
+    global export_headers, keys, pd_df
 
     print('uploading file')
     form = UploadFileForm(request.POST, request.FILES)
@@ -437,6 +439,7 @@ def upload(request):
 
     # keys = make_keys(headers)
     pd_rep_csv.to_pickle(settings.REP_CSV)
+    pd_df = pd_rep_csv
     print(pd_rep_csv.shape)
 
 
