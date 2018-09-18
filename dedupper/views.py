@@ -23,7 +23,8 @@ sf_prog =rep_prog = 0
 keys= []
 name_sort=address_sort=email_sort=crd_sort=phone_sort=average_sort=key_sort=True
 db_job=rep_df = None
-JOB_ID = '79243664'
+UPLOAD_JOB_ID = '79243664'
+DUPLIFY_JOB_ID = '36647924'
 q =django_rq.get_queue('high', autocommit=True, is_async=True)
 
 def display(request):
@@ -269,8 +270,8 @@ def import_csv(request):
     # the csv headers are stored to be used for exporting
     # get_channel queries the channel and loads the rep list and sf contacts
     request.session['misc'] = list(rep_header_map.keys())
-    newest =  q.enqueue(get_channel, db_data, job_id=JOB_ID, timeout='1h', result_ttl='1h')
-    request.session['rq_job'] = JOB_ID
+    newest =  q.enqueue(get_channel, db_data, job_id=UPLOAD_JOB_ID, timeout='1h', result_ttl='1h')
+    request.session['rq_job'] = UPLOAD_JOB_ID
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def index(request):
@@ -355,14 +356,10 @@ def merge(request, id):
 
 def progress(request):
     if request.method == 'GET':
-        reps = repContact.objects.all().count()
-        dups = len(repContact.objects.filter(type='Duplicate'))
-        news = len(repContact.objects.filter(type='New Record'))
-        undies = len(repContact.objects.filter(type='Undecided'))
-        manu = len(repContact.objects.filter(type='Manual Check'))
+        reps =  request.session['rep_size']
         doneKeys, numKeys, currKey, doneReps = get_progress()
         # keyPercent = round(((doneKeys/numKeys)*100) + ((1/numKeys) * (doneReps/reps)*100),2)
-        if completed():
+        if duplifyTime.objects.count() != 0:
             keyPercent = 100
             repPercent = 100
         else:
@@ -422,7 +419,7 @@ def run(request):
         keylist = keylist.split("_")
         partslist = [i.split('-') for i in keylist[:-1]]
         keys=partslist
-        result = key_generator(partslist)
+        newest = q.enqueue(key_generator, partslist, job_id=DUPLIFY_JOB_ID, timeout='1h', result_ttl='1h')
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def upload(request):
