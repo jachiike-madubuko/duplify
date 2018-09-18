@@ -6,6 +6,7 @@ from difflib import SequenceMatcher as SeqMat
 import django_rq
 import pandas as pd
 import tablib
+from django import db
 from django.conf import settings
 from django.core.management import call_command
 from django.http import HttpResponse, JsonResponse
@@ -466,6 +467,8 @@ def db_progress(request):
                     if db_job.result:
                         print(db_job.result)
                         msg = 2
+                        db.connections.close_all()
+
             except Exception as e:
                 print ('no progress')
                 print(e)

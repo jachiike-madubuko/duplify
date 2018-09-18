@@ -465,6 +465,8 @@ def get_channel(data):
     # # make_keys()
     # print('key stats: DONE')
     print('job: DONE')
+    db.connections.close_all()
+
     return True
 
 def get_key_stats():
