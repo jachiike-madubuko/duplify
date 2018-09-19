@@ -14,14 +14,18 @@
 
     <title>Duplify | Rep List</title>
     <style>
-             h1, .nav-link {
+        span > a {
+            text-decoration: none;
+            color: white;
+        }
+        h1, .nav-link {
             text-shadow:
                     1.25px 1.25px 0 #000,
                     1.25px 1.25px 0 #000,
                     1.25px 1.25px 0 #000,
                     1.25px 1.25px 0 #000;
-        }  
-             .te {
+        }
+        .te {
             text-shadow:
                     .125px .125px 0 #000,
                     .125px .125px 0 #000,
@@ -29,15 +33,15 @@
                     .125px .125px 0 #000;
         }
         body {
-    background-image: url("{% static 'img/mist.png' %}");
-                background-position: right top;
-                background-repeat: no-repeat;
+            background-image: url("{% static 'img/mist.png' %}");
+            background-position: right top;
+            background-repeat: no-repeat;
 
-    background-attachment: fixed;
-    background-size: 100% 100%;
+            background-attachment: fixed;
+            background-size: 100% 100%;
 
 
-}
+        }
         input[type='radio'] {
             visibility:hidden;
         }
@@ -75,7 +79,7 @@
 
     </style>
 </head>
-<body class="blue-grey lighten-5" style="overflow: auto; max-height: min-content;"  >
+<body class="blue-grey lighten-5" style="overflow: auto; max-height: max-content;"  >
 <button class="btn btn-primary  rounded-circle download ml-5 z-depth-5 p-3 shadow"  style="z-index: 5000;
 position:
 fixed;
@@ -259,35 +263,50 @@ bottom:
                 $.getJSON("{% url 'closest' %}",{id:a, close1:x, close2:y, close3:z, }, function (result){
                     var content =$("<fieldset></fieldset>").addClass("form-group");
                     if (result['table1'] != '') {
-                        var t1 = $("<div></div>").addClass("form-check").append($("<input></input>").addClass
-                        ("form-check-input mt-5").attr({
-                            type: "radio",
-                            value: x,
-                            id: x,
-                            name: 'rad'
-                        })).append(result['table1']);
+                        var t1 = $("<div><span class ='badge-pill r  badge-success z-depth-1'><a href='#' " +
+                            "onclick='MyFunction(this);return false;' data-id='"+x+"' " +
+                            "data-rep='"+a+"'>#1</a></span></div>")
+                            .addClass
+                            ("custom-control " +
+                                "custom-radio ")
+                            .append($
+                            ("<input></input>").addClass
+                            ("custom-control-input mt-5 z-depth-5").attr({
+                                type: "radio",
+                                value: x,
+                                id: x,
+                                name: 'rad'
+                            })).append(result['table1']);
                         content.append(t1);
                     }
                     if (result['table2'] != '') {
-                        var t2 = $("<div></div>").addClass("form-check").append($("<input></input>").addClass
-                        ("form-check-input  mt-5").attr({
-                            type: "radio",
-                            value: y,
-                            id: y,
-                            name: 'rad'
-                        })).append(result['table2']);
+                        var t2 = $("<div><span class ='badge-pill r  badge-success z-depth-1'><a href='#' " +
+                            "onclick='MyFunction(this);return false;' data-id='"+y+"' " +
+                            "data-rep='"+a+"'>#2</a></span></div>")
+                            .addClass("custom-control custom-radio").append($
+                            ("<input></input>").addClass
+                            ("custom-control-input  mt-5").attr({
+                                type: "radio",
+                                value: y,
+                                id: y,
+                                name: 'rad'
+                            })).append( result['table2']);
                         content.append(t2);
 
                     }
-                    if (result['table2'] != '') {
+                    if (result['table3'] != '') {
 
-                        var t3 = $("<div></div>").addClass("form-check").append($("<input></input>").addClass
-                        ("form-check-input  mt-5").attr({
-                            type: "radio",
-                            value: z,
-                            id: z,
-                            name: 'rad'
-                        })).append(result['table3']);
+                        var t3 = $("<div><span class ='badge-pill r  badge-success z-depth-1'><a href='#' " +
+                            "onclick='MyFunction(this);return false;' data-id='"+z+"' " +
+                            "data-rep='"+a+"'>#3</a></span></div>")
+                            .addClass("custom-control custom-radio").append($
+                            ("<input></input>").addClass
+                            ("custom-control-input  mt-5").attr({
+                                type: "radio",
+                                value: z,
+                                id: z,
+                                name: 'rad'
+                            })).append(result['table3']);
                         content.append(t3);
                     }
                     var sort =  '<div class="col-1"> <button class="btn btn-success rounded-circle p-1 float-right" ' +
@@ -329,12 +348,15 @@ bottom:
                     //the rep with be updated with a type (and a new closest1)
                     //then the two affected lists will update
                     $('#'+id).html(content);
-                    $('input[type=radio][name=types]').change( function () {
+                    $('input[type=radio][name=types]').change( function (evt) {
                         if(this.id == "new"){
-                            $('input[type=radio][name=rad]').hide();
+                             $('.r').hide();
+
                         }
                         else{
-                            $('input[type=radio][name=rad]').show();
+                            $('.r').show();
+
+
                         }
                     });
                 });
@@ -361,6 +383,11 @@ bottom:
             if (parsed[0].includes('Manual')){
                 man_table(parsed[2].replace('sort=',''));
             }
+
+
+        });
+        $('.dup').on('checked', function (e) {
+            confirm('bro');
 
 
         });
@@ -473,8 +500,8 @@ bottom:
 
     function sort(evt) {
         var sort_type = $(evt).parents(".row").find('label.active > input ').attr('value');
-        var sf_dup = $(evt).parents(".form-group").find(".form-check-input:checked").attr("value");
         var rep_id = $(evt).data('rep');
+
         if ( sort_type == "new"){
             $('.popover').popover('hide');
             $.getJSON("{% url 'contact_sort' %}",{data:['New Record',rep_id] }, function(result){
@@ -484,17 +511,12 @@ bottom:
 
         }
         else{
-            if( sf_dup === undefined ){
-                alert("Select the duplicate Saleforce record before sorting");
-            }
-            else{
-                $('.popover').popover('hide');
-                $.getJSON("{% url 'contact_sort' %}",{data:['Duplicate',rep_id, sf_dup] }, function(result){
-                    dup_table();
-                    man_table();
-                });
-
-            }
+            var sf_dup = $(evt).data('id');
+            $('.popover').popover('hide');
+            $.getJSON("{% url 'contact_sort' %}",{data:['Duplicate',rep_id, sf_dup] }, function(result){
+                dup_table();
+                man_table();
+            });
         }
     }
 
@@ -682,6 +704,15 @@ bottom:
     function f() {
         if (confirm('WARNING: You are about to erase all records in the database.')) {
             window.location.replace("{% url 'flush_db' %}");
+        } else {
+            // Do nothing!
+        }
+    }
+
+    function MyFunction(evt) {
+        var dup_crd = $(evt).data('id');
+        if (confirm('Are sure you want to sort this record as a duplicate?')) {
+            sort(evt);
         } else {
             // Do nothing!
         }
