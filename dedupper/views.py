@@ -303,6 +303,7 @@ def key_gen(request):
     #
 
     key = make_keys()
+    db.connections.close_all()
 
     print ('generating keys: DONE')
 
@@ -414,6 +415,7 @@ def contact_sort(request):
 def run(request):
     global keys
     if request.method == 'GET':
+        db.connections.close_all()
         keylist = request.GET.get('keys')
         #channel = request.GET.get('channel')
         keylist = keylist.split("_")
