@@ -1,11 +1,14 @@
-
 {% load static %}
-{% load render_table from django_tables2 %}
-<!doctype html>
-<html lang="en">
-<head>
 
-    <meta charset="utf-8">
+<!DOCTYPE html>
+<!-- saved from url=(0100)http://localhost:63342/voeller.com/src/index.html?_ijt=rr19aei4i07vj20jrbe8ksam43#multi-item-example -->
+<html class="" lang="">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title></title>
+    <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -391,112 +394,25 @@ bottom:
 
 
         });
-
-
+    <style type="text/css">/* Chart.js */
+    @-webkit-keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}@keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}.chartjs-render-monitor{-webkit-animation:chartjs-render-animation 0.001s;animation:chartjs-render-animation 0.001s;}
+    .bnt {
+        opacity: 0.0;
     }
-    function dup_table(sort){
-        //throw up modal
-        $.getJSON("{% url 'tables' %}",{type: 'Duplicate', sorting: sort}, function (result){
-            $("#pills-dup").html( result['table']);
-            //close modal
-            table_popover();
+body, html {
+  height: 100%;
+  margin: 0;
+  font: 400 15px/1.8 "Lato", sans-serif;
+  color: #777;
+}
 
-        }).fail(function () {
-            alert('why');
-        });
-    }
-    function new_table(sort){
-        $.getJSON("{% url 'tables' %}",{type: 'New Record', sorting: sort}, function (result){
-            $("#pills-new").html( result['table']);
-            table_popover();
-
-        }).fail(function () {
-            alert('why');
-        });
-    }
-    function man_table(sort){
-        $.getJSON("{% url 'tables' %}",{type: 'Manual Check', sorting: sort}, function (result){
-            $("#pills-man").html( result['table']);
-            table_popover();
-
-        }).fail(function () {
-            alert('why');
-        });
-    }
-
-    $(function () {
-        var link = 'export/Duplicate';
-        dup_table('');
-        new_table('');
-        man_table('');
-
-        $('button').addClass('waves-effect');
-        $('a').addClass('waves-effect');
-
-        $('.nav-link').click(function (e) {
-            link = $(this).data('download');
-            $('.nav-link').removeClass('z-depth-2');
-            $(this).addClass('z-depth-2');
-
-        });
-
-        $("#pills-dup-tab").click();
-
-        $('.download').click(function () {
-
-            var anchor = $('<a></a>').attr('href', link);
-            window.location = anchor.attr('href');
-
-        });
-
-        $('.btn').on('shown.bs.popover', function () {
-            $('.popover').css('max-width', "100%");
-        });
-
-
-
-        $(document).ajaxSend(function(event, request, settings) {
-            $('#loading-indicator').show();
-        });
-
-        $(document).ajaxStop(function(event, request, settings) {
-            $('#loading-indicator').hide();
-
-        });
-
-        document.getElementById("new-undi").defaultValue- "70";
-        document.getElementById("undi-dup").defaultValue- "98";
-
-        $("#new-undi").change(function(){
-            $(".bg-primary").width($("#new-undi").val()+'%');
-            let n_u = Number($("#new-undi").val());
-            let u_d = Number($("#undi-dup").val());
-            let mid =  (u_d-n_u);
-            let end = 100 - (n_u + mid);
-            $(".bg-warning").width(mid+'%');
-            $(".bg-primary").width(n_u+'%');
-            $(".bg-success").width(end+'%');
-        });
-
-        $("#undi-dup").change(function(){
-            let n_u = Number($("#new-undi").val());
-            let u_d = Number($("#undi-dup").val());
-            let thres = u_d-n_u;
-            $(".bg-warning").width(thres+'%');
-            $(".bg-success").width(100-u_d+'%');
-        });
-
-
-    });
-
-
-    function merge(ids) {
-        alert('merge');
-        $.getJSON("{% url 'closest' %}",{x:ids}, function (result){
-            $("#table").html(result['table']);
-            $("#rep-table").html(result['rep-table']);
-        });
-    }
+.bgimg-1, .bgimg-2, .bgimg-3 {
+  position: relative;
+  opacity: 0.65;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 
     function sort(evt) {
         var sort_type = $(evt).parents(".row").find('label.active > input ').attr('value');
@@ -520,185 +436,317 @@ bottom:
         }
     }
 
-    function resort() {
-        let n_u = Number($("#new-undi").val());
-        let u_d = Number($("#undi-dup").val());
-        $(".modal-body, .modal-footer").hide();
-        $(".modal-title").text("Reps are being sorted!");
 
-        $.getJSON("{% url 'resort' %}", {lower_thres: n_u,  upper_thres: u_d}, function (result) {
-            location.reload(true);
+.bgimg-3 {
+  background-image: url("{% static 'index_files/shangyou-shi-543887-unsplash.jpg' %}");
+  min-height: 100%;
+}
 
-        }).fail(function () {alert('wtf bro');
+.caption {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  text-align: center;
+  color: #000;
+}
 
-        });
+.caption span.border {
+  background-color: #111;
+  color: #fff;
+  padding: 18px;
+  font-size: 25px;
+  letter-spacing: 10px;
+}
+
+h3 {
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font: 20px "Lato", sans-serif;
+  color: #111;
+}
 
 
 
+/* Turn off parallax scrolling for tablets and phones */
+@media only screen and (max-device-width: 1024px) {
+    .bgimg-1, .bgimg-2, .bgimg-3 {
+        background-attachment: scroll;
     }
-    function bg() {
-        $("body").polygonizr({
+}
+</style>
+</head>
+<body>
+<nav class="navbar fixed-top navbar-dark white">
+  <a class="navbar-brand text-dark" href="#">Voeller & Associates</a>
+</nav>
 
-            restNodeMovements: 0,// How long to pause in between new node-movements.
+<div class="bgimg-1">
 
-            duration: 4, // When the cluster updates, this sets speed of nodes.
+  <div class="caption">
+    <span class="border">VOELLER & ASSOCIATES</span>
+  </div>
+</div>
 
-            nodeMovementDistance: 400, // Define the maximum distance to move nodes.
+<div style="color: #777;background-color:white;text-align:center;padding:50px 80px;text-align: justify;">
+  <h3 style="text-align:center;">Work with Voeller &amp; Associates</h3>
+  <p>Parallax scrolling is a web site trend where the background content is moved at a different speed than the foreground content while scrolling. Nascetur per nec posuere turpis, lectus nec libero turpis nunc at, sed posuere mollis ullamcorper libero ante lectus, blandit pellentesque a, magna turpis est sapien duis blandit dignissim. Viverra interdum mi magna mi, morbi sociis. Condimentum dui ipsum consequat morbi, curabitur aliquam pede, nullam vitae eu placerat eget et vehicula. Varius quisque non molestie dolor, nunc nisl dapibus vestibulum at, sodales tincidunt mauris ullamcorper, dapibus pulvinar, in in neque risus odio. Accumsan fringilla vulputate at quibusdam sociis eleifend, aenean maecenas vulputate, non id vehicula lorem mattis, ratione interdum sociis ornare. Suscipit proin magna cras vel, non sit platea sit, maecenas ante augue etiam maecenas, porta porttitor placerat leo.</p>
+</div>
 
-            numberOfNodes: 36,// The number of node nodes to print out.
+<div class="bgimg-2">
+  <div class="caption">
+    <span class="border">MANUFACTURERS</span>
+  </div>
+</div>
 
-            nodeDotSize: 2.5,// Define the maximum size of each node dot.
+<div style="position:relative; height: 600px;">
+                <div id="carousel-modal" class="carousel slide carousel-fade carousel-multi-item" data-ride="carousel">
 
-            nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
 
-            nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
+                    <!--Indicators-->
+                    <ol class="carousel-indicators">
+                        <li data-target="#multi-item-example" data-slide-to="0" class="active dark"></li>
+                        <li data-target="#multi-item-example" data-slide-to="1"></li>
+                        <li data-target="#multi-item-example" data-slide-to="2"></li>
+                        <li data-target="#multi-item-example" data-slide-to="3"></li>
+                    </ol>
+                    <!--/.Indicators-->
 
-            randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
+                    <!--Slides-->
+                    <div class="carousel-inner h-100 p-3 m-3" role="listbox">
 
-            // Define a formula for how to initialize each node dot's position.
-            specifyPolygonMeshNetworkFormation: function (i) {
-                var forEachNode = {// Half a circle and randomized
-                    x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
-                    y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
-                };
-                return forEachNode;
-            },
+                        <!--First slide-->
+                        <div class="carousel-item active">
+                            <div class="row">
+                                <div class="col-md-4 p-1">
+                                        <div class="card mb-2  z-depth-5">
+                                        <img class="card-img-top" src="{% static 'index_files/Arcobaleno-logo-01.jpg'   %}" alt="Card image cap">
+                                        <div class="card-body">
 
-            nodeRelations: 15,// Number of relations between nodes.
+                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
+                                        </div>
+                                    </div>
+                                </div>
 
-            animationFps: 300, // The FPS for the whole canvas.
+                                <div class="col-md-4  p-1 ">
+                                    <div class="card mb-2  z-depth-5">
+                                        <img class="card-img-top" src=" {% static 'index_files/BSI-Logo-Green_2017.jpg'   %}" alt="Card image cap">
+                                        <div class="card-body">
 
-            nodeDotColor: "0, 0 0 ",// Sets the color of the nodes in the network (RGB).
+                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
+                                        </div>
+                                    </div>
+                                </div>
 
-            nodeLineColor: "0, 0, 0 ",// Sets the color of the lines in the network (RGB).
+                                <div class="col-md-4 p-1 d-flex ">
+                                    <div class="card mb-2 h-100 z-depth-5">
+                                        <img class="card-img-top" src="{% static 'index_files/Clabo.jpg'   %}" alt="Card image cap">
+                                        <div class="card-body">
 
-            nodeFillColor: "0, 0, 0 ",// Sets the color of  triangles in the network (RGB).
+                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--/.First slide-->
 
-            nodeFillAlpha: 2,// Sets the alpha level for the colors (1-0).
+                        <!--Second slide-->
+                        <div class="carousel-item">
+                            <div class="row">
 
-            nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
+                                <div class="col-md-4 p-1 d-flex">
+                                    <div class="card mb-2 h-100 z-depth-5">
+                                        <img class="card-img-top" src="{% static 'index_files/cres_cor.jpg'   %}" alt="Card image cap">
+                                        <div class="card-body">
 
-            nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
+                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
+                                        </div>
+                                    </div>
+                                </div>
 
-            nodeFillSpace: true,// Defines if the triangles in the network should be shown.
+                                <div class="col-md-4 p-1 d-flex clearfix ">
+                                    <div class="card mb-2 h-100 z-depth-5">
+                                        <img class="card-img-top" src="{% static 'index_files/Electrolux_logo_master_black_RGB-300x69.jpg'   %}" alt="Card image cap">
+                                        <div class="card-body">
 
-            nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
+                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
+                                        </div>
+                                    </div>
+                                </div>
 
-            // Define the canvas size and css position.
-            canvasWidth: $(this).width(),
-            canvasHeight: $(this).height(),
-            canvasPosition: "absolute"
+                                <div class="col-md-4 p-1 d-flex clearfix ">
+                                    <div class="card mb-2 h-100 z-depth-5">
+                                        <img class="card-img-top" src="{% static 'index_files/image321.png'   %}" alt="Card image cap">
+                                        <div class="card-body">
 
+                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!--/.Second slide-->
+
+                        <!--Third slide-->
+                        <div class="carousel-item">
+                            <div class="row">
+
+                                <div class="col-md-4 p-1 d-flex">
+                                    <div class="card mb-2 h-100 z-depth-5">
+                                        <img class="card-img-top" src="{% static 'index_files/image327.png'   %}"
+                                             alt="Card image cap">
+                                        <div class="card-body">
+
+                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 p-1 d-flex clearfix ">
+                                    <div class="card mb-2 h-100 z-depth-5">
+                                        <img class="card-img-top" src="{% static 'index_files/image349.jpg'   %}" alt="Card image cap">
+                                        <div class="card-body">
+
+                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 p-1 d-flex clearfix ">
+                                    <div class="card mb-2 h-100 z-depth-5">
+                                        <img class="card-img-top" src="{% static 'index_files/image2831.jpg'   %}" alt="Card image cap">
+                                        <div class="card-body">
+
+                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!--/.Third slide-->
+                        <!--Fourth slide-->
+                        <div class="carousel-item">
+                            <div class="row">
+
+                                <div style="height: available" class="col-md-4 p-1 d-flex">
+                                    <div class="card mb-2 h-100 z-depth-5">
+                                        <img class="card-img-top" src="{% static 'index_files/image3401.jpg'   %}" alt="Card image cap">
+                                        <div class="card-body">
+
+                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style="height: available" class="col-md-4 p-1 d-flex clearfix">
+                                    <div class="card mb-2 h-100 z-depth-5">
+                                        <img class="card-img-top" src="{% static 'index_files/image37912.gif'   %}" alt="Card image cap">
+                                        <div class="card-body">
+
+                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 p-1 d-flex clearfix ">
+                                    <div class="card mb-2 h-100 z-depth-5">
+                                        <img class="card-img-top" src="{% static 'index_files/img (48).jpg'   %}" alt="Card image cap">
+                                        <div class="card-body">
+
+                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!--/.Fourth slide-->
+
+                    </div>
+                    <!--/.Slides-->
+
+                </div>
+  </div>
+</div>
+
+<div class="bgimg-3">
+  <div class="caption">
+    <span class="border">INDUSTRY</span>
+  </div>
+</div>
+
+<div style="position:relative;">
+  <div style="color:#ddd;background-color:#282E34;text-align:center;padding:50px 80px;text-align: justify;">
+    <p>Scroll up and down to really get the feeling of how Parallax Scrolling works.</p>
+  </div>
+</div>
+
+<div class="bgimg-1">
+  <div class="caption">
+    <span class="border">CONTACT US</span>
+  </div>
+</div>
+   k
+<!--/.Footer-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+
+<!-- JQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<!-- Bootstrap tooltips -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/popper.min.js"></script>
+<!-- Bootstrap core JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js"></script>
+<!-- MDB core JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.10/js/mdb.min.js"></script>
+<!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. -->
+<script>
+
+    $('#carousel-main').carousel({
+        interval: 2000
+    });
+    $('#carousel-modal').carousel({
+        interval: 2000
+    });
+
+    var buttonMenu  = false;
+
+
+    $(document).ready(function() {
+        // popovers Initialization
+
+
+
+        $('#fileSubmit').click(function (evt) {
+
+            if (!buttonMenu) {
+
+                $('#popup1').animate({bottom: '+=80', opacity: 1}, 500);
+                $('#popup2').animate({bottom: '+=160', opacity: 1}, 500);
+                $('#popup3').animate({bottom: '+=240', opacity: 1}, 500);
+                buttonMenu=true;
+            }else{
+                $('#popup1').animate({bottom: '-=80', opacity: 0}, 500);
+                $('#popup2').animate({bottom: '-=160', opacity: 0}, 500);
+                $('#popup3').animate({bottom: '-=240', opacity: 0}, 500);
+                buttonMenu = false;
+            }
         });
-        $("body").polygonizr({
-
-            restNodeMovements: 0,// How long to pause in between new node-movements.
-
-            duration: 8, // When the cluster updates, this sets speed of nodes.
-
-            nodeMovementDistance: 400, // Define the maximum distance to move nodes.
-
-            numberOfNodes: 36,// The number of node nodes to print out.
-
-            nodeDotSize: 1,// Define the maximum size of each node dot.
-
-            nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
-
-            nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
-
-            randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
-
-            // Define a formula for how to initialize each node dot's position.
-            specifyPolygonMeshNetworkFormation: function (i) {
-                var forEachNode = {// Half a circle and randomized
-                    x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
-                    y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
-                };
-                return forEachNode;
-            },
-
-            nodeRelations: 15,// Number of relations between nodes.
-
-            animationFps: 300, // The FPS for the whole canvas.
-
-            nodeDotColor: "255, 255, 255 ",// Sets the color of the nodes in the network (RGB).
-
-            nodeLineColor: "255, 255, 255",// Sets the color of the lines in the network (RGB).
-
-            nodeFillColor: "255, 255, 255 ",// Sets the color of  triangles in the network (RGB).
-
-            nodeFillAlpha: 3,// Sets the alpha level for the colors (1-0).
-
-            nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
-
-            nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
-
-            nodeFillSpace: true,// Defines if the triangles in the network should be shown.
-
-            nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
-
-            // Define the canvas size and css position.
-            canvasWidth: $(this).width(),
-            canvasHeight: $(this).height(),
-            canvasPosition: "absolute"
-
-        });
-    }
-    {#bg();#}
-
-    var colors = new Array(
-        [255,255,255],
-        [127.5,127.5,127.5],
-        [0,0,0],
-        [255,255,255],
-        [127.5,127.5,127.5],
-        [0,0,0]);
-
-    var step = 0;
-    var colorIndices = [0,1,2,3];
-
-    //transition speed
-    var gradientSpeed = 0.001;
-
-    function updateGradient()
-    {
-
-        if ( $===undefined ) return;
-
-        var c0_0 = colors[colorIndices[0]];
-        var c0_1 = colors[colorIndices[1]];
-        var c1_0 = colors[colorIndices[2]];
-        var c1_1 = colors[colorIndices[3]];
-
-        var istep = 1 - step;
-        var r1 = Math.round(istep * c0_0[0] + step * c0_1[0]);
-        var g1 = Math.round(istep * c0_0[1] + step * c0_1[1]);
-        var b1 = Math.round(istep * c0_0[2] + step * c0_1[2]);
-        var color1 = "rgb("+r1+","+g1+","+b1+")";
-
-        var r2 = Math.round(istep * c1_0[0] + step * c1_1[0]);
-        var g2 = Math.round(istep * c1_0[1] + step * c1_1[1]);
-        var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
-        var color2 = "rgb("+r2+","+g2+","+b2+")";
-
-        $('body').css({
-            background: "-webkit-gradient(linear, left top, right top, from("+color1+"), to("+color2+"))"}).css({
-            background: "-moz-linear-gradient(left, "+color1+" 0%, "+color2+" 100%)"});
-
-        step += gradientSpeed;
-        if ( step >= 1 )
-        {
-            step %= 1;
-            colorIndices[0] = colorIndices[1];
-            colorIndices[2] = colorIndices[3];
-
-            //pick two new target color indices
-            //do not pick the same as the current one
-            colorIndices[1] = ( colorIndices[1] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
-            colorIndices[3] = ( colorIndices[3] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
-
-        }
-    }
+    });
 
     {#setInterval(updateGradient,10);#}
     function f() {
@@ -716,6 +764,7 @@ bottom:
             // Do nothing!
         }
     }
+
 </script>
-</body>
-</html>
+<div class="hiddendiv common"></div><div style="background-color: rgb(255, 143, 0); display: none; color: white; text-align: center; position: fixed; top: 0px; left: 0px; width: 100%; height: auto; min-width: 100%; min-height: auto; max-width: 100%; font: 12px &quot;Helvetica Neue&quot;, Helvetica, Arial, Geneva, sans-serif; cursor: pointer; padding: 5px;"><span style="color: white; font: 12px &quot;Helvetica Neue&quot;, Helvetica, Arial, Geneva, sans-serif;">You have turned off the paragraph player. You can turn it on again from the options page.</span><img src="chrome-extension://gfjopfpjmkcfgjpogepmdjmcnihfpokn/img/icons/icon-close_16.png" style="width: 20px; height: auto; min-width: 20px; min-height: auto; max-width: 20px; float: right; margin-right: 10px;"></div></body></html>
+

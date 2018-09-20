@@ -20,6 +20,7 @@ from dedupper.utils import *
 
 tablib.formats.json.json = json
 sf_prog =rep_prog = 0
+
 keys= []
 name_sort=address_sort=email_sort=crd_sort=phone_sort=average_sort=key_sort=True
 db_job=rep_df = None
@@ -272,6 +273,7 @@ def import_csv(request):
     request.session['misc'] = list(rep_header_map.keys())
     newest =  q.enqueue(get_channel, db_data, job_id=UPLOAD_JOB_ID, timeout='1h', result_ttl='1h')
     request.session['rq_job'] = UPLOAD_JOB_ID
+
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def index(request):
