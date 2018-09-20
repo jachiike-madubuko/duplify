@@ -22,14 +22,14 @@ from . import views
 admin.autodiscover()
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('v1/', views.index, name='v1'),
     url(r'^keys', views.upload, name='keys'),
     path('key-gen/', views.key_gen, name='key-gen'),
     # path('heroku/', generic.ListView.as_view(model=models.Contact), name='heroku'),
     path('run/', views.run, name='run'),
     path('map/', views.map, name='map'),
     path('login/', views.login, name='login'),
-    path('upload_page/', views.upload_page, name='upload_page'),
+    path('', views.upload_page, name='upload_page'),
     path('progress/', views.progress, name='progress'),
     path('db_progress/', views.db_progress, name='db_progress'),
     path('closest/', views.closest, name='closest'),
@@ -39,7 +39,7 @@ urlpatterns = [
     path('duplify/', views.duplify, name='duplify'), #figure out url reverse
     path('resort/', views.resort, name='resort'), #figure out url reverse
     path('contact_sort/', views.contact_sort, name='contact_sort'), #figure out url reverse
-    path('sorted/', views.display, name='reps'),
+    path('v2/', views.display, name='v2'),
     path('sorted/<id>', views.merge, name='merge'),
     path('sorted/export/<type>', views.download, name='export'),
     path('sorted/report/<type>', views.download_times, name='report'),
