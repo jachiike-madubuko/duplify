@@ -2,7 +2,7 @@
 
 <!DOCTYPE html>
 <!-- saved from url=(0100)http://localhost:63342/voeller.com/src/index.html?_ijt=rr19aei4i07vj20jrbe8ksam43#multi-item-example -->
-<html class="" lang="">
+<html class="" lang="" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
@@ -26,296 +26,435 @@
     .bnt {
         opacity: 0.0;
     }
-body, html {
-  height: 100%;
-  margin: 0;
-  font: 400 15px/1.8 "Lato", sans-serif;
-  color: #777;
-}
 
-.bgimg-1, .bgimg-2, .bgimg-3 {
-  position: relative;
-  opacity: 0.65;
-  background-attachment: fixed;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-
-}
-.bgimg-1 {
-  background-image: url("{% static 'index_files/jason-leung-537357-unsplash.jpg' %}");
-  min-height: 100%;
-}
-
-.bgimg-2 {
-  background-image: url("{% static 'index_files/nick-karvounis-72018-unsplash.jpg' %}");
-  min-height: 100%;
-}
-
-.bgimg-3 {
-  background-image: url("{% static 'index_files/shangyou-shi-543887-unsplash.jpg' %}");
-  min-height: 100%;
-}
-
-.caption {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: 100%;
-  text-align: center;
-  color: #000;
-}
-
-.caption span.border {
-  background-color: #111;
-  color: #fff;
-  padding: 18px;
-  font-size: 25px;
-  letter-spacing: 10px;
-}
-
-h3 {
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  font: 20px "Lato", sans-serif;
-  color: #111;
-}
-
-/* Turn off parallax scrolling for tablets and phones */
-@media only screen and (max-device-width: 1024px) {
-    .bgimg-1, .bgimg-2, .bgimg-3 {
-        background-attachment: scroll;
+    iframe{
+        height: 500px;  /* The height is 400 pixels */
+        width: 500px;  /* The height is 400 pixels */
     }
-}
-</style>
-</head>
-<body>
-<nav class="navbar fixed-top navbar-dark white">
+    body, html {
+        height: 100%;
+        margin: 0;
+        font: 400 20px "Lato", sans-serif;
+        color: #777;
+    }
 
-    <a class="navbar-brand text-dark" href="#">Voeller & Associates</a>
+    .bgimg-1, .bgimg-2, .bgimg-3, .bgimg-4 {
+        position: relative;
+        opacity: 0.65;
+        background-attachment: fixed;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+
+    }
+    .bgimg-1 {
+        background-image: url("{% static 'index_files/jason-leung-537357-unsplash.jpg' %}");
+        min-height: 100%;
+    }
+
+    .bgimg-2 {
+        background-image: url("{% static 'index_files/nick-karvounis-72018-unsplash.jpg' %}");
+        min-height: 100%;
+    }
+
+    .bgimg-3 {
+        background-image: url("{% static 'index_files/shangyou-shi-543887-unsplash.jpg' %}");
+        min-height: 100%;
+    }
+    .bgimg-4 {
+        background-image: url("{% static 'index_files/pan-xiaozhen-543981-unsplash.jpg' %}");
+        min-height: 100%;
+    }
+
+    .caption {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 100%;
+        text-align: center;
+        color: #000;
+    }
+
+    .caption span.border {
+        background-color: #111;
+        color: #fff;
+        padding: 18px;
+        font-size: 25px;
+        letter-spacing: 10px;
+    }
+
+    h3 {
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font: 20px "Lato", sans-serif;
+        color: #111;
+    }
+
+    img{
+        max-height: 400px;
+    {#min-height: 400px;#}
+        max-width: 600px;
+    {#min-width: 400px;#}
+    }
+
+    /* Turn off parallax scrolling for tablets and phones */
+    @media only screen and (max-device-width: 1024px) {
+        .bgimg-1, .bgimg-2, .bgimg-3, .bgimg-4{
+            background-attachment: scroll;
+        }
+    }
+    </style>
+</head>
+<body class="container-fluid"  data-spy="scroll" data-target="#navbar" data-offset="3">
+<nav class="navbar fixed-top navbar-dark white" id="navbar">
+
+    <a class="navbar-brand text-dark" href="#bgimg-1">Voeller & Associates</a>
     <strong> <a class="navbar-brand btn btn-primary badge-pill" href="{% url 'v1' %}">Go to v1</a></strong>
+      <ul class="nav nav-pills dark">
+    <li class="nav-item">
+      <a class="nav-link" href="#work-with-us">Work with Us</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#manufacturers">Manufacturers</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#industry">Industry</a>
+    </li>
+    <li class="nav-item dropdown">
+      <a class="nav-link" href="#contact" role="button">Contact Us</a>
+    </li>
+  </ul>
 </nav>
 
-<div class="bgimg-1">
+<div class="bgimg-1" id="work-with-us">
 
-  <div class="caption">
-    <span class="border">VOELLER & ASSOCIATES</span>
-  </div>
+    <div class="caption">
+        <span class="border" id="fat">VOELLER & ASSOCIATES</span>
+    </div>
 </div>
 
 <div style="color: #777;background-color:white;text-align:center;padding:50px 80px;text-align: justify;">
-  <h3 style="text-align:center;">Work with Voeller &amp; Associates</h3>
-  <p>Parallax scrolling is a web site trend where the background content is moved at a different speed than the foreground content while scrolling. Nascetur per nec posuere turpis, lectus nec libero turpis nunc at, sed posuere mollis ullamcorper libero ante lectus, blandit pellentesque a, magna turpis est sapien duis blandit dignissim. Viverra interdum mi magna mi, morbi sociis. Condimentum dui ipsum consequat morbi, curabitur aliquam pede, nullam vitae eu placerat eget et vehicula. Varius quisque non molestie dolor, nunc nisl dapibus vestibulum at, sodales tincidunt mauris ullamcorper, dapibus pulvinar, in in neque risus odio. Accumsan fringilla vulputate at quibusdam sociis eleifend, aenean maecenas vulputate, non id vehicula lorem mattis, ratione interdum sociis ornare. Suscipit proin magna cras vel, non sit platea sit, maecenas ante augue etiam maecenas, porta porttitor placerat leo.</p>
+    <h2 style="text-align:center;"  >Work with Voeller &amp; Associates</h2>
+    <p>Parallax scrolling is a web site trend where the background content is moved at a different speed than the foreground content while scrolling. Nascetur per nec posuere turpis, lectus nec libero turpis nunc at, sed posuere mollis ullamcorper libero ante lectus, blandit pellentesque a, magna turpis est sapien duis blandit dignissim. Viverra interdum mi magna mi, morbi sociis. Condimentum dui ipsum consequat morbi, curabitur aliquam pede, nullam vitae eu placerat eget et vehicula. Varius quisque non molestie dolor, nunc nisl dapibus vestibulum at, sodales tincidunt mauris ullamcorper, dapibus pulvinar, in in neque risus odio. Accumsan fringilla vulputate at quibusdam sociis eleifend, aenean maecenas vulputate, non id vehicula lorem mattis, ratione interdum sociis ornare. Suscipit proin magna cras vel, non sit platea sit, maecenas ante augue etiam maecenas, porta porttitor placerat leo.</p>
 </div>
 
-<div class="bgimg-2">
-  <div class="caption">
-    <span class="border">MANUFACTURERS</span>
-  </div>
+<div class="bgimg-2"id="manufacturers">
+    <div class="caption">
+        <span class="border" id="mdo">MANUFACTURERS</span>
+    </div>
 </div>
 
-<div style="position:relative; height: 700px;">
-                <div id="carousel-modal" class="carousel slide carousel-fade carousel-multi-item" data-ride="carousel">
+<div class="p-2" style="position:relative; height: min-content;">
+    <div class="row">
+              <h2 class="mx-auto">Our Manufacturers</h2>
+    </div>
+    <div class="row  my-5">
+        <div class="col-md-4 p-1">
+            <div class="mb-2 card wow fadeInDown  z-depth-5">
+                <img class="card-img-top" src="{% static 'index_files/Arcobaleno-logo-01.jpg'   %}" alt="Card image cap">
+                <div class="card-body">
 
-
-                    <!--Indicators-->
-                    <ol class="carousel-indicators">
-                        <li data-target="#multi-item-example" data-slide-to="0" class="active dark"></li>
-                        <li data-target="#multi-item-example" data-slide-to="1"></li>
-                        <li data-target="#multi-item-example" data-slide-to="2"></li>
-                        <li data-target="#multi-item-example" data-slide-to="3"></li>
-                    </ol>
-                    <!--/.Indicators-->
-
-                    <!--Slides-->
-                    <div class="carousel-inner h-100 p-3 m-3" role="listbox">
-
-                        <!--First slide-->
-                        <div class="carousel-item active">
-                            <div class="row">
-                                <div class="col-md-4 p-1">
-                                        <div class="card mb-2  z-depth-5">
-                                        <img class="card-img-top" src="{% static 'index_files/Arcobaleno-logo-01.jpg'   %}" alt="Card image cap">
-                                        <div class="card-body">
-
-                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4  p-1 ">
-                                    <div class="card mb-2  z-depth-5">
-                                        <img class="card-img-top" src=" {% static 'index_files/BSI-Logo-Green_2017.jpg'   %}" alt="Card image cap">
-                                        <div class="card-body">
-
-                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4 p-1 d-flex ">
-                                    <div class="card mb-2 h-100 z-depth-5">
-                                        <img class="card-img-top" src="{% static 'index_files/Clabo.jpg'   %}" alt="Card image cap">
-                                        <div class="card-body">
-
-                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!--/.First slide-->
-
-                        <!--Second slide-->
-                        <div class="carousel-item">
-                            <div class="row">
-
-                                <div class="col-md-4 p-1 d-flex">
-                                    <div class="card mb-2 h-100 z-depth-5">
-                                        <img class="card-img-top" src="{% static 'index_files/cres_cor.jpg'   %}" alt="Card image cap">
-                                        <div class="card-body">
-
-                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4 p-1 d-flex clearfix ">
-                                    <div class="card mb-2 h-100 z-depth-5">
-                                        <img class="card-img-top" src="{% static 'index_files/Electrolux_logo_master_black_RGB-300x69.jpg'   %}" alt="Card image cap">
-                                        <div class="card-body">
-
-                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4 p-1 d-flex clearfix ">
-                                    <div class="card mb-2 h-100 z-depth-5">
-                                        <img class="card-img-top" src="{% static 'index_files/image321.png'   %}" alt="Card image cap">
-                                        <div class="card-body">
-
-                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                        <!--/.Second slide-->
-
-                        <!--Third slide-->
-                        <div class="carousel-item">
-                            <div class="row">
-
-                                <div class="col-md-4 p-1 d-flex">
-                                    <div class="card mb-2 h-100 z-depth-5">
-                                        <img class="card-img-top" src="{% static 'index_files/image327.png'   %}"
-                                             alt="Card image cap">
-                                        <div class="card-body">
-
-                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4 p-1 d-flex clearfix ">
-                                    <div class="card mb-2 h-100 z-depth-5">
-                                        <img class="card-img-top" src="{% static 'index_files/image349.jpg'   %}" alt="Card image cap">
-                                        <div class="card-body">
-
-                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4 p-1 d-flex clearfix ">
-                                    <div class="card mb-2 h-100 z-depth-5">
-                                        <img class="card-img-top" src="{% static 'index_files/image2831.jpg'   %}" alt="Card image cap">
-                                        <div class="card-body">
-
-                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                        <!--/.Third slide-->
-                        <!--Fourth slide-->
-                        <div class="carousel-item">
-                            <div class="row">
-
-                                <div style="height: available" class="col-md-4 p-1 d-flex">
-                                    <div class="card mb-2 h-100 z-depth-5">
-                                        <img class="card-img-top" src="{% static 'index_files/image3401.jpg'   %}" alt="Card image cap">
-                                        <div class="card-body">
-
-                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div style="height: available" class="col-md-4 p-1 d-flex clearfix">
-                                    <div class="card mb-2 h-100 z-depth-5">
-                                        <img class="card-img-top" src="{% static 'index_files/image37912.gif'   %}" alt="Card image cap">
-                                        <div class="card-body">
-
-                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4 p-1 d-flex clearfix ">
-                                    <div class="card mb-2 h-100 z-depth-5">
-                                        <img class="card-img-top" src="{% static 'index_files/img (48).jpg'   %}" alt="Card image cap">
-                                        <div class="card-body">
-
-                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                            <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                        <!--/.Fourth slide-->
-
-                    </div>
-                    <!--/.Slides-->
-
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
                 </div>
-  </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 p-1">
+            <div class=" mb-2 card wow fadeInDown " data-wow-delay="0.3s">
+                <img class="card-img-top" src=" {% static 'index_files/BSI-Logo-Green_2017.jpg'   %}" alt="Card image cap">
+                <div class="card-body">
+
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 p-1d-flex ">
+            <div class="mb-2 card wow fadeInDown h-100 z-depth-5" data-wow-delay="0.6s">
+                <img class="card-img-top" src="{% static 'index_files/Clabo.jpg'   %}" alt="Card image cap">
+                <div class="card-body">
+
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--/.First slide-->
+
+    <!--Second slide-->
+    <div class="row  my-5">
+
+        <div class="col-md-4 p-1d-flex">
+            <div class="mb-2 card wow fadeInDown h-100 z-depth-5" data-wow-delay="0.6s">
+                <img class="card-img-top" src="{% static 'index_files/cres_cor.jpg'   %}" alt="Card image cap">
+                <div class="card-body">
+
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 p-1d-flex clearfix ">
+            <div class="mb-2 card wow fadeInDown h-100 z-depth-5" data-wow-delay="0.3s">
+                <img class="card-img-top" src="{% static 'index_files/Electrolux_logo_master_black_RGB-300x69.jpg'   %}" alt="Card image cap">
+                <div class="card-body">
+
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 p-1d-flex clearfix ">
+            <div class="mb-2 card wow fadeInDown h-100 z-depth-5" >
+                <img class="card-img-top" src="{% static 'index_files/image321.png'   %}" alt="Card image cap">
+                <div class="card-body">
+
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--/.Second slide-->
+
+    <!--Third slide-->
+    <div class="row  my-5">
+
+        <div class="col-md-4 p-1d-flex">
+            <div class="mb-2 card wow fadeInDown h-100 z-depth-5">
+                <img class="card-img-top" src="{% static 'index_files/image327.png'   %}"
+                     alt="Card image cap">
+                <div class="card-body">
+
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 p-1d-flex clearfix ">
+            <div class="mb-2 card wow fadeInDown h-100 z-depth-5" data-wow-delay="0.3s">
+                <img class="card-img-top" src="{% static 'index_files/image349.jpg'   %}" alt="Card image cap">
+                <div class="card-body">
+
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 p-1d-flex clearfix ">
+            <div class="mb-2 card wow fadeInDown h-100 z-depth-5" data-wow-delay="0.6s">
+                <img class="card-img-top" src="{% static 'index_files/image2831.jpg'   %}" alt="Card image cap">
+                <div class="card-body">
+
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--/.Third slide-->
+    <!--Fourth slide-->
+    <div class="row  my-5">
+
+        <div style="height: available" class="col-md-4 p-1d-flex">
+            <div class="mb-2 card wow fadeInDown h-100 z-depth-5" data-wow-delay="0.6s">
+                <img class="card-img-top" src="{% static 'index_files/image3401.jpg'   %}" alt="Card image cap">
+                <div class="card-body">
+
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
+                </div>
+            </div>
+        </div>
+
+        <div style="height: available" class="col-md-4 p-1d-flex clearfix">
+            <div class="mb-2 card wow fadeInDown h-100 z-depth-5" data-wow-delay="0.3s">
+                <img class="card-img-top" src="{% static 'index_files/image37912.gif'   %}" alt="Card image cap">
+                <div class="card-body">
+
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 p-1d-flex clearfix ">
+            <div class="mb-2 card wow fadeInDown h-100 z-depth-5">
+                <img class="card-img-top" src="{% static 'index_files/img (48).jpg'   %}" alt="Card image cap">
+                <div class="card-body">
+
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a class="btn btn-primary waves-effect waves-light">Visit Site</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!--/.Fourth slide-->
+
+</div>
+<!--/.Slides-->
+
+
+</div>
 </div>
 
-<div class="bgimg-3">
-  <div class="caption">
-    <span class="border">INDUSTRY</span>
-  </div>
+<div class="bgimg-3"id="industry">
+    <div class="caption">
+        <span class="border" id="indust">INDUSTRY</span>
+    </div>
 </div>
 
 <div style="position:relative;">
-  <div style="color:#ddd;background-color:#282E34;text-align:center;padding:50px 80px;text-align: justify;">
-    <p>Scroll up and down to really get the feeling of how Parallax Scrolling works.</p>
-  </div>
+    <div style="text-align:center;padding:50px 80px;text-align: justify;">
+                <div class="row text-center">
+          <h2 class="mx-auto">Industry Associations</h2>
+
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <ul type="circle">
+              <li class="mb-2"><a href="http://www.ahrinet.org/">AHRI</a> – Air-Conditioning, Heating, and Refrigeration Institute.</li>
+              <li class="mb-2"><a href="http://www.aksna.org/">AKSNA</a> – Alaska School Nutrition Association</li>
+              <li class="mb-2"><a href="http://www.cfesa.com/">CFESA</a> – Commercial Food Equipment Service Association.</li>
+              <li class="mb-2"><a href="http://www.fcsi.org/">FCSI</a> – Foodservice Consultants Society International.</li>
+              <li class="mb-2"><a href="http://www.ifdaonline.org/">FDI/IFDA</a> – Food Distributors International.</li>
+              <li class="mb-2"><a href="http://www.feda.com/">FEDA</a> – Foodservice Equipment Distributors Association.</li>
+              <li class="mb-2"><a href="http://www.fmi.org/">FMI</a> – Food Marketing Institute.</li>
+              <li class="mb-2"><a href="http://www.foodserviceworld.com/">IFMA</a> – International Foodservice Manufacturers Association.</li>
+              <li class="mb-2"><a href="http://www.idahosna.org/">ISNA</a> – Idaho School Nutrition Association</li>
+              <li class="mb-2"><a href="http://www.mafsi.org/">MAFSI</a> – Manufacturers’ Agents for the Food Service Industry.</li>
+              <li class="mb-2"><a href="http://www.montanasna.org/">MSNA</a> – Montana School Nutrition Association</li>
+              <li class="mb-2"><a href="http://www.cstorecentral.com/">NACS</a> – National Association of Convenience Stores</li>
+              <li class="mb-2"><a href="http://www.nacufs.org/">NACUFS</a> – National Association of College and University Food Services</li>
+
+            </ul>
+          </div>
+          <div class="col-md-4">
+
+            <ul type="circle">
+              <li class="mb-2"><a href="http://www.nafem.org/">NAFEM</a> – North American Association of Food Equipment Manufacturers.</li>
+              <li class="mb-2"><a href="http://www.restaurant.org/">NRA</a> – National Restaurant Association.</li>
+              <li class="mb-2"><a href="http://www.osna.org/">OSNA</a> – Oregon School Nutrition Association</li>
+              <li class="mb-2"><a href="http://www.rbanet.com/">RBA</a> – Retailer’s Bakery Association.</li>
+              <li class="mb-2"><a href="http://www.schoolnutrition.org/">SNA</a> – School Nutrition Association</li>
+              <li class="mb-2"><a href="http://www.womensfoodserviceforum.com/">WFF</a> – Women’s Foodservice Forum.</li>
+              <li class="mb-2"><a href="http://www.washingtonsna.org/">WSNA</a> – Washington School Nutrition Association</li>
+              <li class="mb-2"><a href="http://www.aga.com/">American Gas Association</a></li>
+              <li class="mb-2"><a href="http://www.aqmd.gov/">AQMD</a> is the smog control agency for much of Los Angeles, Orange, Riverside and San Bernardino counties.</li>
+              <li class="mb-2"><a href="http://www.etl.com/">ETL</a> – ITS/ETL, TestMark Laboratories.</li>
+              <li class="mb-2"><a href="http://www.iit.edu/~sgendel/fsvl.htm">Food Safety Links</a></li>
+              <li class="mb-2"><a href="http://www.nsf.org/">NSF</a> – National Sanitation Foundation.</li>
+              <li class="mb-2"><a href="http://www.osha.gov/">OSHA</a> – Occupational Health and Safety Administration.</li>
+              <li class="mb-2">Sales Tax &amp; Resale Permit information for <a href="http://localhost:63342/www.voeller.com/dor.wa.gov/content/findtaxesandrates/">Washington State</a></li>
+              <li class="mb-2"><a href="http://www.ul.com/eph/foodqry.htm">UL</a> – Underwriters Laboratory.</li>
+              <li class="mb-2"><a href="http://www.usda.gov/">USDA</a> – U.S. Department of Agriculture.</li>
+
+            </ul>
+          </div>
+          <div class="col-md-4">
+
+            <ul type="circle">
+              <li class="mb-2"><a href="http://www.fda.gov/food/default.htm">U.S. Food and Drug Administration</a> – Center for Food Safety and Applied Nutrition.</li>
+              <li class="mb-2"><a href="http://www.alfa.org/">ALFA</a> – Assisted Living Federation of America.</li>
+              <li class="mb-2"><a href="http://aqnet.com/">AutoQuotes</a> – Product information and quotation system for foodservice equipment providers.</li>
+              <li class="mb-2"><a href="http://www.bbga.org/">Bread Bakers Guild of America</a> – Everything for artisan bread bakers.</li>
+              <li class="mb-2"><a href="http://www.corrections.com/links/show/14">Corrections Connection Foodnet</a> – Foodservice information for corrections facilities.</li>
+              <li class="mb-2"><a href="http://www.csnews.com/">CSNews Online</a> – News and information from ConvenienceStoreNews magazine.</li>
+              <li class="mb-2"><a href="http://www.foodserviceworld.com/">FoodserviceWorld</a> – Gateway to Foodservice &amp; Hospitality Resources Worldwide.</li>
+              <li class="mb-2"><a href="http://www.idmagonline.com/">ID Online</a> – The Voice of Foodservice Distribution.</li>
+              <li class="mb-2"><a href="http://www.kclcad.com/">Kochman Consultants</a> – CAD symbols and services for the foodservice industry.</li>
+              <li class="mb-2"><a href="http://www.nrn.com/">Nation’s Restaurant News</a> – The Newsweekly of the Foodservice Industry.</li>
+
+
+            </ul>
+          </div>
+        </div>
+
+    </div>
 </div>
 
-<div class="bgimg-1">
-  <div class="caption">
-    <span class="border">CONTACT US</span>
-  </div>
+<div class="bgimg-4"id="contact">
+    <div class="caption">
+        <span class="border">CONTACT US</span>
+    </div>
 </div>
+<div style="position:relative;" class="p-5 row">
+    <div class="col-4">
+<div><h1 class="row ml-5">Bellevue Office</h1>
+    <span class="col "> <br/>
+        <i class="fa fa-location-arrow"></i> &ensp; <a href="https://goo.gl/maps/3WLZ9PbtN592" target="_blank">4723 Lakehurst Lane
+            Bellevue, WA 98006 </a><br/>
+<i class="fa fa-phone"></i> &ensp;  (425) 644-7432 <br/>
+ <i class="fa fa-fax"></i>&ensp;  (425) 562-9748</span>
+    <div class="row">
+   <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2692.378224628535!2d-122.19267028452472!3d47.56042899915983!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x54906967dc9d5d1f%3A0xa4aa9407ec40aefb!2sVoeller+%26+Associates+Inc!5e0!3m2!1sen!2sus!4v1537644269285" frameborder="0" style="border:0" allowfullscreen></iframe>
+    </div>
+    </div>
+</div>
+    <div class="col-4 row text-center p-4 float-right" style="align-content: center" >
+        <a href="https://www.instagram.com" target="_blank" class="btn waves-effect black-text"><div class="row
+        text-black
+        text-center">
+        <h3 class="black-text" >Follow us on Instragram</h3>
+            <div class="row">
+                <div class="col-8"></div>
+                <div class="col-4">
+            <img class="" style="width: 100px; height: 100px" src="{% static 'index_files/insta-icon.png' %}"></div>
+            </div>
+            <h3 class="pt-4 ml-4 col"> @VoellerAssoc </h3>
+        </div></a>
+        <div class="row text-center m-5">
+        <h1 class="mx-auto">Email Us</h1>
+            <p class="text-center float-left mx-3">
+               Doug Voeller: <a href="mailto:Doug@Voeller.com?Subject=Contact%20Us" target="_top">Doug@Voeller.com</a><br>
+               Dave Voeller: <a href="mailto:Dave@Voeller.com?Subject=Contact%20Us" target="_top">Dave@Voeller.com</a><br>
+               Joan Sachs: <a href="mailto:Joan@Voeller.com?Subject=Contact%20Us" target="_top">Joan@Voeller.com</a><br>
+               Steve Schmalz: <a href="mailto:Steve@Voeller.com?Subject=Contact%20US" target="_top">Steve@Voeller.com</a>
+            </p>
+        </div>
+    </div>
+    <div class="col-4">
+<div><h1 class="row ml-5">Portland Office</h1>
+    <span class="col"> <br/><i class="fa fa-location-arrow"></i> &ensp; <a href="https://goo.gl/maps/ArRYfJVrpb12" target="_blank"
+    >7441 S.W. Corbett
+        Portland, OR 97219</a> <br/>
+<i class="fa fa-phone"></i> &ensp; (503) 452-0200 <br/>
+ <i class="fa fa-fax"></i>&ensp; (503) 202-0146</span>
+    <div class="row">
+
+    <iframe class="col" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2797.9623898877867!2d-122
+    .67885188459107!3d45
+    .470561541040205!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13
+    .1!3m3!1m2!1s0x54950b1de8b1e43d%3A0x1fe3863c2a7a3a6b!2sVoeller+David+J!5e0!3m2!1sen!2sus!4v1537643968329"
+             frameborder="0" style="border:0;" allowfullscreen></iframe>
+
+    </div>
+    </div>
+</div>
+
+
+
+
+
+
+    </div>
+
+
+        <!-- Replace the value of the key parameter with your own API key. -->
+    </div>
+</div>
+
 <!--/.Footer-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
 
@@ -327,9 +466,15 @@ h3 {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js"></script>
 <!-- MDB core JavaScript -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.10/js/mdb.min.js"></script>
-<!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. -->
+{#<!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. -->#}
+{#<script async defer#}
+{#        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCWtIZEFOdXYAXnPf0URTtWcLysZjXTBkE&callback=initbMap">#}
+{#</script>#}
+
+
 <script>
 
+    // Initialize and add the map
     $('#carousel-main').carousel({
         interval: 2000
     });
@@ -340,10 +485,47 @@ h3 {
     var buttonMenu  = false;
 
 
+    // Add smooth scrolling on all links inside the navbar
+$("#navbar a").on('click', function(event) {
+  // Make sure this.hash has a value before overriding default behavior
+  if (this.hash !== "") {
+    // Prevent default anchor click behavior
+    event.preventDefault();
+
+    // Store hash
+    var hash = this.hash;
+
+    // Using jQuery's animate() method to add smooth page scroll
+    // The optional number (800) specifies the number of milliseconds it takes to scroll to the specified area
+    $('html, body').animate({
+      scrollTop: $(hash).offset().top
+    }, {
+        duration: 2000,
+        specialEasing: {
+      scrollTop: "easeInOutQuint"
+      }
+    },
+   function(){
+
+    // Add hash (#) to URL when done scrolling (default click behavior)
+      window.location.hash = hash;
+    });
+
+  } // End if
+
+});
+
     $(document).ready(function() {
         // popovers Initialization
 
-
+        var wow = new WOW({
+            boxClass: 'wow', // default
+            animateClass: 'animated', // default
+            offset: -5, // default
+            mobile: true, // default
+            live: true // default
+        })
+        wow.init();
 
         $('#fileSubmit').click(function (evt) {
 
