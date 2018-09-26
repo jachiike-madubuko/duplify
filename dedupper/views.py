@@ -21,7 +21,7 @@ keys= []
 name_sort=address_sort=email_sort=crd_sort=phone_sort=average_sort=key_sort=True
 
 def display(request):
-    return render(request, 'dedupper/data-table.html')
+    return render(request, 'dedupper/v2.html')
 
 def closest(request):
     #function gets the SFContactTable for each of the closest matches
@@ -265,7 +265,7 @@ def import_csv(request):
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def index(request):
-    return render(request, 'dedupper/login.html')
+    return render(request, 'dedupper/v1.html')
 
 def upload_page(request):
     '''
@@ -278,7 +278,7 @@ def upload_page(request):
     https://developer.salesforce.com/blogs/developer-relations/2014/01/python-and-the-force-com-rest-api-simple-simple-salesforce-example.html
     https://github.com/simple-salesforce/simple-salesforce
     '''
-    return render(request, 'dedupper/rep_list_upload.html')
+    return render(request, 'dedupper/versions.html')
 
 def key_gen(request):
     try:
