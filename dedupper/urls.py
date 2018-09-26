@@ -24,7 +24,7 @@ admin.autodiscover()
 urlpatterns = [
     path('', views.index, name='index'),
     url(r'^keys', views.upload, name='keys'),
-    path('key-gen/', views.key_gen, name='key-gen'),
+    path('key/', views.key_gen, name='key'),
     # path('heroku/', generic.ListView.as_view(model=models.Contact), name='heroku'),
     path('run/', views.run, name='run'),
     path('map/', views.map, name='map'),

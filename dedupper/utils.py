@@ -82,14 +82,15 @@ def find_rep_dups(rep, keys, numthreads):
                 kwargs = {f'{type_of_phone}__icontains': f'{rep.key([key])}'}
                 # queryset of Sfcontacts that have a matching field with the rep
                 search_party = search_party.union(sfcontact.objects.filter(**kwargs))
-        if 'Email' in key:
+        elif 'Email' in key:
             for type_of_email in ['workEmail', 'personalEmail', 'otherEmail']:
                 kwargs = {f'{type_of_email}__icontains': f'{rep.key([key])}'}
                 search_party = search_party.union(sfcontact.objects.filter(**kwargs))
-
-        kwargs = { f'{key}__icontains' : f'{rep.key([key])}' }
-        # queryset of Sfcontacts that have a matching field with the rep
-        search_party = search_party.union(sfcontact.objects.filter(**kwargs))
+        else:
+            if 'State' not in key:
+                kwargs = { f'{key}__icontains' : f'{rep.key([key])}' }
+                # queryset of Sfcontacts that have a matching field with the rep
+                search_party = search_party.union(sfcontact.objects.filter(**kwargs))
 
     #create list of keys mapped to the contact
     sf_map = {}

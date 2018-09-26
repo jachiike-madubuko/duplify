@@ -2,6 +2,7 @@ import csv
 import json
 import pickle
 from difflib import SequenceMatcher as SeqMat
+from io import BytesIO
 
 import pandas as pd
 import tablib
@@ -110,6 +111,8 @@ def turn_table(request):
         return JsonResponse({ 'table': table.as_html(request) }, safe=False)
 
 def download(request,type):
+    output = BytesIO()
+    writer = pd.ExcelWriter(output, engine='xlsxwriter')
 
     #csv headers
     fields = ('id','CRD', 'First', 'Last', 'Street', 'City',
@@ -136,40 +139,42 @@ def download(request,type):
         filename = f'filename="{repCSV_name} (Undecided Records).csv"'
 
 
-    rep_resource = RepContactResource()
-    users = repContact.objects.filter(type = type)
-    dataset = rep_resource.export(users)
-    db_df = pd.read_json(dataset.json)
+    for type in ['New Record', 'Duplicate', 'Manual Check' ]:
+        rep_resource = RepContactResource()
+        users = repContact.objects.filter(type = type)
+        dataset = rep_resource.export(users)
+        db_df = pd.read_json(dataset.json)
 
-    #parse the misc field  back into their respective fields
-    misc_df = db_df['misc'].astype(str).str.split('-!-', expand=True)
-    db_df=db_df.drop('misc', axis=1)
+        #parse the misc field  back into their respective fields
+        misc_df = db_df['misc'].astype(str).str.split('-!-', expand=True)
+        db_df=db_df.drop('misc', axis=1)
 
-    f = list(db_df[['average', 'keySortedBy', 'closest1_contactID']])
-    with open(settings.REP_CSV, 'rb') as file:
-        pd_rep_csv = pickle.load(file)
-        print('pickle load reps')
-    fields =  f + list(pd_rep_csv)
-    fields[fields.index('closest1_contactID')] = 'ContactID'
+        f = list(db_df[['average', 'keySortedBy', 'closest1_contactID']])
+        with open(settings.REP_CSV, 'rb') as file:
+            pd_rep_csv = pickle.load(file)
+            print('pickle load reps')
+        fields =  f + list(pd_rep_csv)
+        fields[fields.index('closest1_contactID')] = 'ContactID'
 
-    frames=[db_df[['average', 'keySortedBy', 'closest1_contactID']], misc_df]
-    export = pd.concat(frames, axis=1)
-    export.columns = fields
-    if no_id:
-        del export['ContactID']
-        fields.remove('ContactID')
-    export.replace('nan', '', inplace=True)
-    dataset.csv = export.to_csv(index=False)
+        frames=[db_df[['average', 'keySortedBy', 'closest1_contactID']], misc_df]
+        export = pd.concat(frames, axis=1)
+        export.columns = fields
+        if 'New' in type:
+            del export['ContactID']
+            fields.remove('ContactID')
+        export.replace('nan', '', inplace=True)
+        export.to_excel(writer, sheet_name=f'{type}', index=False)
+
+    writer.save()
+    writer.close()
+
+    output.seek(0)
 
     #create response
-    response = HttpResponse(content_type='text/csv')
+    response = HttpResponse(output.read(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml'
+                                                     '.sheet')
+    filename = f'filename="{repCSV_name} (Duplified).xlsx"'
     response['Content-Disposition'] = 'attachment; '+filename
-
-    #create csv writer for the response and write the
-    writer = csv.writer(response)
-    writer.writerow(fields)
-    for line in dataset:
-        writer.writerow(line)
 
     return response
 

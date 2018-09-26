@@ -9,7 +9,8 @@
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/css/mdb.min.css" rel="stylesheet">    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/css/mdb.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
     <style>
         /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#b8e1fc+0,a9d2f3+10,90bae4+25,90bcea+37,90bff0+50,6ba8e5+51,a2daf5+83,bdf3fd+100;Blue+Gloss+%231 */
@@ -154,7 +155,7 @@
                     </label>
                 </div>
 
-                <button class="btn waves-effect btn-success btn-sm rounded-circle p-1 ml-5 invisible z-depth-5"
+                <button class="btn waves-effect btn-success btn-sm rounded-circle p-2 ml-2 invisible z-depth-5"
                         id="map-headers"
                         type="button"
                         onclick="map_headers()">
@@ -617,7 +618,7 @@ bottom:
 
             if ('success'.localeCompare( results['msg']) == 0){
 
-                window.location.replace("{% url 'key-gen' %}");
+                window.location.replace("{% url 'key' %}");
             }
         });
         }

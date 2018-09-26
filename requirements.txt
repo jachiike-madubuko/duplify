@@ -100,6 +100,8 @@ sqlparse==0.2.4
 
 spacy==2.0.12
 
+StringIO
+
 tablib==0.12.1
 
 tqdm==4.23.4
