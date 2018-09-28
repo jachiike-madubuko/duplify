@@ -112,8 +112,7 @@ def turn_table(request):
 
 def download(request,type):
     output = BytesIO()
-    writer = pd.ExcelWriter(output, engine='xlsxwriter')
-
+    writer = pd.ExcelWriter(output)
     #csv headers
     fields = ('id','CRD', 'First', 'Last', 'Street', 'City',
               'State', 'Zip', 'Phone', 'Home Phone', 'Mobile Phone',
@@ -139,7 +138,7 @@ def download(request,type):
         filename = f'filename="{repCSV_name} (Undecided Records).csv"'
 
 
-    for type in ['New Record', 'Duplicate', 'Manual Check' ]:
+    for type in ['New Record', 'Duplicate' ]:
         rep_resource = RepContactResource()
         users = repContact.objects.filter(type = type)
         dataset = rep_resource.export(users)

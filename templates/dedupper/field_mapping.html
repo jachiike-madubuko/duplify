@@ -36,10 +36,10 @@
 
     </style>
 </head>
-<body class="blue-grey lighten-5" style="transition: 2s; overflow: hidden">
+<body class="blue-grey lighten-5" style="transition: 2s; overflow: auto">
 
 
-<nav class="navbar navbar-expand-lg navbar-primary scrolling-navbar">
+<nav class="navbar navbar-expand-lg navbar-primary scrolling-navbar ">
     <h1> <a class="navbar-brand text-white" href="{% url 'index' %}">Duplify</a></h1>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -103,13 +103,6 @@
         </div>
     </div>
 </div>
-<div class="alert format alert-warning alert-dismissible invisible text-center" role="alert">
-    <b>Files must be csv format</b>
-</div>
-<div class="alert files alert-warning alert-dismissible invisible text-center" role="alert">
-    <b>Upload a rep list and a SF report before continuing</b>
-</div>
-
 
 <!-- Modal -->
 <div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
@@ -125,16 +118,12 @@
                 <div class="container-fluid">
                     <div class="x row">
 
-                        <div class=" mapping">
-
-                        </div>
 
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                Channel:
-                <div class="btn-group btn-group-toggle mx-2" data-toggle="buttons">
+            <div class="modal-footerz ">
+                <div class="btn-group btn-group-toggle mx-auto col" data-toggle="buttons">
                     <label class="btn waves-effect btn-primary mr-1">
                         <input type="radio" name="options" id="option2" value="RC" autocomplete="off"> RC
                     </label>
@@ -167,11 +156,11 @@
     </div>
 </div>
 
-<div class="container-fluid">
+<div class="container-fluid p-5" >
     <div class="row">
         <div class="col-1"></div>
         <!-- Card -->
-        <div class="rounded col-6 m-auto bg-transparent z-depth-5">
+        <div class="rounded col-10 m-auto bg-transparent z-depth-5 mapping">
 
             <!-- Card content -->
             <div class="card-body text-center">
@@ -214,6 +203,7 @@ bottom:
 
         <div class="col-1"></div>
     </div>
+
 
 </div>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
@@ -391,46 +381,6 @@ bottom:
     //transition speed
     var gradientSpeed = 0.001;
 
-    function updateGradient()
-    {
-
-        if ( $===undefined ) return;
-
-        var c0_0 = colors[colorIndices[0]];
-        var c0_1 = colors[colorIndices[1]];
-        var c1_0 = colors[colorIndices[2]];
-        var c1_1 = colors[colorIndices[3]];
-
-        var istep = 1 - step;
-        var r1 = Math.round(istep * c0_0[0] + step * c0_1[0]);
-        var g1 = Math.round(istep * c0_0[1] + step * c0_1[1]);
-        var b1 = Math.round(istep * c0_0[2] + step * c0_1[2]);
-        var color1 = "rgb("+r1+","+g1+","+b1+")";
-
-        var r2 = Math.round(istep * c1_0[0] + step * c1_1[0]);
-        var g2 = Math.round(istep * c1_0[1] + step * c1_1[1]);
-        var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
-        var color2 = "rgb("+r2+","+g2+","+b2+")";
-
-        $('body').css({
-            background: "-webkit-gradient(linear, left top, right top, from("+color1+"), to("+color2+"))"}).css({
-            background: "-moz-linear-gradient(left, "+color1+" 0%, "+color2+" 100%)"});
-
-        step += gradientSpeed;
-        if ( step >= 1 )
-        {
-            step %= 1;
-            colorIndices[0] = colorIndices[1];
-            colorIndices[2] = colorIndices[3];
-
-            //pick two new target color indices
-            //do not pick the same as the current one
-            colorIndices[1] = ( colorIndices[1] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
-            colorIndices[3] = ( colorIndices[3] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
-
-        }
-    }
-
     {#setInterval(updateGradient,20);#}
 
     function verify(){
@@ -533,9 +483,10 @@ bottom:
                 contentType: false,
                 cache: false,
                 success: function (data) {
-                    $("#modelId").modal('show');
 
-                    for (var key in data) {
+                    $(".mapping").fadeOut('slow',function () {
+                        $(".card-body").hide();
+                        for (var key in data) {
                         var class_id = "rep" + key;
                         var input_group = $("<div></div>");
                         input_group.addClass("input-group mb-3 col-12");
@@ -560,9 +511,14 @@ bottom:
 
                         $(".mapping").append(input_group);
 
-
-
                     }
+                        $(".mapping").append($(".modal-footerz").html());
+
+
+                    });
+
+
+
                     $('.rep-select').select2({
                         theme: "bootstrap",
                         placeholder: {
@@ -575,6 +531,7 @@ bottom:
                         }
                     });
                     $(".select2-container").width('500');
+                     $(".mapping").fadeIn('slow');
 
                 }
             });
@@ -589,7 +546,6 @@ bottom:
         }
     }
     function map_headers() {
-        $("#modelId").modal('toggle');
         $("#progress").modal('toggle');
         var channel  = $('input:checked').val();
         $('.rep-select').each( function() {
