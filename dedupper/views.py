@@ -13,6 +13,7 @@ from django_tables2.views import RequestConfig
 from simple_salesforce import Salesforce
 
 from dedupper.forms import UploadFileForm
+from dedupper.models import Person
 from dedupper.tables import StatsTable, SFContactTable, RepContactTable
 from dedupper.utils import *
 
@@ -255,19 +256,28 @@ def search(request):
     return JsonResponse({'results': f'sent: search results for {phrase}'}, safe=False)
 
 def index(request):
+    bio_df = pd.read_excel('2018 HATCH Big Sky Bios (09%2F23%2F18).xlsx')
+    person_df = bio_df[['Guest Type', 'Name (First)', 'Name (Last)']]
+    for i in range(len(person_df)):
+        if person_df.iloc[i]['Name (First)'] != np.nan:
+            x = Person(first_name=person_df.iloc[i]['Name (First)'], last_name=person_df.iloc[i]['Name (Last)'],
+                       type=person_df.iloc[i]['Guest Type'])
+            x.save()
+    print(Person.objects.count())
+
     return render(request, 'dedupper/v1.html')
 
 def upload_page(request):
-    '''
-    :param request:
-    :return:
-    Saleforce login:
+    if Person.objects.count() == 0:
+        bio_df = pd.read_excel('2018 HATCH Big Sky Bios (09%2F23%2F18).xlsx')
+        person_df = bio_df[['Guest Type', 'Name (First)', 'Name (Last)']]
+        for i in range(len(person_df)):
+            if person_df.iloc[i]['Name (First)'] != np.nan:
+                x = Person(first_name=person_df.iloc[i]['Name (First)'], last_name=person_df.iloc[i]['Name (Last)'],
+                           type=person_df.iloc[i]['Guest Type'])
+                x.save()
+    print(Person.objects.count())
 
-    from simple_salesforce import Salesforce
-    sf = Salesforce(password='password', username='myemail@example.com', organizationId='D36000001DkQo')
-    https://developer.salesforce.com/blogs/developer-relations/2014/01/python-and-the-force-com-rest-api-simple-simple-salesforce-example.html
-    https://github.com/simple-salesforce/simple-salesforce
-    '''
     return render(request, 'dedupper/intro.html')
 
 def key_gen(request):
