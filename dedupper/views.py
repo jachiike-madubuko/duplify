@@ -246,23 +246,13 @@ def flush_db(request):
     call_command('flush', interactive=False)
     return redirect('/map')
 
-def import_csv(request):
+def search(request):
     if request.method == 'GET':                 #expect getJSON request
-        channel = request.GET.get('channel')    #sf channel to pull from db
-        rep_header_map = request.GET.get('rep_map') #the JSON of csv headers mapped to db fields
-        rep_header_map = json.loads(rep_header_map) #JSON -> dict()
+        phrase = request.GET.get('phrase')    #sf channel to pull from db
 
-        request.session['sfCSV_name'] = f'the {channel} channel'        #for printing
 
-        db_data = {                         #packing data
-            'channel': channel,
-            'map' : rep_header_map
-        }
-        #the csv headers are stored to be used for exporting
-        #get_channel queries the channel and loads the rep list and sf contacts
-        request.session['misc'] =list   ( rep_header_map.keys())
 
-    return JsonResponse({'msg': 'success!'}, safe=False)
+    return JsonResponse({'results': f'sent: search results for {phrase}'}, safe=False)
 
 def index(request):
     return render(request, 'dedupper/v1.html')
@@ -278,7 +268,7 @@ def upload_page(request):
     https://developer.salesforce.com/blogs/developer-relations/2014/01/python-and-the-force-com-rest-api-simple-simple-salesforce-example.html
     https://github.com/simple-salesforce/simple-salesforce
     '''
-    return render(request, 'dedupper/versions.html')
+    return render(request, 'dedupper/intro.html')
 
 def key_gen(request):
     try:

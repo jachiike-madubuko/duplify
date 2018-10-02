@@ -349,3 +349,30 @@ class uploadTime(models.Model):
     def __str__(self):
         return "{} records uploaded in {} seconds".format(self.num_records, self.seconds)
 
+
+class Tag(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ('name',)
+
+class Person(models.Model):
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    TYPES_OF_PERSON = (
+        ('First Time HATCHer', 'First Time HATCHer'),
+        ('Alumni', 'Alumni'),
+        ('Team Member', 'Team Member')
+    )
+    type = models.CharField(max_length=256, choices=TYPES_OF_PERSON)
+    tags = models.ManyToManyField(Tag)
+
+
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}'
+
+    class Meta:
+        ordering = ('last_name',)
