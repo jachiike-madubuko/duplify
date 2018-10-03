@@ -251,6 +251,9 @@ def search(request):
     if request.method == 'GET':                 #expect getJSON request
         phrase = request.GET.get('phrase')    #sf channel to pull from db
 
+        #query for %{string}%
+        return list
+
 
 
     return JsonResponse({'results': f'sent: search results for {phrase}'}, safe=False)
