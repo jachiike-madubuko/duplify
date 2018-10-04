@@ -456,6 +456,7 @@ def make_tags():
                 if j in i.bio:
                     tags.append(j)
             i.tag_list = tags
+            i.save()
 
 
 

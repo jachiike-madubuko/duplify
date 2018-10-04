@@ -268,6 +268,7 @@ def index(request):
             x.save()
     print(Person.objects.count())
     make_tags()
+    print(Tag.objects.count())
     return render(request, 'dedupper/v1.html')
 
 def upload_page(request):
