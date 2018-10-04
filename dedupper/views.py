@@ -1,19 +1,20 @@
 import csv
 import json
 import pickle
+from collections import defaultdict
 from difflib import SequenceMatcher as SeqMat
 
 import pandas as pd
 import tablib
 from django.conf import settings
 from django.core.management import call_command
+from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django_tables2.views import RequestConfig
 from simple_salesforce import Salesforce
 
 from dedupper.forms import UploadFileForm
-from dedupper.models import Person
 from dedupper.tables import StatsTable, SFContactTable, RepContactTable
 from dedupper.utils import *
 
@@ -251,12 +252,11 @@ def search(request):
     if request.method == 'GET':                 #expect getJSON request
         phrase = request.GET.get('phrase')    #sf channel to pull from db
 
-        #query for %{string}%
-        return list
+        data = [ i.list_view() for i in Person.objects.filter(Q(first_name__icontains=phrase) |Q(
+            last_name__icontains=phrase) | Q(tag_list__icontains=[phrase])).order_by()]
+        print(data)
 
-
-
-    return JsonResponse({'results': f'sent: search results for {phrase}'}, safe=False)
+    return JsonResponse({'results': data}, safe=False)
 
 def index(request):
     bio_df = pd.read_excel('2018 HATCH Big Sky Bios (09%2F23%2F18).xlsx')
@@ -267,17 +267,18 @@ def index(request):
                        type=person_df.iloc[i]['Guest Type'])
             x.save()
     print(Person.objects.count())
-
+    make_tags()
     return render(request, 'dedupper/v1.html')
 
 def upload_page(request):
     if Person.objects.count() == 0:
-        bio_df = pd.read_excel('2018 HATCH Big Sky Bios (09%2F23%2F18).xlsx')
-        person_df = bio_df[['Guest Type', 'Name (First)', 'Name (Last)']]
-        for i in range(len(person_df)):
-            if person_df.iloc[i]['Name (First)'] != np.nan:
-                x = Person(first_name=person_df.iloc[i]['Name (First)'], last_name=person_df.iloc[i]['Name (Last)'],
-                           type=person_df.iloc[i]['Guest Type'])
+        bio_df = pd.read_excel('2018 HATCH Big Sky Bios (09%2F23%2F18).xlsx', na_values='')
+        for i in range(len(bio_df)):
+            bio = bio_df.iloc[i]['Bio']
+
+            if bio_df.iloc[i]['Name (First)']:
+                x = Person(first_name=bio_df.iloc[i]['Name (First)'], last_name=bio_df.iloc[i]['Name (Last)'],
+                           type=bio_df.iloc[i]['Guest Type'], bio=bio)
                 x.save()
     print(Person.objects.count())
 
@@ -442,4 +443,26 @@ def upload(request):
 
     print(rep_dropdown)
     return JsonResponse( rep_dropdown, safe=False)
+
+def hatcher(request,id):
+    hatchee = Person.objects.get(id=id)
+    hatchee_tags = set(hatchee.tag_list)
+    hatchers = Person.objects.exclude(id=id)
+    common_hatchers = defaultdict(list)
+
+    top_score = 0
+    for h in hatchers:
+        score = len(hatchee_tags.intersection(set(h.tag_list)))
+        if score>top_score:
+            top_score=score
+        common_hatchers[score].append(h)
+
+    friends = common_hatchers[top_score]
+    friends.extend(common_hatchers[top_score-1])
+    friends_list = [i.list_view() for i in friends]
+    print(friends_list)
+
+    return render(request, 'dedupper/v1.html', {'hatchee': hatchee, 'friends':friends_list})
+
+
 

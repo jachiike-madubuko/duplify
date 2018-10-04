@@ -41,6 +41,7 @@ urlpatterns = [
     path('contact_sort/', views.contact_sort, name='contact_sort'), #figure out url reverse
     path('v2/', views.display, name='v2'),
     path('sorted/<id>', views.merge, name='merge'),
+    path('hatch/<id>', views.hatcher, name='hatcher'),
     path('sorted/export/<type>', views.download, name='export'),
     path('sorted/report/<type>', views.download_times, name='report'),
 ]

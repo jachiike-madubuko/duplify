@@ -62,17 +62,22 @@ a{
 }
 </style>
 </head>
-<body class="mdb-color darken-3">
-<div id="particles-js"></div>
-<div class="container">
-<div class="row h-100 align-middle">
-</div>
-    <header class="fixed-top text-center text-white ">
+<body class="mdb-color darken-3 mh-100 " style="overflow:auto;">
+
+<div id="particles-js">
+        </div>
+        <header class="fixed-top text-center white-text mdb-color darken-3 z-depth-3">
         <div class="md-form">
     <input class="form-control active-cyan-2 text-white" type="text" placeholder="Search" aria-label="Search">
 </div>
 
     </header>
+<div class="my-3 row"></div>
+<div class="row justify-content-center mt-5 pt-5  text-black grey-text results" style="overflow-y: auto; max-height:
+89vh; bottom:0px;" >
+
+
+</div>
 </div>
 
 
@@ -106,8 +111,18 @@ a{
         $(".form-control").keyup(function () {
             var x = $(this).val();
             $.getJSON("{% url 'search' %}", {phrase: x }, function (result) {
+                $(".results").empty();
+                for (let i = 0; i < result['results'].length; i++) {
+                    $(".results").append(result['results'][i]);
+                }
 
-                var results = result['results'];
+                $(".rounded").on('click', function () {
+                    var p_id = $(this).attr('id');
+                    location.replace(location.host +'/hatch/'+p_id);
+
+                });
+
+
         });
 
 
@@ -120,7 +135,7 @@ a{
     particlesJS("particles-js", {
   "particles": {
     "number": {
-      "value": 50 ,
+      "value": 80 ,
       "density": {
         "enable": true,
         "value_area": 500
@@ -182,7 +197,7 @@ a{
       "attract": {
         "enable": false,
         "rotateX": 600,
-        "rotateY": 1200
+        "rotateY": 100
       }
     }
   },
@@ -195,7 +210,7 @@ a{
       },
       "onclick": {
         "enable": true,
-        "mode": "bubble"
+        "mode": "push"
       },
       "resize": true
     },

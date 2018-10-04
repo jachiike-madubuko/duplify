@@ -1,9 +1,10 @@
+import logging
 import threading
 import time
-import logging
+
+import queue  # must be in same directory as this file
+
 import dedupper.utils
-import random
-import queue  #must be in same directory as this file
 
 logging.basicConfig(level=logging.DEBUG,
                     format='(%(threadName)-9s) %(message)s',)
@@ -11,7 +12,7 @@ logging.basicConfig(level=logging.DEBUG,
 BUFF_SIZE = 10000
 q = queue.Queue(BUFF_SIZE)
 command = list()
-producer= consumers = None
+producer = consumers = None
 numThreads = 12
 stopper = True
 dead_threads = 0

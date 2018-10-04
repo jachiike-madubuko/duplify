@@ -24,6 +24,7 @@ from simple_salesforce import Salesforce
 from tablib import Dataset
 
 import dedupper.threads
+from dedupper.models import Tag, Person
 from dedupper.models import repContact, sfcontact, dedupTime, duplifyTime, uploadTime
 from dedupper.resources import SFContactResource, RepContactResource
 
@@ -391,11 +392,9 @@ def sort(avg):
         return last_key_sorting_range[avg]
     else:
         return standard_sorting_range[avg]
-
 #returns data for the progress screeen
 def get_progress():
     return doneKeys, totalKeys, currKey, cnt
-
 
 def get_channel(data):
     channel = data['channel']
@@ -438,8 +437,26 @@ def get_channel(data):
     print('loading rep: DONE')
     return data
 
-
-
-
 def db_done():
     return done
+
+def make_tags():
+    tags = ['creative','founder','loves','high','Director','love','AI','food','music','Arts','technology','Boston',
+           'film','art',
+'health','Science','Education','science','entrepreneur','Music','firm','students','author','Innovation','entrepreneurs','helps','Leadership','activist','gift','growth','youth','Creative','Google','Professor','artistic','kids','positive','Community','nonprofit','voice','children','computer','cultural','mountain','power','theater','visual','built','developer','empowering','journey','marketing','software','tech','thrive','Art','arts','force','harpist','magic','volunteering','African','Women','books','female','fun','machine','mission','musical','nature','playing','songs','startup','storyteller','supports','challenges','deep','leader','powerful','Artist','Burning','Girls','grateful','medical','ordained','robotics','robots','rural','traveled','Film','builder','emotional','energy','filming','holistic','ski','Canadian','Entrepreneurship','German','band','clubs','designers','designing','mindset','neuroscience','promoting','PhD','Studio','TV','artists','augment','fishing','follow','futurist','game','gender','instrumental','inventor','pioneering','play','psychology','teacher','technologist','travel','video','writer','writing','authentic','loving','racial','Artificial','Entrepreneur','Facilitator','Foods','Platform','adventure','adventurous','agriculture','country','healthy','justice','medicine','mental','mentor','mentoring','optimist','outdoor','philanthropist','photography','pianist','service','survivors','tribe','volunteer','vulnerable','Chef','Marketing','builds','snowboarding','Farmers','doctor','ecosystem','epidemiology','harp','karate','literature','microbiology','paint','paintings','pathology','photographs','poetry','women']
+
+    if Tag.objects.count() == 0:
+        for i in tags:
+            t = Tag(name=i.lower())
+            t.save()
+
+        for i in Person.objects.all():
+            tags = []
+            for j in Tag.objects.all():
+                if j in i.bio:
+                    tags.append(j)
+            i.tag_list = tags
+
+
+
+

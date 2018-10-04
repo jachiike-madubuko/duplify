@@ -6,6 +6,7 @@ Run python manage.py migrate dedupper to apply those changes to the database.
 
 from __future__ import unicode_literals
 
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 
@@ -236,8 +237,8 @@ class sfcontact(models.Model):
     personalEmail = models.CharField(max_length=256, blank=True)
     otherEmail = models.CharField(max_length=256, blank=True)
     closest_rep = models.ForeignKey('repContact', on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_related",
-        related_query_name="%(class)s", null=True,
-                                 blank=True)
+                                    related_query_name="%(class)s", null=True,
+                                    blank=True)
     dupFlag = models.BooleanField(blank=True, default=False)
 
     def __str__(self):
@@ -326,7 +327,7 @@ class dedupTime(models.Model):
     created_on = models. DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
-       return "At {} -- {} dups and {} new".format(self.created_on, self.num_dup, self.num_new)
+        return "At {} -- {} dups and {} new".format(self.created_on, self.num_dup, self.num_new)
 
 class duplifyTime(models.Model):
     num_threads = models.IntegerField(null=True, blank=True)
@@ -369,10 +370,28 @@ class Person(models.Model):
     )
     type = models.CharField(max_length=256, choices=TYPES_OF_PERSON)
     tags = models.ManyToManyField(Tag)
+    bio  = models.TextField(blank=True)
+    tag_list = ArrayField(models.CharField(max_length=200), null=True)
+
 
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
 
-    class Meta:
-        ordering = ('last_name',)
+
+    def list_view(self):
+        if self.type == 'First Time HATCHer':
+            h_type = 'HATCHEer'
+        else:
+            h_type = self.type
+        p1=f' <div id="{self.id}" class="p-2 col-5 col-sm-5 z-depth-3 rounded mr-1 mb-1 ' \
+           f'">  <a href="/hatch/{self.id}" class="text-white white-text">  <div ' \
+           f'class="row ' \
+           f'justify-content-center">'
+        p2=  f'{h_type}</div><div class="row justify-content-center"><i class="fa fa-2x fa-user "></i>'
+        p3=   f'</div><div class="row justify-content-center">{self.first_name}</div> <div class="row '
+        p4=     f'justify-content-center">{self.last_name}</div> </a> </div>'
+        return p1+p2+p3+p4
+
+class Meta:
+    ordering = ('last_name',)
