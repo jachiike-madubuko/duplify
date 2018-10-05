@@ -453,7 +453,7 @@ def make_tags():
         for i in Person.objects.all():
             tags = []
             for j in Tag.objects.all():
-                if j in i.bio:
+                if j.name in i.bio:
                     tags.append(j)
             i.tag_list = tags
             i.save()
