@@ -267,23 +267,10 @@ def index(request):
                        type=person_df.iloc[i]['Guest Type'])
             x.save()
     print(Person.objects.count())
-    make_tags()
+
     print(Tag.objects.count())
     return render(request, 'dedupper/v1.html')
 
-def upload_page(request):
-    if Person.objects.count() == 0:
-        bio_df = pd.read_excel('2018 HATCH Big Sky Bios (09%2F23%2F18).xlsx', na_values='')
-        for i in range(len(bio_df)):
-            bio = bio_df.iloc[i]['Bio']
-
-            if bio_df.iloc[i]['Name (First)']:
-                x = Person(first_name=bio_df.iloc[i]['Name (First)'], last_name=bio_df.iloc[i]['Name (Last)'],
-                           type=bio_df.iloc[i]['Guest Type'], bio=bio)
-                x.save()
-    print(Person.objects.count())
-
-    return render(request, 'dedupper/intro.html')
 
 def key_gen(request):
     try:
@@ -467,3 +454,17 @@ def hatcher(request,id):
 
 
 
+def upload_page(request):
+    if Person.objects.count() == 0:
+        bio_df = pd.read_excel('2018 HATCH Big Sky Bios (09%2F23%2F18).xlsx', na_values='')
+        for i in range(len(bio_df)):
+            bio = bio_df.iloc[i]['Bio']
+
+            if bio_df.iloc[i]['Name (First)']:
+                x = Person(first_name=bio_df.iloc[i]['Name (First)'], last_name=bio_df.iloc[i]['Name (Last)'],
+                           type=bio_df.iloc[i]['Guest Type'], bio=bio)
+                x.save()
+    print(Person.objects.count())
+    make_tags()
+    print(Tag.objects.count())
+    return render(request, 'dedupper/intro.html')
