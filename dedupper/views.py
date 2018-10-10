@@ -468,7 +468,7 @@ def db_progress(request):
                     print(db_job)
                     if db_job.result:
                         print(db_job.result)
-                        print(type(db_job.result)
+                        print(type(db_job.result))
                         msg = 2
                         db_job.result['sf'].to_hdf('sf_contact.hdf', 'trill')
                         db_job.result['reps'].to_hdf('rep_contact.hdf', 'trill')
