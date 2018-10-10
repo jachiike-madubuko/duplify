@@ -74,7 +74,8 @@ def convert_csv(file, name):
     return list(pd_csv), pd_csv
 
 def find_rep_dups(rep, keys, numthreads):
-    global cnt                          #track the number of attempted dedups
+    global cnt
+    print ('rep dedupe') #track the number of attempted dedups
     multi_key = False                   #for tracking the one to many key generation of keys containing emails and phones
     dup_start=perf_counter()            #track the dup time
     rep_key = rep.key(keys[:-1])        #create rep key without man/dup flag
