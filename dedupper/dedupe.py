@@ -16,11 +16,11 @@ def run():
     clean_config = {'lower': True, 'punctuation': True, 'whitespace': True, 'digit': True}
     match_config = {'exact': False, 'levenshtein': True, 'soundex': False, 'nysiis': False}
 
-    dupe = Dedupe(clean_config=clean_config, match_config=match_config)
+    dupe = Dedupe()
     input_config = {
         'input_data' : territory,
        '_id': territory['Id'].name,
-        'columns' : territory['CRD__c']
+        'columns' : territory['CRD__c'].name
         }
     results = dupe.dedupe(input_config)
     return results
