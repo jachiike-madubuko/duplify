@@ -350,7 +350,7 @@ def merge(request, id):
         obj_map = {i:j for i,j in zip(fields, list(zip(obj,mergers[0])) ) }
     return render(request, 'dedupper/sort_view.html', {'objs' : obj_map})
 
-def progress(request):
+def dup_progress(request):
     if request.method == 'GET':
         reps =  request.session['rep_size']
         doneKeys, numKeys, currKey, doneReps = get_progress()
@@ -460,7 +460,7 @@ def db_progress(request):
     global rep_prog
     if request.method == 'GET':
         print('checking progress')
-        print(f"actual:{rep_num}, expected:{request.session['rep_size']}")
+        print(f"actual:{progress.objects.count()}, expected:{progress_num}")
         if progress.objects.count() != progress_num:
             try:
                 db_job = q.fetch_job(request.session['rq_job'])
@@ -476,6 +476,8 @@ def db_progress(request):
             except Exception as e:
                 print ('no progress')
                 print(e)
+    db.connections.close_all()
+
     return JsonResponse({
         'msg': msg
     }, safe=False)
