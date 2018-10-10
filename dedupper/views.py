@@ -456,10 +456,11 @@ def upload(request):
 
 def db_progress(request):
     msg = 10000
+    rep_num=0
     global rep_prog
     if request.method == 'GET':
         print('checking progress')
-        print(f"actual:{repContact.objects.all().count()}, expected:{request.session['rep_size']}")
+        print(f"actual:{rep_num}, expected:{request.session['rep_size']}")
         if repContact.objects.all().count() >= request.session['rep_size']:
             print('loading should be done')
             try:
@@ -470,6 +471,7 @@ def db_progress(request):
                         print(db_job.result)
                         print(type(db_job.result))
                         msg = 2
+                        rep_num = len(db_job.result['reps'])
                         db_job.result['sf'].to_hdf('sf_contact.hdf', 'trill')
                         db_job.result['reps'].to_hdf('rep_contact.hdf', 'trill')
                         db.connections.close_all()
@@ -478,7 +480,7 @@ def db_progress(request):
                 print ('no progress')
                 print(e)
         else:
-            print(f"actual:{repContact.objects.all().count()}, expected:{request.session['rep_size']}")
+            print(f"actual:{rep_num}, expected:{request.session['rep_size']}")
 
     return JsonResponse({
         'msg': msg
