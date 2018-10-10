@@ -255,7 +255,10 @@ def fuzzyset_alg(key, key_list):
 def key_generator(data):
     keys= data['key']
     sf_contacts= data['sf_contacts']
-    sf_contacts.to_hdf('sf_contacts')
+    rep_contacts= data['rep_contacts']
+    print(data)
+    sf_contacts.to_hdf('sf_contacts.hdf')
+    rep_contacts.to_hdf('rep_contacts.hdf')
     db.connections.close_all()
     global start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg, keylist
     #start timer
