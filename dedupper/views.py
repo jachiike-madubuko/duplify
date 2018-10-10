@@ -456,7 +456,7 @@ def upload(request):
     return JsonResponse( rep_dropdown, safe=False)
 
 def db_progress(request):
-    msg = 10000000
+    msg = 100
     rep_num=0
     global rep_prog
     if request.method == 'GET':
