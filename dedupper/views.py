@@ -468,15 +468,19 @@ def db_progress(request):
                 if db_job:
                     msg = 'success'
                     reps , sf= progress.objects.latest().label.split('--$--')
-                    print(f'reps:{len(reps)},sf:{len(sf)}, ')
                     pd.read_csv(sf).to_hdf('sf_contact.hdf', 'trill')
                     pd.read_csv(reps).to_hdf('rep_contact.hdf', 'trill')
+
+                    reps = pd.read_hdf('rep_contact.hdf')
+                    sf = pd.read_hdf('sf_contact.hdf')
+                    print(f'reps:{len(reps)},sf:{len(sf)}, ')
+
 
             except Exception as e:
                 print ('no progress')
                 print(e)
     db.connections.close_all()
-
+    print(msg)
     return JsonResponse({
         'msg': msg
     }, safe=False)
