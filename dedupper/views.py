@@ -466,9 +466,7 @@ def db_progress(request):
             try:
                 db_job = q.fetch_job(request.session['rq_job'])
                 if db_job:
-                    print(db_job.result)
                     msg = 2
-                    print(progress.objects.latest().label)
                     reps , sf= progress.objects.latest().label.split('--$--')
                     print(f'reps:{len(reps)},sf:{len(sf)}, ')
                     pd.read_csv(sf).to_hdf('sf_contact.hdf', 'trill')
