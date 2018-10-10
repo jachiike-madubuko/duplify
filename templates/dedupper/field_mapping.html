@@ -9,7 +9,8 @@
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/css/mdb.min.css" rel="stylesheet">    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/css/mdb.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
     <style>
         /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#b8e1fc+0,a9d2f3+10,90bae4+25,90bcea+37,90bff0+50,6ba8e5+51,a2daf5+83,bdf3fd+100;Blue+Gloss+%231 */
@@ -35,10 +36,10 @@
 
     </style>
 </head>
-<body class="blue-grey lighten-5" style="transition: 2s; overflow: hidden">
+<body class="blue-grey lighten-5" style="transition: 2s; overflow: auto">
 
 
-<nav class="navbar navbar-expand-lg navbar-primary scrolling-navbar">
+<nav class="navbar navbar-expand-lg navbar-primary scrolling-navbar ">
     <h1> <a class="navbar-brand text-white" href="{% url 'index' %}">Duplify</a></h1>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -102,13 +103,6 @@
         </div>
     </div>
 </div>
-<div class="alert format alert-warning alert-dismissible invisible text-center" role="alert">
-    <b>Files must be csv format</b>
-</div>
-<div class="alert files alert-warning alert-dismissible invisible text-center" role="alert">
-    <b>Upload a rep list and a SF report before continuing</b>
-</div>
-
 
 <!-- Modal -->
 <div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
@@ -124,16 +118,12 @@
                 <div class="container-fluid">
                     <div class="x row">
 
-                        <div class=" mapping">
-
-                        </div>
 
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                Channel:
-                <div class="btn-group btn-group-toggle mx-2" data-toggle="buttons">
+            <div class="modal-footerz ">
+                <div class="btn-group btn-group-toggle mx-auto col" data-toggle="buttons">
                     <label class="btn waves-effect btn-primary mr-1">
                         <input type="radio" name="options" id="option2" value="RC" autocomplete="off"> RC
                     </label>
@@ -154,7 +144,7 @@
                     </label>
                 </div>
 
-                <button class="btn waves-effect btn-success btn-sm rounded-circle p-1 ml-5 invisible z-depth-5"
+                <button class="btn waves-effect btn-success btn-sm rounded-circle p-2 ml-2 invisible z-depth-5"
                         id="map-headers"
                         type="button"
                         onclick="map_headers()">
@@ -166,11 +156,11 @@
     </div>
 </div>
 
-<div class="container-fluid">
+<div class="container-fluid p-5" >
     <div class="row">
         <div class="col-1"></div>
         <!-- Card -->
-        <div class="rounded col-6 m-auto bg-transparent z-depth-5">
+        <div class="rounded col-10 m-auto bg-transparent z-depth-5 mapping">
 
             <!-- Card content -->
             <div class="card-body text-center">
@@ -191,7 +181,7 @@
                         <div class="row">
                             <div  class="col-4"></div>
                             <div  class="col-4">
-                                <button type="Submit"  onclick="verify()" class="invisible btn waves-effect btn-primary
+                                <button type="Submit"  onclick="verify()" class="btn waves-effect btn-primary
                                 rounded-circle download ml-5 z-depth-5 p-3 shadow"  style="z-index: 5000;
 position:
 fixed;
@@ -213,6 +203,7 @@ bottom:
 
         <div class="col-1"></div>
     </div>
+
 
 </div>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
@@ -245,17 +236,16 @@ bottom:
             if( $(".rep").text().substr(-3).localeCompare('csv') != 0 ) {
                 if( $(".rep").text() == 'Choose file' || $(".rep").text() == '') {
                     e.preventDefault(); //prevent the default action
-                    {#$(".files").removeClass("invisible");//.delay(5).addClass("invisible");#}
-                    {#$.wait( function(){ $(".files").addClass("invisible") }, 3);#}
+                    $(".files").removeClass("invisible");//.delay(5).addClass("invisible");
+                    $.wait( function(){ $(".files").addClass("invisible") }, 3);
 
+                }else {
+                    // e.preventDefault(); //prevent the default action
+                    $(".format").removeClass("invisible");//.delay(5).addClass("invisible");
+                    $.wait(function () {
+                        $(".format").addClass("invisible")
+                    }, 3);
                 }
-                {#else {#}
-                    {#// e.preventDefault(); //prevent the default action#}
-                    {#$(".format").removeClass("invisible");//.delay(5).addClass("invisible");#}
-                    {#$.wait(function () {#}
-                    {#    $(".format").addClass("invisible")#}
-                    //{#}, 3);#}
-               // {#}#}
 
             } });
     }
@@ -371,7 +361,27 @@ bottom:
         });
     }
     {#bg();#}
-    var inter = null;
+
+    var colors = new Array(
+        [127.5,127.5,127.5],
+        [255,255,255],
+        [0,0,0],
+        [255,255,255],
+        [0,0,0],
+        [127.5,127.5,127.5],);
+
+    var step = 0;
+    //color table indices for:
+    // current color left
+    // next color left
+    // current color right
+    // next color right
+    var colorIndices = [0,1,2,3];
+
+    //transition speed
+    var gradientSpeed = 0.001;
+
+    {#setInterval(updateGradient,20);#}
 
     function verify(){
         $.wait = function( callback, seconds){
@@ -473,9 +483,10 @@ bottom:
                 contentType: false,
                 cache: false,
                 success: function (data) {
-                    $("#modelId").modal('show');
 
-                    for (var key in data) {
+                    $(".mapping").fadeOut('slow',function () {
+                        $(".card-body").hide();
+                        for (var key in data) {
                         var class_id = "rep" + key;
                         var input_group = $("<div></div>");
                         input_group.addClass("input-group mb-3 col-12");
@@ -500,9 +511,14 @@ bottom:
 
                         $(".mapping").append(input_group);
 
-
-
                     }
+                        $(".mapping").append($(".modal-footerz").html());
+
+
+                    });
+
+
+
                     $('.rep-select').select2({
                         theme: "bootstrap",
                         placeholder: {
@@ -515,6 +531,7 @@ bottom:
                         }
                     });
                     $(".select2-container").width('500');
+                     $(".mapping").fadeIn('slow');
 
                 }
             });
@@ -528,10 +545,7 @@ bottom:
             // Do nothing!
         }
     }
-
-
     function map_headers() {
-        $("#modelId").modal('toggle');
         $("#progress").modal('toggle');
         var channel  = $('input:checked').val();
         $('.rep-select').each( function() {
@@ -551,19 +565,16 @@ bottom:
         });
         $.getJSON("{% url 'import_csv' %}", {channel: channel, rep_map: JSON.stringify
             (rep_mapping) }, function (result) {
-
-            inter = setInterval(update_progress,  5000);
+            setInterval(update_progress,  5000);
         });
     }
 
         function update_progress(){
             $.getJSON("{% url 'db_progress' %}", function (result) {
-            if (result['msg'] < 10){
-                {#alert('database ready to go');#}
-                clearInterval(inter);
 
+            if ('success'.localeCompare( results['msg']) == 0){
 
-                window.location.replace("{% url 'key-gen' %}");
+                window.location.replace("{% url 'key' %}");
             }
         });
         }
@@ -571,3 +582,5 @@ bottom:
 </script>
 </body>
 </html>
+
+
