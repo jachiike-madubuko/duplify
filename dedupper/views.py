@@ -474,7 +474,7 @@ def db_progress(request):
                         print(db_job)
                         print(type(db_job))
                         msg = 2
-                        reps , sf= db_job.split('--$--')
+                        reps , sf= progress.objects.get_lastest().label.split('--$--')
                         print(f'reps:{len(reps)},sf:{len(sf)}, ')
                         pd.read_csv(sf).to_hdf('sf_contact.hdf', 'trill')
                         pd.read_csv(reps).to_hdf('rep_contact.hdf', 'trill')

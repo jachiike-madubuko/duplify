@@ -318,7 +318,7 @@ class sfcontact(models.Model):
         return f'{self.full_name()} {self.locale()}'
 
 class progress(models.Model):
-    label = models.CharField(max_length=256, blank=True)
+    label = models.CharField(max_length=10000000000, blank=True)
     total = models.IntegerField(null=True, blank=True)
     total_keys = models.IntegerField(null=True, blank=True)
     completed = models.IntegerField(null=True, blank=True, default=0)
