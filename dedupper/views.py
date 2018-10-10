@@ -259,7 +259,7 @@ def import_csv(request):
     channel = request.GET.get('channel')  # sf channel to pull from db
     rep_header_map = request.GET.get('rep_map')  # the JSON of csv headers mapped to db fields
     rep_header_map = json.loads(rep_header_map)  # JSON -> dict()
-    progress_num= progress.objects.all().count()
+    request.session['prog_num']= progress.objects.all().count()
     request.session['sfCSV_name'] = f'the {channel} channel'  # for printing
 
     db_data = {  # packing data
@@ -460,7 +460,7 @@ def db_progress(request):
     global rep_prog
     if request.method == 'GET':
         print('checking progress')
-        print(f"actual:{progress.objects.count()}, expected:{progress_num}")
+        print(f"actual:{progress.objects.count()}, expected:{request.session['prog_num']}")
         if progress.objects.count() != progress_num:
             try:
                 db_job = q.fetch_job(request.session['rq_job'])
