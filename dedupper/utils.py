@@ -487,9 +487,9 @@ def get_channel(data):
     # print('key stats: DONE')
     print('job: DONE')
     data = pd_rep_csv.to_csv() + '--$--'+ territory.to_csv()
-    checksum = zlib.crc32(data)
+    checksum = zlib.crc32(data.encode())
 
-    compressed = zlib.compress(data)
+    compressed = zlib.compress(checksum)
     print('sending data')
     return zipped
 
