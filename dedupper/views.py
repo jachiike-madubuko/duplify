@@ -6,6 +6,7 @@ from difflib import SequenceMatcher as SeqMat
 import django_rq
 import pandas as pd
 import tablib
+import zlib
 from django import db
 from django.conf import settings
 from django.core.management import call_command
@@ -466,6 +467,8 @@ def db_progress(request):
             try:
                 db_job = q.fetch_job(request.session['rq_job'])
                 if db_job:
+                    db_job  = zlib.decompress(db_job)
+
                     print(db_job)
                     if db_job.result:
                         print(db_job.result)
