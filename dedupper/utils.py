@@ -25,7 +25,7 @@ from tablib import Dataset
 from time import perf_counter
 
 import dedupper.threads
-from dedupper.models import repContact, sfcontact, dedupTime, duplifyTime, uploadTime
+from dedupper.models import repContact, sfcontact, dedupTime, duplifyTime, uploadTime, progress
 from dedupper.resources import RepContactResource, SFContactResource
 
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
@@ -487,7 +487,7 @@ def get_channel(data):
     print('job: DONE')
     data = pd_rep_csv.to_csv() + '--$--'+ territory.to_csv()
     print(len(data))
-    pr = Progress(label=data)
+    pr = progress(label=data)
     pr.save()
     print('sending data')
     return True
