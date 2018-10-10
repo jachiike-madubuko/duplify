@@ -572,7 +572,7 @@ bottom:
         function update_progress(){
             $.getJSON("{% url 'db_progress' %}", function (result) {
 
-            if ( results['msg'] < 10){
+            if ( results['msg'] == 2){
                 alert('next');
                 window.location.replace("{% url 'key' %}");
             }

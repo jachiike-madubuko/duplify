@@ -456,17 +456,14 @@ def upload(request):
     return JsonResponse( rep_dropdown, safe=False)
 
 def db_progress(request):
-    msg = 10000
+    msg = 10000000
     rep_num=0
     global rep_prog
     if request.method == 'GET':
         print('checking progress')
         print(f"actual:{progress.objects.count()}, expected:{request.session['prog_num']}")
         if progress.objects.count() > request.session['prog_num']:
-            try:
-                db_job = q.fetch_job(request.session['rq_job'])
-                if db_job:
-                    msg =2
+                    msg=2
                     reps , sf= progress.objects.latest().label.split('--$--')
                     pd.read_csv(sf).to_hdf('sf_contact.hdf', 'trill')
                     pd.read_csv(reps).to_hdf('rep_contact.hdf', 'trill')
@@ -474,11 +471,6 @@ def db_progress(request):
                     reps = pd.read_hdf('rep_contact.hdf', 'trill')
                     sf = pd.read_hdf('sf_contact.hdf', 'trill')
                     print(f'reps:{len(reps)},sf:{len(sf)}, ')
-
-
-            except Exception as e:
-                print ('no progress')
-                print(e)
     db.connections.close_all()
     print(msg)
     return JsonResponse({
