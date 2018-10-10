@@ -461,7 +461,7 @@ def db_progress(request):
     if request.method == 'GET':
         print('checking progress')
         print(f"actual:{progress.objects.count()}, expected:{request.session['prog_num']}")
-        if progress.objects.count() != progress_num:
+        if progress.objects.count() != request.session['prog_num']:
             try:
                 db_job = q.fetch_job(request.session['rq_job'])
                 if db_job:
