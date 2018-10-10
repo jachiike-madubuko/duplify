@@ -1,13 +1,17 @@
 
 import pandas as pd
-from random import randint
-import numpy as np
-import datetime
-sf_obj_df=usage_map=usage_df=obj_by_type=None
+
+sf_obj_df=usage_df=obj_by_type=None
 
 def load_contacts():
     global sf_obj_df
     sf_obj_df = pd.read_csv('contacts/panda_pickles/contact.csv')
+    sf_obj_df['LASTMODIFIEDDATE'] =pd.to_datetime(sf_obj_df['LASTMODIFIEDDATE'])
+    sf_obj_df.index = sf_obj_df['LASTMODIFIEDDATE']
+
+def load_leads():
+    global sf_obj_df
+    sf_obj_df = pd.read_csv('contacts/panda_pickles/lead.csv')
     sf_obj_df['LASTMODIFIEDDATE'] =pd.to_datetime(sf_obj_df['LASTMODIFIEDDATE'])
     sf_obj_df.index = sf_obj_df['LASTMODIFIEDDATE']
 
@@ -33,11 +37,11 @@ def fieldsByThreshold(df,up_percent, low_percent=0):
     return total_usage_per_col[ total_usage_per_col.between(low_percent/100,up_percent/100)]
 
 def get_usage_map():
-    global obj_by_type, usage_map, usage_df
+    global obj_by_type, usage_df
 
     try:
-        usage_df = pd.read_picke('contacts/panda_pickles/usage.pkl')
-    except:
+        usage_df = pd.read_pickle('contacts/panda_pickles/usage.pkl')
+    except Exception:
         obj_by_type = {i: sf_obj_df[sf_obj_df['RECORD_TYPE_NAME__C'] == i] for i in
                        sf_obj_df.RECORD_TYPE_NAME__C.unique()}
 

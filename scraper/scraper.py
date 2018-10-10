@@ -1,22 +1,16 @@
 
-# coding: utf-8
 
-
-
-
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
-import spacy
-import pandas as pd
-from time import sleep
-from simple_salesforce import Salesforce
-import json
-from fuzzywuzzy import fuzz
-from random import randint
-from functools import reduce
-from collections import defaultdict
 import datetime
+import json
+from collections import defaultdict
+from functools import reduce
+from time import sleep
+
+# import spacy
+import pandas as pd
+from selenium import webdriver
+from simple_salesforce import Salesforce
+
 browser = None
 #query contacts
 # query = f"select Id, CRD__c, Name, Middle_Name__c, MailingStreet, MailingCity, MailingState, MailingPostalCode, Finra_BrokerCheck__c, Broker_Dealer__r.Firm_CRD__c , Broker_Dealer__r.Name from Contact where Broker_Dealer__r.Firm_CRD__c != null  limit 100"
@@ -25,7 +19,7 @@ browser = None
 # len(contacts)
 
 
-nlp = spacy.load('en_core_web_sm')
+# #nlp = spacy.load('en_core_web_sm')
 
 # ids = [i['Id'] for i in contacts]   #list of contactIDs
 # crds = [i['CRD__c'] for i in contacts]   #list of CRDs
@@ -314,10 +308,13 @@ def finra_report_job(CRDs):
 
 
 def fuzz_comp(sf, finra):
-    sf = nlp(u"{}".format(str(sf).lower()))
-    finra = nlp(u"{}".format(str(finra).lower()))
-    similarity = sf.similarity(finra)
-    print(sf.text, finra.text, similarity)
-    if similarity > 0.75:
-        return True
+    try:
+        sf = nlp(u"{}".format(str(sf).lower()))
+        finra = nlp(u"{}".format(str(finra).lower()))
+        similarity = sf.similarity(finra)
+        print(sf.text, finra.text, similarity)
+        if similarity > 0.75:
+            return True
+    except:
+        print('hi')
     return False

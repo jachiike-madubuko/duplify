@@ -5,25 +5,29 @@ Created on Sat May 19 17:53:34 2018
 
 @author: jachi
 """
-import dedupper.threads
-import os
-from dedupper.models import progress, repContact, sfcontact, dedupTime, duplifyTime, uploadTime
-import string
-from time import perf_counter
-from random import *
-from range_key_dict import RangeKeyDict
-from fuzzywuzzy import fuzz
-from fuzzywuzzy import process #could be used to generate suggestions for unknown records
-import numpy as np
-from tablib import Dataset
 import logging
-import time                         #use datetime
+import os
+import string
+from random import *
+
+import numpy as np
+import pandas as pd
+from django import db
+from django.conf import settings
 from django.db.models import Avg
 from fuzzyset import FuzzySet
-from operator import itemgetter
-import json
-import pandas as pd
+from fuzzywuzzy import fuzz
 from gc import collect
+from operator import itemgetter
+from range_key_dict import RangeKeyDict
+from simple_salesforce import Salesforce
+from tablib import Dataset
+from time import perf_counter
+
+import dedupper.threads
+from dedupper.models import repContact, sfcontact, dedupTime, duplifyTime, uploadTime, progress
+from dedupper.resources import RepContactResource, SFContactResource
+
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
 
 
@@ -48,8 +52,10 @@ last_manual_sorting_range = RangeKeyDict({
 
 waiting= True
 keylist = list()
-currKey=sort_alg=None
+currKey=sort_alg=key_stats=None
 start=end=cnt=doneKeys=totalKeys=0
+done=complete= False
+
 
 #TODO finish phone/eemail multi sf field mapping
 
@@ -58,9 +64,13 @@ start=end=cnt=doneKeys=totalKeys=0
 #TODO django test cases realpython <--
 
 #simple csv to dataframe
-def convert_csv(file):
-    print('converting CSV: ', str(file))
-    pd_csv = pd.read_csv(file, encoding = "cp1252", delimiter=',', dtype=str)  #western european
+def convert_csv(file, name):
+    if  'csv' in name:
+        print('converting CSV: ', str(file))
+        pd_csv = pd.read_csv(file, encoding = "cp1252", delimiter=',', dtype=str)  #western european
+    else:
+        print('converting excel sheet:', str(file))
+
     return list(pd_csv), pd_csv
 
 def find_rep_dups(rep, keys, numthreads):
@@ -71,7 +81,11 @@ def find_rep_dups(rep, keys, numthreads):
     if 'NULL' in rep_key:               #dont use key with missing parts
         logging.debug("bad rep key")
         return 0
+
     search_party =  sfcontact.objects.none()        #contains the contacts that have similar fields to the rep
+
+    sf_pd = pd.read_hdf('sf_contacts.hdf')
+
 
     #refactor using Q() object
     for key in keys[:-1]:
@@ -181,7 +195,8 @@ def find_rep_dups(rep, keys, numthreads):
 
 #reset flags and storage time
 def finish(numThreads):
-    global end, waiting
+    db.connections.close_all()
+    global end, waiting, complete
     c = collect()                   #garbage collection
     logging.debug(f'# of garbage collected = {c}')
     #is this the last key
@@ -193,6 +208,7 @@ def finish(numThreads):
             else:
                 i.type = 'New Record'
             i.save()
+        complete = True
         end = perf_counter()
         time = end - start
         duplifyTime.objects.create(num_threads=numThreads,
@@ -236,14 +252,21 @@ def fuzzyset_alg(key, key_list):
         return []
 
 #the start of duplify algorithm
-def key_generator(partslist):
+def key_generator(data):
+    keys= data['key']
+    sf_contacts= data['sf_contacts']
+    rep_contacts= data['rep_contacts']
+    print(data)
+    sf_contacts.to_hdf('sf_contacts.hdf')
+    rep_contacts.to_hdf('rep_contacts.hdf')
+    db.connections.close_all()
     global start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg, keylist
     #start timer
     start = perf_counter()
-    totalKeys = len(partslist)
+    totalKeys = len(keys)
     #store keylist globally
-    keylist = partslist
-    for key_parts in partslist:
+    keylist = keys
+    for key_parts in keys:
         #determine whether strong matches sort as dups or manuals
         sort_alg = key_parts[-1]
         currKey = key_parts
@@ -269,6 +292,7 @@ def key_generator(partslist):
 
 #uploades contacts to the db
 def load_csv2db(csv, header_map, resource, file_type='rep'):
+    global done
     start = perf_counter()
     dataset = Dataset()
     pd_csv = csv
@@ -291,6 +315,7 @@ def load_csv2db(csv, header_map, resource, file_type='rep'):
     end = perf_counter()    #stop timer
     time = end - start
     if file_type == 'rep':
+        done = True
         uploadTime.objects.create(num_records = len(repContact.objects.all()), seconds=round(time, 2))
     else:
         uploadTime.objects.create(num_records = len(sfcontact.objects.all()),seconds=round(time, 2))
@@ -302,28 +327,40 @@ def misc_col(df, cols):
     return reduce(lambda x, y: x.astype(str).str.cat(y.astype(str), sep='-!-'), [df[col] for col in cols])
 
 #generates stats for each fields based on uniqueness of values and amount of blanks
-def make_keys(headers):
+def make_keys():
+    global key_stats
     keys = []
-    rep_total = repContact.objects.all().count()
-    sf_total = sfcontact.objects.all().count()
-    phoneUniqueness = 0
-    emailUniqueness = 0
-    phoneTypes = ['Phone', 'homePhone', 'mobilePhone', 'otherPhone']
-    emailTypes = ['workEmail', 'personalEmail', 'otherEmail']
     excluded = ['id', 'average', 'type', 'match_ID', 'closest1', 'closest2', 'closest3',
                 'closest1_contactID', 'closest2_contactID', 'closest3_contactID', 'dupFlag', 'keySortedBy', 'misc']
 
-    for i in headers:
+
+    reps = pd.read_json(RepContactResource().export().json)
+    SFs = pd.read_json(SFContactResource().export().json)
+    [df.replace('', np.nan, inplace=True) for df in [reps, SFs]]
+
+    sf_count = 100*(SFs.count() / float(len(SFs)) )
+    rep_count = 100*(reps.count() / float(len(reps)) )
+
+
+    for i in set(reps.columns).intersection(set(SFs.columns)):
         if i not in excluded:
-            kwargs = {
-                '{}__{}'.format(i, 'exact'):''
-            }
-            rp_uniqueness = repContact.objects.order_by().values_list(i).distinct().count() / rep_total
-            rp_utility = (len(repContact.objects.all()) - len(repContact.objects.filter(**kwargs))) /rep_total
-            sf_uniqueness = sfcontact.objects.order_by().values_list(i).distinct().count() / sf_total
-            sf_utility = (len(sfcontact.objects.all()) - len(sfcontact.objects.filter(**kwargs))) /sf_total
-            score = (rp_uniqueness + rp_utility + sf_uniqueness + sf_utility)/4
-            keys.append((i, int(rp_uniqueness * 100), int(rp_utility * 100), int(sf_uniqueness * 100), int(sf_utility * 100), score))
+            if reps[i].count() != 0:
+                rp_utility = int(rep_count[i])
+                sf_utility = int(sf_count[i])
+                if reps[i].count() > 0 :
+                    rp_uniqueness = int(float(float(len(reps[i].unique()) )/ float(reps[i].count())) *100)
+                else:
+                    rp_uniqueness = 0
+                if SFs[i].count() > 0:
+                    sf_uniqueness = int(float(float(len(SFs[i].unique())) / float(SFs[i].count()))*  100)
+                else:
+                    sf_uniqueness = 0
+
+                score =   np.average([ rp_uniqueness, rp_utility, sf_uniqueness, sf_utility])
+
+                stat = (i, rp_uniqueness, rp_utility, sf_uniqueness, sf_utility, score)
+            else: stat = (i,0,0,0,0,0)
+            keys.append(stat)
     keys.sort(key=itemgetter(5), reverse=True)
     return keys
 
@@ -392,3 +429,83 @@ def sort(avg):
 #returns data for the progress screeen
 def get_progress():
     return doneKeys, totalKeys, currKey, cnt
+
+def get_channel(data):
+
+    global done
+    channel = data['channel']
+    rep_header_map = data['map']
+    pd_rep_csv =data['reps']
+    print('loading sf: STARTED')
+    sf = Salesforce(password='7924trill', username='jmadubuko@wealthvest.com',
+                    security_token='W4ItPbGFZHssUcJBCZlw2t9p2')
+    query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where Territory_Type__c='Geography' and Territory__r.Name like "
+    starts_with = f"'{channel}%'"
+    print ('querying SF')
+    territory = sf.bulk.Contact.query(query + starts_with)
+    print(len(territory))
+    territory = pd.DataFrame(territory).drop('attributes', axis=1).replace([None], [''], regex=True)
+    #store hdf
+    # territory.to_hdf('sf_contact.hdf', 'sf', mode='w')
+
+
+
+    sf_header_map = {
+           'CRD__c': 'CRD',
+           'Email': 'workEmail',
+           'FirstName': 'firstName',
+           'HomePhone': 'homePhone',
+           'Id': 'ContactID',
+           'LastName': 'lastName',
+           'MailingCity': 'mailingCity',
+           'MailingPostalCode': 'mailingZipPostalCode',
+           'MailingState': 'mailingStateProvince',
+           'MailingStreet': 'mailingStree t',
+           'MobilePhone': 'mobilePhone',
+           'OtherPhone': 'otherPhone',
+           'Phone': 'Phone',
+           'Personal_Email__c': 'personalEmail',
+           'Other_Email__c': 'otherEmail',
+           'Suffix': 'suffix',
+                       }
+
+    # sfcontact_resource = SFContactResource()
+    repcontact_resource = RepContactResource()
+    # load_csv2db(territory, sf_header_map,
+    # sfcontact_resource, file_type='SF')
+    territory.rename(columns=sf_header_map, inplace=True)
+
+    print('loading sf: DONE')
+
+    print(pd_rep_csv.shape)
+    print('loading rep: STARTED')
+    # load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
+    print('loading rep: DONE')
+    # print('key stats: STARTED')
+    # # make_keys()
+    # print('key stats: DONE')
+    print('job: DONE')
+    data = pd_rep_csv.to_csv() + '--$--'+ territory.to_csv()
+    print(len(data))
+    pr = progress(label=data)
+    pr.save()
+    print('sending data')
+    return True
+
+def get_key_stats():
+    return key_stats
+
+def completed():
+    return complete
+
+def db_done():
+    try:
+        d = pd.read_pickle(settings.SF_CSV)
+        print (type(d))
+        status =list(d['status'] == 1)[0]
+        print (f'status: {status}')
+        if status:
+             return status
+    except Exception as e:
+        print(e)
+        return

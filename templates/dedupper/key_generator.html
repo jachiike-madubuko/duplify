@@ -125,22 +125,17 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
         integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
 <script src="http://yui.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.6.2/mousetrap.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/js/mdb.min.js"></script>
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/js/mdb.min.js"></script>
 
 <script>
     $(document).ready(function() {
 
         var data = [
-            {% for key, rep_uniqueness, rep_utility, sf_uniqueness, sf_utility, score in keys %}
+            {% for key in keys %}
                 {
                     id: {{ forloop.counter0 }},
                     text:"{{ key }}",
-                    value:'{{ key }}',
-                    rep_uniqueness: {{ rep_uniqueness }},
-                    rep_utility: {{ rep_utility }},
-                    sf_uniqueness: {{ sf_uniqueness }},
-                    sf_utility: {{ sf_utility }}
+                    value:'{{ key }}'
                 },
             {% endfor %}
         ]
@@ -171,7 +166,7 @@
             theme: "bootstrap",
             placeholderOption: 'first',
             data: data,
-            templateResult: colorCode
+            {#templateResult: colorCode#}
         });
         $('input').addClass('mousetrap');
 
@@ -396,7 +391,7 @@
         sList = sList.slice(9, sList.length-1);
         //convert sList to have _ instead of spaces (idsList) and make check box id=idsList then select #idsList for genKeys
         var idsList = sList.replace(/ /g, "-");
-        var key = '<li class="madeKey text-black rounded z-depth-4 border border-black mt-4 white"> <div class="row ' +
+        var key = '<li class="madeKey text-black rounded z-depth-4 border border-black mt-3 white"> <div class="row ' +
             'pt-2" ' +
             'style="height: ' +
             '40px"><div ' +
@@ -468,7 +463,7 @@
     }
 </script>
 <nav class="navbar navbar-expand-lg navbar-white scrolling-navbar">
-    <h2> <strong><a class="navbar-brand  text-white     " href="#" >Duplify</a></strong></h2>
+    <h2> <strong><a class="navbar-brand  text-white     " href="{% url 'index' %}" >Duplify</a></strong></h2>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -613,7 +608,7 @@ fixed;
 bottom:
 50px;
                     right: 30px;">
-                            <span class="fa fa-2x fa-download"></span>
+                            <span class="fa fa-2x fa-play"></span>
                         </button>
                     </div>
                     <div class="col-4"></div>

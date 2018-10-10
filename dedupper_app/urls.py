@@ -13,10 +13,9 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls import include
 from django.contrib import admin
-from django.urls import path, include
-from django.conf.urls import url, include
-
+from django.urls import path
 
 urlpatterns = [
     path('dedupper/', include('dedupper.urls')),
@@ -26,4 +25,8 @@ urlpatterns = [
     path(r'jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),  # Django JET dashboard URLS
     path(r'jet/', include('jet.urls', 'jet')),  # Django JET URLS
     path('admin/', admin.site.urls),
+]
+
+urlpatterns += [
+    path('django-rq/', include('django_rq.urls'))
 ]

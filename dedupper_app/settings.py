@@ -10,9 +10,11 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+
 import dj_database_url
 import django_heroku
 from django.conf.locale.en import formats as en_formats
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -25,7 +27,7 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 SECRET_KEY = "gbo6kx1v+xk+uyxlzkjrmuc25ak0o!4o2ksa+^fy04(3(85p8w"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # Application definition
 
@@ -42,8 +44,9 @@ INSTALLED_APPS = [
     'scraper.apps.ScraperConfig',
     'django.contrib.postgres',
     'django_tables2',
-    'django_filters',
+    # 'django_filters',
     'import_export',
+    "django_rq",
 
     # Disable Django's own staticfiles handling in favour of WhiteNoise, for
     # greater consistency between gunicorn and `./manage.py runserver`. See:
@@ -101,6 +104,33 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
+RQ_QUEUES = {
+    'default': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        'PASSWORD': 'some-password',
+        'DEFAULT_TIMEOUT': 360,
+    },
+    'with-sentinel': {
+       'SENTINELS': [('localhost', 26736), ('localhost', 26737)],
+       'MASTER_NAME': 'redismaster',
+       'DB': 0,
+       'PASSWORD': 'secret',
+       'SOCKET_TIMEOUT': None,
+    },
+    'high': {
+        'URL': os.getenv('REDISTOGO_URL', 'redis://localhost:6379/0'), # If you're on Heroku
+        'DEFAULT_TIMEOUT': 500,
+    },
+    'low': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+    }
+}
+
 # db_from_env = dj_database_url.config(conn_max_age=500)
 # DATABASES['default'].update(db_from_env)
 
@@ -135,6 +165,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
+
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
@@ -172,3 +203,4 @@ django_heroku.settings(locals())
 
 REP_CSV = os.path.join(BASE_DIR, 'uploads', 'rep_csv.pkl')
 SF_CSV = os.path.join(BASE_DIR, 'uploads', 'sf_csv.pkl')
+JOB_STATUS = os.path.join(BASE_DIR, 'uploads', 'job.json')

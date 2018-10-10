@@ -75,5 +75,12 @@ scrapyd = "*"
 python-scrapyd-api = "*"
 spacy = "==2.0.12"
 Scrapy = "*"
+rq = "*"
+redis = "*"
+gevent = "==1.3.6"
+greenlet = "*"
+aiohttp = "==1.3.5"
+eventlet = "*"
+django-rq = "*"
 
 [dev-packages]

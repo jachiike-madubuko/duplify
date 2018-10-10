@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Duplify</title>
+    <title>Duplify | Home</title>
 
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -42,19 +42,30 @@
                 </button>
             </div>
             <div class="modal-body">
-               <h2> <a href="{% url 'map' %}" style="">Duplify</a></h2>
-                <h2><a href="{% url 'contact_index' %}" style="">Contact Analysis</a></h2>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save</button>
+                <h2>
+                    <a href="{% url 'map' %}" style="">Duplify <i class="fa fa-arrow-circle-o-right"></i></a>
+                </h2>
+                <h2>
+
+                    <a href="{% url 'contact_index' %}" style="">Contact Analysis <i class="fa
+                    fa-arrow-circle-o-right"></i>
+                    </a>
+
+                </h2>
+                <h2>
+
+                    <a href="{% url 'lead_index' %}" style="">Lead Analysis <i class="fa
+                    fa-arrow-circle-o-right"></i>
+                    </a>
+
+                </h2>
             </div>
         </div>
     </div>
 </div>
 
 <div  class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-     aria-hidden="true">
+      aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header text-center">
@@ -90,7 +101,7 @@
 <nav class="navbar fixed-top navbar-expand-lg navbar-dark scrolling-navbar">
     <div class="container">
         <!-- Brand -->
-        <a class="navbar-brand" href="https://mdbootstrap.com/material-design-for-bootstrap/" target="_blank">
+        <a class="navbar-brand" href="{% url 'index' %}" target="_blank">
             <strong>Duplify</strong>
         </a>
 
@@ -106,7 +117,7 @@
             <!-- Left -->
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="#">Home
+                    <a class="nav-link" href="{% url 'index' %}">Home
                         <span class="sr-only">(current)</span>
                     </a>
                 </li>
@@ -184,7 +195,7 @@
                         </h1>
 
                         <p>
-                            <strong>Finding Duplicate just became a hike in Montana</strong>
+                            <strong>Finding duplicates just became a hike in Montana</strong>
                         </p>
 
                         <p class="mb-4 d-none d-md-block">
@@ -216,7 +227,7 @@
     <div class="container text-center grey-text">
 
         <hr class="my-5">
-            Just Do It
+        Just Do It
     </div>
 </main>
 <!--Main layout-->
@@ -234,19 +245,19 @@
 <script src="https://www.jqueryscript.net/demo/Polygonal-Particles-Background-polygonizr/polygonizr.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/js/dataTables.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.19/js/dataTables.material.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.6.2/mousetrap.min.js"></script>
+<!-- TODO add keyboard shortcuts -->
 <script type="text/javascript">
     // Animations initialization
     new WOW().init();
 
     function send_her(){
         $.getJSON("{% url 'login' %}", {username: $("#form1").val(), password: $("#form2").val()}, function(results){
-            if ('success'.localeCompare( results['msg']) != 0){
-                $("#modalLoginForm").modal('hide');
-                $("#modelId").modal('show');
+            if ('success'.localeCompare( results['msg']) == 0){
+                window.location.replace({% url 'map' %});
             }else{
                 alert('Incorrect Username/Password. Please try again');
             }
-
         });
     }
 </script>

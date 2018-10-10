@@ -1,30 +1,32 @@
-from django.shortcuts import render
-from django.views.generic import TemplateView, ListView
-import django_tables2
-from dedupper.models import dedupTime, duplifyTime, uploadTime,  sfcontact, repContact, progress
-from dedupper.tables import StatsTable, SFContactTable, RepContactTable
-from tablib import Dataset
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, redirect
-from dedupper.forms import UploadFileForm
-from django_filters.views import FilterView
-from django_tables2.views import SingleTableMixin, RequestConfig
-from django.core.management import call_command
-from dedupper.resources import RepContactResource, SFContactResource, DedupTimeResource, DuplifyTimeResource, UploadTimeResource
-from  dedupper.utils import *
 import csv
 import json
 import pickle
-from django.conf import settings
 from difflib import SequenceMatcher as SeqMat
+
+import django_rq
 import pandas as pd
-from simple_salesforce import Salesforce
 import tablib
+from django import db
+from django.conf import settings
+from django.core.management import call_command
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render, redirect
+from django_tables2.views import RequestConfig
+from simple_salesforce import Salesforce
+
+from dedupper.forms import UploadFileForm
+from dedupper.tables import StatsTable, SFContactTable, RepContactTable
+from dedupper.utils import *
 
 tablib.formats.json.json = json
+sf_prog =rep_prog=progress_num = 0
 
 keys= []
 name_sort=address_sort=email_sort=crd_sort=phone_sort=average_sort=key_sort=True
+db_job=rep_df = None
+UPLOAD_JOB_ID = '79243664'
+DUPLIFY_JOB_ID = '36647924'
+q =django_rq.get_queue('high', autocommit=True, is_async=True)
 
 def display(request):
     return render(request, 'dedupper/data-table.html')
@@ -209,7 +211,7 @@ def download_times(request,type):
         audit_info.append([f"Duplify Audit of {repCSV_name} duped against {sfCSV_name}"])
         audit_info.append([""])
         audit_info.append([f"Number of Records in Rep List: {total_reps} \t Number of Records in {sfCSV_name[2:]}: " +
-                          f"{total_sf}"])
+                           f"{total_sf}"])
 
         audit_info.append([f"Number of Duplicate Records in the Rep List: {total_dups}({percent_dups}%)"])
         audit_info.append([f"Number of New Records in the Rep List: {total_news}({percent_news}%)"])
@@ -250,92 +252,65 @@ def duplify(request):
 
 def flush_db(request):
     call_command('flush', interactive=False)
-    return redirect('/')
+    return redirect('/map')
 
 def import_csv(request):
-    repcontact_resource = RepContactResource()
-    sfcontact_resource = SFContactResource()
-    if request.method == 'GET':
-        channel = request.GET.get('channel')
-        rep_header_map = request.GET.get('rep_map')
+    global db_job, progress_num
+    channel = request.GET.get('channel')  # sf channel to pull from db
+    rep_header_map = request.GET.get('rep_map')  # the JSON of csv headers mapped to db fields
+    rep_header_map = json.loads(rep_header_map)  # JSON -> dict()
+    request.session['prog_num']= progress.objects.all().count()
+    request.session['sfCSV_name'] = f'the {channel} channel'  # for printing
 
-        # sf_header_map = json.loads(sf_header_map)
-        rep_header_map = json.loads(rep_header_map)
+    db_data = {  # packing data
+        'channel': channel,
+        'reps': pd.read_pickle(settings.REP_CSV),
+        'map': rep_header_map
 
-        pd_rep_csv = pd.read_pickle(settings.REP_CSV)
+    }
+    # the csv headers are stored to be used for exporting
+    # get_channel queries the channel and loads the rep list and sf contacts
+    request.session['misc'] = list(rep_header_map.keys())
+    newest =  q.enqueue(get_channel, db_data, job_id=UPLOAD_JOB_ID, timeout='1h', result_ttl='1h')
 
-        # sf = Salesforce(password='7924Trill!', username='jmadubuko@wealthvest.com', organizationId='00D36000001DkQo')
-        query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where Territory_Type__c='Geography' and Territory__r.Name like "
-        starts_with = f"'{channel}%'"
-        request.session['sfCSV_name'] = f'the {channel} channel'
-        # territory = sf.bulk.Contact.query(query + starts_with)
-        # print(len(territory))
-        # territory = pd.DataFrame(territory).drop('attributes', axis=1).replace([None], [''], regex=True)
-        sf_header_map = {
-           'CRD__c': 'CRD',
-           'Email': 'workEmail',
-           'FirstName': 'firstName',
-           'HomePhone': 'homePhone',
-           'Id': 'ContactID',
-           'LastName': 'lastName',
-           'MailingCity': 'mailingCity',
-           'MailingPostalCode': 'mailingZipPostalCode',
-           'MailingState': 'mailingStateProvince',
-           'MailingStreet': 'mailingStreet',
-           'MobilePhone': 'mobilePhone',
-           'OtherPhone': 'otherPhone',
-           'Phone': 'Phone',
-           'Personal_Email__c': 'personalEmail',
-           'Other_Email__c': 'otherEmail',
-           'Suffix': 'suffix',
-                       }
-        # load_csv2db(territory, sf_header_map, sfcontact_resource, file_type='SF')
-        request.session['misc'] = load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
 
+    request.session['rq_job'] = UPLOAD_JOB_ID
 
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def index(request):
-    '''
-    :param request:
-    :return:
-    Saleforce login:
-
-    from simple_salesforce import Salesforce
-    sf = Salesforce(password='password', username='myemail@example.com', organizationId='D36000001DkQo')
-    https://developer.salesforce.com/blogs/developer-relations/2014/01/python-and-the-force-com-rest-api-simple-simple-salesforce-example.html
-    https://github.com/simple-salesforce/simple-salesforce
-    '''
     return render(request, 'dedupper/login.html')
-def upload_page(request):
-    '''
-    :param request:
-    :return:
-    Saleforce login:
 
-    from simple_salesforce import Salesforce
-    sf = Salesforce(password='password', username='myemail@example.com', organizationId='D36000001DkQo')
-    https://developer.salesforce.com/blogs/developer-relations/2014/01/python-and-the-force-com-rest-api-simple-simple-salesforce-example.html
-    https://github.com/simple-salesforce/simple-salesforce
-    '''
+def upload_page(request):
+
     return render(request, 'dedupper/rep_list_upload.html')
 
 def key_gen(request):
-    try:
-        if  'key_n_stats' in request.session:
-            key =  request.session['key_n_stats']
-        else:
-            key = make_keys([i.name for i in repContact._meta.local_fields])
-            request.session['key_n_stats'] = key
-    except:
-        key = [('error', 100, 0, 100, 0, 100)]
-    return render(request, 'dedupper/key_generator.html', {'keys': key})
+    # key= None
+    # while not key:
+    #     key = get_key_stats()
+    # print ('generating keys: STARTED')
+    # rps =set( [i.name for i in repContact._meta.local_fields])
+    # sfs = set( [i.name for i in sfcontact._meta.local_fields])
+    #
+    # key= list(rps.intersection(sfs))
+    # key.sort()
+    #
+
+    key = pd.read_hdf('sf_contact.hdf')
+    print(key)
+    db.connections.close_all()
+
+    print ('generating keys: DONE')
+
+
+    return render(request, 'dedupper/key_generator.html', {'keys': key.columns})
 
 def login(request):
     u = request.GET.get('username')
     p = request.GET.get('password')
     try:
-        sf = Salesforce(username=u, password=p, organizationId='00D36000001DkQo')
+        sf = Salesforce(password='7924trill', username='jmadubuko@wealthvest.com',  security_token='W4ItPbGFZHssUcJBCZlw2t9p2')
         msg= 'success'
         #store u & p in session, create function called login_check that makes sure a username is in the session
         # else, redirect to /
@@ -376,16 +351,19 @@ def merge(request, id):
         obj_map = {i:j for i,j in zip(fields, list(zip(obj,mergers[0])) ) }
     return render(request, 'dedupper/sort_view.html', {'objs' : obj_map})
 
-def progress(request):
+def dup_progress(request):
     if request.method == 'GET':
-        reps = len(repContact.objects.all())
-        dups = len(repContact.objects.filter(type='Duplicate'))
-        news = len(repContact.objects.filter(type='New Record'))
-        undies = len(repContact.objects.filter(type='Undecided'))
-        manu = len(repContact.objects.filter(type='Manual Check'))
+        reps =  request.session['rep_size']
         doneKeys, numKeys, currKey, doneReps = get_progress()
-        keyPercent = round(((doneKeys/numKeys)*100) + ((1/numKeys) * (doneReps/reps)*100),2)
-        repPercent = round(100*(reps-undies)/reps,2)
+        # keyPercent = round(((doneKeys/numKeys)*100) + ((1/numKeys) * (doneReps/reps)*100),2)
+        if duplifyTime.objects.count() != 0:
+            keyPercent = 100
+            repPercent = 100
+        else:
+            keyPercent = 0
+            repPercent = 0
+
+        # repPercent = round(100*(reps-undies)/reps,2)
         key_stats = []
         for i in keys:
             key = '-'.join(i)
@@ -397,8 +375,8 @@ def progress(request):
             key_stats.append({'title': title, 'undies': undies, 'dups': dups, 'news': news, 'manu': manu})
         stats_table = StatsTable(key_stats)
 
-    return JsonResponse({'reps': reps, 'dups': dups, 'news': news, 'undies':undies, 'doneKeys': doneKeys,
-                         'numKeys': numKeys, 'doneReps': doneReps, 'currKey':currKey, 'manu': manu,
+    return JsonResponse({'reps': reps, 'dups': 0, 'news': 0, 'undies':0, 'doneKeys': 0,
+                         'numKeys': 0, 'doneReps': 0, 'currKey':0, 'manu': 0,
                          'keyPercent': keyPercent, 'repPercent': repPercent, 'table': stats_table.as_html(request)},
                         safe=False)
 
@@ -433,29 +411,41 @@ def contact_sort(request):
 def run(request):
     global keys
     if request.method == 'GET':
+        db.connections.close_all()
         keylist = request.GET.get('keys')
         #channel = request.GET.get('channel')
         keylist = keylist.split("_")
+        sf_contacts = pd.read_hdf('sf_contacts.hdf', 'trill')
+        rep_contacts = pd.read_hdf('rep_contacts.hdf', 'trill')
         partslist = [i.split('-') for i in keylist[:-1]]
         keys=partslist
-        result = key_generator(partslist)
+        data= {
+            'keys' : partslist,
+            'sf_contacts' : sf_contacts,
+            'rep_contacts' : rep_contacts
+        }
+        newest = q.enqueue(key_generator, data, job_id=DUPLIFY_JOB_ID, timeout='1h', result_ttl='1h')
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def upload(request):
-    global export_headers, keys
+    global export_headers, keys, pd_df
 
     print('uploading file')
     form = UploadFileForm(request.POST, request.FILES)
     repCSV = request.FILES['repFile']
     request.session['repCSV_name'] = str(repCSV)
-    rep_headers, pd_rep_csv = convert_csv(repCSV)
+    rep_headers, pd_rep_csv = convert_csv(repCSV, str(repCSV))
+
     request.session['repCSV_headers'] = rep_headers
+    request.session['rep_size'] = len(pd_rep_csv)
+    print(f'rep size: {len(pd_rep_csv)}')
     export_headers = rep_headers
 
     # keys = make_keys(headers)
-    with open(settings.REP_CSV, 'wb') as file:
-        pickle.dump(pd_rep_csv, file)
-        print('pickle dump reps')
+    pd_rep_csv.to_pickle(settings.REP_CSV)
+    pd_df = pd_rep_csv
+    print(pd_rep_csv.shape)
+
 
     exclude = ('id', 'misc', 'average', 'type', 'closest1_contactID', 'closest1', 'closest2_contactID', 'closest2', 'closest3_contactID', 'closest3', 'dupFlag', 'keySortedBy', 'closest_rep')
     rep_key = [i.name for i in repContact._meta.local_fields if i.name not in exclude]
@@ -463,8 +453,38 @@ def upload(request):
 
     rep_headers= request.session['repCSV_headers']
     rep_dropdown = {i: sorted(rep_headers, key= lambda x: SeqMat(None, x, i).ratio(), reverse=True) for i in rep_key}
-
-
-    print(rep_dropdown)
     return JsonResponse( rep_dropdown, safe=False)
+
+def db_progress(request):
+    msg = 10000
+    rep_num=0
+    global rep_prog
+    if request.method == 'GET':
+        print('checking progress')
+        print(f"actual:{progress.objects.count()}, expected:{request.session['prog_num']}")
+        if progress.objects.count() > request.session['prog_num']:
+            try:
+                db_job = q.fetch_job(request.session['rq_job'])
+                if db_job:
+                    msg =2
+                    reps , sf= progress.objects.latest().label.split('--$--')
+                    pd.read_csv(sf).to_hdf('sf_contact.hdf', 'trill')
+                    pd.read_csv(reps).to_hdf('rep_contact.hdf', 'trill')
+
+                    reps = pd.read_hdf('rep_contact.hdf')
+                    sf = pd.read_hdf('sf_contact.hdf')
+                    print(f'reps:{len(reps)},sf:{len(sf)}, ')
+
+
+            except Exception as e:
+                print ('no progress')
+                print(e)
+    db.connections.close_all()
+    print(msg)
+    return JsonResponse({
+        'msg': msg
+    }, safe=False)
+
+#update key_gen to lower request time.
+
 

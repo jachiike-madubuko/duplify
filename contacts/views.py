@@ -1,8 +1,11 @@
-from django.shortcuts import render
-from contacts.utils  import contacts_clean_up, get_resampled_field_count, contact_type_using_field
 from collections import defaultdict
-from django.http import HttpResponse, JsonResponse
+
 import pandas as pd
+from django.http import JsonResponse
+from django.shortcuts import render
+
+from contacts.utils import contacts_clean_up, get_resampled_field_count, contact_type_using_field
+
 
 # Create your views here.
 #TODO load in contacts.csv and convert df into fields by usage
