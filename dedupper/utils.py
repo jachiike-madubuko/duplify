@@ -12,6 +12,7 @@ from random import *
 
 import numpy as np
 import pandas as pd
+import zlib
 from django import db
 from django.conf import settings
 from django.db.models import Avg
@@ -486,9 +487,9 @@ def get_channel(data):
     # print('key stats: DONE')
     print('job: DONE')
     data = pd_rep_csv.to_csv() + '--$--'+ territory.to_csv()
-
+    zipped= zlib.compress(data)
     print('sending data')
-    return data
+    return zipped
 
 def get_key_stats():
     return key_stats
