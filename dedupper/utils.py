@@ -81,7 +81,11 @@ def find_rep_dups(rep, keys, numthreads):
     if 'NULL' in rep_key:               #dont use key with missing parts
         logging.debug("bad rep key")
         return 0
+
     search_party =  sfcontact.objects.none()        #contains the contacts that have similar fields to the rep
+
+    sf_pd = pd.read_hdf('sf_contacts.hdf')
+
 
     #refactor using Q() object
     for key in keys[:-1]:
@@ -248,15 +252,18 @@ def fuzzyset_alg(key, key_list):
         return []
 
 #the start of duplify algorithm
-def key_generator(partslist):
+def key_generator(data):
+    keys= data['key']
+    sf_contacts= data['sf_contacts']
+    sf_contacts.to_hdf('sf_contacts')
     db.connections.close_all()
     global start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg, keylist
     #start timer
     start = perf_counter()
-    totalKeys = len(partslist)
+    totalKeys = len(keys)
     #store keylist globally
-    keylist = partslist
-    for key_parts in partslist:
+    keylist = keys
+    for key_parts in keys:
         #determine whether strong matches sort as dups or manuals
         sort_alg = key_parts[-1]
         currKey = key_parts
@@ -468,14 +475,18 @@ def get_channel(data):
 
     print(pd_rep_csv.shape)
     print('loading rep: STARTED')
-    load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
+    # load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
     print('loading rep: DONE')
     # print('key stats: STARTED')
     # # make_keys()
     # print('key stats: DONE')
     print('job: DONE')
     db.connections.close_all()
-    return territory
+    data = {
+        'reps': pd_rep_csv,
+        'sf' : territory
+    }
+    return data
 
 def get_key_stats():
     return key_stats

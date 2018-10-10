@@ -414,9 +414,14 @@ def run(request):
         keylist = request.GET.get('keys')
         #channel = request.GET.get('channel')
         keylist = keylist.split("_")
+        sf_contacts = pd.read_hdf('sf_contacts', 'trill')
         partslist = [i.split('-') for i in keylist[:-1]]
         keys=partslist
-        newest = q.enqueue(key_generator, partslist, job_id=DUPLIFY_JOB_ID, timeout='1h', result_ttl='1h')
+        data= {
+            'keys' : partslist,
+            'sf_contacts' : sf_contacts
+        }
+        newest = q.enqueue(key_generator, data, job_id=DUPLIFY_JOB_ID, timeout='1h', result_ttl='1h')
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def upload(request):
@@ -461,7 +466,9 @@ def db_progress(request):
                     print(db_job)
                     if db_job.result:
                         print(db_job.result)
+                        print(type(db_job.result)
                         msg = 2
+                        db_job.result.to_hdf('sf_contact.hdf', 'trill')
                         db.connections.close_all()
 
             except Exception as e:
