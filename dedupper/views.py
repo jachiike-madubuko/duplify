@@ -297,7 +297,7 @@ def key_gen(request):
     # key.sort()
     #
 
-    key = pd.read_hf('sf_contact.hdf')
+    key = pd.read_hdf('sf_contact.hdf')
     print(key)
     db.connections.close_all()
 
