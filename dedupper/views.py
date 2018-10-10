@@ -19,7 +19,7 @@ from dedupper.tables import StatsTable, SFContactTable, RepContactTable
 from dedupper.utils import *
 
 tablib.formats.json.json = json
-sf_prog =rep_prog = 0
+sf_prog =rep_prog=progress_num = 0
 
 keys= []
 name_sort=address_sort=email_sort=crd_sort=phone_sort=average_sort=key_sort=True
@@ -255,11 +255,11 @@ def flush_db(request):
     return redirect('/map')
 
 def import_csv(request):
-    global db_job
+    global db_job, progress_num
     channel = request.GET.get('channel')  # sf channel to pull from db
     rep_header_map = request.GET.get('rep_map')  # the JSON of csv headers mapped to db fields
     rep_header_map = json.loads(rep_header_map)  # JSON -> dict()
-
+    progress_num= progress.objects.all().count()
     request.session['sfCSV_name'] = f'the {channel} channel'  # for printing
 
     db_data = {  # packing data
@@ -461,8 +461,7 @@ def db_progress(request):
     if request.method == 'GET':
         print('checking progress')
         print(f"actual:{rep_num}, expected:{request.session['rep_size']}")
-        if repContact.objects.all().count() >= request.session['rep_size']:
-            print('loading should be done')
+        if progress.objects.count() != progress_num:
             try:
                 db_job = q.fetch_job(request.session['rq_job'])
                 if db_job:
@@ -477,9 +476,6 @@ def db_progress(request):
             except Exception as e:
                 print ('no progress')
                 print(e)
-        else:
-            print(f"actual:{rep_num}, expected:{request.session['rep_size']}")
-
     return JsonResponse({
         'msg': msg
     }, safe=False)
