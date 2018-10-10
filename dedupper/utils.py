@@ -8,10 +8,7 @@ Created on Sat May 19 17:53:34 2018
 import logging
 import os
 import string
-from gc import collect
-from operator import itemgetter
 from random import *
-from time import perf_counter
 
 import numpy as np
 import pandas as pd
@@ -20,9 +17,12 @@ from django.conf import settings
 from django.db.models import Avg
 from fuzzyset import FuzzySet
 from fuzzywuzzy import fuzz
+from gc import collect
+from operator import itemgetter
 from range_key_dict import RangeKeyDict
 from simple_salesforce import Salesforce
 from tablib import Dataset
+from time import perf_counter
 
 import dedupper.threads
 from dedupper.models import repContact, sfcontact, dedupTime, duplifyTime, uploadTime
@@ -426,7 +426,7 @@ def get_channel(data):
     channel = data['channel']
     rep_header_map = data['map']
     pd_rep_csv =data['reps']
-
+    print('loading sf: STARTED')
     sf = Salesforce(password='7924Trill!', username='jmadubuko@wealthvest.com',security_token='Hkx5iAL3Al1p7ZlToomn8samW')
     query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where Territory_Type__c='Geography' and Territory__r.Name like "
     starts_with = f"'{channel}%'"
@@ -434,6 +434,11 @@ def get_channel(data):
     territory = sf.bulk.Contact.query(query + starts_with)
     print(len(territory))
     territory = pd.DataFrame(territory).drop('attributes', axis=1).replace([None], [''], regex=True)
+    #store hdf
+    # territory.to_hdf('sf_contact.hdf', 'sf', mode='w')
+
+
+
     sf_header_map = {
            'CRD__c': 'CRD',
            'Email': 'workEmail',
@@ -452,10 +457,13 @@ def get_channel(data):
            'Other_Email__c': 'otherEmail',
            'Suffix': 'suffix',
                        }
-    sfcontact_resource = SFContactResource()
+
+    # sfcontact_resource = SFContactResource()
     repcontact_resource = RepContactResource()
-    print('loading sf: STARTED')
-    load_csv2db(territory, sf_header_map, sfcontact_resource, file_type='SF')
+    # load_csv2db(territory, sf_header_map,
+    # sfcontact_resource, file_type='SF')
+    territory.rename(columns=sf_header_map, inplace=True)
+
     print('loading sf: DONE')
 
     print(pd_rep_csv.shape)
@@ -467,8 +475,7 @@ def get_channel(data):
     # print('key stats: DONE')
     print('job: DONE')
     db.connections.close_all()
-
-    return True
+    return territory
 
 def get_key_stats():
     return key_stats

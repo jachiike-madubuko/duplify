@@ -272,6 +272,8 @@ def import_csv(request):
     # get_channel queries the channel and loads the rep list and sf contacts
     request.session['misc'] = list(rep_header_map.keys())
     newest =  q.enqueue(get_channel, db_data, job_id=UPLOAD_JOB_ID, timeout='1h', result_ttl='1h')
+
+
     request.session['rq_job'] = UPLOAD_JOB_ID
 
     return JsonResponse({'msg': 'success!'}, safe=False)
@@ -307,8 +309,7 @@ def login(request):
     u = request.GET.get('username')
     p = request.GET.get('password')
     try:
-        sf = Salesforce(password='7924trill', username='jmadubuko@wealthvest.com',
-                        security_token='W4ItPbGFZHssUcJBCZlw2t9p2')
+        sf = Salesforce(password='7924trill', username='jmadubuko@wealthvest.com',  security_token='W4ItPbGFZHssUcJBCZlw2t9p2')
         msg= 'success'
         #store u & p in session, create function called login_check that makes sure a username is in the session
         # else, redirect to /
