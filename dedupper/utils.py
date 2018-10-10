@@ -485,11 +485,9 @@ def get_channel(data):
     # # make_keys()
     # print('key stats: DONE')
     print('job: DONE')
-    db.connections.close_all()
-    data = {
-        'reps': pd_rep_csv,
-        'sf' : territory
-    }
+    data = pd_rep_csv.to_csv() + '--$--'+ territory.to_csv()
+
+    print('sending data')
     return data
 
 def get_key_stats():

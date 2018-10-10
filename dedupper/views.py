@@ -471,10 +471,10 @@ def db_progress(request):
                         print(db_job.result)
                         print(type(db_job.result))
                         msg = 2
-                        rep_num = len(db_job.result['reps'])
-                        db_job.result['sf'].to_hdf('sf_contact.hdf', 'trill')
-                        db_job.result['reps'].to_hdf('rep_contact.hdf', 'trill')
-                        db.connections.close_all()
+                        reps , sf= db_job.result.split('--$--')
+                        print(f'reps:{len(reps)},sf:{len(sf)}, ')
+                        pd.read_csv(sf).to_hdf('sf_contact.hdf', 'trill')
+                        pd.read_csv(reps).to_hdf('rep_contact.hdf', 'trill')
 
             except Exception as e:
                 print ('no progress')
