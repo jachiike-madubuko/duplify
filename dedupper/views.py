@@ -467,14 +467,14 @@ def db_progress(request):
             try:
                 db_job = q.fetch_job(request.session['rq_job'])
                 if db_job:
-                    db_job  = zlib.decompress(db_job)
+                    db_job  = zlib.decompress(db_job.result)
 
                     print(db_job)
-                    if db_job.result:
-                        print(db_job.result)
-                        print(type(db_job.result))
+                    if db_job:
+                        print(db_job)
+                        print(type(db_job))
                         msg = 2
-                        reps , sf= db_job.result.split('--$--')
+                        reps , sf= db_job.split('--$--')
                         print(f'reps:{len(reps)},sf:{len(sf)}, ')
                         pd.read_csv(sf).to_hdf('sf_contact.hdf', 'trill')
                         pd.read_csv(reps).to_hdf('rep_contact.hdf', 'trill')
