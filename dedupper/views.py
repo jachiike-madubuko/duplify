@@ -6,7 +6,6 @@ from difflib import SequenceMatcher as SeqMat
 import django_rq
 import pandas as pd
 import tablib
-import zlib
 from django import db
 from django.conf import settings
 from django.core.management import call_command
@@ -467,17 +466,13 @@ def db_progress(request):
             try:
                 db_job = q.fetch_job(request.session['rq_job'])
                 if db_job:
-                    db_job  = zlib.decompress(db_job.result)
-
-                    print(db_job)
-                    if db_job:
-                        print(db_job)
-                        print(type(db_job))
-                        msg = 2
-                        reps , sf= progress.objects.get_lastest().label.split('--$--')
-                        print(f'reps:{len(reps)},sf:{len(sf)}, ')
-                        pd.read_csv(sf).to_hdf('sf_contact.hdf', 'trill')
-                        pd.read_csv(reps).to_hdf('rep_contact.hdf', 'trill')
+                    print(db_job.result)
+                    msg = 2
+                    print(progress.objects.get_lastest().label)
+                    reps , sf= progress.objects.get_lastest().label.split('--$--')
+                    print(f'reps:{len(reps)},sf:{len(sf)}, ')
+                    pd.read_csv(sf).to_hdf('sf_contact.hdf', 'trill')
+                    pd.read_csv(reps).to_hdf('rep_contact.hdf', 'trill')
 
             except Exception as e:
                 print ('no progress')
