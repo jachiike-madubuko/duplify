@@ -20,7 +20,7 @@ def run():
     input_config = {
         'input_data' : territory,
        '_id': territory['Id'].name,
-        'columns' : territory['CRD__c'].name
+        'column' : territory['CRD__c'].name
         }
     results = dupe.dedupe(input_config)
     return results
