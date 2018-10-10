@@ -471,8 +471,8 @@ def db_progress(request):
                     pd.read_csv(sf).to_hdf('sf_contact.hdf', 'trill')
                     pd.read_csv(reps).to_hdf('rep_contact.hdf', 'trill')
 
-                    reps = pd.read_hdf('rep_contact.hdf')
-                    sf = pd.read_hdf('sf_contact.hdf')
+                    reps = pd.read_hdf('rep_contact.hdf', 'trill')
+                    sf = pd.read_hdf('sf_contact.hdf', 'trill')
                     print(f'reps:{len(reps)},sf:{len(sf)}, ')
 
 

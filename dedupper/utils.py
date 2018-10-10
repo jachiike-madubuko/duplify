@@ -253,15 +253,18 @@ def fuzzyset_alg(key, key_list):
 
 #the start of duplify algorithm
 def key_generator(data):
-    keys= data['key']
+    keys= data['keys']
     sf_contacts= data['sf_contacts']
     rep_contacts= data['rep_contacts']
-    print(data)
+    print(f'key generator: num of sf={len(sf_contacts)} [{type(sf_contacts)}] \n num of rep={len(rep_contacts)} ['
+          + f'{type(rep_contacts)}]\n ')
     sf_contacts.to_hdf('sf_contacts.hdf')
     rep_contacts.to_hdf('rep_contacts.hdf')
     db.connections.close_all()
     global start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg, keylist
     #start timer
+    print('start your engines ')
+
     start = perf_counter()
     totalKeys = len(keys)
     #store keylist globally
