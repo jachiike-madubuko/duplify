@@ -572,9 +572,12 @@ bottom:
         function update_progress(){
             $.getJSON("{% url 'db_progress' %}", function (result) {
 
-            if ('success'.localeCompare( results['msg']) == 0){
-
+            if ( results['msg'] < 10){
+                alert('next');
                 window.location.replace("{% url 'key' %}");
+            }
+            else{
+                alert('dd');
             }
         });
         }
