@@ -297,13 +297,14 @@ def key_gen(request):
     # key.sort()
     #
 
-    key = make_keys()
+    key = pd.read_hf('sf_contact.hdf')
+    print(key)
     db.connections.close_all()
 
     print ('generating keys: DONE')
 
 
-    return render(request, 'dedupper/key_generator.html', {'keys': key})
+    return render(request, 'dedupper/key_generator.html', {'keys': key.columns})
 
 def login(request):
     u = request.GET.get('username')
