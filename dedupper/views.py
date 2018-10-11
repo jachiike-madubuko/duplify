@@ -469,9 +469,9 @@ def db_progress(request):
             store = False
             reps, sf = get_contacts('both')
             print ('sf df')
-            print (pd.read_csv(sf))
+            print (sf)
             print ('rep df')
-            print (pd.read_csv(reps))
+            print (reps)
             # print('storing sf contacts')
             # pd.read_csv(sf).to_hdf('sf_contact.hdf', 'trill')
             # print('storing rep contacts')
