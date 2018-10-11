@@ -23,7 +23,7 @@ tablib.formats.json.json = json
 sf_prog =rep_prog=progress_num = 0
 
 keys= []
-name_sort=address_sort=email_sort=crd_sort=phone_sort=average_sort=key_sort=True
+store=name_sort=address_sort=email_sort=crd_sort=phone_sort=average_sort=key_sort=True
 db_job=rep_df = None
 UPLOAD_JOB_ID = '79243664'
 DUPLIFY_JOB_ID = '36647924'
@@ -459,12 +459,13 @@ def upload(request):
 def db_progress(request):
     msg = 100
     rep_num=0
-    global rep_prog
+    global rep_prog, store
     if request.method == 'GET':
         print('checking progress')
         print(f"actual:{progress.objects.count()}, expected:{request.session['prog_num']}")
-        if progress.objects.count() > request.session['prog_num']:
+        if progress.objects.count() > request.session['prog_num'] and store:
             msg=2
+            store = False
             reps , sf= progress.objects.latest().label.split('--$--')
             print('storing sf contacts')
             pd.read_csv(sf).to_hdf('sf_contact.hdf', 'trill')

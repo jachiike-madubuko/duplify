@@ -565,14 +565,14 @@ bottom:
         });
         $.getJSON("{% url 'import_csv' %}", {channel: channel, rep_map: JSON.stringify
             (rep_mapping) }, function (result) {
-            setInterval(update_progress,  5000);
+            setInterval(update_progress,  10000);
         });
     }
 
         function update_progress(){
             $.getJSON("{% url 'db_progress' %}", function (result) {
 
-            if ( results['msg'] == 2){
+            if ( result['msg'] == 2){
                 alert('next');
                 window.location.replace("{% url 'key' %}");
             }
