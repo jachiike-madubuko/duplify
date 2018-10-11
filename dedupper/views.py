@@ -467,6 +467,7 @@ def db_progress(request):
             msg=2
             store = False
             reps , sf= progress.objects.latest().label.split('--$--')
+            print ('sf df')
             print (pd.read_csv(sf))
             # print('storing sf contacts')
             # pd.read_csv(sf).to_hdf('sf_contact.hdf', 'trill')
