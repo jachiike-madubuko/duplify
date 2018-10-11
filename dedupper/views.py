@@ -467,15 +467,16 @@ def db_progress(request):
             msg=2
             store = False
             reps , sf= progress.objects.latest().label.split('--$--')
-            print('storing sf contacts')
-            pd.read_csv(sf).to_hdf('sf_contact.hdf', 'trill')
-            print('storing rep contacts')
-            pd.read_csv(reps).to_hdf('rep_contact.hdf', 'trill')
-
-            reps_df = pd.read_hdf('rep_contact.hdf', 'trill')
-            sf_df = pd.read_hdf('sf_contact.hdf', 'trill')
-            print(f'reps:{reps_df.shape},sf:{sf_df.shape}, ')
-            del reps, sf, reps_df, sf_df
+            print (pd.read_csv(sf))
+            # print('storing sf contacts')
+            # pd.read_csv(sf).to_hdf('sf_contact.hdf', 'trill')
+            # print('storing rep contacts')
+            # pd.read_csv(reps).to_hdf('rep_contact.hdf', 'trill')
+            #
+            # reps_df = pd.read_hdf('rep_contact.hdf', 'trill')
+            # sf_df = pd.read_hdf('sf_contact.hdf', 'trill')
+            # print(f'reps:{reps_df.shape},sf:{sf_df.shape}, ')
+            # del reps, sf, reps_df, sf_df
 
             c = collect()  # garbage collection
             logging.debug(f'# of garbage collected after saving records on this server = {c}')
