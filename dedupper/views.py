@@ -416,8 +416,9 @@ def run(request):
         keylist = request.GET.get('keys')
         #channel = request.GET.get('channel')
         keylist = keylist.split("_")
-        sf_contacts = pd.read_hdf('sf_contacts.hdf', 'trill')
-        rep_contacts = pd.read_hdf('rep_contacts.hdf', 'trill')
+        reps, sf = progress.objects.latest().label.split('--$--')
+        sf_contacts = pd.read_csv(sf)
+        rep_contacts = pd.read_csv(reps)
         partslist = [i.split('-') for i in keylist[:-1]]
         keys=partslist
         data= {
@@ -466,9 +467,11 @@ def db_progress(request):
         if progress.objects.count() > request.session['prog_num'] and store:
             msg=2
             store = False
-            reps , sf= progress.objects.latest().label.split('--$--')
+            reps, sf = get_contacts('both')
             print ('sf df')
             print (pd.read_csv(sf))
+            print ('rep df')
+            print (pd.read_csv(reps))
             # print('storing sf contacts')
             # pd.read_csv(sf).to_hdf('sf_contact.hdf', 'trill')
             # print('storing rep contacts')

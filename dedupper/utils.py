@@ -8,6 +8,7 @@ Created on Sat May 19 17:53:34 2018
 import logging
 import os
 import string
+from io import StringIO
 from random import *
 
 import numpy as np
@@ -255,12 +256,9 @@ def fuzzyset_alg(key, key_list):
 #the start of duplify algorithm
 def key_generator(data):
     keys= data['keys']
-    sf_contacts= data['sf_contacts']
-    rep_contacts= data['rep_contacts']
+    sf_contacts, rep_contacts = get_contacts('both')
     print(f'key generator: num of sf={len(sf_contacts)} [{type(sf_contacts)}] \n num of rep={len(rep_contacts)} ['
           + f'{type(rep_contacts)}]\n ')
-    sf_contacts.to_hdf('sf_contacts.hdf')
-    rep_contacts.to_hdf('rep_contacts.hdf')
     db.connections.close_all()
     global start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg, keylist
     #start timer
@@ -489,7 +487,7 @@ def get_channel(data):
     # # make_keys()
     # print('key stats: DONE')
     print('job: DONE')
-    data = pd_rep_csv.to_csv() + '--$--'+ territory.to_csv()
+    data = pd_rep_csv.to_csv() + '--$--' + territory.to_csv()
     pr = progress(label=data)
     pr.save()
 
@@ -518,3 +516,15 @@ def db_done():
     except Exception as e:
         print(e)
         return
+
+
+def get_contacts(c_filter):
+    reps, sf = progress.objects.latest().label.split('--$--')
+
+    contact_getter = {
+        'sf': pd.read_csv(StringIO(sf)),
+        'rep': pd.read_csv(StringIO(reps)),
+        'both': (pd.read_csv(StringIO(reps)), pd.read_csv(StringIO(sf)))
+    }
+
+    return contact_getter[c_filter]
