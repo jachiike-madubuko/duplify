@@ -12,6 +12,7 @@ from django.core.management import call_command
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django_tables2.views import RequestConfig
+from gc import collect
 from simple_salesforce import Salesforce
 
 from dedupper.forms import UploadFileForm
@@ -298,13 +299,13 @@ def key_gen(request):
     #
 
     key = pd.read_hdf('sf_contact.hdf')
-    print(key)
+    print(len(key))
     db.connections.close_all()
 
     print ('generating keys: DONE')
 
 
-    return render(request, 'dedupper/key_generator.html', {'keys': key.columns})
+    return render(request, 'dedupper/key_generator.html', {'keys': list(key.columns)})
 
 def login(request):
     u = request.GET.get('username')
@@ -463,14 +464,21 @@ def db_progress(request):
         print('checking progress')
         print(f"actual:{progress.objects.count()}, expected:{request.session['prog_num']}")
         if progress.objects.count() > request.session['prog_num']:
-                    msg=2
-                    reps , sf= progress.objects.latest().label.split('--$--')
-                    pd.read_csv(sf).to_hdf('sf_contact.hdf', 'trill')
-                    pd.read_csv(reps).to_hdf('rep_contact.hdf', 'trill')
+            msg=2
+            reps , sf= progress.objects.latest().label.split('--$--')
+            print('storing sf contacts')
+            pd.read_csv(sf).to_hdf('sf_contact.hdf', 'trill')
+            print('storing rep contacts')
+            pd.read_csv(reps).to_hdf('rep_contact.hdf', 'trill')
 
-                    reps = pd.read_hdf('rep_contact.hdf', 'trill')
-                    sf = pd.read_hdf('sf_contact.hdf', 'trill')
-                    print(f'reps:{len(reps)},sf:{len(sf)}, ')
+            reps_df = pd.read_hdf('rep_contact.hdf', 'trill')
+            sf_df = pd.read_hdf('sf_contact.hdf', 'trill')
+            print(f'reps:{reps_df.shape},sf:{sf_df.shape}, ')
+            del reps, sf, reps_df, sf_df
+
+            c = collect()  # garbage collection
+            logging.debug(f'# of garbage collected after saving records on this server = {c}')
+
     db.connections.close_all()
     print(msg)
     return JsonResponse({

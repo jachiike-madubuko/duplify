@@ -490,10 +490,15 @@ def get_channel(data):
     # print('key stats: DONE')
     print('job: DONE')
     data = pd_rep_csv.to_csv() + '--$--'+ territory.to_csv()
-    print(len(data))
     pr = progress(label=data)
     pr.save()
+
+    c = collect()                   #garbage collection
+    logging.debug(f'# of garbage collected after importing records = {c}')
+
     print('sending data')
+    print(f'size of data sent: {len(data)} ')
+    del data, territory, pd_rep_csv
     return True
 
 def get_key_stats():
