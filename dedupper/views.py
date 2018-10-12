@@ -297,15 +297,17 @@ def key_gen(request):
     # key= list(rps.intersection(sfs))
     # key.sort()
     #
+    begin = perf_counter()
+    reps, sf = get_contacts('both')
+    fin = perf_counter()
+    print(f'contacts pulled in {round(fin-begin)} secs')
+    print(len(reps))
+    print(reps)
 
-    key = get_contacts('sf')
-    print(len(key))
-    db.connections.close_all()
-
+    # enqueue trill with rep and sf function then procede to fuck shit up
     print ('generating keys: DONE')
 
-
-    return render(request, 'dedupper/key_generator.html', {'keys': list(key.columns)})
+    return render(request, 'dedupper/key_generator.html', {'keys': list(sf.columns)})
 
 def login(request):
     u = request.GET.get('username')

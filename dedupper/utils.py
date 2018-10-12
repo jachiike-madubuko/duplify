@@ -433,7 +433,7 @@ def get_progress():
     return doneKeys, totalKeys, currKey, cnt
 
 def get_channel(data):
-
+    begin = perf_counter()
     global done
     channel = data['channel']
     rep_header_map = data['map']
@@ -453,23 +453,23 @@ def get_channel(data):
 
 
     sf_header_map = {
-           'CRD__c': 'CRD',
-           'Email': 'workEmail',
-           'FirstName': 'firstName',
-           'HomePhone': 'homePhone',
-           'Id': 'ContactID',
-           'LastName': 'lastName',
-           'MailingCity': 'mailingCity',
-           'MailingPostalCode': 'mailingZipPostalCode',
-           'MailingState': 'mailingStateProvince',
-           'MailingStreet': 'mailingStree t',
-           'MobilePhone': 'mobilePhone',
-           'OtherPhone': 'otherPhone',
-           'Phone': 'Phone',
-           'Personal_Email__c': 'personalEmail',
-           'Other_Email__c': 'otherEmail',
-           'Suffix': 'suffix',
-                       }
+        'CRD__c': 'CRD',
+        'Email': 'workEmail',
+        'FirstName': 'firstName',
+        'HomePhone': 'homePhone',
+        'Id': 'ContactID',
+        'LastName': 'lastName',
+        'MailingCity': 'mailingCity',
+        'MailingPostalCode': 'mailingZipPostalCode',
+        'MailingState': 'mailingStateProvince',
+        'MailingStreet': 'mailingStree t',
+        'MobilePhone': 'mobilePhone',
+        'OtherPhone': 'otherPhone',
+        'Phone': 'Phone',
+        'Personal_Email__c': 'personalEmail',
+        'Other_Email__c': 'otherEmail',
+        'Suffix': 'suffix',
+    }
 
     # sfcontact_resource = SFContactResource()
     repcontact_resource = RepContactResource()
@@ -490,13 +490,13 @@ def get_channel(data):
     data = pd_rep_csv.to_csv() + '--$--' + territory.to_csv()
     pr = progress(label=data)
     pr.save()
-
-    c = collect()                   #garbage collection
-    logging.debug(f'# of garbage collected after importing records = {c}')
-
-    print('sending data')
     print(f'size of data sent: {len(data)} ')
     del data, territory, pd_rep_csv
+    c = collect()                   #garbage collection
+    logging.debug(f'# of garbage collected after importing records = {c}')
+    fin = perf_counter()
+    print(f'####contacts stored in {round(fin-begin)} secs')
+
     return True
 
 def get_key_stats():
@@ -522,9 +522,9 @@ def get_contacts(c_filter):
     reps, sf = progress.objects.latest().label.split('--$--')
 
     contact_getter = {
-        'sf': pd.read_csv(StringIO(sf)),
-        'rep': pd.read_csv(StringIO(reps)),
-        'both': (pd.read_csv(StringIO(reps)), pd.read_csv(StringIO(sf)))
+        'sf': pd.read_csv(StringIO(sf), dtype=str, index_col=0),
+        'rep': pd.read_csv(StringIO(reps), dtype=str, index_col=0),
+        'both': (pd.read_csv(StringIO(reps), dtype=str, index_col=0), pd.read_csv(StringIO(sf), dtype=str, index_col=0))
     }
 
     return contact_getter[c_filter]
