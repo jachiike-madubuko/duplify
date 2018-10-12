@@ -12,7 +12,6 @@ from django.core.management import call_command
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django_tables2.views import RequestConfig
-from gc import collect
 from simple_salesforce import Salesforce
 
 from dedupper.forms import UploadFileForm
@@ -302,7 +301,9 @@ def key_gen(request):
     fin = perf_counter()
     print(f'contacts pulled in {round(fin-begin)} secs')
     print(len(reps))
-    print(reps)
+    print(reps.head())
+    print(len(sf))
+    print(sf.head())
 
     # enqueue trill with rep and sf function then procede to fuck shit up
     print ('generating keys: DONE')
