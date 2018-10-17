@@ -521,6 +521,7 @@ def db_done():
 def get_contacts(c_filter):
     reps, sf = progress.objects.latest().label.split('--$--')
 
+    print(progress.objects.latest().label)
     contact_getter = {
         'sf': pd.read_csv(StringIO(sf), dtype=str, index_col=0),
         'rep': pd.read_csv(StringIO(reps), dtype=str, index_col=0),
