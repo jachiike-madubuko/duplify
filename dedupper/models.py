@@ -48,6 +48,17 @@ class simple(models.Model):
             key += key_builder[part]
         return key
 
+
+class industry(models.Model):
+    title = models.CharField(max_length=256)
+    link = models.URLField(max_length=256)
+    description = models.CharField(max_length=256)
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return '{} by {} \n\t has Record type: {}'.format(self.title, self.author, self.type, self.average)
+
+
 # class Contact(hc_models.HerokuConnectModel):
 #     sf_object_name= 'Contact'
 #
