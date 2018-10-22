@@ -8,8 +8,11 @@ Created on Sat May 19 17:53:34 2018
 import logging
 import os
 import string
+from gc import collect
 from io import StringIO
+from operator import itemgetter
 from random import *
+from time import perf_counter
 
 import numpy as np
 import pandas as pd
@@ -18,12 +21,10 @@ from django.conf import settings
 from django.db.models import Avg
 from fuzzyset import FuzzySet
 from fuzzywuzzy import fuzz
-from gc import collect
-from operator import itemgetter
+from fuzzywuzzy import process
 from range_key_dict import RangeKeyDict
 from simple_salesforce import Salesforce
 from tablib import Dataset
-from time import perf_counter
 
 import dedupper.threads
 from dedupper.models import repContact, sfcontact, dedupTime, duplifyTime, uploadTime, progress
@@ -252,6 +253,51 @@ def fuzzyset_alg(key, key_list):
         return finalist[:3]
     else:
         return []
+
+
+def key_dedupe(keys):
+    start = perf_counter()
+    reps, territory = get_contacts('both')
+
+    # get reps without a matching sf record
+    unmatched_reps = reps[reps.Id.isnull()]
+
+    # get sf records that have not been matched
+
+    # map of the rep keys => index in dataframe
+    rep_key_map = {rep_key: i for i, rep_key in
+                   enumerate(list(np.add.reduce(reps[keys].astype(str).fillna('NULL'), axis=1))
+                             ) if i in unmatched_reps.index}
+
+    # loop thru each rep_key, df index pair (THREADED PART)
+    for rep_key, num in list(rep_key_map.items())[:50]:
+
+        # create a boolean mask on the sf contacts for each of the rep's field values
+        bool_filters = [list(territory[key].str.contains(reps.loc[num][key])) for key in keys]
+
+        # reduce the boolean masks with an or operator
+        rep_filter = reduce(lambda a, b: a or b, bool_filters)
+
+        # get a subset of sf contacts which have at least one field in common with the rep
+        sf_contacts = territory[rep_filter and territory.unmatched]
+
+        # generate a sf key => dataframe index map for each sf contact in the subset
+        sf_key_map = {v: k for k, v in
+                      enumerate(list(np.add.reduce(territory[keys].astype(str).fillna('NULL'), axis=1))) if
+                      k in sf_contacts.index}
+
+        # find the top 3 closest matches from the subset
+        possibilities = process.extract(rep_key, sf_key_map.keys(), limit=3, scorer=fuzz.token_sort_ratio)
+
+        # filter by those with 97% match or closer
+        top_3 = [(i, possible) for i, possible in enumerate(possibilities) if possible[1] > 97]
+
+        # if there is any record close to this then assign it's ID
+        if top_3:
+            reps.loc[rep_key_map[rep_key], 'Id'] = territory.loc[sf_key_map[top_3[0][1][0]], 'Id']
+            territory.loc[sf_key_map[top_3[0][1][0]], 'unmatched'] = False
+    print(f'time \t {round(perf_counter()-start)} seconds')
+
 
 #the start of duplify algorithm
 def key_generator(data):
@@ -527,5 +573,6 @@ def get_contacts(c_filter):
         'rep': pd.read_csv(StringIO(reps), dtype=str, index_col=0),
         'both': (pd.read_csv(StringIO(reps), dtype=str, index_col=0), pd.read_csv(StringIO(sf), dtype=str, index_col=0))
     }
+    db.connections.close_all()
 
     return contact_getter[c_filter]

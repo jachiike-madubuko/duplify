@@ -1,0 +1,13 @@
+[
+  {
+    "model": "dedupper.progress",
+    "pk": 1,
+    "fields": {
+      "label": "1 sdfsdf wd f--$-- sfdsfsfsdfgd",
+      "total": null,
+      "total_keys": null,
+      "completed": 0,
+      "created_on": "2018-10-11T21:32:55.271Z"
+    }
+  }
+]
