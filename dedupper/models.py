@@ -58,7 +58,11 @@ class industry(models.Model):
     def __str__(self):
         return '{} by {} \n\t has Record type: {}'.format(self.title, self.author, self.type, self.average)
 
+    def html(self):
+        return f'<a target="_blank"  href="{self.link}">{self.title}</a> – {self.description}'
 
+    class Meta():
+        ordering = ["title"]
 # class Contact(hc_models.HerokuConnectModel):
 #     sf_object_name= 'Contact'
 #

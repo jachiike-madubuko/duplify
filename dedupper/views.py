@@ -20,8 +20,15 @@ tablib.formats.json.json = json
 keys= []
 name_sort=address_sort=email_sort=crd_sort=phone_sort=average_sort=key_sort=True
 
+
 def display(request):
-    return render(request, 'dedupper/v2.html')
+    indust_list = get_industries()
+
+    indust_list1, indust_list2, indust_list3 = np.array_split(indust_list, 3)
+
+    return render(request, 'dedupper/v2.html', {'industry1': indust_list1,
+                                                'industry2': indust_list2,
+                                                'industry3': indust_list3, })
 
 def closest(request):
     #function gets the SFContactTable for each of the closest matches

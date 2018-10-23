@@ -24,7 +24,7 @@ from simple_salesforce import Salesforce
 from tablib import Dataset
 
 import dedupper.threads
-from dedupper.models import repContact, sfcontact, dedupTime, duplifyTime, uploadTime
+from dedupper.models import repContact, sfcontact, dedupTime, duplifyTime, uploadTime, industry
 from dedupper.resources import SFContactResource, RepContactResource
 
 standard_sorting_range = RangeKeyDict({
@@ -439,6 +439,8 @@ def get_channel(data):
     return data
 
 
+def get_industries():
+    return [i.html() for i in industry.objects.all()]
 
 
 def db_done():
