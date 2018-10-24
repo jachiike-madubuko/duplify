@@ -290,15 +290,11 @@ def key_gen(request):
     reps, sf = get_contacts('both')
     fin = perf_counter()
     print(f'contacts pulled in {round(fin-begin)} secs')
-    print(len(reps))
-    print(reps.head())
-    print(len(sf))
-    print(sf.head())
-
+    fields = set(sf.columns).intersection(set(reps.columns))
     # enqueue trill with rep and sf function then procede to fuck shit up
     print ('generating keys: DONE')
 
-    return render(request, 'dedupper/key_generator.html', {'keys': list(sf.columns)})
+    return render(request, 'dedupper/key_generator.html', {'keys': fields})
 
 def login(request):
     u = request.GET.get('username')
@@ -437,12 +433,16 @@ def upload(request):
     pd_df = pd_rep_csv
     print(pd_rep_csv.shape)
 
+    rep_key = ['CRD__c', 'FirstName', 'LastName', 'Suffix', 'MailingStreet', 'MailingCity', 'MailingState',
+               'MailingPostalCode', 'Phone', 'MobilePhone', 'HomePhone', 'otherPhone', 'Email', 'Other_Email__c',
+               'Personal_Email__c']
 
-    exclude = ('id', 'misc', 'average', 'type', 'closest1_contactID', 'closest1', 'closest2_contactID', 'closest2', 'closest3_contactID', 'closest3', 'dupFlag', 'keySortedBy', 'closest_rep')
-    rep_key = [i.name for i in repContact._meta.local_fields if i.name not in exclude]
-    [i.sort(key=lambda x: x.lower()) for i in [rep_key ]]
+    # python magic
+    [i.sort(key=lambda x: x.lower()) for i in [rep_key]]
 
     rep_headers= request.session['repCSV_headers']
+
+    #sorts the rep options based on closeness to the sf field
     rep_dropdown = {i: sorted(rep_headers, key= lambda x: SeqMat(None, x, i).ratio(), reverse=True) for i in rep_key}
     return JsonResponse( rep_dropdown, safe=False)
 
