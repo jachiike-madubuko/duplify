@@ -12,7 +12,7 @@ from django.shortcuts import render, redirect
 from django_tables2.views import RequestConfig
 from simple_salesforce import Salesforce
 
-from dedupper.forms import UploadFileForm
+from dedupper.forms import *
 from dedupper.tables import StatsTable, SFContactTable, RepContactTable
 from dedupper.utils import *
 
@@ -30,6 +30,25 @@ def display(request):
                                                 'industry2': indust_list2,
                                                 'industry3': indust_list3,
                                                 'manufacturer': manufac_list})
+
+
+def crm(request):
+    f = IndudstryForm(request.POST)
+    article = industry.objects.get(pk=1)
+    form = IndudstryForm(instance=article)
+
+    # Save a new Article object from the form's data.
+    new_article = f.save()
+
+    # Create a form to edit an existing Article, but use
+    # POST data to populate the form.
+    a = industry.objects.get(pk=1)
+    f = IndudstryForm(request.POST, instance=a)
+    f.save()
+    form = IndudstryForm()
+
+    # Creating a form to change an existing article.
+
 
 def closest(request):
     #function gets the SFContactTable for each of the closest matches

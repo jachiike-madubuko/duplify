@@ -440,11 +440,11 @@ def get_channel(data):
 
 
 def get_industries():
-    return [i.html() for i in industry.objects.all()]
+    return [i.html() for i in industry.objects.all().exclude(archived=True)]
 
 
 def get_manufacturers():
-    return [i.html() for i in manufacturer.objects.all()]
+    return [i.html() for i in manufacturer.objects.all().exclude(archived=True)]
 
 
 def db_done():
