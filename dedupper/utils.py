@@ -588,7 +588,9 @@ def update_df(update):
     global reps_df, sf_df
     reps_df.loc[update[0], 'Id'] = sf_df.loc[update[1], 'Id']
     sf_df.loc[update[1], 'unmatched'] = False
-    progress.objects.latest().update(completed_reps=progress.objects.latest().completed_reps + 1)
+    p = progress.objects.latest()
+    p.update(completed_reps=progress.objects.latest().completed_reps + 1)
+    p.save()
     db.connections.close_all()
 
 
@@ -597,8 +599,10 @@ def save_dfs():
     unmatched_reps = reps_df[reps_df.Id.notnull()]
     print(f'reps matched: {unmatched_reps}')
     data = reps_df.to_csv() + '--$--' + sf_df.to_csv()
-    progress.objects.latest().update(label=data)
-    progress.objects.latest().update(completed_keys=progress.objects.latest().completed_keys + 1)
+    p = progress.objects.latest()
+    p.label = data
+    p.completed_keys = progress.objects.latest().completed_keys + 1
+    p.save()
     db.connections.close_all()
 
     del data, unmatched_reps

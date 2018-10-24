@@ -408,7 +408,9 @@ def run(request):
         keylist = keylist.split("_")
         partslist = [i.split('-') for i in keylist[:-1]]
         keys=partslist
-        progress.objects.latest().update(total_keys=len(partslist))
+        p = progress.objects.latest()
+        p.total_keys = len(partslist)
+        p.save()
         db.connections.close_all()
         data= {
             'keys' : partslist,
@@ -444,8 +446,10 @@ def upload(request):
     rep_dropdown = {i: sorted(rep_headers, key= lambda x: SeqMat(None, x, i).ratio(), reverse=True) for i in rep_key}
     return JsonResponse( rep_dropdown, safe=False)
 
+
+msg = 100
 def db_progress(request):
-    msg = 100
+    global msgx
     rep_num=0
     global rep_prog, store
     if request.method == 'GET':
