@@ -615,7 +615,7 @@ bottom:
         function update_progress(){
             $.getJSON("{% url 'db_progress' %}", function (result) {
 
-                if ('success'.localeCompare(results['msg']) == 0) {
+                if (results['msg'] == 0) {
 
                     window.location.replace("{% url 'key' %}");
             }

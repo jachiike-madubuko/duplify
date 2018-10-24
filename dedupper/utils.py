@@ -356,7 +356,7 @@ def load_csv2db(csv, header_map, resource, file_type='rep'):
         #map replist headers to db headers
         pd_csv.rename(columns=header_map, inplace=True)
         #add id col for django import export
-        pd_csv['id'] = np.nan
+        pd_csv['Id'] = np.nan
 
         #import contact records
         dataset.csv = pd_csv.to_csv()
@@ -486,7 +486,7 @@ def get_channel(data):
     global done
     channel = data['channel']
     rep_header_map = data['map']
-    pd_rep_csv =data['reps']
+    rep_df = data['reps']
     print('loading sf: STARTED')
     sf = Salesforce(password='7924trill', username='jmadubuko@wealthvest.com',
                     security_token='W4ItPbGFZHssUcJBCZlw2t9p2')
@@ -528,20 +528,20 @@ def get_channel(data):
 
     print('loading sf: DONE')
 
-    print(pd_rep_csv.shape)
+    territory['unmatched'], rep_df["Id"] = True, np.nan
     print('loading rep: STARTED')
-    # load_csv2db(pd_rep_csv, rep_header_map, repcontact_resource)
+    # load_csv2db(rep_df, rep_header_map, repcontact_resource)
     print('loading rep: DONE')
     # print('key stats: STARTED')
     # # make_keys()
     # print('key stats: DONE')
     print('job: DONE')
-    data = pd_rep_csv.to_csv() + '--$--' + territory.to_csv()
-    pr = progress(label=data, total_reps=len(pd_rep_csv))
+    data = rep_df.to_csv() + '--$--' + territory.to_csv()
+    pr = progress(label=data, total_reps=len(rep_df))
     pr.save()
     db.connections.close_all()
     print(f'size of data sent: {len(data)} ')
-    del data, territory, pd_rep_csv
+    del data, territory, rep_df
     c = collect()                   #garbage collection
     logging.debug(f'# of garbage collected after importing records = {c}')
     fin = perf_counter()
