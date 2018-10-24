@@ -26,7 +26,7 @@ store=name_sort=address_sort=email_sort=crd_sort=phone_sort=average_sort=key_sor
 db_job=rep_df = None
 UPLOAD_JOB_ID = '79243664'
 DUPLIFY_JOB_ID = '36647924'
-q =django_rq.get_queue('high', autocommit=True, is_async=True)
+dedupe_q = django_rq.get_queue('high', autocommit=True, is_async=True)
 
 def display(request):
     return render(request, 'dedupper/data-table.html')
@@ -271,7 +271,7 @@ def import_csv(request):
     # the csv headers are stored to be used for exporting
     # get_channel queries the channel and loads the rep list and sf contacts
     request.session['misc'] = list(rep_header_map.keys())
-    newest =  q.enqueue(get_channel, db_data, job_id=UPLOAD_JOB_ID, timeout='1h', result_ttl='1h')
+    newest = dedupe_q.enqueue(get_channel, db_data, job_id=UPLOAD_JOB_ID, timeout='1h', result_ttl='1h')
 
 
     request.session['rq_job'] = UPLOAD_JOB_ID
@@ -429,7 +429,7 @@ def run(request):
             'sf_contacts' : sf_contacts,
             'rep_contacts' : rep_contacts
         }
-        newest = q.enqueue(key_generator, data, job_id=DUPLIFY_JOB_ID, timeout='1h', result_ttl='1h')
+        newest = dedupe_q.enqueue(key_generator, data, job_id=DUPLIFY_JOB_ID, timeout='1h', result_ttl='1h')
     return JsonResponse({'msg': 'success!'}, safe=False)
 
 def upload(request):

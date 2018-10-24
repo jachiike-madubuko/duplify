@@ -1,16 +1,18 @@
+import logging
 import threading
 import time
-import logging
+
+import queue  # must be in same directory as this file
+
 import dedupper.utils
-import random
-import queue  #must be in same directory as this file
 
 logging.basicConfig(level=logging.DEBUG,
                     format='(%(threadName)-9s) %(message)s',)
 
 BUFF_SIZE = 10000
-q = queue.Queue(BUFF_SIZE)
-command = list()
+dedupe_q = queue.Queue(BUFF_SIZE)
+update_q = queue.Queue(BUFF_SIZE)
+dedupe_wait_list = updates_wait_list = list()
 producer= consumers = None
 numThreads = 12
 stopper = True
@@ -25,14 +27,14 @@ class DuplifyThread(threading.Thread):
         self.event = threading.Event()  #enable easy thread stopping
 
     def run(self):
-        global command, q
+        global dedupe_wait_list, dedupe_q
         while not self.event.is_set():
-            if not q.full():
-                if command:
-                    d = command.pop()
-                    q.put(d)
+            if not dedupe_q.full():
+                if dedupe_wait_list:
+                    d = dedupe_wait_list.pop()
+                    dedupe_q.put(d)
                 else:
-                    q.put(None)
+                    dedupe_q.put(None)
                 if last_thread_killed != 0:
                     logging.debug('Time is last killed thread is {}'.format(time.time() - last_thread_killed))
                     time.sleep(5)
@@ -40,7 +42,7 @@ class DuplifyThread(threading.Thread):
             if dead_threads >= numThreads-1:
                 logging.debug('all consumer threads dead. producer stopped')
                 stop(self)
-                q = queue.Queue(BUFF_SIZE)
+                dedupe_q = queue.Queue(BUFF_SIZE)
                 dedupper.utils.finish(numThreads)
         return
 
@@ -56,9 +58,9 @@ class DedupThread(threading.Thread):
         while not self.event.is_set():
             if last_thread_killed != 0:
                 logging.debug('Time is last killed thread is {}'.format(time.time()-last_thread_killed))
-            if not q.empty():
+            if not dedupe_q.empty():
                 time.sleep(1)
-                item = q.get()
+                item = dedupe_q.get()
                 if item is None:
                     logging.debug('Queue empty, stopping thread.')
                     stop(self)
@@ -73,17 +75,51 @@ class DedupThread(threading.Thread):
 
         return
 
-def updateQ(newQ):
-    global command
-    command.extend(newQ)
+
+class UpdateThread(threading.Thread):
+    def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None):
+        super(UpdateThread, self).__init__()
+        self.target = target
+        self.name = name
+        self.event = threading.Event()  # enable easy thread stopping
+        return
+
+    def run(self):
+        while not self.event.is_set():
+            if last_thread_killed != 0:
+                logging.debug('Time is last killed thread is {}'.format(time.time() - last_thread_killed))
+            if not update_q.empty():
+                time.sleep(1)
+                item = update_q.get()
+                if item is None:
+                    logging.debug('Queue empty, stopping thread.')
+                    stop(self)
+                else:
+                    dedupper.utils.update_df(item)
+            else:
+                logging.debug('Queue empty, stopping thread.')
+            if time.time() - last_thread_killed > 15 and last_thread_killed != 0:
+                logging.debug('AUTO-KILL')
+                stop(self)
+        return
+
+
+def dedupeQ(newQ):
+    global dedupe_wait_list
+    dedupe_wait_list.extend(newQ)
     startThreads()
+
+
+def updateQ(update):
+    global updates_wait_list
+    updates_wait_list.append(update)
 
 def stop(x):
     global dead_threads, last_thread_killed
     dead_threads+=1
     last_thread_killed = time.time()
     x.event.set()
-    logging.debug('bye: {}/{} threads killed'.format(dead_threads,numThreads))
+    logging.debug('bye: {}/{} threads killed'.format(dead_threads, numThreads))
 
 def dedup(repNkey):
     dedupper.utils.find_rep_dups(repNkey[0], repNkey[1], numThreads)
@@ -97,6 +133,8 @@ def startThreads():
     last_thread_killed = 0
     producer = DuplifyThread(name='producer')
     producer.start()
+    u = UpdateThread(name='updater')
+    u.start()
     consumers = makeThreads()
     numThreads = len(consumers)
     time.sleep(5)

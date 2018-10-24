@@ -54,9 +54,10 @@ last_manual_sorting_range = RangeKeyDict({
 
 waiting= True
 keylist = list()
-currKey=sort_alg=key_stats=None
+reps_df = sf_df = currKey = sort_alg = key_stats = None
 start=end=cnt=doneKeys=totalKeys=0
 done=complete= False
+
 
 
 #TODO finish phone/eemail multi sf field mapping
@@ -257,56 +258,59 @@ def fuzzyset_alg(key, key_list):
 
 def key_dedupe(keys):
     start = perf_counter()
-    reps, territory = get_contacts('both')
+    reps = get_contacts('both')
 
     # get reps without a matching sf record
     unmatched_reps = reps[reps.Id.isnull()]
-
-    # get sf records that have not been matched
-
     # map of the rep keys => index in dataframe
     rep_key_map = {rep_key: i for i, rep_key in
                    enumerate(list(np.add.reduce(reps[keys].astype(str).fillna('NULL'), axis=1))
                              ) if i in unmatched_reps.index}
-
+    data = reps.to_csv() + '--$--' + territory.to_csv()
+    progress.objects.latest().update(label=data)
     # loop thru each rep_key, df index pair (THREADED PART)
-    for rep_key, num in list(rep_key_map.items())[:50]:
+    # send to threading Q
+    # how to package data properly
 
-        # create a boolean mask on the sf contacts for each of the rep's field values
-        bool_filters = [list(territory[key].str.contains(reps.loc[num][key])) for key in keys]
 
-        # reduce the boolean masks with an or operator
-        rep_filter = reduce(lambda a, b: a or b, bool_filters)
+def threaded_deduping(rep_key, num, keys, rep_key_map):
+    global reps_df, sf_df
+    # create a boolean mask on the sf contacts for each of the rep's field values
+    bool_filters = [list(territory[key].str.contains(reps.loc[num][key])) for key in keys]
 
-        # get a subset of sf contacts which have at least one field in common with the rep
-        sf_contacts = territory[rep_filter and territory.unmatched]
+    # reduce the boolean masks with an or operator
+    rep_filter = reduce(lambda a, b: a or b, bool_filters)
 
-        # generate a sf key => dataframe index map for each sf contact in the subset
-        sf_key_map = {v: k for k, v in
-                      enumerate(list(np.add.reduce(territory[keys].astype(str).fillna('NULL'), axis=1))) if
-                      k in sf_contacts.index}
+    # get a subset of sf contacts which have at least one field in common with the rep
+    sf_contacts = territory[rep_filter and territory.unmatched]
 
-        # find the top 3 closest matches from the subset
-        possibilities = process.extract(rep_key, sf_key_map.keys(), limit=3, scorer=fuzz.token_sort_ratio)
+    # generate a sf key => dataframe index map for each sf contact in the subset
+    sf_key_map = {v: k for k, v in
+                  enumerate(list(np.add.reduce(territory[keys].astype(str).fillna('NULL'), axis=1))) if
+                  k in sf_contacts.index}
 
-        # filter by those with 97% match or closer
-        top_3 = [(i, possible) for i, possible in enumerate(possibilities) if possible[1] > 97]
+    # find the top 3 closest matches from the subset
+    possibilities = process.extract(rep_key, sf_key_map.keys(), limit=3, scorer=fuzz.ratio)
 
-        # if there is any record close to this then assign it's ID
-        if top_3:
-            reps.loc[rep_key_map[rep_key], 'Id'] = territory.loc[sf_key_map[top_3[0][1][0]], 'Id']
-            territory.loc[sf_key_map[top_3[0][1][0]], 'unmatched'] = False
-    print(f'time \t {round(perf_counter()-start)} seconds')
+    # filter by those with 97% match or closer
+    top_3 = [(i, possible) for i, possible in enumerate(possibilities) if possible[1] > 97]
+
+    # if there is any record close to this then assign it's ID
+    if top_3:
+        # push updates to update_queue
+        dedupper.threads.updateQ((rep_key_map[rep_key], sf_key_map[top_3[0][1][0]]))
+
+
+
 
 
 #the start of duplify algorithm
 def key_generator(data):
+    global sf_df, reps_df, start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg, keylist
     keys= data['keys']
-    sf_contacts, rep_contacts = get_contacts('both')
     print(f'key generator: num of sf={len(sf_contacts)} [{type(sf_contacts)}] \n num of rep={len(rep_contacts)} ['
           + f'{type(rep_contacts)}]\n ')
     db.connections.close_all()
-    global start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg, keylist
     #start timer
     print('start your engines ')
 
@@ -315,6 +319,7 @@ def key_generator(data):
     #store keylist globally
     keylist = keys
     for key_parts in keys:
+        reps_df, sf_df = get_contacts('both')
         #determine whether strong matches sort as dups or manuals
         sort_alg = key_parts[-1]
         currKey = key_parts
@@ -333,9 +338,11 @@ def key_generator(data):
 
         print('adding {} items to the Q'.format(len(rep_list)))
         #add reps to the thread Q
-        dedupper.threads.updateQ([[rep, key_parts] for rep in rep_list])
+        dedupper.threads.dedupeQ([[rep, key_parts] for rep in rep_list])
         while waiting:
             pass
+        data = reps.to_csv() + '--$--' + territory.to_csv()
+        progress.objects.latest().update(label=data)
         doneKeys += 1
 
 #uploades contacts to the db
@@ -567,12 +574,17 @@ def db_done():
 def get_contacts(c_filter):
     reps, sf = progress.objects.latest().label.split('--$--')
 
-    print(progress.objects.latest().label)
     contact_getter = {
         'sf': pd.read_csv(StringIO(sf), dtype=str, index_col=0),
         'rep': pd.read_csv(StringIO(reps), dtype=str, index_col=0),
         'both': (pd.read_csv(StringIO(reps), dtype=str, index_col=0), pd.read_csv(StringIO(sf), dtype=str, index_col=0))
     }
     db.connections.close_all()
+    collect()
 
     return contact_getter[c_filter]
+
+
+def update_df(update):
+    reps_df.loc[update[0], 'Id'] = sf_df.loc[update[1], 'Id']
+    sf_df.loc[update[1], 'unmatched'] = False
