@@ -240,16 +240,6 @@ def download_times(request,type):
 
     return response
 
-def duplify(request):
-    if request.method == 'GET':
-        keylist = request.GET.get('keylist')
-        print('Starting algorithm with {}'.format(keylist))
-        keylist = keylist.split("_")
-        partslist = [i.split('-') for i in keylist[:-1]]
-        result = key_generator.delay(partslist)
-
-    return JsonResponse({'task_id': result.task_id}, safe=False)
-
 def flush_db(request):
     call_command('flush', interactive=False)
     return redirect('/map')
@@ -360,12 +350,9 @@ def dup_progress(request):
         reps =  request.session['rep_size']
         doneKeys, numKeys, currKey, doneReps = get_progress()
         # keyPercent = round(((doneKeys/numKeys)*100) + ((1/numKeys) * (doneReps/reps)*100),2)
-        if duplifyTime.objects.count() != 0:
-            keyPercent = 100
-            repPercent = 100
-        else:
-            keyPercent = 0
-            repPercent = 0
+
+        keyPercent = round(progress.objects.latest().completed_keys / progress.objects.latest().total_keys, 2)
+        repPercent = round(progress.objects.latest().completed_reps / progress.objects.latest().total_reps, 2)
 
         # repPercent = round(100*(reps-undies)/reps,2)
         key_stats = []
@@ -419,15 +406,12 @@ def run(request):
         keylist = request.GET.get('keys')
         #channel = request.GET.get('channel')
         keylist = keylist.split("_")
-        reps, sf = progress.objects.latest().label.split('--$--')
-        sf_contacts = pd.read_csv(sf)
-        rep_contacts = pd.read_csv(reps)
         partslist = [i.split('-') for i in keylist[:-1]]
         keys=partslist
+        progress.objects.latest().update(total_keys=len(partslist))
+        db.connections.close_all()
         data= {
             'keys' : partslist,
-            'sf_contacts' : sf_contacts,
-            'rep_contacts' : rep_contacts
         }
         newest = dedupe_q.enqueue(key_generator, data, job_id=DUPLIFY_JOB_ID, timeout='1h', result_ttl='1h')
     return JsonResponse({'msg': 'success!'}, safe=False)

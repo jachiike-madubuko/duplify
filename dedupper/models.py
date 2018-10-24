@@ -319,9 +319,10 @@ class sfcontact(models.Model):
 
 class progress(models.Model):
     label = models.TextField( blank=True)
-    total = models.IntegerField(null=True, blank=True)
+    total_reps = models.IntegerField(null=True, blank=True)
+    completed_reps = models.IntegerField(null=True, blank=True, default=0)
     total_keys = models.IntegerField(null=True, blank=True)
-    completed = models.IntegerField(null=True, blank=True, default=0)
+    completed_keys = models.IntegerField(null=True, blank=True, default=0)
     created_on = models.DateTimeField(auto_now_add=True)
 
     class Meta():

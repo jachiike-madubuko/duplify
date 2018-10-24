@@ -57,6 +57,7 @@ keylist = list()
 reps_df = sf_df = currKey = sort_alg = key_stats = None
 start=end=cnt=doneKeys=totalKeys=0
 done=complete= False
+rep_key_map = None
 
 
 
@@ -255,39 +256,44 @@ def fuzzyset_alg(key, key_list):
     else:
         return []
 
-
 def key_dedupe(keys):
-    start = perf_counter()
-    reps = get_contacts('both')
+    global rep_key_map
+
+    # extract reps
+    reps = get_contacts('reps')
 
     # get reps without a matching sf record
     unmatched_reps = reps[reps.Id.isnull()]
+
     # map of the rep keys => index in dataframe
+    #np.add.reduce => concatenates the provided columns for each rep
     rep_key_map = {rep_key: i for i, rep_key in
                    enumerate(list(np.add.reduce(reps[keys].astype(str).fillna('NULL'), axis=1))
                              ) if i in unmatched_reps.index}
-    data = reps.to_csv() + '--$--' + territory.to_csv()
-    progress.objects.latest().update(label=data)
-    # loop thru each rep_key, df index pair (THREADED PART)
-    # send to threading Q
-    # how to package data properly
+
+    print('adding {} items to the Q'.format(len(rep_key_map)))
+    # add them all to thread Q
+    dedupper.threads.dedupeQ([[rep_key, keys] for rep_key in rep_key_map.keys()])
+    del rep_key_map, unmatched_reps, reps
+    collect()
 
 
-def threaded_deduping(rep_key, num, keys, rep_key_map):
+def threaded_deduping(rep_key, keys):
     global reps_df, sf_df
+
     # create a boolean mask on the sf contacts for each of the rep's field values
-    bool_filters = [list(territory[key].str.contains(reps.loc[num][key])) for key in keys]
+    bool_filters = [list(sf_df[key].str.contains(reps_df.loc[rep_key_map[rep_key]][key])) for key in keys]
 
     # reduce the boolean masks with an or operator
     rep_filter = reduce(lambda a, b: a or b, bool_filters)
 
     # get a subset of sf contacts which have at least one field in common with the rep
-    sf_contacts = territory[rep_filter and territory.unmatched]
+    sf_contacts = sf_df[rep_filter and sf_df.unmatched]
 
     # generate a sf key => dataframe index map for each sf contact in the subset
-    sf_key_map = {v: k for k, v in
-                  enumerate(list(np.add.reduce(territory[keys].astype(str).fillna('NULL'), axis=1))) if
-                  k in sf_contacts.index}
+    sf_key_map = {sf_key: df_idx for df_idx, sf_key in
+                  enumerate(list(np.add.reduce(sf_df[keys].astype(str).fillna('NULL'), axis=1)))
+                  if df_idx in sf_contacts.index}
 
     # find the top 3 closest matches from the subset
     possibilities = process.extract(rep_key, sf_key_map.keys(), limit=3, scorer=fuzz.ratio)
@@ -299,10 +305,7 @@ def threaded_deduping(rep_key, num, keys, rep_key_map):
     if top_3:
         # push updates to update_queue
         dedupper.threads.updateQ((rep_key_map[rep_key], sf_key_map[top_3[0][1][0]]))
-
-
-
-
+    del sf_key_map, sf_contacts,
 
 #the start of duplify algorithm
 def key_generator(data):
@@ -310,7 +313,6 @@ def key_generator(data):
     keys= data['keys']
     print(f'key generator: num of sf={len(sf_contacts)} [{type(sf_contacts)}] \n num of rep={len(rep_contacts)} ['
           + f'{type(rep_contacts)}]\n ')
-    db.connections.close_all()
     #start timer
     print('start your engines ')
 
@@ -318,13 +320,12 @@ def key_generator(data):
     totalKeys = len(keys)
     #store keylist globally
     keylist = keys
-    for key_parts in keys:
-        reps_df, sf_df = get_contacts('both')
+    for key in keys:
         #determine whether strong matches sort as dups or manuals
-        sort_alg = key_parts[-1]
-        currKey = key_parts
+        sort_alg = key[-1]
+        currKey = key
         cnt=0           #restarts global count
-        print('starting key: {}'.format(key_parts))
+        print('starting key: {}'.format(key))
 
         #set flags
         waiting = True
@@ -333,16 +334,11 @@ def key_generator(data):
         #convert key string to list
         string_key = '-'.join(currKey)
 
-        #get all unsorted reps
-        rep_list = repContact.objects.filter(type='Undecided').exclude(keySortedBy=string_key)
-
-        print('adding {} items to the Q'.format(len(rep_list)))
-        #add reps to the thread Q
-        dedupper.threads.dedupeQ([[rep, key_parts] for rep in rep_list])
+        key_dedupe(key)
         while waiting:
             pass
-        data = reps.to_csv() + '--$--' + territory.to_csv()
-        progress.objects.latest().update(label=data)
+        collect()
+        save_dfs()
         doneKeys += 1
 
 #uploades contacts to the db
@@ -541,8 +537,9 @@ def get_channel(data):
     # print('key stats: DONE')
     print('job: DONE')
     data = pd_rep_csv.to_csv() + '--$--' + territory.to_csv()
-    pr = progress(label=data)
+    pr = progress(label=data, total_reps=len(pd_rep_csv))
     pr.save()
+    db.connections.close_all()
     print(f'size of data sent: {len(data)} ')
     del data, territory, pd_rep_csv
     c = collect()                   #garbage collection
@@ -576,7 +573,7 @@ def get_contacts(c_filter):
 
     contact_getter = {
         'sf': pd.read_csv(StringIO(sf), dtype=str, index_col=0),
-        'rep': pd.read_csv(StringIO(reps), dtype=str, index_col=0),
+        'reps': pd.read_csv(StringIO(reps), dtype=str, index_col=0),
         'both': (pd.read_csv(StringIO(reps), dtype=str, index_col=0), pd.read_csv(StringIO(sf), dtype=str, index_col=0))
     }
     db.connections.close_all()
@@ -586,5 +583,20 @@ def get_contacts(c_filter):
 
 
 def update_df(update):
+    global reps_df, sf_df
     reps_df.loc[update[0], 'Id'] = sf_df.loc[update[1], 'Id']
     sf_df.loc[update[1], 'unmatched'] = False
+    progress.objects.latest().update(completed_reps=progress.objects.latest().completed_reps + 1)
+    db.connections.close_all()
+
+
+def save_dfs():
+    print('saving dataframes')
+    unmatched_reps = reps_df[reps_df.Id.notnull()]
+    print(f'reps matched: {unmatched_reps}')
+    data = reps_df.to_csv() + '--$--' + sf_df.to_csv()
+    progress.objects.latest().update(label=data)
+    progress.objects.latest().update(completed_keys=progress.objects.latest().completed_keys + 1)
+    db.connections.close_all()
+
+    del data, unmatched_reps

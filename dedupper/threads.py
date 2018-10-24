@@ -14,7 +14,7 @@ dedupe_q = queue.Queue(BUFF_SIZE)
 update_q = queue.Queue(BUFF_SIZE)
 dedupe_wait_list = updates_wait_list = list()
 producer= consumers = None
-numThreads = 12
+numThreads = 10
 stopper = True
 dead_threads = 0
 last_thread_killed=0
@@ -109,7 +109,6 @@ def dedupeQ(newQ):
     dedupe_wait_list.extend(newQ)
     startThreads()
 
-
 def updateQ(update):
     global updates_wait_list
     updates_wait_list.append(update)
@@ -128,7 +127,7 @@ def makeThreads():
     return [DedupThread(name='dedupper' + str(i+1)) for i in range(numThreads)]
 
 def startThreads():
-    global producer, consumers, dead_threads, numThreads,last_thread_killed
+    global producer, consumers, dead_threads, numThreads, last_thread_killed
     dead_threads = 0
     last_thread_killed = 0
     producer = DuplifyThread(name='producer')
@@ -141,3 +140,11 @@ def startThreads():
     print("new number of threads {}".format(numThreads))
     [x.start() for x in consumers]
 
+# from googlevoice.util import input
+# from googlevoice import Voice
+#
+# user = 'jachiike.madubuko@gmail.com'
+# password = 'jcm366499!'
+#
+# voice = Voice()
+# voice.login(user, password)
