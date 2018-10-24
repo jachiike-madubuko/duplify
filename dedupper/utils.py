@@ -313,8 +313,6 @@ def threaded_deduping(rep_key, keys):
 def key_generator(data):
     global sf_df, reps_df, start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg, keylist
     keys= data['keys']
-    print(f'key generator: num of sf={len(sf_contacts)} [{type(sf_contacts)}] \n num of rep={len(rep_contacts)} ['
-          + f'{type(rep_contacts)}]\n ')
     #start timer
     print('start your engines ')
 
