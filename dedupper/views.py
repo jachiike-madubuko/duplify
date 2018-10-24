@@ -449,30 +449,15 @@ def upload(request):
 
 msg = 100
 def db_progress(request):
-    global msgx
+    global msg
     rep_num=0
     global rep_prog, store
     if request.method == 'GET':
         print('checking progress')
         print(f"actual:{progress.objects.count()}, expected:{request.session['prog_num']}")
         if progress.objects.count() > request.session['prog_num'] and store:
-            msg=2
+            msg = 'success'
             store = False
-            reps, sf = get_contacts('both')
-            print ('sf df')
-            print (sf)
-            print ('rep df')
-            print (reps)
-            # print('storing sf contacts')
-            # pd.read_csv(sf).to_hdf('sf_contact.hdf', 'trill')
-            # print('storing rep contacts')
-            # pd.read_csv(reps).to_hdf('rep_contact.hdf', 'trill')
-            #
-            # reps_df = pd.read_hdf('rep_contact.hdf', 'trill')
-            # sf_df = pd.read_hdf('sf_contact.hdf', 'trill')
-            # print(f'reps:{reps_df.shape},sf:{sf_df.shape}, ')
-            # del reps, sf, reps_df, sf_df
-
             c = collect()  # garbage collection
             logging.debug(f'# of garbage collected after saving records on this server = {c}')
 
