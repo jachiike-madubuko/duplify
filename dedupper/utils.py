@@ -334,7 +334,7 @@ def key_generator(data):
         #convert key string to list
         string_key = '-'.join(currKey)
 
-        key_dedupe(key)
+        key_dedupe(key[:-1])
         while waiting:
             pass
         collect()
