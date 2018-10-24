@@ -73,7 +73,7 @@ class SFContactTable(tables.Table):
 
     def render_link(self, record):
         href = record.ContactID
-        return mark_safe('<a class="btn btn-outline-primary" target="_blank" href="https://na30.salesforce.com/'+str(
+        return mark_safe('<a class="btn btn-outline-primary" target="_blank" href="https://na81.salesforce.com/'+str(
             href)+'">View <span class="fa fa-external-link"></span></a>')
 
     class Meta:

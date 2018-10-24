@@ -124,7 +124,7 @@ def download(request,type):
 
     #name of uploaded rep list
     if 'repCSV_name' in request.session:
-        repCSV_name = request.session['repCSV_name'].replace('.csv','')
+        repCSV_name = request.session['repCSV_name'].replace('.csv','').replace('.xlsx','')
     #name the csv
     if(type == "Duplicate"):
         filename = f'filename="{repCSV_name} (Duplicates).csv"'
@@ -274,16 +274,6 @@ def index(request):
     return render(request, 'dedupper/login.html')
 
 def upload_page(request):
-    '''
-    :param request:
-    :return:
-    Saleforce login:
-
-    from simple_salesforce import Salesforce
-    sf = Salesforce(password='password', username='myemail@example.com', organizationId='D36000001DkQo')
-    https://developer.salesforce.com/blogs/developer-relations/2014/01/python-and-the-force-com-rest-api-simple-simple-salesforce-example.html
-    https://github.com/simple-salesforce/simple-salesforce
-    '''
     return render(request, 'dedupper/rep_list_upload.html')
 
 def key_gen(request):
@@ -301,7 +291,8 @@ def login(request):
     u = request.GET.get('username')
     p = request.GET.get('password')
     try:
-        sf = Salesforce(password='7924Trill!', username='jmadubuko@wealthvest.com', security_token='Hkx5iAL3Al1p7ZlToomn8samW')
+        sf = Salesforce(password='7924trill',
+                        username='jmadubuko@wealthvest.com', security_token='W4ItPbGFZHssUcJBCZlw2t9p2')
         msg= 'success'
         #store u & p in session, create function called login_check that makes sure a username is in the session
         # else, redirect to /

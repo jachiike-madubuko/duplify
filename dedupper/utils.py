@@ -60,9 +60,13 @@ start=end=cnt=doneKeys=totalKeys=0
 
 #simple csv to dataframe
 def convert_csv(file):
-    print('converting CSV: ', str(file))
-    pd_csv = pd.read_csv(file, encoding = "cp1252", delimiter=',', dtype=str)  #western european
-    return list(pd_csv), pd_csv
+    try:
+        print('converting CSV: ', str(file))
+        df = pd.read_excel(file)
+    except:
+        print('converting CSV: ', str(file))
+        df = pd.read_csv(file, encoding = "cp1252", delimiter=',', dtype=str)  #western european
+    return list(df), df
 
 def find_rep_dups(rep, keys, numthreads):
     global cnt                          #track the number of attempted dedups
@@ -403,11 +407,20 @@ def get_progress():
 def get_channel(data):
     channel = data['channel']
     rep_header_map = data['map']
+    print(rep_header_map)
 
-    sf = Salesforce(password='7924trillest', username='jmadubuko@wealthvest.com',security_token='Hkx5iAL3Al1p7ZlToomn8samW')
-    query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where Territory_Type__c='Geography' and Territory__r.Name like "
-    starts_with = f"'{channel}%'"
+    sf = Salesforce(password='7924trill',
+                    username='jmadubuko@wealthvest.com', security_token='W4ItPbGFZHssUcJBCZlw2t9p2')
+    query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where "
+
+    if channel=='MC':
+        names = ('MC - BBoucher','MC - KRector','MC - LDemaree','MC - DJackson')
+        starts_with = f"Territory_Type__c='Named' and Territory__r.Name in {names}"
+    else:
+        starts_with = f"Territory_Type__c='Geography' and Territory__r.Name like'{channel}%'"
     print ('querying SF')
+    print(starts_with)
+
     territory = sf.bulk.Contact.query(query + starts_with)
     print(len(territory))
     territory = pd.DataFrame(territory).drop('attributes', axis=1).replace([None], [''], regex=True)
@@ -421,7 +434,7 @@ def get_channel(data):
            'MailingCity': 'mailingCity',
            'MailingPostalCode': 'mailingZipPostalCode',
            'MailingState': 'mailingStateProvince',
-           'MailingStreet': 'mailingStree t',
+           'MailingStreet': 'mailingStreet',
            'MobilePhone': 'mobilePhone',
            'OtherPhone': 'otherPhone',
            'Phone': 'Phone',
@@ -442,7 +455,7 @@ def get_channel(data):
     return data
 
 
-
-
 def db_done():
     return done
+
+
