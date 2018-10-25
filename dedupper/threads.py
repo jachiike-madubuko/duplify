@@ -90,14 +90,11 @@ class UpdateThread(threading.Thread):
                 time.sleep(1)
                 item = update_q.get()
                 if item is None:
+                    time.sleep(1)
 
                 else:
                     dedupper.utils.update_df(item)
-            else:
-                logging.debug('Queue empty, stopping thread.')
-            if time.time() - last_thread_killed > 15 and last_thread_killed != 0:
-                logging.debug('AUTO-KILL')
-                stop(self)
+
         return
 
 
