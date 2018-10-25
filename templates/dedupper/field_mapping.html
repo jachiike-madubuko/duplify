@@ -14,16 +14,17 @@
 
     <style>
         /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#b8e1fc+0,a9d2f3+10,90bae4+25,90bcea+37,90bff0+50,6ba8e5+51,a2daf5+83,bdf3fd+100;Blue+Gloss+%231 */
-        body {
-    background-image: url("{% static 'img/lake.png' %}");
-                background-position: right top;
-                background-repeat: no-repeat;
-
-    background-attachment: fixed;
-    background-size: 100% 100%;
-
-
-}
+        {#        body {#}
+        {#    background-image: url("{% static 'img/lake.png' %}");#}
+        {#                background-position: right top;#}
+        {#                background-repeat: no-repeat;#}
+        {##}
+        {#    background-attachment: fixed;#}
+        {#    background-size: 100% 100%;#}
+        {##}
+        {##}
+        {
+        #}#}
 
         h1 {
             text-shadow:
@@ -36,10 +37,10 @@
 
     </style>
 </head>
-<body class="blue-grey lighten-5" style="transition: 2s; overflow: hidden">
+<body class="rgba-black-slight" style="transition: 2s; overflow: auto">
 
 
-<nav class="navbar navbar-expand-lg navbar-primary scrolling-navbar">
+<nav class="navbar navbar-expand-lg navbar-black rgba-stylish scrolling-navbar">
     <h1> <a class="navbar-brand text-white" href="{% url 'index' %}">Duplify</a></h1>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -103,12 +104,6 @@
         </div>
     </div>
 </div>
-<div class="alert format alert-warning alert-dismissible invisible text-center" role="alert">
-    <b>Files must be csv format</b>
-</div>
-<div class="alert files alert-warning alert-dismissible invisible text-center" role="alert">
-    <b>Upload a rep list and a SF report before continuing</b>
-</div>
 
 
 <!-- Modal -->
@@ -125,68 +120,39 @@
                 <div class="container-fluid">
                     <div class="x row">
 
-                        <div class=" mapping">
+                        <div class=" ">
 
                         </div>
 
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                Channel:
-                <div class="btn-group btn-group-toggle mx-2" data-toggle="buttons">
-                    <label class="btn waves-effect btn-primary mr-1">
-                        <input type="radio" name="options" id="option2" value="RC" autocomplete="off"> RC
-                    </label>
-                    <label class="btn waves-effect btn-primary mr-1">
-                        <input type="radio" name="options" id="option3" value="RD" autocomplete="off"> RD
-                    </label>
-                    <label class="btn waves-effect btn-primary mr-1">
-                        <input type="radio" name="options" id="option3" value="RM" autocomplete="off"> RM
-                    </label>
-                    <label class="btn waves-effect btn-primary mr-1">
-                        <input type="radio" name="options" id="option3" value="IMC" autocomplete="off"> IMC
-                    </label>
-                    <label class="btn waves-effect btn-primary mr-1">
-                        <input type="radio" name="options" id="option3" value="EMC" autocomplete="off"> EMC
-                    </label>
-                    <label class="btn waves-effect btn-primary mr-1">
-                        <input type="radio" name="options" id="option3" value="FD" autocomplete="off"> FD
-                    </label>
-
-                </div>
-                <button class="btn waves-effect btn-primary rounded-circle p-2 ml-5 z-depth-5"
-                        id="map-headers"
-                        type="button"
-                        onclick="map_headers()">
-                    <span class="fa fa-upload fa-2x "></span>
-                </button>
-
-            </div>
         </div>
     </div>
 </div>
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-1"></div>
+<div class="container-fluid pb-5">
+    <div class="row pt-4 mb-5">
         <!-- Card -->
-        <div class="rounded col-6 m-auto bg-transparent z-depth-5">
+        <div class="file rounded col-4 m-auto white z-depth-1 p-3" style="overflow: auto">
 
             <!-- Card content -->
             <div class="card-body text-center">
 
                 <!-- Title -->
-                <h1 class="card-title text-white">Upload Rep List Here</h1>
+                <h3 class="">Upload Rep List Here</h3>
                 <!-- Text -->
                 {% block content %}
                     <form method="post" enctype="multipart/form-data" id="upload">
                         {% csrf_token %}
                         <div class="custom-file ">
 
-                            <input type="file" class=" badge-pill custom-file-input" id="repFile" name="repFile"
+                            <input type="file" class=" badge-pill custom-file-input mr-5 text-left" id="repFile"
+                                   name="repFile"
                                    onchange="filename(this, '.rep')">
-                            <label class=" custom-file-label rep rgba-white-light text-white" for="repFile">Choose file</label>
+                            <label class=" custom-file-label rep rgba-white-light text-black  text-left  mr-5"
+                                   for="repFile">Choose
+                                file</label>
                         </div>
 
                         <div class="row">
@@ -210,10 +176,45 @@ bottom:
             </div>
 
         </div>
-        <!-- Card -->
 
-        <div class="col-1"></div>
     </div>
+    <div class="row ff fixed-bottom rgba-stylish-slight z-depth-3 p-1">
+        <div class=" col-8 mx-auto text-primary">
+            Select a Channel:
+            <div class="btn-group btn-group-toggle mx-2" data-toggle="buttons">
+                <label class="btn waves-effect btn-primary mr-1">
+                    <input type="radio" name="options" id="option2" value="RC" autocomplete="off"> RC
+                </label>
+                <label class="btn waves-effect btn-primary mr-1">
+                    <input type="radio" name="options" id="option3" value="RD" autocomplete="off"> RD
+                </label>
+                <label class="btn waves-effect btn-primary mr-1">
+                    <input type="radio" name="options" id="option3" value="RM" autocomplete="off"> RM
+                </label>
+                <label class="btn waves-effect btn-primary mr-1">
+                    <input type="radio" name="options" id="option3" value="IMC" autocomplete="off"> IMC
+                </label>
+                <label class="btn waves-effect btn-primary mr-1">
+                    <input type="radio" name="options" id="option3" value="EMC" autocomplete="off"> EMC
+                </label>
+                <label class="btn waves-effect btn-primary mr-1">
+                    <input type="radio" name="options" id="option3" value="FD" autocomplete="off"> FD
+                </label>
+
+            </div>
+            <button class="btn waves-effect btn-primary rounded-circle p-2 ml-5 z-depth-5"
+                    id="map-headers"
+                    type="button"
+                    onclick="map_headers()">
+                <span class="fa fa-upload fa-2x "></span>
+            </button>
+
+        </div>
+
+    </div>
+    <!-- Card -->
+
+</div>
 
 </div>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
@@ -233,7 +234,7 @@ bottom:
     function filename(file, label) {
         var name = $(file).val().replace("C:\\fakepath\\","");
 
-        $(label).text(name);
+        $(label).text(name.substring(0, 25) + '...');
         $("#fileSubmit").trigger('click');
     }
     function verify(){
@@ -433,33 +434,10 @@ bottom:
 
     {#setInterval(updateGradient,20);#}
 
-    function verify(){
-        $.wait = function( callback, seconds){
-            return window.setTimeout( callback, seconds * 1000 );
-        }
-        $(document).on('click', '#fileSubmit', function(e) {
-
-
-            if( $(".rep").text().substr(-3) != 'csv' ||  $(".sf").text().substr(-3) != 'csv') {
-                if( $(".rep").text() == 'Choose file' ||   $(".sf").text() == 'Choose file' || $(".rep").text() ==
-                    '' ||   $(".sf").text() == '' ) {
-                    e.preventDefault(); //prevent the default action
-                    $(".files").removeClass("invisible");//.delay(5).addClass("invisible");
-                    $.wait( function(){ $(".files").addClass("invisible") }, 3);
-
-                }else {
-                    // e.preventDefault(); //prevent the default action
-                    $(".format").removeClass("invisible");//.delay(5).addClass("invisible");
-                    $.wait(function () {
-                        $(".format").addClass("invisible")
-                    }, 3);
-                }
-
-            } });
-    }
 
     $(document).ready(function() {
 
+        $(".ff").hide();
 
         var rep_data = [
             {
@@ -533,47 +511,53 @@ bottom:
                 contentType: false,
                 cache: false,
                 success: function (data) {
-                    $("#modelId").modal('show');
+                    $(".file").hide('slow', function () {
+                        $(".file").empty().toggleClass('col-4 col-8').append("<h3 class='col mx-auto my-5 p-1 " +
+                            "text-center'>Field " +
+                            "Mapping</h3>");
+                        for (var key in data) {
+                            var class_id = "rep" + key;
+                            var input_group = $("<div></div>");
+                            input_group.addClass("input-group mb-3 col-12 mx-auto");
+                            var prepend = $("<div></div>");
+                            prepend.addClass("input-group-prepend");
+                            var text = $("<p></p>");
+                            text.addClass("input-group-text bg-dark text-white").css({
+                                "height": "34px",
+                                "width": "200px"
+                            }).text(key);
 
-                    for (var key in data) {
-                        var class_id = "rep" + key;
-                        var input_group = $("<div></div>");
-                        input_group.addClass("input-group mb-3 col-12");
-                        var prepend = $("<div></div>");
-                        prepend.addClass("input-group-prepend");
-                        var text = $("<p></p>");
-                        text.addClass("input-group-text bg-dark text-white").css({
-                            "height": "34px",
-                            "width": "200px"
-                        }).text(key);
+                            input_group.append(prepend.append(text));
+                            var selectList = $("<select style='width=100%'></select>");
+                            selectList.addClass(class_id).addClass("rep-select py-5 col-12");
+                            selectList.append($("<option></option>").data("name", "placeholder"));
+                            for (var k in data[key]) {
+                                var opt = $("<option></option>");
+                                opt.data("name", data[key][k]).val(data[key][k]).text(data[key][k]);
+                                selectList.append(opt);
+                            }
+                            input_group.append(selectList);
 
-                        input_group.append(prepend.append(text));
-                        var selectList = $("<select style='width=100%'></select>");
-                        selectList.addClass(class_id).addClass("rep-select py-5 col-12");
-                        selectList.append($("<option></option>").data("name", "placeholder"));
-                        for (var k in data[key]) {
-                            var opt = $("<option></option>");
-                            opt.data("name", data[key][k]).val(data[key][k]).text(data[key][k]);
-                            selectList.append(opt);
-                        }
-                        input_group.append(selectList);
+                            $(".file").append(input_group);
 
-                        $(".mapping").append(input_group);
-
-
-                    }
-                    $('.rep-select').select2({
-                        theme: "bootstrap",
-                        placeholder: {
-                            id: '0'
-                        },
-                        templateSelection: function (data, container) {
-                            $(data.element).attr('data-name', data.value);
-                            return data.text;
 
                         }
+                        $('.rep-select').select2({
+                            theme: "bootstrap",
+                            placeholder: {
+                                id: '0'
+                            },
+                            templateSelection: function (data, container) {
+                                $(data.element).attr('data-name', data.value);
+                                return data.text;
+
+                            }
+                        });
+                        $(".select2-container").width('75%');
+
+                        $(".file").show('slow')
+                        $(".ff").show('slow')
                     });
-                    $(".select2-container").width('500');
 
                 }
             });
@@ -612,15 +596,15 @@ bottom:
         });
     }
 
-        function update_progress(){
-            $.getJSON("{% url 'db_progress' %}", function (result) {
+    function update_progress() {
+        $.getJSON("{% url 'db_progress' %}", function (result) {
 
-                if (result['msg'] < 10) {
+            if (result['msg'] < 10) {
 
-                    window.location.replace("{% url 'key' %}");
+                window.location.replace("{% url 'key' %}");
             }
         });
-        }
+    }
 
 </script>
 </body>

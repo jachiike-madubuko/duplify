@@ -278,7 +278,11 @@ def upload_page(request):
     return render(request, 'dedupper/rep_list_upload.html')
 
 def key_gen(request):
-    return render(request, 'dedupper/key_generator.html', {'keys': request.session['fields']})
+    if 'fields' in request.session:
+        fields = request.session['fields']
+    else:
+        fields = ['ERROR: Reset and Upload Reps']
+    return render(request, 'dedupper/key_generator.html', {'keys': fields})
 
 def login(request):
     u = request.GET.get('username')
@@ -385,7 +389,7 @@ def run(request):
         db.connections.close_all()
         keylist = request.GET.get('keys')
         #channel = request.GET.get('channel')
-        keylist = keylist.split("_")
+        keylist = keylist.split("~")
         partslist = [i.split('-') for i in keylist[:-1]]
         keys=partslist
         p = progress.objects.latest()

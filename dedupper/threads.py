@@ -90,8 +90,7 @@ class UpdateThread(threading.Thread):
                 time.sleep(1)
                 item = update_q.get()
                 if item is None:
-                    logging.debug('Queue empty, stopping thread.')
-                    stop(self)
+
                 else:
                     dedupper.utils.update_df(item)
             else:
