@@ -315,7 +315,7 @@ def key_generator(data):
     keys= data['keys']
     #start timer
     print('start your engines ')
-
+    reps_df, sf_df = get_contacts('both')
     start = perf_counter()
     totalKeys = len(keys)
     #store keylist globally
@@ -598,6 +598,7 @@ def update_df(update):
 
 
 def save_dfs():
+    global reps_df, sf_df
     print('saving dataframes')
     unmatched_reps = reps_df[reps_df.Id.notnull()]
     print(f'reps matched: {unmatched_reps}')

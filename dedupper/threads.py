@@ -86,8 +86,6 @@ class UpdateThread(threading.Thread):
 
     def run(self):
         while not self.event.is_set():
-            if last_thread_killed != 0:
-                logging.debug('Time is last killed thread is {}'.format(time.time() - last_thread_killed))
             if not update_q.empty():
                 time.sleep(1)
                 item = update_q.get()
