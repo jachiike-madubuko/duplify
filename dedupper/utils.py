@@ -281,7 +281,7 @@ def key_dedupe(keys):
 
 
 def threaded_deduping(rep_key, keys):
-    global reps_df, sf_df
+    global reps_df, sf_df, rep_key_map
 
     # create a boolean mask on the sf contacts for each of the rep's field values
     bool_filters = [list(sf_df[key].str.contains(reps_df.loc[rep_key_map[rep_key]][key])) for key in keys]
