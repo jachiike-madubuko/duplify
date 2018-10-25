@@ -294,6 +294,7 @@ def key_gen(request):
     print(sf.columns)
     print(reps.columns)
     fields = set(sf.columns).intersection(set(reps.columns))
+    fields.remove('Id')
     # enqueue trill with rep and sf function then procede to fuck shit up
     print ('generating keys: DONE')
 
@@ -459,7 +460,7 @@ def db_progress(request):
         print('checking progress')
         print(f"actual:{progress.objects.count()}, expected:{request.session['prog_num']}")
         if progress.objects.count() > request.session['prog_num'] and store:
-            msg = 0
+            msg = 2
             store = False
             c = collect()  # garbage collection
             logging.debug(f'# of garbage collected after saving records on this server = {c}')

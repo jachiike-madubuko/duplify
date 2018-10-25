@@ -526,7 +526,7 @@ def get_channel(data):
     }
 
     # sfcontact_resource = SFContactResource()
-    repcontact_resource = RepContactResource()
+    # repcontact_resource = RepContactResource()
     # load_csv2db(territory, sf_header_map,
     # sfcontact_resource, file_type='SF')
     # territory.rename(columns=sf_header_map, inplace=True)
