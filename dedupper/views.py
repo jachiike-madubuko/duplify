@@ -251,7 +251,8 @@ def import_csv(request):
     rep_header_map = json.loads(rep_header_map)  # JSON -> dict()
     print(rep_header_map)
     request.session['prog_num']= progress.objects.all().count()
-    request.session['sfCSV_name'] = f'the {channel} channel'  # for printing
+    request.session['sf_channel'] = f'the {channel} channel'  # for printing
+    request.session['fields'] = list(rep_header_map.values())
 
     db_data = {  # packing data
         'channel': channel,
@@ -277,28 +278,7 @@ def upload_page(request):
     return render(request, 'dedupper/rep_list_upload.html')
 
 def key_gen(request):
-    # key= None
-    # while not key:
-    #     key = get_key_stats()
-    # print ('generating keys: STARTED')
-    # rps =set( [i.name for i in repContact._meta.local_fields])
-    # sfs = set( [i.name for i in sfcontact._meta.local_fields])
-    #
-    # key= list(rps.intersection(sfs))
-    # key.sort()
-    #
-    begin = perf_counter()
-    reps, sf = get_contacts('both')
-    fin = perf_counter()
-    print(f'contacts pulled in {round(fin-begin)} secs')
-    print(sf.columns)
-    print(reps.columns)
-    fields = set(sf.columns).intersection(set(reps.columns))
-    fields.remove('Id')
-    # enqueue trill with rep and sf function then procede to fuck shit up
-    print ('generating keys: DONE')
-
-    return render(request, 'dedupper/key_generator.html', {'keys': fields})
+    return render(request, 'dedupper/key_generator.html', {'keys': request.session['fields']})
 
 def login(request):
     u = request.GET.get('username')
