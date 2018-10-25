@@ -115,7 +115,7 @@ def stop(x):
     logging.debug('bye: {}/{} threads killed'.format(dead_threads, numThreads))
 
 def dedup(repNkey):
-    dedupper.utils.find_rep_dups(repNkey[0], repNkey[1], numThreads)
+    dedupper.utils.threaded_deduping(repNkey[0], repNkey[1])
 
 def makeThreads():
     return [DedupThread(name='dedupper' + str(i+1)) for i in range(numThreads)]
