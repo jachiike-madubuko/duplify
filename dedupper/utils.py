@@ -487,6 +487,11 @@ def get_channel(data):
     channel = data['channel']
     rep_header_map = data['map']
     rep_df = data['reps']
+    print(f'old columns = {list(rep_df.columns)}')
+    rep_df.rename(columns=rep_header_map,
+                  inplace=True)
+    print(f'new columns = {list(rep_df.columns)}')
+
     print('loading sf: STARTED')
     sf = Salesforce(password='7924trill', username='jmadubuko@wealthvest.com',
                     security_token='W4ItPbGFZHssUcJBCZlw2t9p2')
@@ -524,7 +529,7 @@ def get_channel(data):
     repcontact_resource = RepContactResource()
     # load_csv2db(territory, sf_header_map,
     # sfcontact_resource, file_type='SF')
-    territory.rename(columns=sf_header_map, inplace=True)
+    # territory.rename(columns=sf_header_map, inplace=True)
 
     print('loading sf: DONE')
 

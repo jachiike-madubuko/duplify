@@ -249,6 +249,7 @@ def import_csv(request):
     channel = request.GET.get('channel')  # sf channel to pull from db
     rep_header_map = request.GET.get('rep_map')  # the JSON of csv headers mapped to db fields
     rep_header_map = json.loads(rep_header_map)  # JSON -> dict()
+    print(rep_header_map)
     request.session['prog_num']= progress.objects.all().count()
     request.session['sfCSV_name'] = f'the {channel} channel'  # for printing
 
@@ -290,6 +291,8 @@ def key_gen(request):
     reps, sf = get_contacts('both')
     fin = perf_counter()
     print(f'contacts pulled in {round(fin-begin)} secs')
+    print(sf.columns)
+    print(reps.columns)
     fields = set(sf.columns).intersection(set(reps.columns))
     # enqueue trill with rep and sf function then procede to fuck shit up
     print ('generating keys: DONE')
