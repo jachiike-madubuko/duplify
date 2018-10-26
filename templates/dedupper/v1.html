@@ -17,7 +17,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/css/mdb.min.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-
+    {% include 'material/includes/material_css.html' %}
+    <script src="{% static 'material/js/jquery.js' %}"></script>
+    {% include 'material/includes/material_js.html' %}
+    {% load material_form %}
 
 <style type="text/css">/* Chart.js */
 @-webkit-keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}@keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}.chartjs-render-monitor{-webkit-animation:chartjs-render-animation 0.001s;animation:chartjs-render-animation 0.001s;}</style></head>
@@ -325,281 +328,35 @@
 <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
 <![endif]-->
 <div class="row container-fluid">
-  <div class="col-md-2 blue lighten-4  text-center">
-    <img class="mb-4" src="{% static 'index_files/Voeller-logo-2013-176x300.png'   %}">
+    <form method="post">
+        {{ formset.management_form }}
+        {% for form in formset %}
+            {{ form.id }}
+            <div class="card m-4">
 
-    <div class="text-center">
-      <h5>
-        <a href="http://localhost:63342/voeller.com/src/index.html?_ijt=rr19aei4i07vj20jrbe8ksam43" class=" mb-4" data-toggle="modal" data-target="#modalContactForm">Contact Us</a>
-      </h5>
-      <p> Bellevue Office: <br>
-        4723 Lakehurst Lane <br>
-        Bellevue, WA 98006<br>
-        T:  425-644-7432<br>
-        F: 425-562-9748<br>
-        <br>
-        Portland Office:<br>
-        7441 S.W. Corbett<br>
-        Portland, OR 97219<br>
-        T:  503-452-0200<br>
-        F:  503-202-0146<br>
-      </p>
-      <button type="button" class="btn blue darken-4 waves-effect waves-light"><i class="fa fa-instagram pr-1"></i> Instagram</button>
+                <h5 class="card-header info-color white-text text-center py-4">
+                    <strong>Sign in</strong>
+                </h5>
 
-    </div>
-    <div class=""> </div>
-    <!--Footer-->
-    <footer class="page-footer fixed-bottom text-center text-md-left font-small blue lighten-2 mt-2">
-      <!--Copyright-->
-      <div class="footer-copyright py-3 text-center">
-        Copyright © 2018 Voeller &amp; Associates
-      </div>
-      <!--/.Copyright-->
+                <!--Card content-->
+                <div class="card-body px-lg-5 pt-0">
 
-    </footer>
-  </div>
-  <div class="col-md-10">
-    <!--Main Navigation-->
-    <header>
-      <!--Navbar-->
-      <nav class="navbar navbar-expand-lg navbar-light intro-fixed-nav z-depth-0 ">
-        <div class="container">
-          <!-- Navbar brand -->
-         <strong> <a class="navbar-brand btn btn-primary badge-pill" href="{% url 'v2' %}">Go to v2</a></strong>
-          <a class="navbar-brand" href="#">Voeller &amp; Associates</a>
+                    <!-- Form -->
+                    <form class="text-center" style="color: #757575;">
 
-          <!-- Collapse button -->
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav" aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
+                        <!-- Email -->
+                        <div class="md-form">
 
-          <!-- Collapsible content -->
-          <div class="collapse navbar-collapse" id="basicExampleNav">
-
-            <!-- Links -->
-            <ul class="navbar-nav mr-auto">
-              <li class="nav-item">
-                <a class="nav-link waves-effect waves-light" href="#" data-toggle="modal"
-                   data-target="#modalManufacturers">Our Manufacturers</a>
-              </li>
-
-              <!-- Dropdown -->
-              <li class="nav-item">
-                <a class="nav-link waves-effect waves-light" id="navbarDropdownMenuLink" data-toggle="modal" data-target="#modalIndustry">Industry</a>
-              </li>
-            </ul>
-            <!-- Links -->
-
-            <!--<form class="form-inline">-->
-              <!--<div class="md-form mt-0">-->
-                <!--<input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">-->
-              <!--</div>-->
-            <!--</form>-->
-          </div>
-          <!-- Collapsible content -->
-        </div>
-      </nav>
-      <!--/.Navbar-->
-      <!--<img src="img/Voeller-logo-2013-176x300.png">-->
-    </header>
-    <!--Main Navigation-->
-
-    <!--Main layout-->
-    <main class="">
-      <!--Main container-->
-
-      <div class="my-5 container">
-
-        <!--Grid row-->
-        <div class="row ">
-
-          <!--Grid column-->
-          <div class="col-md-7 mb-4">
-
-            <!--Featured image -->
-            <div class="view overlay z-depth-1-half">
-              <!--Carousel Wrapper-->
-              <div id="carousel-main" class="carousel slide carousel-fade" data-ride="carousel">
-                <!--Indicators-->
-                <ol class="carousel-indicators">
-                  <li data-target="#carousel-example-1z" data-slide-to="0" class=""></li>
-                  <li data-target="#carousel-example-1z" data-slide-to="1" class=""></li>
-                  <li data-target="#carousel-example-1z" data-slide-to="2" class=""></li>
-                  <li data-target="#carousel-example-1z" data-slide-to="3" class="active"></li>
-                </ol>
-                <!--/.Indicators-->
-                <!--Slides-->
-                <div class="carousel-inner" role="listbox">
-                  <!--First slide-->
-                  <div class="carousel-item">
-                    <img class="d-block w-100 h-200" src="{% static 'index_files/jason-leung-537357-unsplash.jpg'%}" alt="First slide">
-                  </div>
-                  <!--/First slide-->
-                  <!--Second slide-->
-                  <div class="carousel-item">
-                    <img class="d-block w-100 h-200" src="{% static 'index_files/shangyou-shi-543887-unsplash.jpg' %}" alt="Second slide">
-                  </div>
-                  <!--/Second slide-->
-                  <!--Third slide-->
-                  <div class="carousel-item active carousel-item-left">
-                    <img class="d-block w-100 h-200" src="{% static 'index_files/pan-xiaozhen-543981-unsplash.jpg' %}" alt="Third slide">
-                  </div>
-                  <!--/Third slide-->
-                  <!--Fourth slide-->
-                  <div class="carousel-item carousel-item-next carousel-item-left">
-                    <img class="d-block w-100 h-200" src="{% static 'index_files/roman-pavluv-531684-unsplash.jpg'   %}" alt="Fourth slide">
-                  </div>
-                  <!--/Fourth slide-->
+                            <div>Title: {{ form.title }}</div>
+                            <div>{{ form.link }}</div>
+                            <div>{{ form.description }}</div>
+                        </div>
+                    </form>
                 </div>
-                <!--/.Slides-->
-                <!--Controls-->
-                <a class="carousel-control-prev" href="http://localhost:63342/voeller.com/src/index.html?_ijt=rr19aei4i07vj20jrbe8ksam43#carousel-example-1z" role="button" data-slide="prev">
-                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                  <span class="sr-only">Previous</span>
-                </a>
-                <a class="carousel-control-next" href="http://localhost:63342/voeller.com/src/index.html?_ijt=rr19aei4i07vj20jrbe8ksam43#carousel-example-1z" role="button" data-slide="next">
-                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                  <span class="sr-only">Next</span>
-                </a>
-                <!--/.Controls-->
-              </div>
-              <!--/.Carousel Wrapper-->
-              <div class="mask rgba-white-light"></div>
             </div>
-          </div>
-          <!--Grid column-->
+        {% endfor %}
+    </form>
 
-          <!--Grid column-->
-          <div class="col-md-5 mb-4">
-
-            <h2>Work with Voeller &amp; Associates</h2>
-            <hr>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. <br><br>Blanditiis pariatur quod ipsum atque quam dolorem
-              <br><br>
-              voluptate officia sunt placeat consectetur alias fugit cum  <br><br>praesentium ratione sint mollitia, perferendis
-              <br><br>
-              natus quaerat!</p>
-
-          </div>
-          <!--Grid column-->
-        </div>
-        <!--Grid row-->
-
-        <!--Grid row-->
-        <!--Grid row-->
-        <div class="row">
-
-          <!--Grid column-->
-          <div class="col-lg-4 col-md-12 mb-4 d-flex">
-
-            <!--Card-->
-            <div class="card">
-
-              <!--Card image-->
-              <div class="view overlay">
-                <img src="{% static 'index_files/rawpixel-760036-unsplash.jpg'   %}" class="card-img-top" alt="">
-                <a href="http://localhost:63342/voeller.com/src/index.html?_ijt=rr19aei4i07vj20jrbe8ksam43#">
-                  <div class="mask rgba-white-slight waves-effect waves-light"></div>
-                </a>
-              </div>
-
-              <!--Card content-->
-              <div class="card-body">
-                <!--Title-->
-                <h4 class="card-title">Work with Voeller &amp; Associates</h4>
-                <!--Text-->
-                <p class="card-text">
-                  Voeller &amp; Associates is a leading manufacturer’s representative firm in the Pacific Northwest and has been offering award winning sales of our food service equipment since 1991.
-
-                  We provide our customers with a unique perspective derived from years of experience working with dealers, consultants, and many of the end-users of our products.
-
-                  We work tirelessly to show, test, and inform our customers the cost/benefits of purchasing the high value products that we represent. We are proud of our success and our time honored integrity among our peers.</p>
-                <a href="http://localhost:63342/voeller.com/src/index.html?_ijt=rr19aei4i07vj20jrbe8ksam43" data-toggle="modal" data-target="#modalIndustry" class="btn btn-primary waves-effect waves-light">Industry</a>
-
-              </div>
-
-            </div>
-            <!--/.Card-->
-
-          </div>
-          <!--Grid column-->
-
-          <!--Grid column-->
-          <div class="col-lg-4 col-md-6 mb-4 d-flex">
-
-            <!--Card-->
-            <div class="card">
-
-              <!--Card image-->
-              <div class="view overlay">
-                <img src="{% static 'index_files/nick-karvounis-72018-unsplash.jpg'   %}" class="card-img-top" alt="">
-                <a href="http://localhost:63342/voeller.com/src/index.html?_ijt=rr19aei4i07vj20jrbe8ksam43#">
-                  <div class="mask rgba-white-slight waves-effect waves-light"></div>
-                </a>
-              </div>
-
-              <!--Card content-->
-              <div class="card-body">
-                <!--Title-->
-                <h4 class="card-title">We are committed to your success!</h4>
-                <!--Text-->
-                <p class="card-text">Washington
-                  Oregon <br>
-                  Idaho <br>
-                  Montana <br>
-                  Alaska <br>
-                  Each member of our team is committed to assist our clientele, and consider it a privilege to represent our manufacturers.
-
-                  Voeller &amp; Associates is dedicated to honesty, commitment, and professionalism in foodservice and hospitality equipment marketing. When you need assistance, we are your source. Call or email us today.</p>
-                <a href="http://localhost:63342/voeller.com/src/index.html?_ijt=rr19aei4i07vj20jrbe8ksam43" data-toggle="modal" data-target="#modalContactForm" class="btn btn-primary waves-effect waves-light">Contact Us</a>
-              </div>
-
-            </div>
-            <!--/.Card-->
-
-          </div>
-          <!--Grid column-->
-
-          <!--Grid column-->
-          <div class="col-lg-4 col-md-6 mb-4 d-flex">
-
-            <!--Card-->
-            <div class="card">
-
-              <!--Card image-->
-              <div class="view overlay">
-                <img src="{% static 'index_files/jez-timms-305915-unsplash.jpg'   %}" class="card-img-top" alt="">
-                <a href="http://localhost:63342/voeller.com/src/index.html?_ijt=rr19aei4i07vj20jrbe8ksam43#">
-                  <div class="mask rgba-white-slight waves-effect waves-light"></div>
-                </a>
-              </div>
-
-              <!--Card content-->
-              <div class="card-body">
-                <!--Title-->
-                <h4 class="card-title">See Our Manufacturers</h4>
-                <!--Text-->
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                <a href="http://localhost:63342/voeller.com/src/index.html?_ijt=rr19aei4i07vj20jrbe8ksam43" class="btn btn-primary mb-4 waves-effect waves-light" data-toggle="modal" data-target="#modalManufacturers">Manufacturers</a>
-
-              </div>
-
-            </div>
-            <!--/.Card-->
-
-          </div>
-          <!--Grid column-->
-
-        </div>
-        <!--Grid row-->    <!--Grid row-->
-
-      </div>
-      <!--Main container-->
-    </main>
-    <!--Main layout-->
-
-
-  </div>
 </div>
 
 <!--/.Footer-->

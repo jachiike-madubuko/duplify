@@ -7,6 +7,7 @@ import pandas as pd
 import tablib
 from django.conf import settings
 from django.core.management import call_command
+from django.forms import modelformset_factory
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django_tables2.views import RequestConfig
@@ -33,21 +34,24 @@ def display(request):
 
 
 def crm(request):
-    f = IndudstryForm(request.POST)
-    article = industry.objects.get(pk=1)
-    form = IndudstryForm(instance=article)
-
-    # Save a new Article object from the form's data.
-    new_article = f.save()
-
-    # Create a form to edit an existing Article, but use
-    # POST data to populate the form.
-    a = industry.objects.get(pk=1)
-    f = IndudstryForm(request.POST, instance=a)
-    f.save()
-    form = IndudstryForm()
+    IndustryFormSet = modelformset_factory(industry, fields=('link', 'title', 'link', 'description', 'archived'))
+    formset = IndustryFormSet(queryset=industry.objects.all())
+    # f = IndudstryForm(request.POST)
+    # article = industry.objects.get(pk=1)
+    # form = IndudstryForm(instance=article)
+    #
+    # # Save a new Article object from the form's data.
+    # new_article = f.save()
+    #
+    # # Create a form to edit an existing Article, but use
+    # # POST data to populate the form.
+    # a = industry.objects.get(pk=1)
+    # f = IndudstryForm(request.POST, instance=a)
+    # f.save()
+    # form = IndudstryForm()
 
     # Creating a form to change an existing article.
+    return render(request, 'dedupper/v1.html', {'formset': formset})
 
 
 def closest(request):
