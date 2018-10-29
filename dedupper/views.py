@@ -20,12 +20,12 @@ from dedupper.utils import *
 
 tablib.formats.json.json = json
 sf_prog =rep_prog=progress_num = 0
-
-keys= []
+keys = list()
 store=name_sort=address_sort=email_sort=crd_sort=phone_sort=average_sort=key_sort=True
 db_job=rep_df = None
 UPLOAD_JOB_ID = '79243664'
 DUPLIFY_JOB_ID = '36647924'
+
 dedupe_q = django_rq.get_queue('high', autocommit=True, is_async=True)
 
 def display(request):
@@ -39,7 +39,6 @@ def closest(request):
         close_id2 = request.GET.get('close2')
         close_id3 = request.GET.get('close3')
         html_table1=html_table2=html_table3=''
-
         #check if id exists, if so: render html table of the contact
         if close_id1 != '':
             table1 = SFContactTable( sfcontact.objects.filter(pk=close_id1))
@@ -410,7 +409,6 @@ def upload(request):
     repCSV = request.FILES['repFile']
     request.session['repCSV_name'] = str(repCSV)
     rep_headers, pd_rep_csv = convert_csv(repCSV, str(repCSV))
-
     request.session['repCSV_headers'] = rep_headers
     request.session['rep_size'] = len(pd_rep_csv)
     print(f'rep size: {len(pd_rep_csv)}')
@@ -434,7 +432,6 @@ def upload(request):
     rep_dropdown = {i: sorted(rep_headers, key= lambda x: SeqMat(None, x, i).ratio(), reverse=True) for i in rep_key}
     return JsonResponse( rep_dropdown, safe=False)
 
-
 msg = 100
 def db_progress(request):
     global msg
@@ -454,7 +451,3 @@ def db_progress(request):
     return JsonResponse({
         'msg': msg
     }, safe=False)
-
-#update key_gen to lower request time.
-
-

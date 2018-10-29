@@ -34,13 +34,26 @@
                     1.25px 1.25px 0 #000;
         }
 
+        #loading-indicator {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            right: 50%;
+            bottom: 50%;
+            z-index: 1100;
+            box-shadow: 0px 0px 1000vw 1000vh rgba(0, 0, 0, 0.2);
+        }
+
 
     </style>
 </head>
 <body class="rgba-black-slight" style="transition: 2s; overflow: auto">
+<div class="row"><img src="{% static 'img/loader.gif' %}" id="loading-indicator" class="border-0
+    transparent
+"/></div>
 
 
-<nav class="navbar navbar-expand-lg navbar-black rgba-stylish scrolling-navbar">
+<nav class="navbar navbar-expand-lg navbar-black black scrolling-navbar">
     <h1> <a class="navbar-brand text-white" href="{% url 'index' %}">Duplify</a></h1>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -134,7 +147,7 @@
 <div class="container-fluid pb-5">
     <div class="row pt-4 mb-5">
         <!-- Card -->
-        <div class="file rounded col-4 m-auto white z-depth-1 p-3" style="overflow: auto">
+        <div class="file rounded col-4 m-auto white z-depth-1 p-1" style="overflow: auto">
 
             <!-- Card content -->
             <div class="card-body text-center">
@@ -145,9 +158,10 @@
                 {% block content %}
                     <form method="post" enctype="multipart/form-data" id="upload">
                         {% csrf_token %}
-                        <div class="custom-file ">
+                        <div class="custom-file md-form">
 
-                            <input type="file" class=" badge-pill custom-file-input mr-5 text-left" id="repFile"
+                            <input type="file" class=" badge-pill custom-file-input mr-5 text-left mdb_upload"
+                                   id="repFile"
                                    name="repFile"
                                    onchange="filename(this, '.rep')">
                             <label class=" custom-file-label rep rgba-white-light text-black  text-left  mr-5"
@@ -178,40 +192,39 @@ bottom:
         </div>
 
     </div>
-    <div class="row ff fixed-bottom rgba-stylish-slight z-depth-3 p-1">
-        <div class=" col-8 mx-auto text-primary">
-            Select a Channel:
-            <div class="btn-group btn-group-toggle mx-2" data-toggle="buttons">
-                <label class="btn waves-effect btn-primary mr-1">
-                    <input type="radio" name="options" id="option2" value="RC" autocomplete="off"> RC
+    <div class="row ff white z-depth-3 py-2 rounded" style="position: fixed; right: 20px; top: 120px">
+        <div class="col-12"><h3>Channels</h3>
+            <div>
+                <div class=" col-1 text-primary">
+                    <div class="btn-group-vertical btn-group-toggle" data-toggle="buttons">
+                        <label class="btn waves-effect btn-primary">
+                            RC
+                            <input type="radio" name="options" id="option3" value="RD" autocomplete="off">
                 </label>
-                <label class="btn waves-effect btn-primary mr-1">
-                    <input type="radio" name="options" id="option3" value="RD" autocomplete="off"> RD
+                        <label class="btn waves-effect btn-primary">
+                            <input type="radio" name="options" id="option3" value="RM" autocomplete="off">RD
                 </label>
-                <label class="btn waves-effect btn-primary mr-1">
-                    <input type="radio" name="options" id="option3" value="RM" autocomplete="off"> RM
+                        <label class="btn waves-effect btn-primary">
+                            <input type="radio" name="options" id="option3" value="IMC" autocomplete="off">RM
                 </label>
-                <label class="btn waves-effect btn-primary mr-1">
-                    <input type="radio" name="options" id="option3" value="IMC" autocomplete="off"> IMC
+                        <label class="btn waves-effect btn-primary ">
+                            <input type="radio" name="options" id="option3" value="EMC" autocomplete="off">MC
                 </label>
-                <label class="btn waves-effect btn-primary mr-1">
-                    <input type="radio" name="options" id="option3" value="EMC" autocomplete="off"> EMC
-                </label>
-                <label class="btn waves-effect btn-primary mr-1">
-                    <input type="radio" name="options" id="option3" value="FD" autocomplete="off"> FD
+                        <label class="btn waves-effect btn-primary ">
+                            <input type="radio" name="options" id="option3" value="FD" autocomplete="off">FD
                 </label>
 
             </div>
-            <button class="btn waves-effect btn-primary rounded-circle p-2 ml-5 z-depth-5"
-                    id="map-headers"
-                    type="button"
-                    onclick="map_headers()">
+                    <button class="row btn waves-effect btn-primary rounded-circle p-2 m-3 z-depth-5"
+                            id="map-headers"
+                            type="button"
+                            onclick="map_headers()">
                 <span class="fa fa-upload fa-2x "></span>
             </button>
 
         </div>
 
-    </div>
+                </h4>
     <!-- Card -->
 
 </div>
@@ -438,6 +451,8 @@ bottom:
     $(document).ready(function() {
 
         $(".ff").hide();
+        $("#loading-indicator").hide();
+        $(".btn-primary").css({'margin': '0px'});
 
         var rep_data = [
             {
@@ -512,7 +527,7 @@ bottom:
                 cache: false,
                 success: function (data) {
                     $(".file").hide('slow', function () {
-                        $(".file").empty().toggleClass('col-4 col-8').append("<h3 class='col mx-auto my-5 p-1 " +
+                        $(".file").empty().toggleClass('col-4 col-8').append("<h3 class='col mx-auto my-1 p-1 " +
                             "text-center'>Field " +
                             "Mapping</h3>");
                         for (var key in data) {
@@ -572,8 +587,7 @@ bottom:
         }
     }
     function map_headers() {
-        $("#modelId").modal('toggle');
-        $("#progress").modal('toggle');
+        {#$("#progress").modal('toggle');#}
         var channel  = $('input:checked').val();
         $('.rep-select').each( function() {
             var x = $(this).find(':selected').data('name');
@@ -605,6 +619,14 @@ bottom:
             }
         });
     }
+
+    $(document).ajaxStart(function () {
+        $("#loading-indicator").show('fast');
+
+    })
+    $(document).ajaxComplete(function () {
+        $("#loading-indicator").hide('fast');
+    })
 
 </script>
 </body>

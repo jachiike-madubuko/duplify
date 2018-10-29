@@ -8,7 +8,6 @@ import dedupper.utils
 
 logging.basicConfig(level=logging.DEBUG,
                     format='(%(threadName)-9s) %(message)s',)
-
 BUFF_SIZE = 10000
 dedupe_q = queue.Queue(BUFF_SIZE)
 update_q = queue.Queue(BUFF_SIZE)
@@ -75,7 +74,6 @@ class DedupThread(threading.Thread):
 
         return
 
-
 class UpdateThread(threading.Thread):
     def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None):
         super(UpdateThread, self).__init__()
@@ -134,11 +132,3 @@ def startThreads():
     print("new number of threads {}".format(numThreads))
     [x.start() for x in consumers]
 
-# from googlevoice.util import input
-# from googlevoice import Voice
-#
-# user = 'jachiike.madubuko@gmail.com'
-# password = 'jcm366499!'
-#
-# voice = Voice()
-# voice.login(user, password)
