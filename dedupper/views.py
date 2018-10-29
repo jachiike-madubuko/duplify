@@ -6,6 +6,7 @@ from difflib import SequenceMatcher as SeqMat
 import pandas as pd
 import tablib
 from django.conf import settings
+from django.core import serializers
 from django.core.management import call_command
 from django.forms import modelformset_factory
 from django.http import HttpResponse, JsonResponse
@@ -35,7 +36,8 @@ def display(request):
 
 def crm(request):
     IndustryFormSet = modelformset_factory(industry, fields=('link', 'title', 'link', 'description', 'archived'))
-    formset = IndustryFormSet(queryset=industry.objects.all())
+    all_indust = industry.objects.all()
+    formset = IndustryFormSet(queryset=all_indust)
     # f = IndudstryForm(request.POST)
     # article = industry.objects.get(pk=1)
     # form = IndudstryForm(instance=article)
@@ -51,7 +53,7 @@ def crm(request):
     # form = IndudstryForm()
 
     # Creating a form to change an existing article.
-    return render(request, 'dedupper/v1.html', {'formset': formset})
+    return render(request, 'dedupper/Industry.html', {'industries': all_indust})
 
 
 def closest(request):
@@ -273,6 +275,18 @@ def duplify(request):
 
     return JsonResponse({'task_id': result.task_id}, safe=False)
 
+
+def edit(request):
+    if request.GET:
+        print(request.GET.get('id'))
+        indust = industry.objects.get(id=request.GET.get('id'))
+        f = IndudstryForm(instance=indust)
+
+        JsonResponse({'msg': 'f'}, safe=False)
+
+
+
+
 def flush_db(request):
     call_command('flush', interactive=False)
     return redirect('/map')
@@ -298,6 +312,12 @@ def import_csv(request):
 def index(request):
     return render(request, 'dedupper/v1.html')
 
+
+def industries(request):
+    all_indust = industry.objects.all()
+    json = serializers.serialize('json', all_indust)
+
+    return HttpResponse(json, content_type='application/json')
 def upload_page(request):
     '''
     :param request:

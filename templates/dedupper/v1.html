@@ -17,10 +17,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/css/mdb.min.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    {% include 'material/includes/material_css.html' %}
-    <script src="{% static 'material/js/jquery.js' %}"></script>
-    {% include 'material/includes/material_js.html' %}
-    {% load material_form %}
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn.datatables.net/v/bs4-4.1.1/jq-3.3.1/moment-2.18.1/dt-1.10.18/af-2.3.2/b-1.5.4/b-colvis-1.5.4/cr-1.5.0/r-2.2.2/sl-1.2.6/datatables.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/generator-base.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/editor.bootstrap4.min.css' %}">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn.datatables.net/v/dt/jqc-1.12.3/dt-1.10.19/b-1.5.4/sl-1.2.7/datatables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'Editor/css/editor.dataTables.css' %}">
+
+    <script type="text/javascript"
+            src="https://cdn.datatables.net/v/dt/jqc-1.12.3/dt-1.10.19/b-1.5.4/sl-1.2.7/datatables.min.js"></script>
+    <script type="text/javascript" src="{% static 'Editor/js/dataTables.editor.js' %}"></script>
 
 <style type="text/css">/* Chart.js */
 @-webkit-keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}@keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}.chartjs-render-monitor{-webkit-animation:chartjs-render-animation 0.001s;animation:chartjs-render-animation 0.001s;}</style></head>
@@ -328,34 +337,37 @@
 <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
 <![endif]-->
 <div class="row container-fluid">
-    <form method="post">
         {{ formset.management_form }}
-        {% for form in formset %}
-            {{ form.id }}
-            <div class="card m-4">
-
-                <h5 class="card-header info-color white-text text-center py-4">
-                    <strong>Sign in</strong>
-                </h5>
-
-                <!--Card content-->
-                <div class="card-body px-lg-5 pt-0">
-
-                    <!-- Form -->
-                    <form class="text-center" style="color: #757575;">
-
-                        <!-- Email -->
-                        <div class="md-form">
-
-                            <div>Title: {{ form.title }}</div>
-                            <div>{{ form.link }}</div>
-                            <div>{{ form.description }}</div>
-                        </div>
-                    </form>
-                </div>
+    {% for indust in industries %}
+        {#            <div class="card m-4">#}
+        {##}
+        {#                <h5 class="card-header info-color white-text text-center py-4">#}
+        {#                    <strong>Edit {{ form.id }}</strong>#}
+        {#                </h5>#}
+        {##}
+        {#                <!--Card content-->#}
+        {#                <div class="card-body px-lg-5 pt-0">#}
+        {##}
+        {#                    <!-- Form -->#}
+        {#                    <form class="text-center" style="color: #757575;">#}
+        {##}
+        {#                        <!-- Email -->#}
+        {#                        <div class="md-form">#}
+        {##}
+        {#                            <div>Title: {{ form.title }}</div>#}
+        {#                            <div>{{ form.link }}</div>#}
+        {#                            <div>{{ form.description }}</div>#}
+        {#                        </div>#}
+        {#                    </form>#}
+        {#                          <button class="btn btn-outline-info btn-rounded btn-block my-4 waves-effect z-depth-0" type="submit">Sign in</button>#}
+        {##}
+        {#                </div>#}
+        {#            </div>#}
+        <div class=" d-flex justify-content-center">
+            <button data-id="{{ indust.id }}" class="btn btn-primary text-white" style="height: min-content">
+                {{ indust.title }}</button>
             </div>
         {% endfor %}
-    </form>
 
 </div>
 
@@ -373,14 +385,16 @@
 <!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. -->
 <script>
   window.ga = function () { ga.q.push(arguments) }; ga.q = []; ga.l = +new Date;
-  ga('create', 'UA-XXXXX-Y', 'auto'); ga('send', 'pageview')
+  ga('create', 'UA-XXXXX-Y', 'auto');
+  ga('send', 'pageview');
 
-  $('#carousel-main').carousel({
-    interval: 2000
-  })
-  $('#carousel-modal').carousel({
-    interval: 4000
-  })
+  $(".btn").click(function (evt) {
+      alert();
+      $.getJSON("{% url 'edit' %}", {id: $(this).data('id')}, function (result) {
+          alert(result.msg);
+
+      });
+  });
 
 </script>
 <div class="hiddendiv common"></div><div style="background-color: rgb(255, 143, 0); display: none; color: white; text-align: center; position: fixed; top: 0px; left: 0px; width: 100%; height: auto; min-width: 100%; min-height: auto; max-width: 100%; font: 12px &quot;Helvetica Neue&quot;, Helvetica, Arial, Geneva, sans-serif; cursor: pointer; padding: 5px;"><span style="color: white; font: 12px &quot;Helvetica Neue&quot;, Helvetica, Arial, Geneva, sans-serif;">You have turned off the paragraph player. You can turn it on again from the options page.</span><img src="chrome-extension://gfjopfpjmkcfgjpogepmdjmcnihfpokn/img/icons/icon-close_16.png" style="width: 20px; height: auto; min-width: 20px; min-height: auto; max-width: 20px; float: right; margin-right: 10px;"></div></body></html>
