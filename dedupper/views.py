@@ -25,8 +25,8 @@ store=name_sort=address_sort=email_sort=crd_sort=phone_sort=average_sort=key_sor
 db_job=rep_df = None
 UPLOAD_JOB_ID = '79243664'
 DUPLIFY_JOB_ID = '36647924'
-
 dedupe_q = django_rq.get_queue('high', autocommit=True, is_async=True)
+
 
 def display(request):
     return render(request, 'dedupper/data-table.html')
@@ -268,6 +268,7 @@ def import_csv(request):
     request.session['rq_job'] = UPLOAD_JOB_ID
 
     return JsonResponse({'msg': 'success!'}, safe=False)
+
 
 def index(request):
     return render(request, 'dedupper/login.html')

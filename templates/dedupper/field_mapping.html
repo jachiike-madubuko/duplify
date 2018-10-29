@@ -193,441 +193,450 @@ bottom:
 
     </div>
     <div class="row ff white z-depth-3 py-2 rounded" style="position: fixed; right: 20px; top: 120px">
-        <div class="col-12"><h3>Channels</h3>
+        <div class="col-12"><h3 class="mx-auto col-6">Channels</h3>
             <div>
                 <div class=" col-1 text-primary">
                     <div class="btn-group-vertical btn-group-toggle" data-toggle="buttons">
-                        <label class="btn waves-effect btn-primary">
-                            RC
-                            <input type="radio" name="options" id="option3" value="RD" autocomplete="off">
-                </label>
-                        <label class="btn waves-effect btn-primary">
+                        <label class="btn btn-lg waves-effect btn-block btn-primary mb-1 ml-5">
+                            <input type="radio" name="options" id="option3" value="RD" autocomplete="off">RC
+                        </label>
+                        <label class="btn btn-lg waves-effect btn-block btn-primary mb-1 ml-5">
                             <input type="radio" name="options" id="option3" value="RM" autocomplete="off">RD
-                </label>
-                        <label class="btn waves-effect btn-primary">
+                        </label>
+                        <label class="btn btn-lg waves-effect btn-block btn-primary mb-1 ml-5">
                             <input type="radio" name="options" id="option3" value="IMC" autocomplete="off">RM
-                </label>
-                        <label class="btn waves-effect btn-primary ">
+                        </label>
+                        <label class="btn btn-lg waves-effect btn-block btn-primary mb-1 ml-5 ">
                             <input type="radio" name="options" id="option3" value="EMC" autocomplete="off">MC
-                </label>
-                        <label class="btn waves-effect btn-primary ">
+                        </label>
+                        <label class="btn btn-lg waves-effect btn-block btn-primary mb-1 ml-5 ">
                             <input type="radio" name="options" id="option3" value="FD" autocomplete="off">FD
-                </label>
+                        </label>
 
-            </div>
-                    <button class="row btn waves-effect btn-primary rounded-circle p-2 m-3 z-depth-5"
+                    </div>
+                    <button class="row btn waves-effect btn-primary rounded-circle p-2 m-3 z-depth-5 float-left"
                             id="map-headers"
                             type="button"
                             onclick="map_headers()">
-                <span class="fa fa-upload fa-2x "></span>
-            </button>
+                        <span class="fa fa-upload fa-2x "></span>
+                    </button>
 
-        </div>
+                </div>
 
                 </h4>
-    <!-- Card -->
+                <!-- Card -->
 
-</div>
+            </div>
 
-</div>
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
-        integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/js/mdb.min.js"></script>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
+                integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
+                crossorigin="anonymous"></script>
+        <script type="text/javascript"
+                src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/js/mdb.min.js"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
-<script src="http://yui.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
+        <script src="http://yui.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
 
-<script>
-    var rep_mapping = {};
-    var sf_mapping = {};
+        <script>
+            var rep_mapping = {};
+            var sf_mapping = {};
 
 
-    function filename(file, label) {
-        var name = $(file).val().replace("C:\\fakepath\\","");
+            function filename(file, label) {
+                var name = $(file).val().replace("C:\\fakepath\\", "");
 
-        $(label).text(name.substring(0, 25) + '...');
-        $("#fileSubmit").trigger('click');
-    }
-    function verify(){
-        $.wait = function( callback, seconds){
-            return window.setTimeout( callback, seconds * 1000 );
-        }
-        $(document).on('click', '.btn-success', function(e) {
+                $(label).text(name.substring(0, 25) + '...');
+                $("#fileSubmit").trigger('click');
+            }
 
-            alert($(".rep").text().substr(-3).localeCompare('csv'));
-            if( $(".rep").text().substr(-3).localeCompare('csv') != 0 ) {
-                if( $(".rep").text() == 'Choose file' || $(".rep").text() == '') {
-                    e.preventDefault(); //prevent the default action
-                    $(".files").removeClass("invisible");//.delay(5).addClass("invisible");
-                    $.wait( function(){ $(".files").addClass("invisible") }, 3);
-
-                }else {
-                    // e.preventDefault(); //prevent the default action
-                    $(".format").removeClass("invisible");//.delay(5).addClass("invisible");
-                    $.wait(function () {
-                        $(".format").addClass("invisible")
-                    }, 3);
+            function verify() {
+                $.wait = function (callback, seconds) {
+                    return window.setTimeout(callback, seconds * 1000);
                 }
-
-            } });
-    }
-
-    function bg()
-    {
-
-        $("body").polygonizr({
-
-            restNodeMovements: 0,// How long to pause in between new node-movements.
-
-            duration: 4, // When the cluster updates, this sets speed of nodes.
-
-            nodeMovementDistance: 400, // Define the maximum distance to move nodes.
-
-            numberOfNodes: 36,// The number of node nodes to print out.
-
-            nodeDotSize: 2.5,// Define the maximum size of each node dot.
-
-            nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
-
-            nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
-
-            randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
-
-            // Define a formula for how to initialize each node dot's position.
-            specifyPolygonMeshNetworkFormation: function (i) {
-                var forEachNode = {// Half a circle and randomized
-                    x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
-                    y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
-                };
-                return forEachNode;
-            },
-
-            nodeRelations: 15,// Number of relations between nodes.
-
-            animationFps: 300, // The FPS for the whole canvas.
-
-            nodeDotColor: "0, 0 0 ",// Sets the color of the nodes in the network (RGB).
-
-            nodeLineColor: "0, 0, 0 ",// Sets the color of the lines in the network (RGB).
-
-            nodeFillColor: "0, 0, 0 ",// Sets the color of  triangles in the network (RGB).
-
-            nodeFillAlpha: 2,// Sets the alpha level for the colors (1-0).
-
-            nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
-
-            nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
-
-            nodeFillSpace: true,// Defines if the triangles in the network should be shown.
-
-            nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
-
-            // Define the canvas size and css position.
-            canvasWidth: $(this).width(),
-            canvasHeight: $(this).height(),
-            canvasPosition: "absolute"
-
-        });
-        $("body").polygonizr({
-
-            restNodeMovements: 0,// How long to pause in between new node-movements.
-
-            duration: 8, // When the cluster updates, this sets speed of nodes.
-
-            nodeMovementDistance: 400, // Define the maximum distance to move nodes.
-
-            numberOfNodes: 36,// The number of node nodes to print out.
-
-            nodeDotSize: 1,// Define the maximum size of each node dot.
-
-            nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
-
-            nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
-
-            randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
-
-            // Define a formula for how to initialize each node dot's position.
-            specifyPolygonMeshNetworkFormation: function (i) {
-                var forEachNode = {// Half a circle and randomized
-                    x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
-                    y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
-                };
-                return forEachNode;
-            },
-
-            nodeRelations: 15,// Number of relations between nodes.
-
-            animationFps: 300, // The FPS for the whole canvas.
-
-            nodeDotColor: "255, 255, 255 ",// Sets the color of the nodes in the network (RGB).
-
-            nodeLineColor: "255, 255, 255",// Sets the color of the lines in the network (RGB).
-
-            nodeFillColor: "255, 255, 255 ",// Sets the color of  triangles in the network (RGB).
-
-            nodeFillAlpha: 3,// Sets the alpha level for the colors (1-0).
-
-            nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
-
-            nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
-
-            nodeFillSpace: true,// Defines if the triangles in the network should be shown.
-
-            nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
-
-            // Define the canvas size and css position.
-            canvasWidth: $(this).width(),
-            canvasHeight: $(this).height(),
-            canvasPosition: "absolute"
-
-        });
-    }
-    {#bg();#}
-
-    var colors = new Array(
-        [127.5,127.5,127.5],
-        [255,255,255],
-        [0,0,0],
-        [255,255,255],
-        [0,0,0],
-        [127.5,127.5,127.5],);
-
-    var step = 0;
-    //color table indices for:
-    // current color left
-    // next color left
-    // current color right
-    // next color right
-    var colorIndices = [0,1,2,3];
-
-    //transition speed
-    var gradientSpeed = 0.001;
-
-    function updateGradient() {
-
-        if ($ === undefined) return;
-
-        var c0_0 = colors[colorIndices[0]];
-        var c0_1 = colors[colorIndices[1]];
-        var c1_0 = colors[colorIndices[2]];
-        var c1_1 = colors[colorIndices[3]];
-
-        var istep = 1 - step;
-        var r1 = Math.round(istep * c0_0[0] + step * c0_1[0]);
-        var g1 = Math.round(istep * c0_0[1] + step * c0_1[1]);
-        var b1 = Math.round(istep * c0_0[2] + step * c0_1[2]);
-        var color1 = "rgb(" + r1 + "," + g1 + "," + b1 + ")";
-
-        var r2 = Math.round(istep * c1_0[0] + step * c1_1[0]);
-        var g2 = Math.round(istep * c1_0[1] + step * c1_1[1]);
-        var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
-        var color2 = "rgb(" + r2 + "," + g2 + "," + b2 + ")";
-
-        $('body').css({
-            background: "-webkit-gradient(linear, left top, right top, from(" + color1 + "), to(" + color2 + "))"
-        }).css({
-            background: "-moz-linear-gradient(left, " + color1 + " 0%, " + color2 + " 100%)"
-        });
-
-        step += gradientSpeed;
-        if (step >= 1) {
-            step %= 1;
-            colorIndices[0] = colorIndices[1];
-            colorIndices[2] = colorIndices[3];
-
-            //pick two new target color indices
-            //do not pick the same as the current one
-            colorIndices[1] = (colorIndices[1] + Math.floor(1 + Math.random() * (colors.length - 1))) % colors.length;
-            colorIndices[3] = (colorIndices[3] + Math.floor(1 + Math.random() * (colors.length - 1))) % colors.length;
-
-        }
-    }
-
-    {#setInterval(updateGradient,20);#}
-
-
-    $(document).ready(function() {
-
-        $(".ff").hide();
-        $("#loading-indicator").hide();
-        $(".btn-primary").css({'margin': '0px'});
-
-        var rep_data = [
-            {
-                id: 0,
-                text: '',
-                value: 'placeholder'
-            },
-            {% for key in rep_csv %}
-                {
-                    id: {{ forloop.counter }},
-                    text:"{{ key }}",
-                    value:'{{ key }}',
-                },
-            {% endfor %}
-        ];
-        var sf_data = [
-            {
-                id: 0,
-                text: '',
-                value: 'placeholder',
-
-            },
-            {% for key in sf_csv %}
-
-                {
-                    id: {{ forloop.counter}},
-                    text:"{{ key }}",
-                    value:'{{ key }}',
-                },
-            {% endfor %}
-        ];
-        $('.rep-select').select2({
-            theme: "bootstrap",
-            placeholder: {
-                id: '0'
-            },
-            templateSelection: function (data, container) {
-                $(data.element).attr('data-name', data.value);
-                return data.text;
-
+                $(document).on('click', '.btn-success', function (e) {
+
+                    alert($(".rep").text().substr(-3).localeCompare('csv'));
+                    if ($(".rep").text().substr(-3).localeCompare('csv') != 0) {
+                        if ($(".rep").text() == 'Choose file' || $(".rep").text() == '') {
+                            e.preventDefault(); //prevent the default action
+                            $(".files").removeClass("invisible");//.delay(5).addClass("invisible");
+                            $.wait(function () {
+                                $(".files").addClass("invisible")
+                            }, 3);
+
+                        } else {
+                            // e.preventDefault(); //prevent the default action
+                            $(".format").removeClass("invisible");//.delay(5).addClass("invisible");
+                            $.wait(function () {
+                                $(".format").addClass("invisible")
+                            }, 3);
+                        }
+
+                    }
+                });
             }
-        });
-        $('.sf-select').select2({
-            theme: "bootstrap",
-            placeholder: {
-                id: '0'
-            },
-            templateSelection: function (data, container) {
-                $(data.element).attr('data-name', data.value);
-                return data.text;
+
+            function bg() {
+
+                $("body").polygonizr({
+
+                    restNodeMovements: 0,// How long to pause in between new node-movements.
+
+                    duration: 4, // When the cluster updates, this sets speed of nodes.
+
+                    nodeMovementDistance: 400, // Define the maximum distance to move nodes.
+
+                    numberOfNodes: 36,// The number of node nodes to print out.
+
+                    nodeDotSize: 2.5,// Define the maximum size of each node dot.
+
+                    nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
+
+                    nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
+
+                    randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
+
+                    // Define a formula for how to initialize each node dot's position.
+                    specifyPolygonMeshNetworkFormation: function (i) {
+                        var forEachNode = {// Half a circle and randomized
+                            x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
+                            y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
+                        };
+                        return forEachNode;
+                    },
+
+                    nodeRelations: 15,// Number of relations between nodes.
+
+                    animationFps: 300, // The FPS for the whole canvas.
+
+                    nodeDotColor: "0, 0 0 ",// Sets the color of the nodes in the network (RGB).
+
+                    nodeLineColor: "0, 0, 0 ",// Sets the color of the lines in the network (RGB).
+
+                    nodeFillColor: "0, 0, 0 ",// Sets the color of  triangles in the network (RGB).
+
+                    nodeFillAlpha: 2,// Sets the alpha level for the colors (1-0).
+
+                    nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
+
+                    nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
+
+                    nodeFillSpace: true,// Defines if the triangles in the network should be shown.
+
+                    nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
+
+                    // Define the canvas size and css position.
+                    canvasWidth: $(this).width(),
+                    canvasHeight: $(this).height(),
+                    canvasPosition: "absolute"
+
+                });
+                $("body").polygonizr({
+
+                    restNodeMovements: 0,// How long to pause in between new node-movements.
+
+                    duration: 8, // When the cluster updates, this sets speed of nodes.
+
+                    nodeMovementDistance: 400, // Define the maximum distance to move nodes.
+
+                    numberOfNodes: 36,// The number of node nodes to print out.
+
+                    nodeDotSize: 1,// Define the maximum size of each node dot.
+
+                    nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
+
+                    nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
+
+                    randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
+
+                    // Define a formula for how to initialize each node dot's position.
+                    specifyPolygonMeshNetworkFormation: function (i) {
+                        var forEachNode = {// Half a circle and randomized
+                            x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
+                            y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
+                        };
+                        return forEachNode;
+                    },
+
+                    nodeRelations: 15,// Number of relations between nodes.
+
+                    animationFps: 300, // The FPS for the whole canvas.
+
+                    nodeDotColor: "255, 255, 255 ",// Sets the color of the nodes in the network (RGB).
+
+                    nodeLineColor: "255, 255, 255",// Sets the color of the lines in the network (RGB).
+
+                    nodeFillColor: "255, 255, 255 ",// Sets the color of  triangles in the network (RGB).
+
+                    nodeFillAlpha: 3,// Sets the alpha level for the colors (1-0).
+
+                    nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
+
+                    nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
+
+                    nodeFillSpace: true,// Defines if the triangles in the network should be shown.
+
+                    nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
+
+                    // Define the canvas size and css position.
+                    canvasWidth: $(this).width(),
+                    canvasHeight: $(this).height(),
+                    canvasPosition: "absolute"
+
+                });
             }
-        });
-        $('.select2-container--bootstrap').width(500);
-        $('.btn-primary').click(function () {
-            $('#map-headers').removeClass('invisible');
-        });
 
-        $('#fileSubmit').click(function (evt) {
-            evt.preventDefault();
+            {#bg();#}
 
-            var form = $('#upload')[0];
-            var data = new FormData(form);
+            var colors = new Array(
+                [127.5, 127.5, 127.5],
+                [255, 255, 255],
+                [0, 0, 0],
+                [255, 255, 255],
+                [0, 0, 0],
+                [127.5, 127.5, 127.5],);
+
+            var step = 0;
+            //color table indices for:
+            // current color left
+            // next color left
+            // current color right
+            // next color right
+            var colorIndices = [0, 1, 2, 3];
+
+            //transition speed
+            var gradientSpeed = 0.001;
+
+            function updateGradient() {
+
+                if ($ === undefined) return;
+
+                var c0_0 = colors[colorIndices[0]];
+                var c0_1 = colors[colorIndices[1]];
+                var c1_0 = colors[colorIndices[2]];
+                var c1_1 = colors[colorIndices[3]];
+
+                var istep = 1 - step;
+                var r1 = Math.round(istep * c0_0[0] + step * c0_1[0]);
+                var g1 = Math.round(istep * c0_0[1] + step * c0_1[1]);
+                var b1 = Math.round(istep * c0_0[2] + step * c0_1[2]);
+                var color1 = "rgb(" + r1 + "," + g1 + "," + b1 + ")";
+
+                var r2 = Math.round(istep * c1_0[0] + step * c1_1[0]);
+                var g2 = Math.round(istep * c1_0[1] + step * c1_1[1]);
+                var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
+                var color2 = "rgb(" + r2 + "," + g2 + "," + b2 + ")";
+
+                $('body').css({
+                    background: "-webkit-gradient(linear, left top, right top, from(" + color1 + "), to(" + color2 + "))"
+                }).css({
+                    background: "-moz-linear-gradient(left, " + color1 + " 0%, " + color2 + " 100%)"
+                });
+
+                step += gradientSpeed;
+                if (step >= 1) {
+                    step %= 1;
+                    colorIndices[0] = colorIndices[1];
+                    colorIndices[2] = colorIndices[3];
+
+                    //pick two new target color indices
+                    //do not pick the same as the current one
+                    colorIndices[1] = (colorIndices[1] + Math.floor(1 + Math.random() * (colors.length - 1))) % colors.length;
+                    colorIndices[3] = (colorIndices[3] + Math.floor(1 + Math.random() * (colors.length - 1))) % colors.length;
+
+                }
+            }
+
+            {#setInterval(updateGradient,20);#}
 
 
-            $.ajax({
-                type: "POST",
-                url: "{% url 'keys'  %}",
-                data: data,
-                enctype: 'multipart/form-data',
-                processData: false,
-                contentType: false,
-                cache: false,
-                success: function (data) {
-                    $(".file").hide('slow', function () {
-                        $(".file").empty().toggleClass('col-4 col-8').append("<h3 class='col mx-auto my-1 p-1 " +
-                            "text-center'>Field " +
-                            "Mapping</h3>");
-                        for (var key in data) {
-                            var class_id = "rep" + key;
-                            var input_group = $("<div></div>");
-                            input_group.addClass("input-group mb-3 col-12 mx-auto");
-                            var prepend = $("<div></div>");
-                            prepend.addClass("input-group-prepend");
-                            var text = $("<p></p>");
-                            text.addClass("input-group-text bg-dark text-white").css({
-                                "height": "34px",
-                                "width": "200px"
-                            }).text(key);
+            $(document).ready(function () {
 
-                            input_group.append(prepend.append(text));
-                            var selectList = $("<select style='width=100%'></select>");
-                            selectList.addClass(class_id).addClass("rep-select py-5 col-12");
-                            selectList.append($("<option></option>").data("name", "placeholder"));
-                            for (var k in data[key]) {
-                                var opt = $("<option></option>");
-                                opt.data("name", data[key][k]).val(data[key][k]).text(data[key][k]);
-                                selectList.append(opt);
-                            }
-                            input_group.append(selectList);
+                {#$(".ff").hide();#}
+                $("#loading-indicator").hide();
+                $(".btn-primary").css({'margin': '0px'});
 
-                            $(".file").append(input_group);
+                var rep_data = [
+                    {
+                        id: 0,
+                        text: '',
+                        value: 'placeholder'
+                    },
+                    {% for key in rep_csv %}
+                        {
+                            id: {{ forloop.counter }},
+                            text: "{{ key }}",
+                            value: '{{ key }}',
+                        },
+                    {% endfor %}
+                ];
+                var sf_data = [
+                    {
+                        id: 0,
+                        text: '',
+                        value: 'placeholder',
 
+                    },
+                    {% for key in sf_csv %}
+
+                        {
+                            id: {{ forloop.counter}},
+                            text: "{{ key }}",
+                            value: '{{ key }}',
+                        },
+                    {% endfor %}
+                ];
+                $('.rep-select').select2({
+                    theme: "bootstrap",
+                    placeholder: {
+                        id: '0'
+                    },
+                    templateSelection: function (data, container) {
+                        $(data.element).attr('data-name', data.value);
+                        return data.text;
+
+                    }
+                });
+                $('.sf-select').select2({
+                    theme: "bootstrap",
+                    placeholder: {
+                        id: '0'
+                    },
+                    templateSelection: function (data, container) {
+                        $(data.element).attr('data-name', data.value);
+                        return data.text;
+                    }
+                });
+                $('.select2-container--bootstrap').width(500);
+                $('.btn-primary').click(function () {
+                    $('#map-headers').removeClass('invisible');
+                });
+
+                $('#fileSubmit').click(function (evt) {
+                    evt.preventDefault();
+
+                    var form = $('#upload')[0];
+                    var data = new FormData(form);
+
+
+                    $.ajax({
+                        type: "POST",
+                        url: "{% url 'keys'  %}",
+                        data: data,
+                        enctype: 'multipart/form-data',
+                        processData: false,
+                        contentType: false,
+                        cache: false,
+                        success: function (data) {
+                            $(".file").hide('slow', function () {
+                                $(".file").empty().toggleClass('col-4 col-8').append("<h3 class='col mx-auto my-1 p-1 " +
+                                    "text-center'>Field " +
+                                    "Mapping</h3>");
+                                for (var key in data) {
+                                    var class_id = "rep" + key;
+                                    var input_group = $("<div></div>");
+                                    input_group.addClass("input-group mb-3 col-12 mx-auto");
+                                    var prepend = $("<div></div>");
+                                    prepend.addClass("input-group-prepend");
+                                    var text = $("<p></p>");
+                                    text.addClass("input-group-text bg-dark text-white").css({
+                                        "height": "34px",
+                                        "width": "200px"
+                                    }).text(key);
+
+                                    input_group.append(prepend.append(text));
+                                    var selectList = $("<select style='width=100%'></select>");
+                                    selectList.addClass(class_id).addClass("rep-select py-5 col-12");
+                                    selectList.append($("<option></option>").data("name", "placeholder"));
+                                    for (var k in data[key]) {
+                                        var opt = $("<option></option>");
+                                        opt.data("name", data[key][k]).val(data[key][k]).text(data[key][k]);
+                                        selectList.append(opt);
+                                    }
+                                    input_group.append(selectList);
+
+                                    $(".file").append(input_group);
+
+
+                                }
+                                $('.rep-select').select2({
+                                    theme: "bootstrap",
+                                    placeholder: {
+                                        id: '0'
+                                    },
+                                    templateSelection: function (data, container) {
+                                        $(data.element).attr('data-name', data.value);
+                                        return data.text;
+
+                                    }
+                                });
+                                $(".select2-container").width('75%');
+
+                                $(".file").show('slow');
+                                $(".ff").show('slow');
+                            });
 
                         }
-                        $('.rep-select').select2({
-                            theme: "bootstrap",
-                            placeholder: {
-                                id: '0'
-                            },
-                            templateSelection: function (data, container) {
-                                $(data.element).attr('data-name', data.value);
-                                return data.text;
-
-                            }
-                        });
-                        $(".select2-container").width('75%');
-
-                        $(".file").show('slow')
-                        $(".ff").show('slow')
                     });
 
-                }
+                });
             });
 
-        });
-    });
-    function f() {
-        if (confirm('WARNING: You are about to erase all records in the database.')) {
-            window.location.replace("{% url 'flush_db' %}");
-        } else {
-            // Do nothing!
-        }
-    }
-    function map_headers() {
-        {#$("#progress").modal('toggle');#}
-        var channel  = $('input:checked').val();
-        $('.rep-select').each( function() {
-            var x = $(this).find(':selected').data('name');
-            var par = $(this).parent().children('div').children('p').text();
-            if (x.localeCompare("placeholder") != 0){
-                rep_mapping[x] = par;
+            function f() {
+                if (confirm('WARNING: You are about to erase all records in the database.')) {
+                    window.location.replace("{% url 'flush_db' %}");
+                } else {
+                    // Do nothing!
+                }
             }
-        });
-        $('.sf-select').each( function() {
-            var x = $(this).find(':selected').data('name');
-            var par = $(this).parent().children('div').children('p').text();
-            if (x.localeCompare("placeholder") != 0) {
-                sf_mapping[x] = par;
+
+            function map_headers() {
+                {#$("#progress").modal('toggle');#}
+                var channel = $('input:checked').val();
+                $('.rep-select').each(function () {
+                    var x = $(this).find(':selected').data('name');
+                    var par = $(this).parent().children('div').children('p').text();
+                    if (x.localeCompare("placeholder") != 0) {
+                        rep_mapping[x] = par;
+                    }
+                });
+                $('.sf-select').each(function () {
+                    var x = $(this).find(':selected').data('name');
+                    var par = $(this).parent().children('div').children('p').text();
+                    if (x.localeCompare("placeholder") != 0) {
+                        sf_mapping[x] = par;
+                    }
+                });
+
+                $.getJSON("{% url 'import_csv' %}", {
+                    channel: channel, rep_map: JSON.stringify
+                    (rep_mapping)
+                }, function (result) {
+                    setInterval(update_progress, 5000);
+                });
             }
-        });
 
-        $.getJSON("{% url 'import_csv' %}", {channel: channel, rep_map: JSON.stringify
-            (rep_mapping) }, function (result) {
-            setInterval(update_progress, 5000);
-        });
-    }
+            function update_progress() {
+                $.getJSON("{% url 'db_progress' %}", function (result) {
 
-    function update_progress() {
-        $.getJSON("{% url 'db_progress' %}", function (result) {
+                    if (result['msg'] < 10) {
 
-            if (result['msg'] < 10) {
-
-                window.location.replace("{% url 'key' %}");
+                        window.location.replace("{% url 'key' %}");
+                    }
+                });
             }
-        });
-    }
 
-    $(document).ajaxStart(function () {
-        $("#loading-indicator").show('fast');
+            $(document).ajaxStart(function () {
+                $("#loading-indicator").show('fast');
 
-    })
-    $(document).ajaxComplete(function () {
-        $("#loading-indicator").hide('fast');
-    })
+            })
+            $(document).ajaxComplete(function () {
+                $("#loading-indicator").hide('fast');
+            })
 
-</script>
+        </script>
 </body>
 </html>
