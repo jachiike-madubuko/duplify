@@ -415,7 +415,6 @@ def make_keys():
     keys.sort(key=itemgetter(5), reverse=True)
     return keys
 
-
 def match_keys(key,key_list):
     for i in key_list:
         yield match_percentage(key, i)
@@ -572,7 +571,6 @@ def db_done():
         print(e)
         return
 
-
 def get_contacts(c_filter):
     reps, sf = progress.objects.latest().label.split('--$--')
 
@@ -586,7 +584,6 @@ def get_contacts(c_filter):
 
     return contact_getter[c_filter]
 
-
 def update_df(update):
     global reps_df, sf_df
     reps_df.loc[update[0], 'Id'] = sf_df.loc[update[1], 'Id']
@@ -595,7 +592,6 @@ def update_df(update):
     p.update(completed_reps=progress.objects.latest().completed_reps + 1)
     p.save()
     db.connections.close_all()
-
 
 def save_dfs():
     global reps_df, sf_df
