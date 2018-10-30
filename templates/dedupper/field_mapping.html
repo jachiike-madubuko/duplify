@@ -192,7 +192,7 @@ bottom:
         </div>
 
     </div>
-    <div class="row ff white z-depth-3 py-2 rounded" style="position: fixed; right: 20px; top: 120px">
+    <div class="row ff white z-depth-3 py-2 rounded" style="position: fixed; right: 50px; top: 120px">
         <div class="col-12"><h3 class="mx-auto col-6">Channels</h3>
             <div>
                 <div class=" col-1 text-primary">
@@ -532,7 +532,10 @@ bottom:
                         cache: false,
                         success: function (data) {
                             $(".file").hide('slow', function () {
-                                $(".file").empty().toggleClass('col-4 col-8').append("<h3 class='col mx-auto my-1 p-1 " +
+                                $(".file").empty().toggleClass('col-4 col-8 m-auto ml-5  z-depth-1  z-depth-5')
+                                    .append("<h3 " +
+                                        "class='col " +
+                                        "mx-auto my-1 p-1 " +
                                     "text-center'>Field " +
                                     "Mapping</h3>");
                                 for (var key in data) {
