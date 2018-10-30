@@ -8,6 +8,7 @@ Created on Sat May 19 17:53:34 2018
 import logging
 import os
 import string
+from functools import reduce
 from gc import collect
 from io import StringIO
 from operator import itemgetter
@@ -374,7 +375,6 @@ def load_csv2db(csv, header_map, resource, file_type='rep'):
 
 # concatenates cols of the df
 def misc_col(df, cols):
-    from functools import reduce
     return reduce(lambda x, y: x.astype(str).str.cat(y.astype(str), sep='-!-'), [df[col] for col in cols])
 
 #generates stats for each fields based on uniqueness of values and amount of blanks
