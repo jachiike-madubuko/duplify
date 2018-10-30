@@ -1,4 +1,5 @@
-{% load static %}
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -14,16 +15,17 @@
 
     <style>
         /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#b8e1fc+0,a9d2f3+10,90bae4+25,90bcea+37,90bff0+50,6ba8e5+51,a2daf5+83,bdf3fd+100;Blue+Gloss+%231 */
-        body {
-    background-image: url("{% static 'img/lake.png' %}");
-                background-position: right top;
-                background-repeat: no-repeat;
-
-    background-attachment: fixed;
-    background-size: 100% 100%;
 
 
-}
+
+
+
+
+
+
+
+        {
+        #}#}
 
         h1 {
             text-shadow:
@@ -33,14 +35,27 @@
                     1.25px 1.25px 0 #000;
         }
 
+        #loading-indicator {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            right: 50%;
+            bottom: 50%;
+            z-index: 1100;
+            box-shadow: 0px 0px 1000vw 1000vh rgba(0, 0, 0, 0.001);
+        }
+
 
     </style>
 </head>
-<body class="blue-grey lighten-5" style="transition: 2s; overflow: auto">
+<body class="rgba-black-slight" style="transition: 2s; overflow: auto">
+<img src="/static/img/loader.gif" id="loading-indicator" class="border-0
+    transparent
+" style="display: none"/>
 
 
-<nav class="navbar navbar-expand-lg navbar-primary scrolling-navbar ">
-    <h1> <a class="navbar-brand text-white" href="{% url 'index' %}">Duplify</a></h1>
+<nav class="navbar navbar-expand-lg navbar-black black scrolling-navbar">
+    <h1> <a class="navbar-brand text-white" href="/">Duplify</a></h1>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -98,11 +113,12 @@
             </div>
             <hr>
             <div class="container my-3">
-                <a id="next" class="invisible btn waves-effect btn-success badge-pill btn-block" href="{% url 'reps' %}">Next</a>
+                <a id="next" class="invisible btn waves-effect btn-success badge-pill btn-block" href="/sorted/">Next</a>
             </div>
         </div>
     </div>
 </div>
+
 
 <!-- Modal -->
 <div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
@@ -118,344 +134,464 @@
                 <div class="container-fluid">
                     <div class="x row">
 
+                        <div class=" ">
+
+                        </div>
 
                     </div>
                 </div>
-            </div>
-            <div class="modal-footerz ">
-                <div class="btn-group btn-group-toggle mx-auto col" data-toggle="buttons">
-                    <label class="btn waves-effect btn-primary mr-1">
-                        <input type="radio" name="options" id="option2" value="RC" autocomplete="off"> RC
-                    </label>
-                    <label class="btn waves-effect btn-primary mr-1">
-                        <input type="radio" name="options" id="option3" value="RD" autocomplete="off"> RD
-                    </label>
-                    <label class="btn waves-effect btn-primary mr-1">
-                        <input type="radio" name="options" id="option3" value="RM" autocomplete="off"> RM
-                    </label>
-                    <label class="btn waves-effect btn-primary mr-1">
-                        <input type="radio" name="options" id="option3" value="MC" autocomplete="off"> MC
-                    </label>
-                    <label class="btn waves-effect btn-primary mr-1">
-                        <input type="radio" name="options" id="option3" value="FD" autocomplete="off"> FD
-                    </label>
-                </div>
-
-                <button class="btn waves-effect btn-success btn-sm rounded-circle p-2 ml-2 invisible z-depth-5"
-                        id="map-headers"
-                        type="button"
-                        onclick="map_headers()">
-                 <span class="fa fa-arrow-circle-right fa-3x "></span>
-                </button>
-
             </div>
         </div>
     </div>
 </div>
 
-<div class="container-fluid p-5" >
-    <div class="row">
-        <div class="col-1"></div>
+<div class="container-fluid pb-5">
+    <div class="row pt-4 mb-5">
         <!-- Card -->
-        <div class="rounded col-10 m-auto bg-transparent z-depth-5 mapping">
+        <div class="file rounded col-4 m-auto white z-depth-1 p-1" style="overflow: hidden">
 
             <!-- Card content -->
             <div class="card-body text-center">
 
                 <!-- Title -->
-                <h1 class="card-title text-white">Upload Rep List Here</h1>
+                <h3 style="user-select: none;">Upload Rep List Here</h3>
                 <!-- Text -->
-                {% block content %}
-                    <form method="post" enctype="multipart/form-data" id="upload">
+                <form method="post" enctype="multipart/form-data" id="upload">
+                    <div class="custom-file md-form">
                         {% csrf_token %}
-                        <div class="custom-file ">
+                        <input type="file" class=" badge-pill custom-file-input mr-5 text-left mdb_upload"
+                               id="repFile"
+                               name="repFile"
+                               onchange="filename(this, '.rep')">
+                        <label class=" custom-file-label rep rgba-white-light text-black  text-left  mr-5"
+                               for="repFile" style="user-select: none;">Choose
+                            file</label>
+                    </div>
 
-                            <input type="file" class=" badge-pill custom-file-input" id="repFile" name="repFile"
-                                   onchange="filename(this, '.rep')">
-                            <label class=" custom-file-label rep rgba-white-light text-white" for="repFile">Choose file</label>
-                        </div>
-
-
-                        <div class="row">
-                            <div  class="col-4"></div>
-                            <div  class="col-4">
-                                <button type="Submit"  onclick="verify()" class=" invisible btn waves-effect btn-primary
-                                rounded-circle download ml-5 z-depth-5 p-3 shadow"  style="z-index: 5000;
+                    <div class="row">
+                        <div  class="col-4"></div>
+                        <div  class="col-4">
+                            <button type="Submit" onclick="verify()" hidden class="btn waves-effect btn-primary
+                                rounded-circle download ml-5 z-depth-5 p-3 shadow" style="z-index: 5000;
 position:
 fixed;
 bottom:
 50px;
                     right: 30px;"
-                                        id="fileSubmit"> <span class="fa fa-upload fa-2x "></span>
-                                </button>
-                            </div>
-                            <div  class="col-4"></div>
+                                    id="fileSubmit"> <span class="fa fa-upload fa-2x "></span>
+                            </button>
                         </div>
-                    </form>
-                {% endblock %}
+                        <div  class="col-4"></div>
+                    </div>
+                </form>
+
 
             </div>
 
         </div>
-        <!-- Card -->
 
-        <div class="col-1"></div>
     </div>
+    <div class="row ff white z-depth-3 py-2 rounded" style="position: fixed; right: 50px; top: 120px; display: none">
+        <div class="col-12"><h3 class="mx-auto col-6">Channels</h3>
+            <div>
+                <div class=" col-1 text-primary">
+                    <div class="btn-group-vertical btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-lg waves-effect btn-block btn-primary mb-1 ml-5">
+                            <input type="radio" name="options" id="option3" value="RC" autocomplete="off">RC
+                        </label>
+                        <label class="btn btn-lg waves-effect btn-block btn-primary mb-1 ml-5">
+                            <input type="radio" name="options" id="option3" value="RD" autocomplete="off">RD
+                        </label>
+                        <label class="btn btn-lg waves-effect btn-block btn-primary mb-1 ml-5">
+                            <input type="radio" name="options" id="option3" value="RM" autocomplete="off">RM
+                        </label>
+                        <label class="btn btn-lg waves-effect btn-block btn-primary mb-1 ml-5 ">
+                            <input type="radio" name="options" id="option3" value="MC" autocomplete="off">MC
+                        </label>
+                        <label class="btn btn-lg waves-effect btn-block btn-primary mb-1 ml-5 ">
+                            <input type="radio" name="options" id="option3" value="FD" autocomplete="off">FD
+                        </label>
+
+                    </div>
+                    <button class="row btn waves-effect btn-primary rounded-circle p-2 m-3 z-depth-5 float-left"
+                            id="map-headers"
+                            type="button"
+                            onclick="map_headers()">
+                        <span class="fa fa-upload fa-2x "></span>
+                    </button>
+
+                </div>
+
+                </h4>
+                <!-- Card -->
+
+            </div>
+
+        </div>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
+                integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
+                crossorigin="anonymous"></script>
+        <script type="text/javascript"
+                src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/js/mdb.min.js"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
+        <script src="http://yui.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
+
+        <script>
+            var rep_mapping = {};
+            var sf_mapping = {};
 
 
-</div>
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
-        integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.9/js/mdb.min.js"></script>
+            function filename(file, label) {
+                var name = $(file).val().replace("C:\\fakepath\\", "");
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
-<script src="http://yui.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
-
-<script>
-
-
-
-    var rep_mapping = {};
-    var sf_mapping = {};
-
-function calculateDistance(elem, mouseX, mouseY) {
-        return Math.floor(Math.sqrt(Math.pow(mouseX - (elem.offset().left+(elem.width()/2)), 2) + Math.pow(mouseY - (elem.offset().top+(elem.height()/2)), 2)));
-    }
-
-    function filename(file, label) {
-        var name = $(file).val().replace("C:\\fakepath\\","");
-
-        $(label).text(name);
-        $("#fileSubmit").trigger('click');
-    }
-    function verify(){
-        $.wait = function( callback, seconds){
-            return window.setTimeout( callback, seconds * 1000 );
-        }
-        $(document).on('click', '.btn-success', function(e) {
-
-            alert($(".rep").text().substr(-3).localeCompare('csv'));
-            if( $(".rep").text().substr(-3).localeCompare('csv') != 0 ) {
-                if( $(".rep").text() == 'Choose file' || $(".rep").text() == '') {
-                    e.preventDefault(); //prevent the default action
-                    $(".files").removeClass("invisible");//.delay(5).addClass("invisible");
-                    $.wait( function(){ $(".files").addClass("invisible") }, 3);
-
-                }else {
-                    // e.preventDefault(); //prevent the default action
-                    $(".format").removeClass("invisible");//.delay(5).addClass("invisible");
-                    $.wait(function () {
-                        $(".format").addClass("invisible")
-                    }, 3);
-                }
-
-            } });
-    }
-
-    function verify(){
-        $.wait = function( callback, seconds){
-            return window.setTimeout( callback, seconds * 1000 );
-        }
-        $(document).on('click', '#fileSubmit', function(e) {
-
-
-            if( $(".rep").text().substr(-3) != 'csv' ||  $(".sf").text().substr(-3) != 'csv') {
-                if( $(".rep").text() == 'Choose file' ||   $(".sf").text() == 'Choose file' || $(".rep").text() ==
-                    '' ||   $(".sf").text() == '' ) {
-                    e.preventDefault(); //prevent the default action
-                    $(".files").removeClass("invisible");//.delay(5).addClass("invisible");
-                    $.wait( function(){ $(".files").addClass("invisible") }, 3);
-
-                }else {
-                    // e.preventDefault(); //prevent the default action
-                    $(".format").removeClass("invisible");//.delay(5).addClass("invisible");
-                    $.wait(function () {
-                        $(".format").addClass("invisible")
-                    }, 3);
-                }
-
-            } });
-    }
-
-    $(document).ready(function() {
-
-        $(document).mousemove( function (e) {
-            calculateDistance($("#repFile"), e.pageX, e.pageY)
-
-                alert();
-        });
-
-
-        var rep_data = [
-            {
-                id: 0,
-                text: '',
-                value: 'placeholder'
-            },
-            {% for key in rep_csv %}
-                {
-                    id: {{ forloop.counter }},
-                    text:"{{ key }}",
-                    value:'{{ key }}',
-                },
-            {% endfor %}
-        ];
-        var sf_data = [
-            {
-                id: 0,
-                text: '',
-                value: 'placeholder',
-
-            },
-            {% for key in sf_csv %}
-
-                {
-                    id: {{ forloop.counter}},
-                    text:"{{ key }}",
-                    value:'{{ key }}',
-                },
-            {% endfor %}
-        ];
-        $('.rep-select').select2({
-            theme: "bootstrap",
-            placeholder: {
-                id: '0'
-            },
-            templateSelection: function (data, container) {
-                $(data.element).attr('data-name', data.value);
-                return data.text;
-
+                $(label).text(name.substring(0, 25) + '...');
+                $("#fileSubmit").trigger('click');
             }
-        });
-        $('.sf-select').select2({
-            theme: "bootstrap",
-            placeholder: {
-                id: '0'
-            },
-            templateSelection: function (data, container) {
-                $(data.element).attr('data-name', data.value);
-                return data.text;
-            }
-        });
-        $('.select2-container--bootstrap').width(500);
-        $('.btn-primary').click(function () {
-            $('#map-headers').removeClass('invisible');
-        });
 
-        $('#fileSubmit').click(function (evt) {
-            evt.preventDefault();
+            function verify() {
+                $.wait = function (callback, seconds) {
+                    return window.setTimeout(callback, seconds * 1000);
+                }
+                $(document).on('click', '.btn-success', function (e) {
 
-            var form = $('#upload')[0];
-            var data = new FormData(form);
+                    alert($(".rep").text().substr(-3).localeCompare('csv'));
+                    if ($(".rep").text().substr(-3).localeCompare('csv') != 0) {
+                        if ($(".rep").text() == 'Choose file' || $(".rep").text() == '') {
+                            e.preventDefault(); //prevent the default action
+                            $(".files").removeClass("invisible");//.delay(5).addClass("invisible");
+                            $.wait(function () {
+                                $(".files").addClass("invisible")
+                            }, 3);
 
-
-            $.ajax({
-                type: "POST",
-                url: "{% url 'keys'  %}",
-                data: data,
-                enctype: 'multipart/form-data',
-                processData: false,
-                contentType: false,
-                cache: false,
-                success: function (data) {
-
-                    $(".mapping").fadeOut('slow',function () {
-                        $(".card-body").hide();
-                        for (var key in data) {
-                        var class_id = "rep" + key;
-                        var input_group = $("<div></div>");
-                        input_group.addClass("input-group mb-3 col-12");
-                        var prepend = $("<div></div>");
-                        prepend.addClass("input-group-prepend");
-                        var text = $("<p></p>");
-                        text.addClass("input-group-text bg-dark text-white").css({
-                            "height": "34px",
-                            "width": "200px"
-                        }).text(key);
-
-                        input_group.append(prepend.append(text));
-                        var selectList = $("<select style='width=100%'></select>");
-                        selectList.addClass(class_id).addClass("rep-select py-5 col-12");
-                        selectList.append($("<option></option>").data("name", "placeholder"));
-                        for (var k in data[key]) {
-                            var opt = $("<option></option>");
-                            opt.data("name", data[key][k]).val(data[key][k]).text(data[key][k]);
-                            selectList.append(opt);
+                        } else {
+                            // e.preventDefault(); //prevent the default action
+                            $(".format").removeClass("invisible");//.delay(5).addClass("invisible");
+                            $.wait(function () {
+                                $(".format").addClass("invisible")
+                            }, 3);
                         }
-                        input_group.append(selectList);
-
-                        $(".mapping").append(input_group);
 
                     }
-                        $(".mapping").append($(".modal-footerz").html());
+                });
+            }
+
+            function bg() {
+
+                $("body").polygonizr({
+
+                    restNodeMovements: 0,// How long to pause in between new node-movements.
+
+                    duration: 4, // When the cluster updates, this sets speed of nodes.
+
+                    nodeMovementDistance: 400, // Define the maximum distance to move nodes.
+
+                    numberOfNodes: 36,// The number of node nodes to print out.
+
+                    nodeDotSize: 2.5,// Define the maximum size of each node dot.
+
+                    nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
+
+                    nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
+
+                    randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
+
+                    // Define a formula for how to initialize each node dot's position.
+                    specifyPolygonMeshNetworkFormation: function (i) {
+                        var forEachNode = {// Half a circle and randomized
+                            x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
+                            y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
+                        };
+                        return forEachNode;
+                    },
+
+                    nodeRelations: 15,// Number of relations between nodes.
+
+                    animationFps: 300, // The FPS for the whole canvas.
+
+                    nodeDotColor: "0, 0 0 ",// Sets the color of the nodes in the network (RGB).
+
+                    nodeLineColor: "0, 0, 0 ",// Sets the color of the lines in the network (RGB).
+
+                    nodeFillColor: "0, 0, 0 ",// Sets the color of  triangles in the network (RGB).
+
+                    nodeFillAlpha: 2,// Sets the alpha level for the colors (1-0).
+
+                    nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
+
+                    nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
+
+                    nodeFillSpace: true,// Defines if the triangles in the network should be shown.
+
+                    nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
+
+                    // Define the canvas size and css position.
+                    canvasWidth: $(this).width(),
+                    canvasHeight: $(this).height(),
+                    canvasPosition: "absolute"
+
+                });
+                $("body").polygonizr({
+
+                    restNodeMovements: 0,// How long to pause in between new node-movements.
+
+                    duration: 8, // When the cluster updates, this sets speed of nodes.
+
+                    nodeMovementDistance: 400, // Define the maximum distance to move nodes.
+
+                    numberOfNodes: 36,// The number of node nodes to print out.
+
+                    nodeDotSize: 1,// Define the maximum size of each node dot.
+
+                    nodeEase: "linear",//linear, easeIn, easeOut, easeInOut, accelerateDecelerate.
+
+                    nodeFancyEntrance: false,// If true, the nodes will descend into place on load.
+
+                    randomizePolygonMeshNetworkFormation: false,// Makes the cluster forms an ellipse inspired formation, random if true.
+
+                    // Define a formula for how to initialize each node dot's position.
+                    specifyPolygonMeshNetworkFormation: function (i) {
+                        var forEachNode = {// Half a circle and randomized
+                            x: this.canvasWidth - ((this.canvasWidth / 2) + (this.canvasHeight / 2) * Math.cos(i * (2 * Math.PI / this.numberOfNodes))) * Math.random(),
+                            y: this.canvasHeight - (this.canvasHeight * (i / this.numberOfNodes))
+                        };
+                        return forEachNode;
+                    },
+
+                    nodeRelations: 15,// Number of relations between nodes.
+
+                    animationFps: 300, // The FPS for the whole canvas.
+
+                    nodeDotColor: "255, 255, 255 ",// Sets the color of the nodes in the network (RGB).
+
+                    nodeLineColor: "255, 255, 255",// Sets the color of the lines in the network (RGB).
+
+                    nodeFillColor: "255, 255, 255 ",// Sets the color of  triangles in the network (RGB).
+
+                    nodeFillAlpha: 3,// Sets the alpha level for the colors (1-0).
+
+                    nodeLineAlpha: 0, // Sets the alpha level for the lines (1-0).
+
+                    nodeDotAlpha: 0,// Sets the alpha level for the dots (1-0).
+
+                    nodeFillSpace: true,// Defines if the triangles in the network should be shown.
+
+                    nodeGlowing: false,// Define if the active animation should glow or not (not CPU friendly).
+
+                    // Define the canvas size and css position.
+                    canvasWidth: $(this).width(),
+                    canvasHeight: $(this).height(),
+                    canvasPosition: "absolute"
+
+                });
+            }
 
 
+
+            var colors = new Array(
+                [127.5, 127.5, 127.5],
+                [255, 255, 255],
+                [0, 0, 0],
+                [255, 255, 255],
+                [0, 0, 0],
+                [127.5, 127.5, 127.5],);
+
+            var step = 0;
+            //color table indices for:
+            // current color left
+            // next color left
+            // current color right
+            // next color right
+            var colorIndices = [0, 1, 2, 3];
+
+            //transition speed
+            var gradientSpeed = 0.001;
+
+            function calculateDistance(elem, mouseX, mouseY) {
+                return Math.floor(Math.sqrt(Math.pow(mouseX - (elem.offset().left+(elem.width()/2)), 2) + Math.pow(mouseY - (elem.offset().top+(elem.height()/2)), 2)));
+            }
+
+
+
+
+            $(document).ready(function () {
+
+                $(".btn-primary").css({'margin': '0px'});
+
+
+
+
+                        var rep_data = [
+                            {
+                                id: 0,
+                                text: '',
+                                value: 'placeholder'
+                            },
+
+                        ];
+                        var sf_data = [
+                            {
+                                id: 0,
+                                text: '',
+                                value: 'placeholder',
+
+                            },
+
+                        ];
+                        $('.rep-select').select2({
+                            theme: "bootstrap",
+                            placeholder: {
+                                id: '0'
+                            },
+                            templateSelection: function (data, container) {
+                                $(data.element).attr('data-name', data.value);
+                                return data.text;
+
+                            }
+                        });
+                        $('.sf-select').select2({
+                            theme: "bootstrap",
+                            placeholder: {
+                                id: '0'
+                            },
+                            templateSelection: function (data, container) {
+                                $(data.element).attr('data-name', data.value);
+                                return data.text;
+                            }
+                        });
+                        $('.select2-container--bootstrap').width(500);
+                        $('.btn-primary').click(function () {
+                            $('#map-headers').removeClass('invisible');
+                        });
+
+                        $('#fileSubmit').click(function (evt) {
+                            evt.preventDefault();
+
+                            var form = $('#upload')[0];
+                            var data = new FormData(form);
+
+
+                            $.ajax({
+                                type: "POST",
+                                url: "/keys",
+                                data: data,
+                                enctype: 'multipart/form-data',
+                                processData: false,
+                                contentType: false,
+                                cache: false,
+
+                                success: function (data) {
+                                    $(".file").hide('slow', function () {
+                                        $(".file").empty().toggleClass('col-4 col-8 m-auto ml-5  z-depth-1  z-depth-5')
+                                            .append("<h3 " +
+                                                "class='col " +
+                                                "mx-auto my-1 p-1 " +
+                                                "text-center'>Field " +
+                                                "Mapping</h3>");
+                                        for (var key in data) {
+                                            var class_id = "rep" + key;
+                                            var input_group = $("<div></div>");
+                                            input_group.addClass("input-group mb-3 col-12 mx-auto");
+                                            var prepend = $("<div></div>");
+                                            prepend.addClass("input-group-prepend");
+                                            var text = $("<p></p>");
+                                            text.addClass("input-group-text bg-dark text-white").css({
+                                                "height": "34px",
+                                                "width": "200px"
+                                            }).text(key);
+
+                                            input_group.append(prepend.append(text));
+                                            var selectList = $("<select style='width=100%'></select>");
+                                            selectList.addClass(class_id).addClass("rep-select py-5 col-12");
+                                            selectList.append($("<option></option>").data("name", "placeholder"));
+                                            for (var k in data[key]) {
+                                                var opt = $("<option></option>");
+                                                opt.data("name", data[key][k]).val(data[key][k]).text(data[key][k]);
+                                                selectList.append(opt);
+                                            }
+                                            input_group.append(selectList);
+
+                                            $(".file").append(input_group);
+
+
+                                        }
+                                        $('.rep-select').select2({
+                                            theme: "bootstrap",
+                                            placeholder: {
+                                                id: '0'
+                                            },
+                                            templateSelection: function (data, container) {
+                                                $(data.element).attr('data-name', data.value);
+                                                return data.text;
+
+                                            }
+                                        });
+                                        $(".select2-container").width('75%');
+
+                                        $(".file").show('slow');
+                                        $(".ff").show('slow');
+                                    });
+
+                                }
+                            });
+
+                        });
                     });
 
+                function f() {
+                    if (confirm('WARNING: You are about to erase all records in the database.')) {
+                        window.location.replace("/flush_db/");
+                    } else {
+                        // Do nothing!
+                    }
+                }
 
+                function map_headers() {
 
-                    $('.rep-select').select2({
-                        theme: "bootstrap",
-                        placeholder: {
-                            id: '0'
-                        },
-                        templateSelection: function (data, container) {
-                            $(data.element).attr('data-name', data.value);
-                            return data.text;
-
+                    var channel = $('input:checked').val();
+                    $('.rep-select').each(function () {
+                        var x = $(this).find(':selected').data('name');
+                        var par = $(this).parent().children('div').children('p').text();
+                        if (x.localeCompare("placeholder") != 0) {
+                            rep_mapping[x] = par;
                         }
                     });
-                    $(".select2-container").width('500');
-                     $(".mapping").fadeIn('slow');
+                    $('.sf-select').each(function () {
+                        var x = $(this).find(':selected').data('name');
+                        var par = $(this).parent().children('div').children('p').text();
+                        if (x.localeCompare("placeholder") != 0) {
+                            sf_mapping[x] = par;
+                        }
+                    });
 
+                    $.getJSON("/import_csv/", {
+                        channel: channel, rep_map: JSON.stringify
+                        (rep_mapping)
+                    }, function (result) {
+                        setInterval(update_progress, 5000);
+                    });
                 }
-            });
 
-        });
-    });
-    function f() {
-        if (confirm('WARNING: You are about to erase all records in the database.')) {
-            window.location.replace("{% url 'flush_db' %}");
-        } else {
-            // Do nothing!
-        }
-    }
-    function map_headers() {
-        $("#progress").modal('toggle');
-        var channel  = $('input:checked').val();
-        $('.rep-select').each( function() {
-            var x = $(this).find(':selected').data('name');
-            var par = $(this).parent().children('div').children('p').text();
-            if (x.localeCompare("placeholder") != 0){
-                rep_mapping[x] = par;
-            }
-        });
+                function update_progress() {
+                    $.getJSON("/db_progress/", function (result) {
 
-        $('.sf-select').each( function() {
-            var x = $(this).find(':selected').data('name');
-            var par = $(this).parent().children('div').children('p').text();
-            if (x.localeCompare("placeholder") != 0) {
-                sf_mapping[x] = par;
-            }
-        });
-        $.getJSON("{% url 'import_csv' %}", {channel: channel, rep_map: JSON.stringify
-            (rep_mapping) }, function (result) {
-            setInterval(update_progress,  5000);
-        });
-    }
+                        if (result['msg'] < 10) {
 
-        function update_progress(){
-            $.getJSON("{% url 'db_progress' %}", function (result) {
+                            window.location.replace("/key/");
+                        }
+                    });
+                }
 
-            window.location.replace("{% url 'key' %}");
+                $(document).ajaxStart(function () {
+                    $("#loading-indicator").show('fast');
 
-        });
-        }
+                })
+                $(document).ajaxComplete(function () {
+                    $("#loading-indicator").hide('fast');
+                })
 
-</script>
+        </script>
 </body>
 </html>
-
-
