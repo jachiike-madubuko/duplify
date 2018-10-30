@@ -618,6 +618,8 @@ bottom:
                     channel: channel, rep_map: JSON.stringify
                     (rep_mapping)
                 }, function (result) {
+                    $("#loading-indicator").show('fast');
+
                     setInterval(update_progress, 5000);
                 });
             }
@@ -631,14 +633,6 @@ bottom:
                     }
                 });
             }
-
-            $(document).ajaxStart(function () {
-                $("#loading-indicator").show('fast');
-
-            })
-            $(document).ajaxComplete(function () {
-                $("#loading-indicator").hide('fast');
-            })
 
         </script>
 </body>

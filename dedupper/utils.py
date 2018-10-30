@@ -276,7 +276,7 @@ def key_dedupe(keys):
     print('adding {} items to the Q'.format(len(rep_key_map)))
     # add them all to thread Q
     dedupper.threads.dedupeQ([[rep_key, keys] for rep_key in rep_key_map.keys()])
-    del rep_key_map, unmatched_reps, reps
+    del unmatched_reps, reps
     collect()
 
 
