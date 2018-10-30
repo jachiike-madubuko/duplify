@@ -261,7 +261,7 @@ def fuzzyset_alg(key, key_list):
 
 def key_dedupe(keys):
     global rep_key_map
-
+    print(f'keys: {keys}')
     # extract reps
     reps = get_contacts('reps')
 
@@ -291,7 +291,12 @@ def threaded_deduping(rep_key, keys):
     rep_filter = reduce(lambda a, b: a or b, bool_filters)
 
     # get a subset of sf contacts which have at least one field in common with the rep
-    sf_contacts = sf_df[rep_filter and sf_df.unmatched]
+    try:
+        sf_contacts = sf_df[rep_filter and sf_df.unmatched]
+    except:
+        print('rep filter not applied')
+        sf_contacts = sf_df[sf_df.unmatched]
+
 
     # generate a sf key => dataframe index map for each sf contact in the subset
     sf_key_map = {sf_key: df_idx for df_idx, sf_key in
