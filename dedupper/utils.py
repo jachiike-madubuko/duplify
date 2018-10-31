@@ -580,9 +580,11 @@ def get_contacts(c_filter):
     reps, sf = progress.objects.latest().label.split('--$--')
 
     contact_getter = {
-        'sf': pd.read_csv(StringIO(sf), dtype=str, index_col=0),
-        'reps': pd.read_csv(StringIO(reps), dtype=str, index_col=0),
-        'both': (pd.read_csv(StringIO(reps), dtype=str, index_col=0), pd.read_csv(StringIO(sf), dtype=str, index_col=0))
+        'sf': pd.read_csv(StringIO(sf), dtype=str, index_col=0, true_values=['True'], false_values=['False'], ),
+        'reps': pd.read_csv(StringIO(reps), dtype=str, index_col=0, true_values=['True'], false_values=['False'], ),
+        'both': (pd.read_csv(StringIO(reps), dtype=str, index_col=0, true_values=['True'], false_values=['False'], ),
+                 pd.read_csv(StringIO(sf), dtype=str,
+                             index_col=0, true_values=['True'], false_values=['False'], ))
     }
     db.connections.close_all()
     collect()
