@@ -295,11 +295,9 @@ def threaded_deduping(rep_key, keys):
     rep_filter = reduce(lambda a, b: a or b, bool_filters)
 
     # get a subset of sf contacts which have at least one field in common with the rep
-    try:
-        sf_contacts = sf_df[rep_filter and sf_df.unmatched]
-    except:
-        print('rep filter not applied')
-        sf_contacts = sf_df[sf_df.unmatched]
+    unmatched = [True if 'True' in i else False for i in list(sf_df.unmatched)]
+    sf_contacts = sf_df[rep_filter and unmatched]
+
 
 
     # generate a sf key => dataframe index map for each sf contact in the subset

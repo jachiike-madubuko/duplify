@@ -440,7 +440,7 @@ def db_progress(request):
     global rep_prog, store
     if request.method == 'GET':
         print('checking progress')
-        print(f"actual:{progress.objects.count()}, expected:{request.session['prog_num']}")
+        # print(f"actual:{progress.objects.count()}, expected:{request.session['prog_num']}")
         if progress.objects.count() > request.session['prog_num'] and store:
             msg = 2
             store = False

@@ -83,6 +83,7 @@ class UpdateThread(threading.Thread):
         return
 
     def run(self):
+        cnt = 0
         while not self.event.is_set():
             if not update_q.empty():
                 time.sleep(1)
@@ -92,6 +93,9 @@ class UpdateThread(threading.Thread):
 
                 else:
                     dedupper.utils.update_df(item)
+                    cnt += 1
+                    if cnt % 100 == 0:
+                        print('updating dfs')
 
         return
 
