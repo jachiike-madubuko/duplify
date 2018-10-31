@@ -268,6 +268,9 @@ def key_dedupe(keys):
     # get reps without a matching sf record
     unmatched_reps = reps[reps.Id.isnull()]
 
+    # if 'CRD__c' in keys and len(keys) == 1:
+    # rep_key_map = { crd: i for }
+
     # map of the rep keys => index in dataframe
     #np.add.reduce => concatenates the provided columns for each rep
     rep_key_map = {rep_key: i for i, rep_key in
@@ -285,7 +288,8 @@ def threaded_deduping(rep_key, keys):
     global reps_df, sf_df, rep_key_map
 
     # create a boolean mask on the sf contacts for each of the rep's field values
-    bool_filters = [list(sf_df[key].str.contains(reps_df.loc[rep_key_map[rep_key]][key])) for key in keys]
+    bool_filters = [list(sf_df[key].str.contains(reps_df.loc[rep_key_map[rep_key]][key])) for key in keys if
+                    reps_df.loc[rep_key_map[rep_key]][key]]
 
     # reduce the boolean masks with an or operator
     rep_filter = reduce(lambda a, b: a or b, bool_filters)
