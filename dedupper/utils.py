@@ -332,7 +332,7 @@ def key_generator(data):
     keys= data['keys']
     #start timer
     print('start your engines ')
-    import_contacts(data['reps'], data['channel'])
+    import_contacts(data['reps'], data['channel'], data['map'])
     # reps_df, sf_df = get_contacts('both')
     start = perf_counter()
     totalKeys = len(keys)
@@ -627,10 +627,11 @@ def save_dfs():
     del data, unmatched_reps
 
 
-def import_contacts(rep_file, channel):
+def import_contacts(rep_file, channel, new_headers):
     global reps_df, sf_df, loaded
     if not loaded:
         loaded = True
+        reps_df.rename(columns=new_headers, inplace=True)
         reps_df = rep_file.replace([None], ['NULL'], regex=True)
         sf = Salesforce(password='7924trill', username='jmadubuko@wealthvest.com',
                         security_token='W4ItPbGFZHssUcJBCZlw2t9p2')
