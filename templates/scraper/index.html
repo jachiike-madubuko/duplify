@@ -1,175 +1,540 @@
+<!doctype html>
+<html xmlns:og="http://opengraphprotocol.org/schema/" xmlns:fb="http://www.facebook.com/2008/fbml"
+      xmlns:website="http://ogp.me/ns/website" lang="en-US" itemscope itemtype="http://schema.org/WebPage">
 <head>
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
-<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-<style>
-        /*
- * Specific styles of signin component
- */
-/*
- * General styles
- */
-body, html {
-    height: 100%;
-    background-repeat: no-repeat;
-    background-image: linear-gradient(rgb(104, 104, 104), rgb(12, 12, 12));
-}
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="initial-scale=1">
 
-.card-container.card {
-    max-width: 350px;
-    padding: 40px 40px;
-}
-
-.btn {
-    font-weight: 700;
-    height: 36px;
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    user-select: none;
-    cursor: default;
-}
-
-/*
- * Card component
- */
-.card {
-    background-color: #F7F7F7;
-    /* just in case there no content*/
-    padding: 20px 25px 30px;
-    margin: 0 auto 25px;
-    margin-top: 150px;
-    /* shadows and rounded borders */
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
-    -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-    -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-}
-
-.profile-img-card {
-    width: 96px;
-    height: 96px;
-    margin: 0 auto 10px;
-    display: block;
-    -moz-border-radius: 50%;
-    -webkit-border-radius: 50%;
-    border-radius: 50%;
-}
-
-/*
- * Form styles
- */
-.profile-name-card {
-    font-size: 16px;
-    font-weight: bold;
-    text-align: center;
-    margin: 10px 0 0;
-    min-height: 1em;
-}
-
-.reauth-email {
-    display: block;
-    color: #404040;
-    line-height: 2;
-    margin-bottom: 10px;
-    font-size: 14px;
-    text-align: center;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-}
-
-.form-signin #inputEmail,
-.form-signin #inputPassword {
-    direction: ltr;
-    height: 44px;
-    font-size: 16px;
-}
-
-.form-signin input[type=email],
-.form-signin input[type=password],
-.form-signin input[type=text],
-.form-signin button {
-    width: 100%;
-    display: block;
-    margin-bottom: 10px;
-    z-index: 1;
-    position: relative;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-}
-
-.form-signin .form-control:focus {
-    border-color: rgb(104, 145, 162);
-    outline: 0;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(104, 145, 162);
-    box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(104, 145, 162);
-}
-
-.btn.btn-signin {
-    /*background-color: #4d90fe; */
-    background-color: rgb(104, 145, 162);
-    /* background-color: linear-gradient(rgb(104, 145, 162), rgb(12, 97, 33));*/
-    padding: 0px;
-    font-weight: 700;
-    font-size: 14px;
-    height: 36px;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    border-radius: 3px;
-    border: none;
-    -o-transition: all 0.218s;
-    -moz-transition: all 0.218s;
-    -webkit-transition: all 0.218s;
-    transition: all 0.218s;
-}
-
-.btn.btn-signin:hover,
-.btn.btn-signin:active,
-.btn.btn-signin:focus {
-    background-color: rgb(154, 195, 212);
-}
-
-.forgot-password {
-    color: rgb(104, 145, 162);
-}
-
-.forgot-password:hover,
-.forgot-password:active,
-.forgot-password:focus{
-    color: rgb(97, 12, 19);
-}
-    </style>
+    <!-- This is Squarespace. --><!-- tambourine-bulldog-8g5t -->
+    <base href="">
+    <meta charset="utf-8"/>
+    <title>Cris Beasley</title>
+    <link rel="shortcut icon" type="image/x-icon" href="https://static.squarespace.com/universal/default-favicon.ico"/>
+    <link rel="canonical" href="https://www.crisbeasley.com/"/>
+    <meta property="og:site_name" content="Cris Beasley"/>
+    <meta property="og:title" content="Welcome"/>
+    <meta property="og:url" content="https://www.crisbeasley.com/"/>
+    <meta property="og:type" content="website"/>
+    <meta itemprop="name" content="Welcome"/>
+    <meta itemprop="url" content="https://www.crisbeasley.com/"/>
+    <meta name="twitter:title" content="Welcome"/>
+    <meta name="twitter:url" content="https://www.crisbeasley.com/"/>
+    <meta name="twitter:card" content="summary"/>
+    <meta name="description" content=""/>
+    <script type="text/javascript"
+            src="//use.typekit.net/ik/psfMf9AkcrX_DepocSDHEHQJdnqM2n83dlqJTkmi2cSfeGj2fFHN4UJLFRbh52jhWDmKjQjajAB8jRqUF2bowRIuZA48Z248jy7nMPG0ieBljcNuSc80ZPuKiAUCZeN1OQy1FWb0SaBujW48Sagyjh90jhNlOeFk-WFKZABDdemoOcFzdPUCdhFydeyzSabCieBljcNuSc80ZPuKiAUCZeN1OQy1FWb0SaBujW48Sagyjh90jhNlOYiaikoRSc8DjcmyShU8pPoRdhXCiaiaO1sydA4ziW4Tdc9lj1mCdeszZkXtZDmXO1FUiABkZWF3jAF8OcFzdPJb-Y83jWsTjPuDjAoDOWgkdkJ4Z1mXiW4yOWgXH6qJxDbbMg6fJMJ7fbKIFsMMeMb6MKG4fJ9uIMMjgKMfH6qJxQbbMg6YJMJ7fbRrFgMMegI6MKG4fJZmIMIjMkMfH6qJyB9bMs6IJMJ7fbRxmgMgeM96MKG4f54oIMIjgKMfH6qJ6m9bMs6YJMJ7fbKBmsMgeMt6MKG4f5FoIMIjIfMfH6qJ689bMs6sJMHbMZpczltB.js"></script>
+    <script type="text/javascript">try {
+        Typekit.load();
+    } catch (e) {
+    }</script>
+    <script type="text/javascript">SQUARESPACE_ROLLUPS = {};</script>
+    <script>(function (rollups, name) {
+        if (!rollups[name]) {
+            rollups[name] = {};
+        }
+        rollups[name].js = ["//static.squarespace.com/universal/scripts-compressed/common-22e2c5f86f053b23cc8e-min.en-US.js"];
+    })(SQUARESPACE_ROLLUPS, 'squarespace-common');</script>
+    <script crossorigin="anonymous"
+            src="//static.squarespace.com/universal/scripts-compressed/common-22e2c5f86f053b23cc8e-min.en-US.js"></script>
+    <script crossorigin="anonymous"
+            src="//static.squarespace.com/universal/scripts-compressed/performance-54461a9f3a6686f7ebd9-min.en-US.js"
+            defer></script>
+    <script data-name="static-context">Static = window.Static || {};
+    Static.SQUARESPACE_CONTEXT = {
+        "facebookAppId": "314192535267336",
+        "rollups": {
+            "squarespace-announcement-bar": {
+                "css": "//static.squarespace.com/universal/styles-compressed/announcement-bar-d41d8cd98f00b204e9800998ecf8427e-min.css",
+                "js": "//static.squarespace.com/universal/scripts-compressed/announcement-bar-e5c8ea39bf113997db4b-min.en-US.js"
+            },
+            "squarespace-audio-player": {
+                "css": "//static.squarespace.com/universal/styles-compressed/audio-player-a57b8f3aa31918104f57a068648fbc63-min.css",
+                "js": "//static.squarespace.com/universal/scripts-compressed/audio-player-31d980aefd0541c9f37e-min.en-US.js"
+            },
+            "squarespace-blog-collection-list": {
+                "css": "//static.squarespace.com/universal/styles-compressed/blog-collection-list-d41d8cd98f00b204e9800998ecf8427e-min.css",
+                "js": "//static.squarespace.com/universal/scripts-compressed/blog-collection-list-9353e2c04c0a54230309-min.en-US.js"
+            },
+            "squarespace-calendar-block-renderer": {
+                "css": "//static.squarespace.com/universal/styles-compressed/calendar-block-renderer-61a327b8527a1fbf9b1fe569505ed5ae-min.css",
+                "js": "//static.squarespace.com/universal/scripts-compressed/calendar-block-renderer-7d2c2caf5d9ebe3b7b9f-min.en-US.js"
+            },
+            "squarespace-chartjs-helpers": {
+                "css": "//static.squarespace.com/universal/styles-compressed/chartjs-helpers-9935a41d63cf08ca108505d288c1712e-min.css",
+                "js": "//static.squarespace.com/universal/scripts-compressed/chartjs-helpers-b1fafbfa2adadfa1d42e-min.en-US.js"
+            },
+            "squarespace-comments": {
+                "css": "//static.squarespace.com/universal/styles-compressed/comments-bfcda0f17dd987db5206c1d15e83fd19-min.css",
+                "js": "//static.squarespace.com/universal/scripts-compressed/comments-ccb3742ffb3149c272f0-min.en-US.js"
+            },
+            "squarespace-commerce-cart": {"js": "//static.squarespace.com/universal/scripts-compressed/commerce-cart-870cad8e405f38807f0d-min.en-US.js"},
+            "squarespace-dialog": {
+                "css": "//static.squarespace.com/universal/styles-compressed/dialog-b548cc83dd846f17dd31de0760e67bc5-min.css",
+                "js": "//static.squarespace.com/universal/scripts-compressed/dialog-27e996d621147b8e2ef0-min.en-US.js"
+            },
+            "squarespace-events-collection": {
+                "css": "//static.squarespace.com/universal/styles-compressed/events-collection-61a327b8527a1fbf9b1fe569505ed5ae-min.css",
+                "js": "//static.squarespace.com/universal/scripts-compressed/events-collection-8df116c4b3effddfb35d-min.en-US.js"
+            },
+            "squarespace-form-rendering-utils": {"js": "//static.squarespace.com/universal/scripts-compressed/form-rendering-utils-b9aaa1f5dee33d52c882-min.en-US.js"},
+            "squarespace-forms": {
+                "css": "//static.squarespace.com/universal/styles-compressed/forms-ac7917c174031c937e3df4b3a2005b34-min.css",
+                "js": "//static.squarespace.com/universal/scripts-compressed/forms-2c83fada425c162ac347-min.en-US.js"
+            },
+            "squarespace-gallery-collection-list": {
+                "css": "//static.squarespace.com/universal/styles-compressed/gallery-collection-list-d41d8cd98f00b204e9800998ecf8427e-min.css",
+                "js": "//static.squarespace.com/universal/scripts-compressed/gallery-collection-list-79964654ae13767e87df-min.en-US.js"
+            },
+            "squarespace-image-zoom": {
+                "css": "//static.squarespace.com/universal/styles-compressed/image-zoom-72b0ab7796582588032aa6472e2e2f14-min.css",
+                "js": "//static.squarespace.com/universal/scripts-compressed/image-zoom-ce4ce4163d2899eba23a-min.en-US.js"
+            },
+            "squarespace-pinterest": {
+                "css": "//static.squarespace.com/universal/styles-compressed/pinterest-d41d8cd98f00b204e9800998ecf8427e-min.css",
+                "js": "//static.squarespace.com/universal/scripts-compressed/pinterest-2befa4931c7c0b44c296-min.en-US.js"
+            },
+            "squarespace-popup-overlay": {
+                "css": "//static.squarespace.com/universal/styles-compressed/popup-overlay-7b48efeab9b323dfdb524a256cf61595-min.css",
+                "js": "//static.squarespace.com/universal/scripts-compressed/popup-overlay-0db61d79d9296e4c367a-min.en-US.js"
+            },
+            "squarespace-product-quick-view": {
+                "css": "//static.squarespace.com/universal/styles-compressed/product-quick-view-bc8694b75a40e4bd969b662b80ebafb5-min.css",
+                "js": "//static.squarespace.com/universal/scripts-compressed/product-quick-view-bab250c68f6b221b011c-min.en-US.js"
+            },
+            "squarespace-products-collection-item-v2": {
+                "css": "//static.squarespace.com/universal/styles-compressed/products-collection-item-v2-72b0ab7796582588032aa6472e2e2f14-min.css",
+                "js": "//static.squarespace.com/universal/scripts-compressed/products-collection-item-v2-bd58af92cebf33d98507-min.en-US.js"
+            },
+            "squarespace-products-collection-list-v2": {
+                "css": "//static.squarespace.com/universal/styles-compressed/products-collection-list-v2-72b0ab7796582588032aa6472e2e2f14-min.css",
+                "js": "//static.squarespace.com/universal/scripts-compressed/products-collection-list-v2-15b773cc926fa7be9e9e-min.en-US.js"
+            },
+            "squarespace-search-page": {
+                "css": "//static.squarespace.com/universal/styles-compressed/search-page-ea3e98edb84abbc5e758884f69149027-min.css",
+                "js": "//static.squarespace.com/universal/scripts-compressed/search-page-f3bf075512d0117a6065-min.en-US.js"
+            },
+            "squarespace-search-preview": {"js": "//static.squarespace.com/universal/scripts-compressed/search-preview-63acbcb4ac438e34cb25-min.en-US.js"},
+            "squarespace-share-buttons": {"js": "//static.squarespace.com/universal/scripts-compressed/share-buttons-e2279611e5a6b34ebe56-min.en-US.js"},
+            "squarespace-simple-liking": {
+                "css": "//static.squarespace.com/universal/styles-compressed/simple-liking-310d0b18e112f708f91339b11fd55714-min.css",
+                "js": "//static.squarespace.com/universal/scripts-compressed/simple-liking-b160431a1f2806c817e7-min.en-US.js"
+            },
+            "squarespace-social-buttons": {
+                "css": "//static.squarespace.com/universal/styles-compressed/social-buttons-26106f808f7e9c739a7f862a408ed039-min.css",
+                "js": "//static.squarespace.com/universal/scripts-compressed/social-buttons-7e1f97fec915ec845116-min.en-US.js"
+            },
+            "squarespace-tourdates": {
+                "css": "//static.squarespace.com/universal/styles-compressed/tourdates-d41d8cd98f00b204e9800998ecf8427e-min.css",
+                "js": "//static.squarespace.com/universal/scripts-compressed/tourdates-304af823d5885bcc07cd-min.en-US.js"
+            },
+            "squarespace-website-overlays-manager": {
+                "css": "//static.squarespace.com/universal/styles-compressed/website-overlays-manager-421ba6ba97de46a4a25674cfd6348459-min.css",
+                "js": "//static.squarespace.com/universal/scripts-compressed/website-overlays-manager-594641dec0e32e32d476-min.en-US.js"
+            }
+        },
+        "pageType": 1,
+        "website": {
+            "id": "5ba67aaeb91449215ebed2eb",
+            "identifier": "tambourine-bulldog-8g5t",
+            "websiteType": 1,
+            "contentModifiedOn": 1541003310590,
+            "cloneable": false,
+            "siteStatus": {},
+            "language": "en-US",
+            "timeZone": "America/Los_Angeles",
+            "machineTimeZoneOffset": -25200000,
+            "timeZoneOffset": -25200000,
+            "timeZoneAbbr": "PDT",
+            "siteTitle": "Cris Beasley",
+            "siteTagLine": "a card deck to find your life's greatest gift",
+            "siteDescription": "",
+            "shareButtonOptions": {"7": true, "2": true, "1": true},
+            "authenticUrl": "https://www.crisbeasley.com",
+            "internalUrl": "https://tambourine-bulldog-8g5t.squarespace.com",
+            "baseUrl": "https://www.crisbeasley.com",
+            "primaryDomain": "www.crisbeasley.com",
+            "sslSetting": 3,
+            "isHstsEnabled": false,
+            "typekitId": "",
+            "statsMigrated": false,
+            "imageMetadataProcessingEnabled": false,
+            "showOwnerLogin": false
+        },
+        "websiteSettings": {
+            "id": "5ba67aaeb91449215ebed2ee",
+            "websiteId": "5ba67aaeb91449215ebed2eb",
+            "subjects": [],
+            "country": "US",
+            "state": "CA",
+            "simpleLikingEnabled": true,
+            "mobileInfoBarSettings": {
+                "isContactEmailEnabled": false,
+                "isContactPhoneNumberEnabled": false,
+                "isLocationEnabled": false,
+                "isBusinessHoursEnabled": false
+            },
+            "commentLikesAllowed": true,
+            "commentAnonAllowed": true,
+            "commentThreaded": true,
+            "commentApprovalRequired": false,
+            "commentAvatarsOn": true,
+            "commentSortType": 2,
+            "commentFlagThreshold": 0,
+            "commentFlagsAllowed": true,
+            "commentEnableByDefault": true,
+            "commentDisableAfterDaysDefault": 0,
+            "disqusShortname": "",
+            "commentsEnabled": false,
+            "storeSettings": {
+                "returnPolicy": null,
+                "termsOfService": null,
+                "privacyPolicy": null,
+                "paymentSettings": {},
+                "expressCheckout": false,
+                "continueShoppingLinkUrl": "/",
+                "useLightCart": false,
+                "showNoteField": false,
+                "shippingCountryDefaultValue": "US",
+                "billToShippingDefaultValue": false,
+                "showShippingPhoneNumber": true,
+                "isShippingPhoneRequired": false,
+                "showBillingPhoneNumber": true,
+                "isBillingPhoneRequired": false,
+                "multipleQuantityAllowedForServices": true,
+                "currenciesSupported": ["CHF", "HKD", "MXN", "EUR", "DKK", "USD", "CAD", "MYR", "NOK", "THB", "AUD", "SGD", "ILS", "PLN", "GBP", "CZK", "SEK", "NZD", "PHP", "RUB"],
+                "defaultCurrency": "USD",
+                "selectedCurrency": "USD",
+                "measurementStandard": 1,
+                "showCustomCheckoutForm": false,
+                "enableMailingListOptInByDefault": false,
+                "sameAsRetailLocation": false,
+                "isLive": false
+            },
+            "useEscapeKeyToLogin": true,
+            "ssBadgeType": 1,
+            "ssBadgePosition": 4,
+            "ssBadgeVisibility": 1,
+            "ssBadgeDevices": 1,
+            "pinterestOverlayOptions": {"mode": "disabled"},
+            "ampEnabled": false
+        },
+        "cookieSettings": {
+            "isCookieBannerEnabled": false,
+            "isRestrictiveCookiePolicyEnabled": false,
+            "isRestrictiveCookiePolicyAbsolute": false,
+            "cookieBannerText": "",
+            "cookieBannerTheme": "",
+            "cookieBannerVariant": "",
+            "cookieBannerPosition": "",
+            "cookieBannerCtaVariant": "",
+            "cookieBannerCtaText": ""
+        },
+        "websiteCloneable": false,
+        "collection": {"title": "Welcome", "id": "5ba697a1e4966bf0ebe55ba4", "fullUrl": "/", "type": 1},
+        "subscribed": false,
+        "appDomain": "squarespace.com",
+        "templateTweakable": true,
+        "tweakJSON": {
+            "aspect-ratio": "Auto",
+            "gallery-arrow-style": "No Background",
+            "gallery-aspect-ratio": "3:2 Standard",
+            "gallery-auto-crop": "false",
+            "gallery-autoplay": "true",
+            "gallery-design": "Slideshow",
+            "gallery-info-overlay": "Show on Hover",
+            "gallery-loop": "true",
+            "gallery-navigation": "Numbers",
+            "gallery-show-arrows": "true",
+            "gallery-transitions": "Fade",
+            "galleryArrowBackground": "hsl(232, 84%, 19%)",
+            "galleryArrowColor": "rgba(255,255,255,1)",
+            "galleryAutoplaySpeed": "5",
+            "galleryCircleColor": "rgba(255,255,255,1)",
+            "galleryInfoBackground": "hsl(232, 84%, 19%)",
+            "galleryThumbnailSize": "148px",
+            "gridSize": "350px",
+            "gridSpacing": "0px",
+            "tweak-blog-list-columns": "3",
+            "tweak-blog-list-item-image-aspect-ratio-grid": "2:3 Standard (Vertical)",
+            "tweak-blog-list-item-image-aspect-ratio-stacked": "1:1 Square",
+            "tweak-blog-list-item-image-show": "true",
+            "tweak-blog-list-spacing": "60px",
+            "tweak-blog-list-style": "Grid",
+            "tweak-footer-layout": "Stacked",
+            "tweak-header-bottom-overlay-on-index-gallery": "false",
+            "tweak-index-gallery-apply-bottom-spacing": "true",
+            "tweak-index-gallery-autoplay-duration": "2",
+            "tweak-index-gallery-autoplay-enable": "true",
+            "tweak-index-gallery-fixed-height": "true",
+            "tweak-index-gallery-height": "60vh",
+            "tweak-index-gallery-indicators": "Lines",
+            "tweak-index-gallery-layout": "Packed",
+            "tweak-index-gallery-transition": "Fade",
+            "tweak-index-gallery-transition-duration": "500",
+            "tweak-index-nav-position": "Right",
+            "tweak-index-page-apply-bottom-spacing": "false",
+            "tweak-index-page-fullscreen": "First Page Only",
+            "tweak-index-page-min-height": "85vh",
+            "tweak-mobile-breakpoint": "500px",
+            "tweak-overlay-parallax-enabled": "false",
+            "tweak-overlay-parallax-new-math": "true",
+            "tweak-product-item-image-zoom-factor": "2",
+            "tweak-product-list-item-hover-behavior": "Show Alternate Image",
+            "tweak-product-list-items-per-row": "3",
+            "tweak-site-ajax-loading-enable": "true",
+            "tweak-site-border-show": "false",
+            "tweak-site-border-width": "50px"
+        },
+        "templateId": "55f0aac0e4b0f0a5b7e0b22e",
+        "pageFeatures": [1, 2, 4],
+        "googleMapsStaticApiKey": "AIzaSyBQdch5IcgcQaKNG76sbMQv1MEBEKLeQ-8",
+        "impersonatedSession": false,
+        "demoCollections": [{
+            "collectionId": "57c46e80f5e23179e0ce213b",
+            "deleted": true
+        }, {"collectionId": "57c46ea4f5e23179e0ce24e0", "deleted": true}, {
+            "collectionId": "57c4852ab8a79b084a976f24",
+            "deleted": true
+        }, {"collectionId": "57c4a1d26a4963cf58e70658", "deleted": true}, {
+            "collectionId": "57c99078f7e0abc82323b09a",
+            "deleted": true
+        }, {"collectionId": "57c990df9de4bb31842707fd", "deleted": true}, {
+            "collectionId": "57c993b7893fc038921ac6b4",
+            "deleted": true
+        }, {"collectionId": "57c9950003596ed3450782cd", "deleted": true}, {
+            "collectionId": "57c9951337c581378993d504",
+            "deleted": true
+        }, {"collectionId": "57c99908725e25aa747b45d4", "deleted": true}, {
+            "collectionId": "57cf36fe5016e12f828499fa",
+            "deleted": true
+        }, {"collectionId": "57d1c0e7d2b857cb8800f3ee", "deleted": true}, {
+            "collectionId": "58136302be6594b79f6ec26f",
+            "deleted": true
+        }, {"collectionId": "58136666e3df28e0fbba3e27", "deleted": true}, {
+            "collectionId": "5813a9d06b8f5bf5cdd25360",
+            "deleted": true
+        }, {"collectionId": "5813ac9fe58c62627c19256c", "deleted": true}, {
+            "collectionId": "5813ae7aff7c50531fe6842c",
+            "deleted": true
+        }, {"collectionId": "58175c23197aea6c5f1f2da8", "deleted": true}, {
+            "collectionId": "58175f903e00be80a7df1cea",
+            "deleted": false
+        }, {"collectionId": "581784ff6b8f5b0e59c1a81c", "deleted": true}, {
+            "collectionId": "58179960f7e0ab86f3d50984",
+            "deleted": true
+        }, {"collectionId": "5818d908f5e2314f65b571e6", "deleted": true}, {
+            "collectionId": "581a0ce0d482e9494ba1e9d2",
+            "deleted": true
+        }, {"collectionId": "581a3f1ccd0f68da2838d6c8", "deleted": true}],
+        "isFacebookTab": false,
+        "tzData": {
+            "zones": [[-480, "US", "P%sT", null]],
+            "rules": {"US": [[1967, 2006, null, "Oct", "lastSun", "2:00", "0", "S"], [1987, 2006, null, "Apr", "Sun>=1", "2:00", "1:00", "D"], [2007, "max", null, "Mar", "Sun>=8", "2:00", "1:00", "D"], [2007, "max", null, "Nov", "Sun>=1", "2:00", "0", "S"]]}
+        }
+    };</script>
+    <script type="text/javascript"> SquarespaceFonts.loadViaContext();
+    Squarespace.load(window);</script>
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed"
+          href="https://www.crisbeasley.com/welcome?format=RSS"/>
+    <script type="application/ld+json">
+        {"url":"https://www.crisbeasley.com","name":"Cris Beasley","description":"","@context":"http://schema.org","@type":"WebSite"}
+    </script>
+    <!--[if gte IE 9]> <link rel="stylesheet" type="text/css" href="//static1.squarespace.com/static/sitecss/5ba67aaeb91449215ebed2eb/7/55f0aac0e4b0f0a5b7e0b22e/5ba67aaeb91449215ebed300/317-05142015/1540580793762/site.css?&filterFeatures=true&part=1"/><link rel="stylesheet" type="text/css" href="//static1.squarespace.com/static/sitecss/5ba67aaeb91449215ebed2eb/7/55f0aac0e4b0f0a5b7e0b22e/5ba67aaeb91449215ebed300/317-05142015/1540580793762/site.css?&filterFeatures=true&part=2"/><link rel="stylesheet" type="text/css" href="//static1.squarespace.com/static/sitecss/5ba67aaeb91449215ebed2eb/7/55f0aac0e4b0f0a5b7e0b22e/5ba67aaeb91449215ebed300/317-05142015/1540580793762/site.css?&filterFeatures=true&part=3"/><link rel="stylesheet" type="text/css" href="//static1.squarespace.com/static/sitecss/5ba67aaeb91449215ebed2eb/7/55f0aac0e4b0f0a5b7e0b22e/5ba67aaeb91449215ebed300/317-05142015/1540580793762/site.css?&filterFeatures=true&part=4"/>
+    <![endif]-->
+    <!--[if lt IE 9]><link rel="stylesheet" type="text/css" href="//static1.squarespace.com/static/sitecss/5ba67aaeb91449215ebed2eb/7/55f0aac0e4b0f0a5b7e0b22e/5ba67aaeb91449215ebed300/317-05142015/1540580793762/site.css?&filterFeatures=true&noMedia=true&part=1"/><link rel="stylesheet" type="text/css" href="//static1.squarespace.com/static/sitecss/5ba67aaeb91449215ebed2eb/7/55f0aac0e4b0f0a5b7e0b22e/5ba67aaeb91449215ebed300/317-05142015/1540580793762/site.css?&filterFeatures=true&noMedia=true&part=2"/><link rel="stylesheet" type="text/css" href="//static1.squarespace.com/static/sitecss/5ba67aaeb91449215ebed2eb/7/55f0aac0e4b0f0a5b7e0b22e/5ba67aaeb91449215ebed300/317-05142015/1540580793762/site.css?&filterFeatures=true&noMedia=true&part=3"/><link rel="stylesheet" type="text/css" href="//static1.squarespace.com/static/sitecss/5ba67aaeb91449215ebed2eb/7/55f0aac0e4b0f0a5b7e0b22e/5ba67aaeb91449215ebed300/317-05142015/1540580793762/site.css?&filterFeatures=true&noMedia=true&part=4"/>
+    <![endif]-->
+    <!--[if !IE]> -->
+    <link rel="stylesheet" type="text/css"
+          href="//static1.squarespace.com/static/sitecss/5ba67aaeb91449215ebed2eb/7/55f0aac0e4b0f0a5b7e0b22e/5ba67aaeb91449215ebed300/317-05142015/1540580793762/site.css?&filterFeatures=true"/>
+    <!-- <![endif]-->
+    <script>Static.COOKIE_BANNER_CAPABLE = true;</script>
+    <!-- End of Squarespace Headers -->
 </head>
+<body id="collection-5ba697a1e4966bf0ebe55ba4"
+      class="tweak-social-icons-style-regular tweak-social-icons-shape-square tweak-site-width-option-full-background tweak-icon-weight-light  tweak-site-ajax-loading-enable  ancillary-header-top-left-layout-horizontal ancillary-header-top-center-layout-horizontal ancillary-header-top-right-layout-horizontal ancillary-header-bottom-left-layout-horizontal ancillary-header-bottom-center-layout-horizontal ancillary-header-bottom-right-layout-horizontal ancillary-header-branding-position-top-center ancillary-header-tagline-position-hide ancillary-header-primary-nav-position-top-left ancillary-header-secondary-nav-position-top-right ancillary-header-social-position-hide ancillary-header-search-position-top-right ancillary-header-cart-position-top-right ancillary-header-account-position-hide tweak-header-primary-nav-hover-style-active tweak-header-primary-nav-button-style-solid tweak-header-primary-nav-button-shape-square tweak-header-secondary-nav-inherit-styles tweak-header-secondary-nav-hover-style-spotlight tweak-header-secondary-nav-button-style-solid tweak-header-secondary-nav-button-shape-square tweak-header-search-style-icon-only tweak-header-search-placeholder-show tweak-header-cart-style-cart-alternate tweak-header-account-style-icon  tweak-overlay-parallax-new-math tweak-index-nav-style-none tweak-index-nav-position-right tweak-index-nav-text-show tweak-index-page-fullscreen-first-page-only  tweak-index-page-scroll-indicator-icon-only tweak-index-page-scroll-indicator-icon-line tweak-index-page-scroll-indicator-icon-weight-light  tweak-index-gallery-layout-packed tweak-index-gallery-spacing-sides-show tweak-index-gallery-spacing-top-bottom-show tweak-index-gallery-fixed-height tweak-index-gallery-apply-bottom-spacing tweak-index-gallery-hover-style-fade tweak-index-gallery-controls-small-arrows tweak-index-gallery-controls-icon-weight-hairline tweak-index-gallery-indicators-lines tweak-index-gallery-autoplay-enable tweak-index-gallery-transition-fade tweak-index-gallery-content-position-top-left tweak-index-gallery-content-text-alignment-left tweak-footer-show tweak-footer-layout-stacked tweak-footer-layout-columns-auto tweak-footer-stacked-alignment-center    ancillary-mobile-bar-branding-position-top-center ancillary-mobile-bar-menu-icon-position-top-left tweak-mobile-bar-menu-icon-hamburger ancillary-mobile-bar-search-icon-position-top-right ancillary-mobile-bar-cart-position-bottom-center tweak-mobile-bar-cart-style-cart ancillary-mobile-bar-account-position-hide tweak-mobile-bar-account-style-text tweak-mobile-overlay-slide-origin-left tweak-mobile-overlay-close-show  tweak-mobile-overlay-menu-primary-button-style-outline tweak-mobile-overlay-menu-primary-button-shape-pill tweak-mobile-overlay-menu-secondary-inherit  tweak-mobile-overlay-menu-secondary-button-style-outline tweak-mobile-overlay-menu-secondary-button-shape-pill tweak-quote-block-alignment-center  tweak-blog-meta-primary-date tweak-blog-meta-secondary-comments tweak-blog-list-style-grid tweak-blog-list-separator-show tweak-blog-list-alignment-center tweak-blog-list-item-image-show tweak-blog-list-item-image-aspect-ratio-grid-23-standard-vertical tweak-blog-list-item-image-aspect-ratio-stacked-11-square tweak-blog-list-item-title-show tweak-blog-list-item-excerpt-show tweak-blog-list-item-body-show tweak-blog-list-item-readmore-below-excerpt tweak-blog-list-item-meta-position-below-title tweak-blog-list-pagination-link-label-show  tweak-blog-list-pagination-link-icon-weight-light tweak-blog-item-alignment-center tweak-blog-item-meta-position-below-title tweak-blog-item-share-position-below-content tweak-blog-item-pagination-link-icon-show tweak-blog-item-pagination-link-label-show tweak-blog-item-pagination-link-title-show tweak-blog-item-pagination-link-meta-hide tweak-blog-item-pagination-link-icon-weight-light   event-thumbnails event-thumbnail-size-32-standard event-date-label  event-list-show-cats event-list-date event-list-time event-list-address     event-excerpts  event-item-back-link    gallery-design-slideshow aspect-ratio-auto lightbox-style-dark gallery-navigation-numbers gallery-info-overlay-show-on-hover gallery-aspect-ratio-32-standard gallery-arrow-style-no-background gallery-transitions-fade gallery-show-arrows  gallery-autoplay gallery-loop tweak-product-list-image-aspect-ratio-11-square tweak-product-list-item-hover-behavior-show-alternate-image tweak-product-list-meta-position-under tweak-product-list-mobile-meta-position-under tweak-product-list-meta-alignment-under-center tweak-product-list-meta-alignment-overlay-center-center tweak-product-list-show-title tweak-product-list-show-price tweak-product-list-filter-display-top tweak-product-list-filter-alignment-center tweak-product-item-nav-show-breadcrumb-and-pagination tweak-product-item-nav-pagination-style-previousnext tweak-product-item-nav-breadcrumb-alignment-left tweak-product-item-nav-pagination-alignment-split tweak-product-item-gallery-position-left tweak-product-item-gallery-design-stacked tweak-product-item-gallery-aspect-ratio-11-square tweak-product-item-gallery-thumbnail-alignment-left tweak-product-item-details-alignment-left tweak-product-item-details-show-title tweak-product-item-details-show-price tweak-product-item-details-show-excerpt tweak-product-item-details-excerpt-position-below-price tweak-product-item-details-show-share-buttons tweak-product-item-details-show-variants tweak-product-item-details-show-quantity tweak-product-item-details-options-style-square tweak-product-item-details-show-add-to-cart-button tweak-product-item-details-add-to-cart-button-style-solid tweak-product-item-details-add-to-cart-button-shape-pill tweak-product-item-details-add-to-cart-button-padding-medium  tweak-product-item-image-zoom-behavior-click tweak-product-item-lightbox-enabled tweak-product-badge-style-square tweak-product-badge-position-top-right tweak-product-badge-inset-floating newsletter-style-custom hide-opentable-icons opentable-style-dark small-button-style-outline small-button-shape-pill medium-button-style-solid medium-button-shape-pill large-button-style-solid large-button-shape-pill image-block-poster-text-alignment-center image-block-card-dynamic-font-sizing image-block-card-content-position-center image-block-card-text-alignment-left image-block-overlap-dynamic-font-sizing image-block-overlap-content-position-center image-block-overlap-text-alignment-left image-block-collage-dynamic-font-sizing image-block-collage-content-position-top image-block-collage-text-alignment-left image-block-stack-dynamic-font-sizing image-block-stack-text-alignment-center button-style-outline button-corner-style-pill tweak-product-quick-view-button-style-docked tweak-product-quick-view-button-position-center tweak-product-quick-view-lightbox-excerpt-display-truncate tweak-product-quick-view-lightbox-show-arrows tweak-product-quick-view-lightbox-show-close-button tweak-product-quick-view-lightbox-controls-weight-light tweak-share-buttons-style-icon-only tweak-share-buttons-icons-show    tweak-share-buttons-standard-background-color native-currency-code-usd collection-5ba697a1e4966bf0ebe55ba4 collection-type-index collection-layout-default homepage view-list mobile-style-available sqs-has-custom-cart has-site-title has-tagline has-parallax-images enable-load-effects has-primary-nav has-secondary-nav has-footer-nav"
+      data-controller="HashManager, SiteLoader, MobileClassname">
+
+<div class="Loader"></div>
+
+<div class="Mobile" data-nc-base="mobile-bar" data-controller="AncillaryLayout">
+    <div class="Mobile-bar Mobile-bar--top" data-nc-group="top" data-controller="MobileOffset">
+
+        <div data-nc-container="top-left">
+            <a href="/" class="Mobile-bar-branding" data-nc-element="branding" data-content-field="site-title">
 
 
-<!--
-    you can substitue the span of reauth email for a input with the email and
-    include the remember me checkbox
-    -->
-    <div class="container mt-5">
-        <div class="card card-container">
-            <!-- <img class="profile-img-card" src="//lh3.googleusercontent.com/-6V8xOA6M7BA/AAAAAAAAAAI/AAAAAAAAAAA/rzlHcD0KYwo/photo.jpg?sz=120" alt="" /> -->
-            <img id="profile-img" class="profile-img-card" src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" />
-            <p id="profile-name" class="profile-name-card"></p>
-            <form class="form-signin">
-                <span id="reauth-email" class="reauth-email"></span>
-                <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
-                <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
-                <div id="remember" class="checkbox">
-                    <label>
-                        <input type="checkbox" value="remember-me"> Remember me
-                    </label>
-                </div>
-                <button class="btn btn-lg btn-primary btn-block btn-signin" type="submit">Sign in</button>
-            </form><!-- /form -->
-            <a href="{% url 'fbc' %}" class="forgot-password">
-                FBC
+                Cris Beasley
+
+
             </a>
-        </div><!-- /card-container -->
-    </div><!-- /container -->
+        </div>
+        <div data-nc-container="top-center"></div>
+        <div data-nc-container="top-right"></div>
+    </div>
+    <div class="Mobile-bar Mobile-bar--bottom" data-nc-group="bottom" data-controller="MobileOffset">
+        <div data-nc-container="bottom-left">
+            <button class="Mobile-bar-menu" data-nc-element="menu-icon" data-controller-overlay="menu"
+                    data-controller="MobileOverlayToggle">
+                <svg class="Icon Icon--hamburger" viewBox="0 0 24 18">
+                    <use xlink:href="/assets/ui-icons.svg#hamburger-icon--even" class="use--even"></use>
+                    <use xlink:href="/assets/ui-icons.svg#hamburger-icon--odd" class="use--odd"></use>
+                </svg>
+                <svg class="Icon Icon--hotdog" viewBox="0 0 24 14">
+                    <use xlink:href="/assets/ui-icons.svg#hotdog-icon--even" class="use--even"></use>
+                    <use xlink:href="/assets/ui-icons.svg#hotdog-icon--odd" class="use--odd"></use>
+                </svg>
+                <svg class="Icon Icon--plus" viewBox="0 0 20 20">
+                    <use xlink:href="/assets/ui-icons.svg#plus-icon--even" class="use--even"></use>
+                    <use xlink:href="/assets/ui-icons.svg#plus-icon--odd" class="use--odd"></use>
+                </svg>
+                <svg class="Icon Icon--dots-horizontal" viewBox="0 0 25 7">
+                    <use xlink:href="/assets/ui-icons.svg#dots-horizontal-icon--even" class="use--even"></use>
+                    <use xlink:href="/assets/ui-icons.svg#dots-horizontal-icon--odd" class="use--odd"></use>
+                </svg>
+                <svg class="Icon Icon--dots-vertical" viewBox="0 0 7 25">
+                    <use xlink:href="/assets/ui-icons.svg#dots-vertical-icon--even" class="use--even"></use>
+                    <use xlink:href="/assets/ui-icons.svg#dots-vertical-icon--odd" class="use--odd"></use>
+                </svg>
+                <svg class="Icon Icon--squares-horizontal" viewBox="0 0 25 7">
+                    <use xlink:href="/assets/ui-icons.svg#squares-horizontal-icon--even" class="use--even"></use>
+                    <use xlink:href="/assets/ui-icons.svg#squares-horizontal-icon--odd" class="use--odd"></use>
+                </svg>
+                <svg class="Icon Icon--squares-vertical" viewBox="0 0 7 25">
+                    <use xlink:href="/assets/ui-icons.svg#squares-vertical-icon--even" class="use--even"></use>
+                    <use xlink:href="/assets/ui-icons.svg#squares-vertical-icon--odd" class="use--odd"></use>
+                </svg>
+            </button>
+        </div>
+        <div data-nc-container="bottom-center">
+
+        </div>
+        <div data-nc-container="bottom-right">
+
+            <a href="/search" class="Mobile-bar-search" data-nc-element="search-icon">
+                <svg class="Icon Icon--search" viewBox="0 0 20 20">
+                    <use xlink:href="/assets/ui-icons.svg#search-icon"></use>
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    <div class="Mobile-overlay">
+        <div class="Mobile-overlay-menu" data-controller="MobileOverlayFolders">
+            <div class="Mobile-overlay-menu-main">
+                <nav class="Mobile-overlay-nav Mobile-overlay-nav--primary" data-content-field="navigation">
+
+
+                    <a href="/book-a-session/" class="Mobile-overlay-nav-item">
+                        Book a Session
+                    </a>
+
+
+                </nav>
+                <nav class="Mobile-overlay-nav Mobile-overlay-nav--secondary" data-content-field="navigation">
+
+
+                    <a href="https://itunes.apple.com/us/podcast/embodied-reality/id1261112637?mt=2" target="_blank"
+                       class="Mobile-overlay-nav-item">
+                        Podcast
+                    </a>
+
+
+                    <a href="http://medium.com/@crisbeasley" class="Mobile-overlay-nav-item">
+                        Blog
+                    </a>
+
+
+                </nav>
+            </div>
+            <div class="Mobile-overlay-folders" data-content-field="navigation">
+
+
+            </div>
+        </div>
+        <button class="Mobile-overlay-close" data-controller="MobileOverlayToggle">
+            <svg class="Icon Icon--close" viewBox="0 0 16 16">
+                <use xlink:href="/assets/ui-icons.svg#close-icon"></use>
+            </svg>
+        </button>
+        <div class="Mobile-overlay-back" data-controller="MobileOverlayToggle"></div>
+    </div>
+</div>
+
+
+<div class="Parallax-host-outer">
+    <div class="Parallax-host" data-parallax-host>
+
+
+        <div class="Parallax-item" data-parallax-item data-parallax-id="5ba69610419202c9a860f45d"></div>
+
+
+    </div>
+</div>
+
+<div class="Site" data-nc-base="header" data-controller="AncillaryLayout">
+    <div class="sqs-announcement-bar-dropzone"></div>
+
+    <header class="Header Header--top">
+        <div class="Header-inner Header-inner--top" data-nc-group="top">
+            <div data-nc-container="top-left">
+
+                <div class="Header-search" data-nc-element="search">
+                    <form class="Header-search-form" action="/search" method="get">
+                        <input class="Header-search-form-input" name="q" type="text" spellcheck="false" value=""
+                               autocomplete="off" placeholder="Search"/>
+                        <button class="Header-search-form-submit" type="submit" data-test="template-search">
+                            <svg class="Icon Icon--search--small" viewBox="0 0 15 15">
+                                <use xlink:href="/assets/ui-icons.svg#search-icon--small"></use>
+                            </svg>
+                            <svg class="Icon Icon--search" viewBox="0 0 20 20">
+                                <use xlink:href="/assets/ui-icons.svg#search-icon"></use>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+            <div data-nc-container="top-center">
+
+
+            </div>
+            <div data-nc-container="top-right">
+
+
+            </div>
+        </div>
+    </header>
+
+    <div class="Site-inner Site-inner--index" data-controller="HeaderOverlay">
+
+        <header class="Header Header--bottom Header--overlay">
+            <div class="Header-inner Header-inner--bottom" data-nc-group="bottom">
+                <div data-nc-container="bottom-left">
+                    <nav class="Header-nav Header-nav--primary" data-nc-element="primary-nav"
+                         data-content-field="navigation">
+
+                        <!--
+                            you can substitue the span of reauth email for a input with the email and
+                            include the remember me checkbox
+                            -->
+                        <div class="container mt-5">
+                            <div class="card card-container">
+                                <!-- <img class="profile-img-card" src="//lh3.googleusercontent.com/-6V8xOA6M7BA/AAAAAAAAAAI/AAAAAAAAAAA/rzlHcD0KYwo/photo.jpg?sz=120" alt="" /> -->
+                                <img id="profile-img" class="profile-img-card" src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" />
+                                <p id="profile-name" class="profile-name-card"></p>
+                                <form class="form-signin">
+                                    <span id="reauth-email" class="reauth-email"></span>
+                                    <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+                                    <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+                                    <div id="remember" class="checkbox">
+                                        <label>
+                                            <input type="checkbox" value="remember-me"> Remember me
+                                        </label>
+                                    </div>
+                                    <button class="btn btn-lg btn-primary btn-block btn-signin" type="submit">Sign in</button>
+                                </form><!-- /form -->
+                                <a href="{% url 'fbc' %}" class="forgot-password">
+                                    FBC
+                                </a>
+                            </div><!-- /card-container -->
+                        </div><!-- /container -->

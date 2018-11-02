@@ -52,7 +52,8 @@ last_manual_sorting_range = RangeKeyDict({
     (95, 101): 'Manual Check',
     (0, 95): 'New Record'
 })
-
+loaded = False
+times = []
 waiting= True
 keylist = list()
 reps_df = sf_df = currKey = sort_alg = key_stats = None
@@ -61,8 +62,7 @@ done=complete= False
 rep_key_map = None
 
 
-
-#TODO finish phone/eemail multi sf field mapping
+# TODO finish phone/email multi sf field mapping
 
 #TODO add docstrings go to realpython.com/documenting-python-code/
 #TODO update documentation go to dbader.org/blog/write-a-great-readme-for-your-github-project
@@ -260,10 +260,10 @@ def fuzzyset_alg(key, key_list):
         return []
 
 def key_dedupe(keys):
-    global rep_key_map
+    global rep_key_map, reps_df
     print(f'keys: {keys}')
     # extract reps
-    reps = get_contacts('reps')
+    reps = reps_df
 
     # get reps without a matching sf record
     unmatched_reps = reps[reps.Id.isnull()]
@@ -275,7 +275,7 @@ def key_dedupe(keys):
     #np.add.reduce => concatenates the provided columns for each rep
     rep_key_map = {rep_key: i for i, rep_key in
                    enumerate(list(np.add.reduce(reps[keys].astype(str).fillna('NULL'), axis=1))
-                             ) if i in unmatched_reps.index}
+                             ) if i in unmatched_reps.index and 'NULL' not in rep_key}
 
     print('adding {} items to the Q'.format(len(rep_key_map)))
     # add them all to thread Q
@@ -285,7 +285,8 @@ def key_dedupe(keys):
 
 
 def threaded_deduping(rep_key, keys):
-    global reps_df, sf_df, rep_key_map
+    global reps_df, sf_df, rep_key_map, times
+    start = perf_counter()
 
     # create a boolean mask on the sf contacts for each of the rep's field values
     bool_filters = [list(sf_df[key].str.contains(reps_df.loc[rep_key_map[rep_key]][key])) for key in keys if
@@ -295,15 +296,16 @@ def threaded_deduping(rep_key, keys):
     rep_filter = reduce(lambda a, b: a or b, bool_filters)
 
     # get a subset of sf contacts which have at least one field in common with the rep
-    unmatched = [True if 'True' in i else False for i in list(sf_df.unmatched)]
-    sf_contacts = sf_df[rep_filter and unmatched]
+    # unmatched = [True if 'True' in i else False for i in list(sf_df.unmatched)]
+    # sf_contacts = sf_df[rep_filter and unmatched]
+    sf_contacts = sf_df[rep_filter and sf_df.unmatched]
 
 
 
     # generate a sf key => dataframe index map for each sf contact in the subset
     sf_key_map = {sf_key: df_idx for df_idx, sf_key in
                   enumerate(list(np.add.reduce(sf_df[keys].astype(str).fillna('NULL'), axis=1)))
-                  if df_idx in sf_contacts.index}
+                  if df_idx in sf_contacts.index and 'NULL' not in sf_key}
 
     # find the top 3 closest matches from the subset
     possibilities = process.extract(rep_key, sf_key_map.keys(), limit=3, scorer=fuzz.ratio)
@@ -314,7 +316,14 @@ def threaded_deduping(rep_key, keys):
     # if there is any record close to this then assign it's ID
     if top_3:
         # push updates to update_queue
+        logging.debug(f'dupe found for: {rep_key}')
+
         dedupper.threads.updateQ((rep_key_map[rep_key], sf_key_map[top_3[0][1][0]]))
+    else:
+        logging.debug(f'dupe not found for: {rep_key}')
+
+    time = start - perf_counter()
+    times.append(time)
     del sf_key_map, sf_contacts,
 
 #the start of duplify algorithm
@@ -323,7 +332,8 @@ def key_generator(data):
     keys= data['keys']
     #start timer
     print('start your engines ')
-    reps_df, sf_df = get_contacts('both')
+    import_contacts(data['reps'], data['channel'])
+    # reps_df, sf_df = get_contacts('both')
     start = perf_counter()
     totalKeys = len(keys)
     #store keylist globally
@@ -506,7 +516,7 @@ def get_channel(data):
     print ('querying SF')
     territory = sf.bulk.Contact.query(query + starts_with)
     print(len(territory))
-    territory = pd.DataFrame(territory).drop('attributes', axis=1).replace([None], [''], regex=True)
+    territory = pd.DataFrame(territory).drop('attributes', axis=1).replace([None], ['NULL'], regex=True)
     #store hdf
     # territory.to_hdf('sf_contact.hdf', 'sf', mode='w')
 
@@ -615,3 +625,19 @@ def save_dfs():
     db.connections.close_all()
 
     del data, unmatched_reps
+
+
+def import_contacts(rep_file, channel):
+    global reps_df, sf_df, loaded
+    if not loaded:
+        loaded = True
+        reps_df = rep_file.replace([None], ['NULL'], regex=True)
+        sf = Salesforce(password='7924trill', username='jmadubuko@wealthvest.com',
+                        security_token='W4ItPbGFZHssUcJBCZlw2t9p2')
+        query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where Territory_Type__c='Geography' and Territory__r.Name like "
+        starts_with = f"'{channel}%'"
+        territory = sf.bulk.Contact.query(query + starts_with)
+        sf_df = pd.DataFrame(territory, dtype=str).drop('attributes', axis=1).replace([None], ['NULL'], regex=True)
+        sf_df['unmatched'], reps_df["Id"] = True, np.nan
+        print(sf_df.tail())
+        print(reps_df.tail())

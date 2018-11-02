@@ -252,20 +252,16 @@ def import_csv(request):
     request.session['prog_num']= progress.objects.all().count()
     request.session['sf_channel'] = f'the {channel} channel'  # for printing
     request.session['fields'] = list(rep_header_map.values())
+    request.session['channel'] = channel
+    request.session['map'] = rep_header_map
+    request.session['misc'] = list(rep_header_map.keys())
 
-    db_data = {  # packing data
-        'channel': channel,
-        'reps': pd.read_pickle(settings.REP_CSV),
-        'map': rep_header_map
-
-    }
     # the csv headers are stored to be used for exporting
     # get_channel queries the channel and loads the rep list and sf contacts
-    request.session['misc'] = list(rep_header_map.keys())
-    newest = dedupe_q.enqueue(get_channel, db_data, job_id=UPLOAD_JOB_ID, timeout='1h', result_ttl='1h')
+    # newest = dedupe_q.enqueue(get_channel, db_data, job_id=UPLOAD_JOB_ID, timeout='1h', result_ttl='1h')
+    # request.session['rq_job'] = UPLOAD_JOB_ID
 
 
-    request.session['rq_job'] = UPLOAD_JOB_ID
 
     return JsonResponse({'msg': 'success!'}, safe=False)
 
@@ -397,7 +393,11 @@ def run(request):
         p.save()
         db.connections.close_all()
         data= {
+            'channel': request.session['channel'],
+            'map': request.session['map'],
             'keys' : partslist,
+            'reps': pd.read_pickle(settings.REP_CSV),
+
         }
         newest = dedupe_q.enqueue(key_generator, data, job_id=DUPLIFY_JOB_ID, timeout='1h', result_ttl='1h')
     return JsonResponse({'msg': 'success!'}, safe=False)
@@ -408,6 +408,7 @@ def upload(request):
     print('uploading file')
     form = UploadFileForm(request.POST, request.FILES)
     repCSV = request.FILES['repFile']
+
     request.session['repCSV_name'] = str(repCSV)
     rep_headers, pd_rep_csv = convert_csv(repCSV, str(repCSV))
     request.session['repCSV_headers'] = rep_headers
