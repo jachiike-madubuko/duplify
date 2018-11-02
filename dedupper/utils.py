@@ -75,7 +75,7 @@ def convert_csv(file, name):
         pd_csv = pd.read_csv(file, encoding = "cp1252", delimiter=',', dtype=str)  #western european
     else:
         print('converting excel sheet:', str(file))
-        pd_csv = pd.read_excel(file, dtype=str)  # western european
+        pd_csv = pd.read_excel(file)  # western european
 
 
     return list(pd_csv), pd_csv
