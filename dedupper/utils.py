@@ -85,16 +85,16 @@ def find_rep_dups(rep, keys, numthreads):
                 # create filter for each phone variation
                 kwargs = {f'{type_of_phone}__icontains': f'{rep.key([key])}'}
                 # queryset of Sfcontacts that have a matching field with the rep
-                search_party = search_party.union(sfcontact.objects.filter(**kwargs))
+                search_party = search_party.union(sfcontact.objects.filter(**kwargs).exclude(dupFlag=True))
         elif 'Email' in key:
             for type_of_email in ['workEmail', 'personalEmail', 'otherEmail']:
                 kwargs = {f'{type_of_email}__icontains': f'{rep.key([key])}'}
-                search_party = search_party.union(sfcontact.objects.filter(**kwargs))
+                search_party = search_party.union(sfcontact.objects.filter(**kwargs).exclude(dupFlag=True))
         else:
             if 'State' not in key:
                 kwargs = { f'{key}__icontains' : f'{rep.key([key])}' }
                 # queryset of Sfcontacts that have a matching field with the rep
-                search_party = search_party.union(sfcontact.objects.filter(**kwargs))
+                search_party = search_party.union(sfcontact.objects.filter(**kwargs).exclude(dupFlag=True))
 
     #create list of keys mapped to the contact
     sf_map = {}
@@ -155,6 +155,9 @@ def find_rep_dups(rep, keys, numthreads):
         rep.closest1_contactID = closest[0][0].ContactID
     rep.type = sort(rep.average)
 
+    if rep.average > 99:
+        rep.closest1.dupFlag = True
+        rep.closest1.save()
     if rep.type=='Duplicate' and rep.CRD != '' and  closest[0][0].CRD != '' and  int(rep.CRD.replace(".0","")) != int(closest[0][0].CRD.replace(".0","")) :
         rep.type = 'Manual Check'
     string_key = '-'.join(currKey)
