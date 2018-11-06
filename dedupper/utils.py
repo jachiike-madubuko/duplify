@@ -8,6 +8,7 @@ Created on Sat May 19 17:53:34 2018
 import logging
 import os
 import string
+from collections import Counter
 from functools import reduce
 from gc import collect
 from io import StringIO
@@ -289,42 +290,45 @@ def threaded_deduping(rep_key, keys):
     start = perf_counter()
 
     # create a boolean mask on the sf contacts for each of the rep's field values
-    bool_filters = [list(sf_df[key].str.contains(reps_df.loc[rep_key_map[rep_key]][key])) for key in keys if
-                    reps_df.loc[rep_key_map[rep_key]][key]]
-
-    # reduce the boolean masks with an or operator
-    rep_filter = reduce(lambda a, b: a or b, bool_filters)
-
-    # get a subset of sf contacts which have at least one field in common with the rep
+    # bool_filters = [list(sf_df[key].str.contains(reps_df.loc[rep_key_map[rep_key]][key])) for key in keys if
+    #                 reps_df.loc[rep_key_map[rep_key]][key]]
+    #
+    # # reduce the boolean masks with an or operator
+    # rep_filter = reduce(lambda a, b: a or b, bool_filters)
+    #
+    # # get a subset of sf contacts which have at least one field in common with the rep
     # unmatched = [True if 'True' in i else False for i in list(sf_df.unmatched)]
     # sf_contacts = sf_df[rep_filter and unmatched]
-    sf_contacts = sf_df[rep_filter and sf_df.unmatched]
+    # sf_contacts = sf_df[rep_filter and sf_df.unmatched]
+    # # generate a sf key => dataframe index map for each sf contact in the subset
+    # sf_key_map = {sf_key: df_idx for df_idx, sf_key in
+    #               enumerate(list(np.add.reduce(sf_df[keys].astype(str).fillna('NULL'), axis=1)))
+    #               if df_idx in sf_contacts.index and 'NULL' not in sf_key}
 
-
-
-    # generate a sf key => dataframe index map for each sf contact in the subset
+    # get 10 sf contacts with most field groups in common and map the dedup key to the df index
+    sf_contacts = get_closest(rep_key_map[rep_key], keys)
     sf_key_map = {sf_key: df_idx for df_idx, sf_key in
-                  enumerate(list(np.add.reduce(sf_df[keys].astype(str).fillna('NULL'), axis=1)))
-                  if df_idx in sf_contacts.index and 'NULL' not in sf_key}
+                  enumerate(list(np.add.reduce(sf_df[keys].astype(str), axis=1)))
+                  if df_idx in sf_contacts and 'NULL' not in sf_key}
+
 
     # find the top 3 closest matches from the subset
     possibilities = process.extract(rep_key, sf_key_map.keys(), limit=3, scorer=fuzz.ratio)
 
     # filter by those with 97% match or closer
-    top_3 = [(i, possible) for i, possible in enumerate(possibilities) if possible[1] > 97]
+    top_3 = [possible for i, possible in enumerate(possibilities) if possible[1] > 97]
 
     # if there is any record close to this then assign it's ID
     if top_3:
         # push updates to update_queue
         logging.debug(f'dupe found for: {rep_key}')
-
-        dedupper.threads.updateQ((rep_key_map[rep_key], sf_key_map[top_3[0][1][0]]))
+        dedupper.threads.updateQ((rep_key_map[rep_key], sf_key_map[top_3[0][0]]))
     else:
         logging.debug(f'dupe not found for: {rep_key}')
 
     time = start - perf_counter()
     times.append(time)
-    del sf_key_map, sf_contacts,
+    del sf_key_map, sf_contacts, top_3, possibilities, start,
 
 #the start of duplify algorithm
 def key_generator(data):
@@ -625,6 +629,18 @@ def save_dfs():
     db.connections.close_all()
 
     del data, unmatched_reps
+
+
+def get_closest(rep_id, key):
+    global sf_groups
+    countr = []
+    # for each field search for groups the rep would be in
+    for field in key:
+        reps_df.iloc[rep_id][field] in sf_groups[field] and not countr.extend(
+            list(sf_groups[field][reps_df.iloc[rep_id][field]]))
+    # use Counter to find the sf contacts indexes with  highest # of groups in common
+    c = Counter(countr)
+    return [i[0] for i in c.most_common(10)]
 
 
 def import_contacts(rep_file, channel, new_headers):
