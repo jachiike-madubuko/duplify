@@ -57,7 +57,11 @@ class industry(models.Model):
     archived = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'{self.title} - {self.created_on}'
+        if len(self.description) > 50:
+            desc = self.description[:50] + '...'
+        else:
+            desc = self.description
+        return f'{self.title} - {desc}'
 
     def html(self):
         return f'<a target="_blank"  href="{self.link}">{self.title}</a> – {self.description}'
@@ -75,7 +79,11 @@ class manufacturer(models.Model):
     archived = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'{self.title} - {self.created_on}'
+        if len(self.description) > 50:
+            desc = self.description[:50] + '...'
+        else:
+            desc = self.description
+        return f'{self.title} - {desc}'
 
     def html(self):
         return f'<a href="{self.link}" target="_blank" class="mb-2"><img class="card-img-top" src="/media/{self.logo}" alt="Card image cap"></a><p class="card-text">{self.description}</p>'
