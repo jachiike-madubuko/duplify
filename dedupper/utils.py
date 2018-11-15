@@ -155,7 +155,7 @@ def find_rep_dups(rep, keys, numthreads):
         rep.closest1_contactID = closest[0][0].ContactID
     rep.type = sort(rep.average)
 
-    if rep.average > 99:
+    if rep.type == 99:
         rep.closest1.dupFlag = True
         rep.closest1.save()
     if rep.type=='Duplicate' and rep.CRD != '' and  closest[0][0].CRD != '' and  int(rep.CRD.replace(".0","")) != int(closest[0][0].CRD.replace(".0","")) :
@@ -462,3 +462,16 @@ def db_done():
     return done
 
 
+def fix_da_fuzzy():
+    manuals = repContact.objects.filter(type="Manual Check")
+    found = 0
+    print('new')
+    for rep in manuals:
+        if (
+                rep.lastName + rep.workEmail + rep.firstName == rep.closest1.lastName + rep.closest1.workEmail + rep.closest1.firstName) or (
+                rep.lastName + rep.otherEmail + rep.firstName == rep.closest1.lastName + rep.closest1.otherEmail + rep.closest1.firstName) or (
+                rep.lastName + rep.personalEmail + rep.firstName == rep.closest1.lastName + rep.closest1.personalEmail + rep.closest1.firstName):
+            found += 1
+            rep.type = 'Duplicate'
+            rep.save()
+    print(f'{found} exact matches')

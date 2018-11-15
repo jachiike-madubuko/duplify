@@ -14,7 +14,7 @@ from django.db import models
 def strip(string):
     if string == '':
         return 'NULL'
-    newstring = string.replace(" ","").lower()
+    newstring = string.replace(" ", "").lower().strip()
     return  newstring
 
 class simple(models.Model):
@@ -348,4 +348,3 @@ class uploadTime(models.Model):
 
     def __str__(self):
         return "{} records uploaded in {} seconds".format(self.num_records, self.seconds)
-
