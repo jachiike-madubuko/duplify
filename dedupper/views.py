@@ -1,17 +1,15 @@
 import csv
+import datetime
 import json
 import pickle
 from difflib import SequenceMatcher as SeqMat
 from io import BytesIO
 
-import pandas as pd
 import tablib
-from django.conf import settings
 from django.core.management import call_command
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django_tables2.views import RequestConfig
-from simple_salesforce import Salesforce
 
 from dedupper.forms import UploadFileForm
 from dedupper.tables import StatsTable, SFContactTable, RepContactTable
@@ -110,6 +108,7 @@ def turn_table(request):
         print('sending table')
         return JsonResponse({ 'table': table.as_html(request) }, safe=False)
 
+
 def download(request,type):
     output = BytesIO()
     writer = pd.ExcelWriter(output)
@@ -203,16 +202,16 @@ def download_times(request,type):
         percent_dups = round((total_dups/total_reps)*100,1)
         total_news = repContact.objects.filter(type='New Record').count()
         percent_news = round((total_news/total_reps)*100,1)
-        time_hours = round(((duplifyTime.objects.get(pk=1).seconds/60)/60),2)
+        time_hours = datetime.timedelta(seconds=duplifyTime.objects.get(pk=1).seconds)
         audit_info = []
         audit_info.append([f"Duplify Audit of {repCSV_name} duped against {sfCSV_name}"])
         audit_info.append([""])
-        audit_info.append([f"Number of Records in Rep List: {total_reps} \t Number of Records in {sfCSV_name[2:]}: " +
+        audit_info.append([f"Number of Records in Rep List: {total_reps} \t Number of Records in th{sfCSV_name[2:]}: " +
                           f"{total_sf}"])
 
-        audit_info.append([f"Number of Duplicate Records in the Rep List: {total_dups}({percent_dups}%)"])
-        audit_info.append([f"Number of New Records in the Rep List: {total_news}({percent_news}%)"])
-        audit_info.append([f"Time: {time_hours} hours"])
+        audit_info.append([f"Number of Duplicates in the Rep List: {total_dups}({percent_dups}%)"])
+        audit_info.append([f"Number of News in the Rep List: {total_news}({percent_news}%)"])
+        audit_info.append([f"Time: {time_hours}"])
         audit_info.append([""])
         audit_info.append(["Thank you for using Duplify!"])
 

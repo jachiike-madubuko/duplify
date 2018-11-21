@@ -328,6 +328,10 @@ class dedupTime(models.Model):
     def __str__(self):
        return "At {} -- {} dups and {} new".format(self.created_on, self.num_dup, self.num_new)
 
+    class Meta():
+        get_latest_by = "created_on"
+
+
 class duplifyTime(models.Model):
     num_threads = models.IntegerField(null=True, blank=True)
     num_SF = models.IntegerField(null=True, blank=True)

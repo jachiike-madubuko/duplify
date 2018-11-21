@@ -1,9 +1,16 @@
 from django.contrib import admin
-from .models import simple, sfcontact, repContact, dedupTime, duplifyTime, uploadTime
+from import_export.admin import ImportExportModelAdmin
+
+from dedupper.resources import *
 
 # Register your models here.
 admin.site.register(sfcontact)
 admin.site.register(repContact)
-admin.site.register(dedupTime)
-admin.site.register(duplifyTime)
-admin.site.register(uploadTime)
+
+
+class SFContactAdmin(ImportExportModelAdmin):
+    resource_class = SFContactResource
+
+
+class RepContactAdmin(ImportExportModelAdmin):
+    resource_class = RepContactResource

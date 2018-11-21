@@ -22,7 +22,5 @@ urlpatterns = [
     path('scraper/', include('scraper.urls')),
     path('contacts/', include('contacts.urls')),
     path('', include('dedupper.urls')),
-    path(r'jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),  # Django JET dashboard URLS
-    path(r'jet/', include('jet.urls', 'jet')),  # Django JET URLS
     path('admin/', admin.site.urls),
 ]
