@@ -26,7 +26,7 @@ urlpatterns = [
     path('', include('dedupper.urls')),
     path(r'jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),  # Django JET dashboard URLS
     path(r'jet/', include('jet.urls', 'jet')),  # Django JET URLS
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls, 'admin'),
 ]
 
 if settings.DEBUG:
