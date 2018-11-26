@@ -329,7 +329,7 @@ def upload_page(request):
     https://developer.salesforce.com/blogs/developer-relations/2014/01/python-and-the-force-com-rest-api-simple-simple-salesforce-example.html
     https://github.com/simple-salesforce/simple-salesforce
     '''
-    return render(request, 'dedupper/versions.html')
+    return redirect('https://voellerdev.high-altitude-tech.com/#')
 
 def key_gen(request):
     try:
