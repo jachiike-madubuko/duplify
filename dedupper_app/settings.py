@@ -94,8 +94,8 @@ WSGI_APPLICATION = 'dedupper_app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'falcon_dup',
-        'USER': 'jachi',
+        'NAME': 'postgres',
+        'USER': 'postgres',
         'PASSWORD': '7924',
         'HOST': '127.0.0.1',
         'PORT': '5432',

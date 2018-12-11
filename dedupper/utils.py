@@ -340,7 +340,6 @@ def make_keys(headers):
     keys.sort(key=itemgetter(5), reverse=True)
     return keys
 
-
 def match_keys(key,key_list):
     for i in key_list:
         yield match_percentage(key, i)
@@ -406,7 +405,6 @@ def sort(avg):
 def get_progress():
     return doneKeys, totalKeys, currKey, cnt
 
-
 def get_channel(data):
     channel = data['channel']
     rep_header_map = data['map']
@@ -457,10 +455,8 @@ def get_channel(data):
     print('loading rep: DONE')
     return data
 
-
 def db_done():
     return done
-
 
 def fix_da_fuzzy():
     manuals = repContact.objects.filter(type="Manual Check")

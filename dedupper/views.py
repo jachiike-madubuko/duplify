@@ -233,7 +233,6 @@ def download_times(request,type):
 
     for time in times:
         writer.writerow(time)
-
     return response
 
 def duplify(request):
