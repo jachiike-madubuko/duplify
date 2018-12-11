@@ -30,7 +30,10 @@ from tablib import Dataset
 import dedupper.threads
 from dedupper.models import repContact, sfcontact, dedupTime, duplifyTime, uploadTime, progress
 from dedupper.resources import RepContactResource, SFContactResource
-
+import jellyfish as jelly
+import recordlinkage as rl
+from recordlinkage.preprocessing import clean, phonenumbers, phonetic
+from recordlinkage.index import Full, Block
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
 
 
@@ -338,6 +341,8 @@ def key_generator(data):
     totalKeys = len(keys)
     #store keylist globally
     keylist = keys
+
+    dedupe_ai()
     for key in keys:
         #determine whether strong matches sort as dups or manuals
         sort_alg = key[-1]
@@ -626,7 +631,6 @@ def save_dfs():
 
     del data, unmatched_reps
 
-
 def import_contacts(rep_file, channel, new_headers):
     global reps_df, sf_df, loaded
     if not loaded:
@@ -642,3 +646,104 @@ def import_contacts(rep_file, channel, new_headers):
         sf_df['unmatched'], reps_df["Id"] = True, np.nan
         print(sf_df.tail())
         print(reps_df.tail())
+
+def preprocess(sfdf, repdf):
+    print('enter PREPROCESS')
+
+    global key_list, keys
+    '''preprocessing'''
+
+    sfdf.update(clean(sfdf.FirstName))
+    sfdf.update(clean(sfdf.LastName))
+    sfdf.update(clean(sfdf.Email))
+    sfdf.update(clean(sfdf.State))
+    sfdf.update(phonenumbers(sfdf.Zip))
+    sfdf.update(clean(sfdf.City))
+    sfdf.update(phonenumbers(sfdf.Phone))
+    sfdf.update(clean(sfdf.CRD.astype(str)))
+
+    repdf.update(clean(repdf.FirstName))
+    repdf.update(clean(repdf.LastName))
+    repdf.update(clean(repdf.Email))
+    repdf.update(clean(repdf.State))
+    repdf.update(phonenumbers(repdf.Zip))
+    repdf.update(clean(repdf.City))
+    repdf.update(phonenumbers(repdf.Phone))
+    repdf.update(clean(repdf.CRD.astype(str)))
+
+    '''key generating'''
+
+    for df in [sfdf, repdf]:
+        for key in keys:
+            if len(key) > 1:
+                key_col = ''.join([''.join(c for c in s if c.isupper()) for s in key])
+                if key_col not in key_list:
+                    key_list.append(key_col)
+                df[key_col] = pd.Series(np.add.reduce(df[key].astype(str), axis=1))
+            else:
+                if key[0] not in key_list:
+                    key_list.append(key[0])
+    print('exit PREPROCESS')
+
+def match_crds(sfdf, repdf):
+    print('enter CRD MATCH')
+    global lt_ID_update_list
+    sfcrd = set(sfdf.CRD)
+    repcrd = list(repdf.CRD)
+    print(len(sfcrd), len(repcrd))
+
+    #find intersection of CRD
+    CRD_matches = set(sfcrd).intersection(set(repcrd))
+    lt_ID_update_list = [np.nan for _ in repcrd]
+
+    #match those records
+    for crd in CRD_matches:
+        lt_ID_update_list[repdf[repdf.CRD == crd].iloc[0].name] = sfdf[sfdf.CRD==crd].iloc[0]["Id"]
+    print('exit CRD MATCH')
+
+def dedupe_ai():
+    # match the df fields first
+    preprocess(sfdf, ltdf)
+    match_crds(sfdf, ltdf)
+    ltgroups = ltdf.groupby('LastName')
+    sfgroups = sfdf.groupby('LastName')  # index using groups by lastname
+    lt_lastnames = list(set(ltgroups.groups.keys()))
+    sf_lastnames = list(set(sfgroups.groups.keys()))
+    last_name_groups = list(set(lt_lastnames).intersection(sf_lastnames))
+    matched = False
+    manual_dict = dict()
+    start = pc()
+    for ln in last_name_groups:
+        for index in ltgroups.groups[ln]:
+            if not lt_ID_update_list[index] == np.nan:
+                # only do indexes that have not already been populated in the lt_ID_update_list
+                matched = False
+                for key in key_list:
+                    sf_keys = [sfdf.iloc[i][key] for i in sfgroups.groups[ln]]
+                    # swap out with fuzzyset algorithm
+                    # fuzzyset_alg
+                    # possibilities = process.extract(ltdf.iloc[index][key], sf_keys, limit=3, scorer=jelly.jaro_winkler)
+                    possibilities = fuzzyset_alg(ltdf.iloc[index][key], sf_keys)
+                    manuals = [possible[0] for i, possible in enumerate(possibilities) if 95 <= possible[1] < 97]
+                    non_match = [possible[0] for i, possible in enumerate(possibilities) if possible[1] < 95]
+                    if possibilities and possibilities[0][1] >= 97:
+                        lt_ID_update_list[index] = sfdf[sfdf[key] == possibilities[0][0]].iloc[0]['Id']
+                        matched = True
+                        break
+                    elif manuals:
+                        manual_dict[index] = [i for i in sfgroups.groups[ln] if sfdf.iloc[i][key] in manuals]
+                        lt_ID_update_list[index] = 'manual'
+                        print('manual check')
+                        matched = True
+                        break
+    #             if not matched:
+    #                 print(f"NEW {key} ({ltdf.iloc[index]['FirstName']} {ltdf.iloc[index]['LastName']}): {[ (sfdf[sfdf[key] == pos ].iloc[0]['FirstName'] ,sfdf[sfdf[key] == pos ].iloc[0]['LastName'] ) for pos in non_match]}")
+    #             else:
+    #                 matched=False
+    print(f'time: {pc() - start}')
+
+def manual_sort_compiling():
+
+'''
+create function that will take the match_dict and reformat to match the style of the sorted page
+'''
