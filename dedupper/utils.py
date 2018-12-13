@@ -8,7 +8,6 @@ Created on Sat May 19 17:53:34 2018
 import logging
 import os
 import string
-from collections import Counter
 from functools import reduce
 from gc import collect
 from io import StringIO
@@ -31,7 +30,10 @@ from tablib import Dataset
 import dedupper.threads
 from dedupper.models import repContact, sfcontact, dedupTime, duplifyTime, uploadTime, progress
 from dedupper.resources import RepContactResource, SFContactResource
-
+import jellyfish as jelly
+import recordlinkage as rl
+from recordlinkage.preprocessing import clean, phonenumbers, phonetic
+from recordlinkage.index import Full, Block
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
 
 
@@ -290,45 +292,42 @@ def threaded_deduping(rep_key, keys):
     start = perf_counter()
 
     # create a boolean mask on the sf contacts for each of the rep's field values
-    # bool_filters = [list(sf_df[key].str.contains(reps_df.loc[rep_key_map[rep_key]][key])) for key in keys if
-    #                 reps_df.loc[rep_key_map[rep_key]][key]]
-    #
-    # # reduce the boolean masks with an or operator
-    # rep_filter = reduce(lambda a, b: a or b, bool_filters)
-    #
-    # # get a subset of sf contacts which have at least one field in common with the rep
+    bool_filters = [list(sf_df[key].str.contains(reps_df.loc[rep_key_map[rep_key]][key])) for key in keys if
+                    reps_df.loc[rep_key_map[rep_key]][key]]
+
+    # reduce the boolean masks with an or operator
+    rep_filter = reduce(lambda a, b: a or b, bool_filters)
+
+    # get a subset of sf contacts which have at least one field in common with the rep
     # unmatched = [True if 'True' in i else False for i in list(sf_df.unmatched)]
     # sf_contacts = sf_df[rep_filter and unmatched]
-    # sf_contacts = sf_df[rep_filter and sf_df.unmatched]
-    # # generate a sf key => dataframe index map for each sf contact in the subset
-    # sf_key_map = {sf_key: df_idx for df_idx, sf_key in
-    #               enumerate(list(np.add.reduce(sf_df[keys].astype(str).fillna('NULL'), axis=1)))
-    #               if df_idx in sf_contacts.index and 'NULL' not in sf_key}
+    sf_contacts = sf_df[rep_filter and sf_df.unmatched]
 
-    # get 10 sf contacts with most field groups in common and map the dedup key to the df index
-    sf_contacts = get_closest(rep_key_map[rep_key], keys)
+
+
+    # generate a sf key => dataframe index map for each sf contact in the subset
     sf_key_map = {sf_key: df_idx for df_idx, sf_key in
-                  enumerate(list(np.add.reduce(sf_df[keys].astype(str), axis=1)))
-                  if df_idx in sf_contacts and 'NULL' not in sf_key}
-
+                  enumerate(list(np.add.reduce(sf_df[keys].astype(str).fillna('NULL'), axis=1)))
+                  if df_idx in sf_contacts.index and 'NULL' not in sf_key}
 
     # find the top 3 closest matches from the subset
     possibilities = process.extract(rep_key, sf_key_map.keys(), limit=3, scorer=fuzz.ratio)
 
     # filter by those with 97% match or closer
-    top_3 = [possible for i, possible in enumerate(possibilities) if possible[1] > 97]
+    top_3 = [(i, possible) for i, possible in enumerate(possibilities) if possible[1] > 97]
 
     # if there is any record close to this then assign it's ID
     if top_3:
         # push updates to update_queue
         logging.debug(f'dupe found for: {rep_key}')
-        dedupper.threads.updateQ((rep_key_map[rep_key], sf_key_map[top_3[0][0]]))
+
+        dedupper.threads.updateQ((rep_key_map[rep_key], sf_key_map[top_3[0][1][0]]))
     else:
         logging.debug(f'dupe not found for: {rep_key}')
 
     time = start - perf_counter()
     times.append(time)
-    del sf_key_map, sf_contacts, top_3, possibilities, start,
+    del sf_key_map, sf_contacts,
 
 #the start of duplify algorithm
 def key_generator(data):
@@ -342,6 +341,8 @@ def key_generator(data):
     totalKeys = len(keys)
     #store keylist globally
     keylist = keys
+
+    dedupe_ai()
     for key in keys:
         #determine whether strong matches sort as dups or manuals
         sort_alg = key[-1]
@@ -630,19 +631,6 @@ def save_dfs():
 
     del data, unmatched_reps
 
-
-def get_closest(rep_id, key):
-    global sf_groups
-    countr = []
-    # for each field search for groups the rep would be in
-    for field in key:
-        reps_df.iloc[rep_id][field] in sf_groups[field] and not countr.extend(
-            list(sf_groups[field][reps_df.iloc[rep_id][field]]))
-    # use Counter to find the sf contacts indexes with  highest # of groups in common
-    c = Counter(countr)
-    return [i[0] for i in c.most_common(10)]
-
-
 def import_contacts(rep_file, channel, new_headers):
     global reps_df, sf_df, loaded
     if not loaded:
@@ -658,3 +646,104 @@ def import_contacts(rep_file, channel, new_headers):
         sf_df['unmatched'], reps_df["Id"] = True, np.nan
         print(sf_df.tail())
         print(reps_df.tail())
+
+def preprocess(sfdf, repdf):
+    print('enter PREPROCESS')
+
+    global key_list, keys
+    '''preprocessing'''
+
+    sfdf.update(clean(sfdf.FirstName))
+    sfdf.update(clean(sfdf.LastName))
+    sfdf.update(clean(sfdf.Email))
+    sfdf.update(clean(sfdf.State))
+    sfdf.update(phonenumbers(sfdf.Zip))
+    sfdf.update(clean(sfdf.City))
+    sfdf.update(phonenumbers(sfdf.Phone))
+    sfdf.update(clean(sfdf.CRD.astype(str)))
+
+    repdf.update(clean(repdf.FirstName))
+    repdf.update(clean(repdf.LastName))
+    repdf.update(clean(repdf.Email))
+    repdf.update(clean(repdf.State))
+    repdf.update(phonenumbers(repdf.Zip))
+    repdf.update(clean(repdf.City))
+    repdf.update(phonenumbers(repdf.Phone))
+    repdf.update(clean(repdf.CRD.astype(str)))
+
+    '''key generating'''
+
+    for df in [sfdf, repdf]:
+        for key in keys:
+            if len(key) > 1:
+                key_col = ''.join([''.join(c for c in s if c.isupper()) for s in key])
+                if key_col not in key_list:
+                    key_list.append(key_col)
+                df[key_col] = pd.Series(np.add.reduce(df[key].astype(str), axis=1))
+            else:
+                if key[0] not in key_list:
+                    key_list.append(key[0])
+    print('exit PREPROCESS')
+
+def match_crds(sfdf, repdf):
+    print('enter CRD MATCH')
+    global lt_ID_update_list
+    sfcrd = set(sfdf.CRD)
+    repcrd = list(repdf.CRD)
+    print(len(sfcrd), len(repcrd))
+
+    #find intersection of CRD
+    CRD_matches = set(sfcrd).intersection(set(repcrd))
+    lt_ID_update_list = [np.nan for _ in repcrd]
+
+    #match those records
+    for crd in CRD_matches:
+        lt_ID_update_list[repdf[repdf.CRD == crd].iloc[0].name] = sfdf[sfdf.CRD==crd].iloc[0]["Id"]
+    print('exit CRD MATCH')
+
+def dedupe_ai():
+    # match the df fields first
+    preprocess(sfdf, ltdf)
+    match_crds(sfdf, ltdf)
+    ltgroups = ltdf.groupby('LastName')
+    sfgroups = sfdf.groupby('LastName')  # index using groups by lastname
+    lt_lastnames = list(set(ltgroups.groups.keys()))
+    sf_lastnames = list(set(sfgroups.groups.keys()))
+    last_name_groups = list(set(lt_lastnames).intersection(sf_lastnames))
+    matched = False
+    manual_dict = dict()
+    start = pc()
+    for ln in last_name_groups:
+        for index in ltgroups.groups[ln]:
+            if not lt_ID_update_list[index] == np.nan:
+                # only do indexes that have not already been populated in the lt_ID_update_list
+                matched = False
+                for key in key_list:
+                    sf_keys = [sfdf.iloc[i][key] for i in sfgroups.groups[ln]]
+                    # swap out with fuzzyset algorithm
+                    # fuzzyset_alg
+                    # possibilities = process.extract(ltdf.iloc[index][key], sf_keys, limit=3, scorer=jelly.jaro_winkler)
+                    possibilities = fuzzyset_alg(ltdf.iloc[index][key], sf_keys)
+                    manuals = [possible[0] for i, possible in enumerate(possibilities) if 95 <= possible[1] < 97]
+                    non_match = [possible[0] for i, possible in enumerate(possibilities) if possible[1] < 95]
+                    if possibilities and possibilities[0][1] >= 97:
+                        lt_ID_update_list[index] = sfdf[sfdf[key] == possibilities[0][0]].iloc[0]['Id']
+                        matched = True
+                        break
+                    elif manuals:
+                        manual_dict[index] = [i for i in sfgroups.groups[ln] if sfdf.iloc[i][key] in manuals]
+                        lt_ID_update_list[index] = 'manual'
+                        print('manual check')
+                        matched = True
+                        break
+    #             if not matched:
+    #                 print(f"NEW {key} ({ltdf.iloc[index]['FirstName']} {ltdf.iloc[index]['LastName']}): {[ (sfdf[sfdf[key] == pos ].iloc[0]['FirstName'] ,sfdf[sfdf[key] == pos ].iloc[0]['LastName'] ) for pos in non_match]}")
+    #             else:
+    #                 matched=False
+    print(f'time: {pc() - start}')
+
+def manual_sort_compiling():
+
+'''
+create function that will take the match_dict and reformat to match the style of the sorted page
+'''
