@@ -14,13 +14,21 @@ from io import StringIO
 from operator import itemgetter
 from random import *
 from time import perf_counter
+import datetime
 
 import numpy as np
 import pandas as pd
 from django import db
 from django.conf import settings
 from django.db.models import Avg
+import recordlinkage as rl
+from recordlinkage.preprocessing import clean, phonenumbers, phonetic
+from recordlinkage.index import Full, Block
+import jellyfish as jelly
 from fuzzyset import FuzzySet
+from itertools import combinations, chain
+from collections import defaultdict, Counter
+from functools import reduce
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 from range_key_dict import RangeKeyDict
@@ -206,29 +214,19 @@ def find_rep_dups(rep, keys, numthreads):
 
 #reset flags and storage time
 def finish(numThreads):
-    db.connections.close_all()
-    global end, waiting, complete
-    c = collect()                   #garbage collection
-    logging.debug(f'# of garbage collected = {c}')
-    #is this the last key
-    if currKey == keylist[-1]:
-        #sort the remaining keys
-        for i in list(repContact.objects.filter(type='Undecided')):
-            if i.average != None:
-                i.type = last_key_sorting_range[i.average]
-            else:
-                i.type = 'New Record'
-            i.save()
-        complete = True
-        end = perf_counter()
-        time = end - start
-        duplifyTime.objects.create(num_threads=numThreads,
-                                   seconds=round(time, 2)
-                                   )
-        os.system('say "The repp list has been duplified!"')
+    global waiting, complete, times, start, reps_df
+#     c = collect()  #garbage collection
+    complete = True
+    end = perf_counter()
+    time = end - start
+    os.system('say "The repp list has been duplified!"')
+    print(f'avg dup time: {round(np.average(times),2)}')
+    print(f'total dedupe time: {datetime.timedelta(seconds=round(time))}')
     waiting=False
+    dedupper.threads.stop_updates()
+    reps_df.update(pd.Series(reps_ID_update_list, name='Id'))#fuzzy match the key against the key list and returns the 3 closest from the key list
+    save_dfs()
 
-#fuzzy match the key against the key list and returns the 3 closest from the key list
 def fuzzyset_alg(key, key_list):
     finder = FuzzySet()
     finder.add(key)
@@ -287,83 +285,74 @@ def key_dedupe(keys):
     collect()
 
 
-def threaded_deduping(rep_key, keys):
-    global reps_df, sf_df, rep_key_map, times
+def threaded_deduping(index, ln):
+    global reps_df, sf_df, rep_key_map, times, sf_groups, reps_ID_update_list
     start = perf_counter()
+    data = defaultdict(int)
 
-    # create a boolean mask on the sf contacts for each of the rep's field values
-    bool_filters = [list(sf_df[key].str.contains(reps_df.loc[rep_key_map[rep_key]][key])) for key in keys if
-                    reps_df.loc[rep_key_map[rep_key]][key]]
-
-    # reduce the boolean masks with an or operator
-    rep_filter = reduce(lambda a, b: a or b, bool_filters)
-
-    # get a subset of sf contacts which have at least one field in common with the rep
-    # unmatched = [True if 'True' in i else False for i in list(sf_df.unmatched)]
-    # sf_contacts = sf_df[rep_filter and unmatched]
-    sf_contacts = sf_df[rep_filter and sf_df.unmatched]
-
-
-
-    # generate a sf key => dataframe index map for each sf contact in the subset
-    sf_key_map = {sf_key: df_idx for df_idx, sf_key in
-                  enumerate(list(np.add.reduce(sf_df[keys].astype(str).fillna('NULL'), axis=1)))
-                  if df_idx in sf_contacts.index and 'NULL' not in sf_key}
-
-    # find the top 3 closest matches from the subset
-    possibilities = process.extract(rep_key, sf_key_map.keys(), limit=3, scorer=fuzz.ratio)
-
-    # filter by those with 97% match or closer
-    top_3 = [(i, possible) for i, possible in enumerate(possibilities) if possible[1] > 97]
-
-    # if there is any record close to this then assign it's ID
-    if top_3:
-        # push updates to update_queue
-        logging.debug(f'dupe found for: {rep_key}')
-
-        dedupper.threads.updateQ((rep_key_map[rep_key], sf_key_map[top_3[0][1][0]]))
-    else:
-        logging.debug(f'dupe not found for: {rep_key}')
-
-    time = start - perf_counter()
+    # THREADED PART
+    for key in keylist:
+        sf_keys = [sf_df.iloc[i][key] for i in sf_groups.groups[ln]]
+        possibilities = fuzzyset_alg(reps_df.iloc[index][key], sf_keys)
+        manuals = [possible[0] for i, possible in enumerate(possibilities) if 95 <= possible[1] < 97]
+        non_match = [possible[0] for i, possible in enumerate(possibilities) if possible[1] < 95]
+        if possibilities and possibilities[0][1] >= 97:
+            reps_ID_update_list[index] = sf_df[sf_df[key] == possibilities[0][0]].iloc[0]['Id']
+            break
+        elif manuals:
+            manual_dict[index] = [i for i in sfgroups.groups[ln] if sf_df.iloc[i][key] in manuals]
+            reps_ID_update_list[index] = 'manual'
+            print('manual check')
+            break
+    time = abs(perf_counter() - start)
     times.append(time)
-    del sf_key_map, sf_contacts,
+    if (len(times) % 100 == 0):
+        print(f'averaging {np.average(times)} secs')
 
+
+#     del sf_key_map, sf_contacts
 #the start of duplify algorithm
 def key_generator(data):
-    global sf_df, reps_df, start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg, keylist
-    keys= data['keys']
-    #start timer
+    print('ENTER: import_contacts')
+    import_contacts(data['rep_file'], data['channel'])
+    print('EXIT: import_contacts')
+#     import_gatekeepers()
+    global sf_df, reps_df, start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg, keylist, sf_groups, reps_ID_update_list
+    matched= False
+    manual_dict=dict()
     print('start your engines ')
-    import_contacts(data['reps'], data['channel'], data['map'])
-    # reps_df, sf_df = get_contacts('both')
     start = perf_counter()
-    totalKeys = len(keys)
-    #store keylist globally
-    keylist = keys
 
-    dedupe_ai()
-    for key in keys:
-        #determine whether strong matches sort as dups or manuals
-        sort_alg = key[-1]
-        currKey = key
-        cnt=0           #restarts global count
-        print('starting key: {}'.format(key))
+    print('ENTER: import_contacts')
+    sf_df, reps_df, keylist = preprocess(sf_df, reps_df, data['keys'])
+    print('EXIT: import_contacts')
 
-        #set flags
-        waiting = True
-        multi_key = False
+    print('ENTER: match_crds')
+    reps_ID_update_list = match_crds(sf_df, reps_df) #start timer
+    print('EXIT: match_crds')
+#     reps_df, sf_df = get_contacts('both')
 
-        #convert key string to list
-        string_key = '-'.join(currKey)
+#     sf_groups = {i: sf_df.groupby(i).groups for i in list(sf_df.columns)[:-1]}
+    reps_groups = reps_df.groupby('LastName')
+    sf_groups = sf_df.groupby('LastName')#index using groups by lastname
+    reps_lastnames = list(set(reps_groups.groups.keys()))
+    sf_lastnames = list(set(sf_groups.groups.keys()))
+    last_name_groups = list(set(reps_lastnames).intersection(sf_lastnames))
 
-        key_dedupe(key[:-1])
-        while waiting:
-            pass
-        collect()
-        save_dfs()
-        doneKeys += 1
+    print('ENTER: key_deduper')
+    key_deduper(last_name_groups, reps_groups, reps_ID_update_list)
+    print('EXIT: key_deduper')
 
+def key_deduper(last_name_groups, reps_groups, reps_ID_update_list):
+    matched= False
+    manual_dict=dict()
+    start = perf_counter()
+
+    rep_indices = [[(index, ln) for index in  reps_groups.groups[ln] if reps_ID_update_list[index] == ''] for ln in last_name_groups]
+    rep_list = reduce(lambda x, y: list(chain(x,y)), rep_indices)
+    print('ENTER: threads.dedupeQ')
+    dedupper.threads.dedupeQ(rep_list)
+    print('EXIT: threads.dedupeQ')
 #uploades contacts to the db
 def load_csv2db(csv, header_map, resource, file_type='rep'):
     global done
@@ -631,48 +620,55 @@ def save_dfs():
 
     del data, unmatched_reps
 
-def import_contacts(rep_file, channel, new_headers):
-    global reps_df, sf_df, loaded
+def import_contacts(rep_file, channel):
+    global reps_df, sf_df, loaded, reps_ID_update_list, sf_match_update_list, reps_type_update_list, reps_avg_update_list
     if not loaded:
-        loaded = True
-        reps_df.rename(columns=new_headers, inplace=True)
-        reps_df = rep_file.replace([None], ['NULL'], regex=True)
-        sf = Salesforce(password='7924trill', username='jmadubuko@wealthvest.com',
-                        security_token='W4ItPbGFZHssUcJBCZlw2t9p2')
+        loaded=True
+        reps_df = pd.read_excel(rep_file).replace([None], ['NULL'], regex=True)
+        reps_df.rename(columns={
+                        'First Name' : 'FirstName',
+                        'Last Name' : 'LastName',
+                        'Mailing City' : 'MailingCity',
+                        'Mailing Zip/Postal Code' : 'MailingPostalCode',
+                        'Mailing State/Province' : 'MailingState',
+                        'Crd Number': 'CRD__c',
+                       },
+                       inplace=True)
+        sf = Salesforce(password='7924trill', username='jmadubuko@wealthvest.com', security_token='W4ItPbGFZHssUcJBCZlw2t9p2')
         query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where Territory_Type__c='Geography' and Territory__r.Name like "
         starts_with = f"'{channel}%'"
         territory = sf.bulk.Contact.query(query + starts_with)
         sf_df = pd.DataFrame(territory, dtype=str).drop('attributes', axis=1).replace([None], ['NULL'], regex=True)
-        sf_df['unmatched'], reps_df["Id"] = True, np.nan
-        print(sf_df.tail())
-        print(reps_df.tail())
+        sf_df['unmatched'], reps_df["Id"], reps_df["Type"], reps_df["avg"]  = True, np.nan, np.nan, np.nan
+        reps_ID_update_list = [np.nan for _ in range(len(reps_df))]
+        reps_type_update_list = [np.nan for _ in range(len(reps_df))]
+        reps_avg_update_list = [np.nan for _ in range(len(reps_df))]
+        sf_match_update_list  = [True for _ in range(len(sf_df))]
 
-def preprocess(sfdf, repdf):
-    print('enter PREPROCESS')
 
-    global key_list, keys
+def preprocess(sfdf, repdf, keys):
+    key_list = list()
+
     '''preprocessing'''
-
     sfdf.update(clean(sfdf.FirstName))
     sfdf.update(clean(sfdf.LastName))
     sfdf.update(clean(sfdf.Email))
-    sfdf.update(clean(sfdf.State))
-    sfdf.update(phonenumbers(sfdf.Zip))
-    sfdf.update(clean(sfdf.City))
+    sfdf.update(clean(sfdf.MailingState))
+    sfdf.update(phonenumbers(sfdf.MailingPostalCode))
+    sfdf.update(clean(sfdf.MailingCity))
     sfdf.update(phonenumbers(sfdf.Phone))
-    sfdf.update(clean(sfdf.CRD.astype(str)))
+    sfdf.update(clean(sfdf.CRD__c.astype(str)))
 
     repdf.update(clean(repdf.FirstName))
     repdf.update(clean(repdf.LastName))
     repdf.update(clean(repdf.Email))
-    repdf.update(clean(repdf.State))
-    repdf.update(phonenumbers(repdf.Zip))
-    repdf.update(clean(repdf.City))
+    repdf.update(clean(repdf.MailingState))
+    repdf.update(phonenumbers(repdf.MailingPostalCode))
+    repdf.update(clean(repdf.MailingCity))
     repdf.update(phonenumbers(repdf.Phone))
-    repdf.update(clean(repdf.CRD.astype(str)))
+    repdf.update(clean(repdf.CRD__c.astype(str)))
 
     '''key generating'''
-
     for df in [sfdf, repdf]:
         for key in keys:
             if len(key) > 1:
@@ -683,67 +679,19 @@ def preprocess(sfdf, repdf):
             else:
                 if key[0] not in key_list:
                     key_list.append(key[0])
-    print('exit PREPROCESS')
+    return sfdf, repdf, key_list
 
 def match_crds(sfdf, repdf):
-    print('enter CRD MATCH')
-    global lt_ID_update_list
-    sfcrd = set(sfdf.CRD)
-    repcrd = list(repdf.CRD)
-    print(len(sfcrd), len(repcrd))
+    lt_ID_update_list = list()
+    sfcrd = set(sfdf.CRD__c)
+    repcrd = list(repdf.CRD__c)
+#     print(len(sfcrd), len(repcrd))
 
     #find intersection of CRD
     CRD_matches = set(sfcrd).intersection(set(repcrd))
-    lt_ID_update_list = [np.nan for _ in repcrd]
+    lt_ID_update_list = ['' for _ in repcrd]
 
     #match those records
     for crd in CRD_matches:
-        lt_ID_update_list[repdf[repdf.CRD == crd].iloc[0].name] = sfdf[sfdf.CRD==crd].iloc[0]["Id"]
-    print('exit CRD MATCH')
-
-def dedupe_ai():
-    # match the df fields first
-    preprocess(sfdf, ltdf)
-    match_crds(sfdf, ltdf)
-    ltgroups = ltdf.groupby('LastName')
-    sfgroups = sfdf.groupby('LastName')  # index using groups by lastname
-    lt_lastnames = list(set(ltgroups.groups.keys()))
-    sf_lastnames = list(set(sfgroups.groups.keys()))
-    last_name_groups = list(set(lt_lastnames).intersection(sf_lastnames))
-    matched = False
-    manual_dict = dict()
-    start = pc()
-    for ln in last_name_groups:
-        for index in ltgroups.groups[ln]:
-            if not lt_ID_update_list[index] == np.nan:
-                # only do indexes that have not already been populated in the lt_ID_update_list
-                matched = False
-                for key in key_list:
-                    sf_keys = [sfdf.iloc[i][key] for i in sfgroups.groups[ln]]
-                    # swap out with fuzzyset algorithm
-                    # fuzzyset_alg
-                    # possibilities = process.extract(ltdf.iloc[index][key], sf_keys, limit=3, scorer=jelly.jaro_winkler)
-                    possibilities = fuzzyset_alg(ltdf.iloc[index][key], sf_keys)
-                    manuals = [possible[0] for i, possible in enumerate(possibilities) if 95 <= possible[1] < 97]
-                    non_match = [possible[0] for i, possible in enumerate(possibilities) if possible[1] < 95]
-                    if possibilities and possibilities[0][1] >= 97:
-                        lt_ID_update_list[index] = sfdf[sfdf[key] == possibilities[0][0]].iloc[0]['Id']
-                        matched = True
-                        break
-                    elif manuals:
-                        manual_dict[index] = [i for i in sfgroups.groups[ln] if sfdf.iloc[i][key] in manuals]
-                        lt_ID_update_list[index] = 'manual'
-                        print('manual check')
-                        matched = True
-                        break
-    #             if not matched:
-    #                 print(f"NEW {key} ({ltdf.iloc[index]['FirstName']} {ltdf.iloc[index]['LastName']}): {[ (sfdf[sfdf[key] == pos ].iloc[0]['FirstName'] ,sfdf[sfdf[key] == pos ].iloc[0]['LastName'] ) for pos in non_match]}")
-    #             else:
-    #                 matched=False
-    print(f'time: {pc() - start}')
-
-def manual_sort_compiling():
-
-'''
-create function that will take the match_dict and reformat to match the style of the sorted page
-'''
+        lt_ID_update_list[repdf[repdf.CRD__c == crd].iloc[0].name] = sfdf[sfdf.CRD__c==crd].iloc[0]["Id"]
+    return lt_ID_update_list
