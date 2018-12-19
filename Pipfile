@@ -83,5 +83,6 @@ aiohttp = "==1.3.5"
 eventlet = "*"
 django-rq = "*"
 dedupe = "*"
+recordlinkage = "*"
 
 [dev-packages]
