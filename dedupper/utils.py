@@ -695,9 +695,3 @@ def match_crds(sfdf, repdf):
     for crd in CRD_matches:
         lt_ID_update_list[repdf[repdf.CRD__c == crd].iloc[0].name] = sfdf[sfdf.CRD__c==crd].iloc[0]["Id"]
     return lt_ID_update_list
-
-def manual_sort_compiling():
-
-'''
-create function that will take the match_dict and reformat to match the style of the sorted page
-'''
