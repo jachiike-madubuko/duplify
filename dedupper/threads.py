@@ -12,7 +12,7 @@ BUFF_SIZE = 10000
 dedupe_q = queue.Queue(BUFF_SIZE)
 update_q = queue.Queue(BUFF_SIZE)
 dedupe_wait_list = updates_wait_list = list()
-producer= consumers = None
+producer= consumers=u = None
 numThreads = 10
 stopper = True
 dead_threads = 0
@@ -108,6 +108,11 @@ def dedupeQ(newQ):
 def updateQ(update):
     global updates_wait_list
     updates_wait_list.append(update)
+
+def stop_updates():
+    global u
+    u.event.set()
+
 
 def stop(x):
     global dead_threads, last_thread_killed
