@@ -21,8 +21,6 @@ import pandas as pd
 from django import db
 from django.conf import settings
 from django.db.models import Avg
-import recordlinkage as rl
-from recordlinkage.preprocessing import clean, phonenumbers, phonetic
 from recordlinkage.index import Full, Block
 import jellyfish as jelly
 from fuzzyset import FuzzySet
@@ -30,7 +28,6 @@ from itertools import combinations, chain
 from collections import defaultdict, Counter
 from functools import reduce
 from fuzzywuzzy import fuzz
-from fuzzywuzzy import process
 from range_key_dict import RangeKeyDict
 from simple_salesforce import Salesforce
 from tablib import Dataset
@@ -40,8 +37,8 @@ from dedupper.models import repContact, sfcontact, dedupTime, duplifyTime, uploa
 from dedupper.resources import RepContactResource, SFContactResource
 import jellyfish as jelly
 import recordlinkage as rl
-from recordlinkage.preprocessing import clean, phonenumbers, phonetic
-from recordlinkage.index import Full, Block
+from recordlinkage.preprocessing import clean, phonenumbers
+
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
 
 
@@ -314,7 +311,7 @@ def threaded_deduping(index, ln):
 #the start of duplify algorithm
 def key_generator(data):
     print('ENTER: import_contacts')
-    import_contacts(data['rep_file'], data['channel'])
+    import_contacts(data['reps'], data['channel'])
     print('EXIT: import_contacts')
 #     import_gatekeepers()
     global sf_df, reps_df, start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg, keylist, sf_groups, reps_ID_update_list
