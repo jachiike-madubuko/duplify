@@ -21,10 +21,8 @@ import pandas as pd
 from django import db
 from django.conf import settings
 from django.db.models import Avg
-from recordlinkage.index import Full, Block
-import jellyfish as jelly
 from fuzzyset import FuzzySet
-from itertools import combinations, chain
+from itertools import chain
 from collections import defaultdict, Counter
 from functools import reduce
 from fuzzywuzzy import fuzz
@@ -33,10 +31,8 @@ from simple_salesforce import Salesforce
 from tablib import Dataset
 
 import dedupper.threads
-from dedupper.models import repContact, sfcontact, dedupTime, duplifyTime, uploadTime, progress
+from dedupper.models import repContact, sfcontact, dedupTime, uploadTime, progress
 from dedupper.resources import RepContactResource, SFContactResource
-import jellyfish as jelly
-import recordlinkage as rl
 from recordlinkage.preprocessing import clean, phonenumbers
 
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
@@ -283,7 +279,7 @@ def key_dedupe(keys):
 
 
 def threaded_deduping(index, ln):
-    global reps_df, sf_df, rep_key_map, times, sf_groups, reps_ID_update_list
+    global reps_df, sf_df, rep_key_map, times, sf_groups, reps_ID_update_list, manual_dict
     start = perf_counter()
     data = defaultdict(int)
 
@@ -297,7 +293,7 @@ def threaded_deduping(index, ln):
             reps_ID_update_list[index] = sf_df[sf_df[key] == possibilities[0][0]].iloc[0]['Id']
             break
         elif manuals:
-            manual_dict[index] = [i for i in sfgroups.groups[ln] if sf_df.iloc[i][key] in manuals]
+            manual_dict[index] = [i for i in sf_groups.groups[ln] if sf_df.iloc[i][key] in manuals]
             reps_ID_update_list[index] = 'manual'
             print('manual check')
             break
@@ -306,6 +302,9 @@ def threaded_deduping(index, ln):
     if (len(times) % 100 == 0):
         print(f'averaging {np.average(times)} secs')
 
+
+# report number found with CRD
+# given estimate with number of reps, times average
 
 #     del sf_key_map, sf_contacts
 #the start of duplify algorithm
@@ -621,7 +620,7 @@ def import_contacts(rep_file, channel):
     global reps_df, sf_df, loaded, reps_ID_update_list, sf_match_update_list, reps_type_update_list, reps_avg_update_list
     if not loaded:
         loaded=True
-        reps_df = pd.read_excel(rep_file).replace([None], ['NULL'], regex=True)
+        reps_df = pd.read_excel(rep_file, engine='xlrd').replace([None], ['NULL'], regex=True)
         reps_df.rename(columns={
                         'First Name' : 'FirstName',
                         'Last Name' : 'LastName',
