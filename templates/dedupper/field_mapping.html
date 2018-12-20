@@ -614,11 +614,7 @@ bottom:
 
             function update_progress() {
                 $.getJSON("{% url 'db_progress' %}", function (result) {
-
-                    if (result['msg'] < 10) {
-
-                        window.location.replace("{% url 'key' %}");
-                    }
+                    window.location.replace("{% url 'key' %}");
                 });
             }
 

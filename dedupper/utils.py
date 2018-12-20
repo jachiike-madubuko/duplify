@@ -5,16 +5,18 @@ Created on Sat May 19 17:53:34 2018
 
 @author: jachi
 """
+import datetime
 import logging
 import os
 import string
+from collections import defaultdict
 from functools import reduce
 from gc import collect
 from io import StringIO
+from itertools import chain
 from operator import itemgetter
 from random import *
 from time import perf_counter
-import datetime
 
 import numpy as np
 import pandas as pd
@@ -22,18 +24,15 @@ from django import db
 from django.conf import settings
 from django.db.models import Avg
 from fuzzyset import FuzzySet
-from itertools import chain
-from collections import defaultdict, Counter
-from functools import reduce
 from fuzzywuzzy import fuzz
 from range_key_dict import RangeKeyDict
+from recordlinkage.preprocessing import clean, phonenumbers
 from simple_salesforce import Salesforce
 from tablib import Dataset
 
 import dedupper.threads
 from dedupper.models import repContact, sfcontact, dedupTime, uploadTime, progress
 from dedupper.resources import RepContactResource, SFContactResource
-from recordlinkage.preprocessing import clean, phonenumbers
 
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
 
@@ -617,6 +616,7 @@ def save_dfs():
     del data, unmatched_reps
 
 def import_contacts(rep_file, channel):
+    # check rep_file type
     global reps_df, sf_df, loaded, reps_ID_update_list, sf_match_update_list, reps_type_update_list, reps_avg_update_list
     if not loaded:
         loaded=True
