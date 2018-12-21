@@ -332,9 +332,9 @@
 
     function update_progress(){
         $.getJSON("{% url 'progress' %}", function (result) {
-            var time_estimate = result['done'];
-            alert(time_estimate);
-
+            if (result['done'] > 0) {
+                window.location.replace("{% url 'reps' %}");
+            }
         }).fail(function () {
         });
     }
