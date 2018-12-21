@@ -338,6 +338,12 @@ def key_generator(data):
     print('	 ENTER: key_deduper')
     key_deduper(last_name_groups, reps_groups, reps_ID_update_list)
     print('	 EXIT: key_deduper')
+    print('ENTER: finish')
+    finish(30)
+    print('EXIT: finish')
+    print('EXIT: key_generator')
+
+
 
 def key_deduper(last_name_groups, reps_groups, reps_ID_update_list):
     matched= False
@@ -608,6 +614,7 @@ def save_dfs():
     unmatched_reps = reps_df[reps_df.Id.notnull()]
     print(f'reps matched: {unmatched_reps}')
     data = reps_df.to_csv() + '--$--' + sf_df.to_csv()
+    print(data)
     p = progress.objects.latest()
     p.label = data
     p.completed_keys = progress.objects.latest().completed_keys + 1
