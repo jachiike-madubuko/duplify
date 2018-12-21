@@ -35,9 +35,11 @@ def display(request):
     manual_flag = reps_df.Id == 'manual'
     news = reps_df[new_flag]
     manuals = reps_df[manual_flag]
-    dupes = reps_df[not (new_flag or manual_flag)]
+    # dupes = reps_df[not (new_flag or manual_flag)]
+    dupes = 'dupe'
     print(f'news: {len(news)}\nmanuals: {len(manuals)}\ndupes{len(dupes)}')
     print(f'news: {type(news)}\nmanuals: {type(manuals)}\ndupes{type(dupes)}')
+
     return render(request, 'dedupper/data-table.html')
 
 def closest(request):
@@ -336,6 +338,7 @@ def merge(request, id):
 
 def dup_progress(request):
     if request.method == 'GET':
+        print(f'ENTER dup_progress: {progress.objects.latest().completed_keys}')
         if progress.objects.latest().completed_keys == 0:
             return JsonResponse({'done': 0.1, 'esti': 10}, safe=False)
         else:
