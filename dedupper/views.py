@@ -40,6 +40,8 @@ def display(request):
     print(f'news: {len(news)}\nmanuals: {len(manuals)}\ndupes{len(dupes)}')
     print(f'news: {type(news)}\nmanuals: {type(manuals)}\ndupes{type(dupes)}')
 
+    # now I have
+
     return render(request, 'dedupper/data-table.html')
 
 def closest(request):
@@ -339,7 +341,7 @@ def merge(request, id):
 def dup_progress(request):
     if request.method == 'GET':
         print(f'ENTER dup_progress: {progress.objects.latest().completed_keys}')
-        if progress.objects.latest().completed_keys == 0:
+        if progress.objects.latest().completed_keys == request.session['num_keys']:
             return JsonResponse({'done': 0.1, 'esti': 10}, safe=False)
         else:
             print('DEDUPING DONE')
@@ -384,6 +386,7 @@ def run(request):
         keys=partslist
         p = progress.objects.latest()
         p.total_keys = len(partslist)
+
         request.session['indicator'] = len(partslist)
         p.save()
         db.connections.close_all()

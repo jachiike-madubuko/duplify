@@ -629,6 +629,10 @@ def import_contacts(rep_file, df_map, channel):
         reps_type_update_list = [np.nan for _ in range(len(reps_df))]
         reps_avg_update_list = [np.nan for _ in range(len(reps_df))]
         sf_match_update_list  = [True for _ in range(len(sf_df))]
+        data = reps_df.to_csv() + '--$--' + sf_df.to_csv()
+        pr = progress(label=data, total_reps=len(reps_df))
+        pr.save()
+        db.connections.close_all()
 
 def preprocess(sfdf, repdf, keys):
     key_list = list()

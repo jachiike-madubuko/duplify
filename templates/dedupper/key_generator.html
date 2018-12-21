@@ -334,6 +334,7 @@
         $.getJSON("{% url 'progress' %}", function (result) {
             if (result['done'] > 10) {
                 alert(result['done']);
+                clearInterval(inter);
                 window.location.replace("{% url 'reps' %}");
             }
         }).fail(function () {
