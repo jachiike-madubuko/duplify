@@ -661,11 +661,11 @@ def preprocess(sfdf, repdf, keys):
     '''key generating'''
     for df in [sfdf, repdf]:
         for key in keys:
-            if len(key) > 1:
-                key_col = ''.join([''.join(c for c in s if c.isupper()) for s in key])
+            if len(key[:-1]) > 1:
+                key_col = ''.join([''.join(c for c in s if c.isupper()) for s in key[:-1]])
                 if key_col not in key_list:
                     key_list.append(key_col)
-                df[key_col] = pd.Series(np.add.reduce(df[key].astype(str), axis=1))
+                df[key_col] = pd.Series(np.add.reduce(df[key[:-1]].astype(str), axis=1))
             else:
                 if key[0] not in key_list:
                     key_list.append(key[0])
