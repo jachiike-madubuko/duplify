@@ -7,7 +7,6 @@ Created on Sat May 19 17:53:34 2018
 """
 import datetime
 import logging
-import os
 import string
 from collections import defaultdict
 from functools import reduce
@@ -207,7 +206,7 @@ def finish(numThreads):
     complete = True
     end = perf_counter()
     time = end - start
-    os.system('say "The repp list has been duplified!"')
+    # os.system('say "The repp list has been duplified!"')
     print(f'avg dup time: {round(np.average(times),2)}')
     print(f'total dedupe time: {datetime.timedelta(seconds=round(time))}')
     waiting=False
