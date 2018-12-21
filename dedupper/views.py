@@ -30,9 +30,11 @@ dedupe_q = django_rq.get_queue('high', autocommit=True, is_async=True)
 
 def display(request):
     print('render datatables from dataframes')
-    # news  = rep_df[ rep_df.Id == '' ]
-    # manuals  = rep_df[ rep_df.Id == 'manual' ]
-    # dupes  = rep_df[ len(rep_df.Id) > 6 ]
+    reps_df = get_contacts('reps')
+    news = reps_df[reps_df.Id == '']
+    manuals = reps_df[reps_df.Id == 'manual']
+    dupes = reps_df[len(reps_df.Id) > 6]
+    print(f'news: {len(news)}\nmanuals: {len(manuals)}\ndupes{len(dupes)}')
     return render(request, 'dedupper/data-table.html')
 
 def closest(request):

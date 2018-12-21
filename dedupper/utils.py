@@ -35,8 +35,6 @@ from dedupper.models import repContact, sfcontact, dedupTime, uploadTime, progre
 from dedupper.resources import RepContactResource, SFContactResource
 
 #find more on fuzzywuzzy at https://github.com/seatgeek/fuzzywuzzy
-
-
 standard_sorting_range = RangeKeyDict({
     (97, 101): 'Duplicate',
     (95, 97): 'Manual Check',
@@ -63,8 +61,6 @@ reps_df = sf_df = currKey = sort_alg = key_stats = None
 start=end=cnt=doneKeys=totalKeys=0
 done=complete= False
 rep_key_map = None
-
-
 # TODO finish phone/email multi sf field mapping
 
 #TODO add docstrings go to realpython.com/documenting-python-code/
@@ -276,7 +272,6 @@ def key_dedupe(keys):
     del unmatched_reps, reps
     collect()
 
-
 def threaded_deduping(index, ln):
     global reps_df, sf_df, rep_key_map, times, sf_groups, reps_ID_update_list, manual_dict
     start = perf_counter()
@@ -300,7 +295,6 @@ def threaded_deduping(index, ln):
     times.append(time)
     if (len(times) % 100 == 0):
         print(f'averaging {np.average(times)} secs')
-
 
 # report number found with CRD
 # given estimate with number of reps, times average
@@ -342,8 +336,6 @@ def key_generator(data):
     finish(30)
     print('EXIT: finish')
     print('EXIT: key_generator')
-
-
 
 def key_deduper(last_name_groups, reps_groups, reps_ID_update_list):
     matched= False
@@ -488,7 +480,6 @@ def sort(avg):
         return last_key_sorting_range[avg]
     else:
         return standard_sorting_range[avg]
-
 #returns data for the progress screeen
 def get_progress():
     return doneKeys, totalKeys, currKey, cnt
@@ -611,18 +602,16 @@ def update_df(update):
 def save_dfs():
     global reps_df, sf_df
     print('saving dataframes')
-    unmatched_reps = reps_df[reps_df.Id.notnull()]
-    print(f'reps matched: {unmatched_reps}')
+    unmatched_reps = reps_df[reps_df.Id == 'manual']
+    print(f'reps matched: {len(unmatched_reps)}')
     data = reps_df.to_csv() + '--$--' + sf_df.to_csv()
-    print(data)
     p = progress.objects.latest()
     p.label = data
     p.completed_keys = progress.objects.latest().completed_keys + 1
     p.save()
     db.connections.close_all()
-
     del data, unmatched_reps
-
+    collect()
 
 def import_contacts(rep_file, df_map, channel):
     # check rep_file type
@@ -641,7 +630,6 @@ def import_contacts(rep_file, df_map, channel):
         reps_type_update_list = [np.nan for _ in range(len(reps_df))]
         reps_avg_update_list = [np.nan for _ in range(len(reps_df))]
         sf_match_update_list  = [True for _ in range(len(sf_df))]
-
 
 def preprocess(sfdf, repdf, keys):
     key_list = list()
