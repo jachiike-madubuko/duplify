@@ -332,7 +332,7 @@
 
     function update_progress(){
         $.getJSON("{% url 'progress' %}", function (result) {
-            if (result['done'] == 1) {
+            if (result['done'] > 10) {
                 window.location.replace("{% url 'reps' %}");
             }
         }).fail(function () {

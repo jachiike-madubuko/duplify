@@ -31,10 +31,13 @@ dedupe_q = django_rq.get_queue('high', autocommit=True, is_async=True)
 def display(request):
     print('render datatables from dataframes')
     reps_df = get_contacts('reps')
-    news = reps_df[reps_df.Id == '']
-    manuals = reps_df[reps_df.Id == 'manual']
-    dupes = reps_df[len(reps_df.Id) > 6]
+    new_flag = reps_df.Id == ''
+    manual_flag = reps_df.Id == 'manual'
+    news = reps_df[new_flag]
+    manuals = reps_df[manual_flag]
+    dupes = reps_df[not (new_flag or manual_flag)]
     print(f'news: {len(news)}\nmanuals: {len(manuals)}\ndupes{len(dupes)}')
+    print(f'news: {type(news)}\nmanuals: {type(manuals)}\ndupes{type(dupes)}')
     return render(request, 'dedupper/data-table.html')
 
 def closest(request):
@@ -334,9 +337,10 @@ def merge(request, id):
 def dup_progress(request):
     if request.method == 'GET':
         if progress.objects.latest().completed_keys == 0:
-            return JsonResponse({'done': 0, 'esti': 10}, safe=False)
+            return JsonResponse({'done': 0.1, 'esti': 10}, safe=False)
         else:
-            return JsonResponse({'done': 1, 'esti': 10}, safe=False)
+            print('DEDUPING DONE')
+            return JsonResponse({'done': 1000, 'esti': 10}, safe=False)
 
 def resort(request):
     if request.method == 'GET':

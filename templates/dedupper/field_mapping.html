@@ -24,13 +24,13 @@
         }
 
         #loading-indicator {
-        {#position: fixed;#}{#left: 50%;#}{#top: 50%;#}{#right: 50%;#}{#bottom: 50%;#}{#z-index: 1100;#}{#box-shadow: 0px 0px 1000vw 1000vh rgba(0, 0, 0, 0.2);#}
+        {#position: fixed;#}{#left: 50%;#}{#top: 50%;#}{#right: 50%;#}{#bottom: 50%;#}{#z-index: 1100;#}{#box-shadow: 0px 0px 1000vw 1000vh rgba(0, 0, 0, 0.2);#} height: inherit;
+            width: inherit;
         }
 
 
     </style>
 </head>
-x
 <body class="rgba-black-slight" style="transition: 2s; overflow: auto">
 <div class="row"></div>
 
@@ -196,7 +196,7 @@ bottom:
                         </label>
 
                     </div>
-                    <button class="row btn waves-effect btn-primary rounded-circle p-2 m-3 z-depth-5 float-left"
+                    <button class="row btn waves-effect btn-primary p-2 m-3 z-depth-5 float-left"
                             id="map-headers"
                             type="button"
                             onclick="map_headers()">
