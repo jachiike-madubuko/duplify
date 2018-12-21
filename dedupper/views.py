@@ -341,7 +341,7 @@ def merge(request, id):
 def dup_progress(request):
     if request.method == 'GET':
         print(f'ENTER dup_progress: {progress.objects.latest().completed_keys}')
-        if progress.objects.latest().completed_keys == request.session['num_keys']:
+        if progress.objects.latest().completed_keys == 0:
             return JsonResponse({'done': 0.1, 'esti': 10}, safe=False)
         else:
             print('DEDUPING DONE')
