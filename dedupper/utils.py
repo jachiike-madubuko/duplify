@@ -308,9 +308,10 @@ def threaded_deduping(index, ln):
 #     del sf_key_map, sf_contacts
 #the start of duplify algorithm
 def key_generator(data):
-    print('ENTER: import_contacts')
-    import_contacts(data['reps'], data['channel'])
-    print('EXIT: import_contacts')
+    print('ENTER: key_generator')
+    print('	 ENTER: import_contacts')
+    import_contacts(data['reps'], data['map'], data['channel'])
+    print('	 EXIT: import_contacts')
 #     import_gatekeepers()
     global sf_df, reps_df, start, waiting, doneKeys, totalKeys, cnt, currKey, sort_alg, keylist, sf_groups, reps_ID_update_list
     matched= False
@@ -318,13 +319,13 @@ def key_generator(data):
     print('start your engines ')
     start = perf_counter()
 
-    print('ENTER: import_contacts')
+    print('	 ENTER: preprocess')
     sf_df, reps_df, keylist = preprocess(sf_df, reps_df, data['keys'])
-    print('EXIT: import_contacts')
+    print('	 EXIT: preprocess')
 
-    print('ENTER: match_crds')
+    print('	 ENTER: match_crds')
     reps_ID_update_list = match_crds(sf_df, reps_df) #start timer
-    print('EXIT: match_crds')
+    print('	 EXIT: match_crds')
 #     reps_df, sf_df = get_contacts('both')
 
 #     sf_groups = {i: sf_df.groupby(i).groups for i in list(sf_df.columns)[:-1]}
@@ -334,9 +335,9 @@ def key_generator(data):
     sf_lastnames = list(set(sf_groups.groups.keys()))
     last_name_groups = list(set(reps_lastnames).intersection(sf_lastnames))
 
-    print('ENTER: key_deduper')
+    print('	 ENTER: key_deduper')
     key_deduper(last_name_groups, reps_groups, reps_ID_update_list)
-    print('EXIT: key_deduper')
+    print('	 EXIT: key_deduper')
 
 def key_deduper(last_name_groups, reps_groups, reps_ID_update_list):
     matched= False
@@ -345,9 +346,9 @@ def key_deduper(last_name_groups, reps_groups, reps_ID_update_list):
 
     rep_indices = [[(index, ln) for index in  reps_groups.groups[ln] if reps_ID_update_list[index] == ''] for ln in last_name_groups]
     rep_list = reduce(lambda x, y: list(chain(x,y)), rep_indices)
-    print('ENTER: threads.dedupeQ')
+    print('	 ENTER: threads.dedupeQ')
     dedupper.threads.dedupeQ(rep_list)
-    print('EXIT: threads.dedupeQ')
+    print('	 EXIT: threads.dedupeQ')
 #uploades contacts to the db
 def load_csv2db(csv, header_map, resource, file_type='rep'):
     global done
@@ -615,21 +616,14 @@ def save_dfs():
 
     del data, unmatched_reps
 
-def import_contacts(rep_file, channel):
+
+def import_contacts(rep_file, df_map, channel):
     # check rep_file type
     global reps_df, sf_df, loaded, reps_ID_update_list, sf_match_update_list, reps_type_update_list, reps_avg_update_list
     if not loaded:
         loaded=True
-        reps_df = pd.read_excel(rep_file, engine='xlrd').replace([None], ['NULL'], regex=True)
-        reps_df.rename(columns={
-                        'First Name' : 'FirstName',
-                        'Last Name' : 'LastName',
-                        'Mailing City' : 'MailingCity',
-                        'Mailing Zip/Postal Code' : 'MailingPostalCode',
-                        'Mailing State/Province' : 'MailingState',
-                        'Crd Number': 'CRD__c',
-                       },
-                       inplace=True)
+        reps_df = rep_file
+        reps_df.rename(columns=df_map, inplace=True)
         sf = Salesforce(password='7924trill', username='jmadubuko@wealthvest.com', security_token='W4ItPbGFZHssUcJBCZlw2t9p2')
         query = "select Id, CRD__c, FirstName, LastName, Suffix, MailingStreet, MailingCity, MailingState, MailingPostalCode, Phone, MobilePhone, HomePhone, otherPhone, Email, Other_Email__c, Personal_Email__c   from Contact where Territory_Type__c='Geography' and Territory__r.Name like "
         starts_with = f"'{channel}%'"

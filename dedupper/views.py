@@ -15,7 +15,7 @@ from django_tables2.views import RequestConfig
 from simple_salesforce import Salesforce
 
 from dedupper.forms import UploadFileForm
-from dedupper.tables import StatsTable, SFContactTable, RepContactTable
+from dedupper.tables import SFContactTable, RepContactTable
 from dedupper.utils import *
 
 tablib.formats.json.json = json
@@ -327,29 +327,10 @@ def merge(request, id):
 
 def dup_progress(request):
     if request.method == 'GET':
-        reps =  request.session['rep_size']
-        doneKeys, numKeys, currKey, doneReps = get_progress()
-        # keyPercent = round(((doneKeys/numKeys)*100) + ((1/numKeys) * (doneReps/reps)*100),2)
-
-        keyPercent = round(progress.objects.latest().completed_keys / progress.objects.latest().total_keys, 2)
-        repPercent = round(progress.objects.latest().completed_reps / progress.objects.latest().total_reps, 2)
-
-        # repPercent = round(100*(reps-undies)/reps,2)
-        key_stats = []
-        for i in keys:
-            key = '-'.join(i)
-            title = ' '.join(i)
-            undies = len(repContact.objects.filter(type='Undecided', keySortedBy=key))
-            dups = len(repContact.objects.filter(type='Duplicate', keySortedBy=key))
-            news = len(repContact.objects.filter(type='New Record', keySortedBy=key))
-            manu = len(repContact.objects.filter(type='Manual Check', keySortedBy=key))
-            key_stats.append({'title': title, 'undies': undies, 'dups': dups, 'news': news, 'manu': manu})
-        stats_table = StatsTable(key_stats)
-
-    return JsonResponse({'reps': reps, 'dups': 0, 'news': 0, 'undies':0, 'doneKeys': 0,
-                         'numKeys': 0, 'doneReps': 0, 'currKey':0, 'manu': 0,
-                         'keyPercent': keyPercent, 'repPercent': repPercent, 'table': stats_table.as_html(request)},
-                        safe=False)
+        if progress.objects.latest().completed_keys == 0:
+            return JsonResponse({'done': 0, 'esti': 10}, safe=False)
+        else:
+            return JsonResponse({'done': 1, 'esti': 10}, safe=False)
 
 def resort(request):
     if request.method == 'GET':
@@ -390,6 +371,7 @@ def run(request):
         keys=partslist
         p = progress.objects.latest()
         p.total_keys = len(partslist)
+        request.session['indicator'] = len(partslist)
         p.save()
         db.connections.close_all()
         data= {
