@@ -12,7 +12,7 @@ BUFF_SIZE = 10000
 dedupe_q = queue.Queue(BUFF_SIZE)
 update_q = queue.Queue(BUFF_SIZE)
 dedupe_wait_list = updates_wait_list = list()
-producer= consumers=u = None
+producer = consumers = u = None
 numThreads = 10
 stopper = True
 dead_threads = 0
@@ -128,7 +128,7 @@ def makeThreads():
     return [DedupThread(name='dedupper' + str(i+1)) for i in range(numThreads)]
 
 def startThreads():
-    global producer, consumers, dead_threads, numThreads, last_thread_killed
+    global producer, consumers, dead_threads, numThreads, last_thread_killed, u
     dead_threads = 0
     last_thread_killed = 0
     producer = DuplifyThread(name='producer')
