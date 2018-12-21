@@ -67,6 +67,7 @@ def closest(request):
         # return  JsonResponse({'rep-table': 'tits'})
 
 def turn_table(request):
+    #create a new RepContactTable
     #function that returns a table of contact types sorted by a user input field
     if request.method == 'GET':
         type =  request.GET.get('type')
