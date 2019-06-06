@@ -98,8 +98,6 @@ six==1.11.0
 
 sqlparse==0.2.4
 
-spacy==2.0.12
-
 tablib==0.12.1
 
 tqdm==4.23.4

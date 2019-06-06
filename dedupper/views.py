@@ -289,8 +289,8 @@ def login(request):
     u = request.GET.get('username')
     p = request.GET.get('password')
     try:
-        sf = Salesforce(password='7924trill',
-                        username='jmadubuko@wealthvest.com', security_token='W4ItPbGFZHssUcJBCZlw2t9p2')
+        sf = Salesforce(password=p,
+                        username=u, security_token='W4ItPbGFZHssUcJBCZlw2t9p2')
         msg= 'success'
         #store u & p in session, create function called login_check that makes sure a username is in the session
         # else, redirect to /
